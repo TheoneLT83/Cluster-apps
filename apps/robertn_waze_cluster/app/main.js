@@ -7,14 +7,14 @@
  * background(bg): what runs from the platform's start (the app starts by itself, "mguAppStartType":
  * "autostart"), with its screen closed too: the waze-on-cluster clients, the gear, the turn signals, the HUD
  * overlay, the HMI's display language. start(ctx): the screen, its pages (the header's tabs):
- *   Maps      where the map shows (Cluster, HUD, both), its state, BMW's turn box; CarPlay or Android Auto:
- *             its patch (Patch, Remove patch), Android Auto's zoom and turn card, CarPlay's Wi-Fi, Restart head
- *             unit while a change waits for it; the HUD map's size, brightness and place, with a picture of the HUD
- *   Info      the turn signals (Test left / Test right, the car's fields that may carry them), the gear,
- *             the HUD overlay's state
+ *   Maps      where the map shows (Cluster, HUD, both), its state, BMW's logo on the cluster; CarPlay or Android
+ *             Auto: its patch (Patch, Reinstall patch over another tool's, Remove patch), Android Auto's zoom and turn
+ *             card, CarPlay's Wi-Fi, Restart head unit while a change waits for it or after a patch; the HUD map's
+ *             size, brightness and place, with a picture of the HUD
+ *   Display   what the HUD shows under the map: turn signals (Test left / Test right), the gear, eDrive power,
+ *             electric range, oil and coolant, the real speed (with the setting realSpeed), with a picture of it
  *   Log       the app's log, and the saved logs for a phone on the car's hotspot
- *   Settings  the kit's settings sheet: the turn signals and the gear on the HUD, the arrows' size, the colours,
- *             the layout
+ *   Settings  the kit's settings sheet: Real speed on the Display page, the arrows' size, the colours, the layout
  * Every word is in the HMI's display language (i18n.js), English where a language has none, with the glyphs of
  * fonts/ (tools/bake_fonts.py). Arabic, Hebrew and Thai are drawn in English: the kit draws no shaping or
  * right-to-left; their words show on the tile and the HMI's own screens.
@@ -27,13 +27,19 @@ const fonts = require('./kit/fonts');
 const i18n = require('./i18n.js');
 const { WazeClusterControl, HUD_SIZE_STEPS, ZOOM_STEP } = require('./waze_cluster_control.js');
 const { LogsControl } = require('./logs_control.js');
-const { HudOverlay, mapRect, gearRect, arrowRect, drawArrow, HUD_W, HUD_H, ARROW, GREEN } = require('./hud_overlay.js');
+const path = require('path');
+const { HudOverlay, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN } = require('./hud_overlay.js');
+const { HvData } = require('./hv_data.js');
 const { TurnSignals } = require('./turn_signals.js');
 const qrcodegen = require('./qrcodegen.js');
 
 const { t } = i18n;
 const W = 1600, H = 520;
-const PAGES = ['Maps', 'Info', 'Log'];
+const PAGES = ['Maps', 'Display', 'Log'];
+/* The Display page's switches: the setting, its words. */
+const HUD_ITEMS = [['hudTurn', 'Turn signals'], ['hudGear', 'Gear']];
+/* What shows between the turn signals (the setting hudData), one at a time; speed: only with the setting realSpeed. */
+const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['temps', 'Oil and coolant'], ['speed', 'Real speed']];
 const LOG_LINES = 60;
 const HMI_CONTEXT = ['de.bmw.infotainment.hmi.hmicontext.HMIContext', 'HMI_CID'];
 /* The HUD overlay's state, by hud.state() (English keys of i18n.js). */
@@ -94,19 +100,43 @@ async function background(bg) {
     const logs = new LogsControl({ log });
     const turns = new TurnSignals();
     const hud = new HudOverlay({ log });
-    const car = new Car(Object.assign({}, bg, { log }), ['gear']);
+    const car = new Car(Object.assign({}, bg, { log }), ['gear', 'speed', 'rpm', 'temps']);
+    // the real speed only while its setting offers it
+    const dataChoice = () => { const c = settings.get('hudData'); return c === 'speed' && !settings.get('realSpeed') ? 'off' : c; };
+    const hv = new HvData({ signals: bg.signals, log, file: bg.dataDir && path.join(bg.dataDir, 'hv.json') });
+    // the battery unit is read only while its power or the range is shown
+    const hvWanted = () => { if (dataChoice() === 'ev') hv.start(); else hv.stop(); };
     const mapNow = () => mapRect(ctl.hudWidth() || 0, ctl.hudOffset() || [0, 0]);
     // the HUD shows the car's gear only, never demo data
     const gearNow = () => { const d = car.data(); return d && !d.demo ? gearText(d) : null; };
+    /* The data under the map (hud_overlay.js drawData), the car's own only; preview: every chosen one, '--' for
+     * a value not known. */
+    const dataNow = (preview) => {
+        const d = car.data(), real = d && !d.demo ? d : {}, out = [];
+        const value = (label, v, unit) => { if (G.isNum(v) || preview) out.push({ kind: 'value', label, text: G.isNum(v) ? Math.round(v) + unit : '--' }); };
+        const c = dataChoice();
+        if (c === 'ev') {
+            if (hv.power() !== null || preview) out.push({ kind: 'power', kw: hv.power() });
+            value(t('EV'), hv.range(), ' km');
+        } else if (c === 'temps') {
+            value(t('OIL'), real.oil, '°');
+            value(t('COOLANT'), real.coolant, '°');
+        } else if (c === 'speed') {
+            value('km/h', real.speed, '');
+        }
+        return out;
+    };
     const toHud = () => hud.update({
         turn: turns.state(), gear: gearNow(), map: mapNow(), arrowSize: settings.get('arrowSize'),
-        showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'),
+        showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'), data: dataNow(false),
     });
-    car.onSample(() => { toHud(); changed(); });
+    car.onSample(() => { hv.feed(car.data().demo ? null : car.data()); toHud(); changed(); });
+    hv.on('change', () => { toHud(); changed(); });
     ctl.on('change', () => { toHud(); changed(); });
     logs.on('change', changed);
     turns.on('change', () => { toHud(); changed(); });
-    settings.onChange(() => { toHud(); changed(); });
+    settings.onChange(() => { hvWanted(); toHud(); changed(); });
+    hvWanted();
 
     // the HMI's display language, at the start and on each change
     const language = (v) => {
@@ -138,7 +168,7 @@ async function background(bg) {
     ctl.open();
     toHud();
     log.info('Cluster functions ' + bg.spec.version + ' started (' + (bg.app && bg.app.startReason) + ')');
-    return { ctl, logs, turns, hud, car, lines, log, mapNow, gearNow, onChange: (fn) => listeners.push(fn) };
+    return { ctl, logs, turns, hud, car, lines, log, mapNow, gearNow, dataNow, onChange: (fn) => listeners.push(fn) };
 }
 
 mgu.run({
@@ -147,7 +177,7 @@ mgu.run({
     async start(ctx) {
         const { ui, settings } = ctx;
         const b = ctx.background || await background(ctx);
-        const { ctl, logs, turns, hud, car, lines, log, mapNow, gearNow } = b;
+        const { ctl, logs, turns, hud, car, lines, log, mapNow, gearNow, dataNow } = b;
         let page = 0, version = 0, drawn = -1, blink = true, phone = 'carplay';
         // the kit's header and Settings tab in the display language too
         const changed = () => {
@@ -202,10 +232,11 @@ mgu.run({
                 });
             }
             if (settings.get('hudGear')) {
-                const g = gearRect(m), gt = gearText(car.data()) || 'D';
-                cv.text(gt, x + (g.x + g.w - 2) * k, y + (g.y + g.h - 8) * k, 46 * k, gearNow() ? '#f2f5f8' : withAlpha('#f2f5f8', 0.35),
-                    { font: 'gear', align: 'right' });
+                const g = gearRect(m, settings.get('arrowSize')), gt = gearText(car.data()) || 'D';
+                cv.text(gt, x + (g.x + 2) * k, y + (g.y + g.h - 8) * k, 40 * k, gearNow() ? '#f2f5f8' : withAlpha('#f2f5f8', 0.35), { font: 'gear' });
             }
+            const dr = dataRect(m, settings.get('arrowSize'));
+            if (dr) drawData(cv, x + dr.x * k, y + dr.y * k, dr.w * k, dataNow(true), k);
             return h;
         };
 
@@ -222,7 +253,7 @@ mgu.run({
             small(cv, th, ctl.mapText(), 48, 204, 712);
             small(cv, th, ctl.hudText(), 48, 230, 712, ctl.hudDisabled() ? th.warn : null);
             const gu = ctl.guidanceUnavailable(), hide = ctl.hideGuidance();
-            cv.text(fit(cv, t("Hide BMW's turn box"), 22, 600, 'label'), 48, 276, 22, gu ? th.dim : th.text, { font: 'label' });
+            cv.text(fit(cv, t('Hide BMW logo on cluster'), 22, 600, 'label'), 48, 276, 22, gu ? th.dim : th.text, { font: 'label' });
             toggle(cv, th, 684, 252, !!hide, () => ctl.toggleGuidance(), 'guide', gu || hide === null);
 
             // the phone: CarPlay or Android Auto, its patch and its own settings
@@ -239,7 +270,8 @@ mgu.run({
             const by = py + 112;
             const btn = (text, run, opts) => { bx += G.button(cv, th, bx, by, 0, 42, text, run, opts) + 10; };
             if (cp) {
-                btn(t('Patch'), () => ctl.enableMap(), { primary: ctl.canEnable(), busy: !ctl.canEnable(), key: 'cp-patch' });
+                if (ctl.reinstallWanted()) btn(t('Reinstall patch'), () => ctl.reinstallMap(), { primary: true, busy: !ctl.canReinstall(), key: 'cp-reinstall' });
+                else btn(t('Patch'), () => ctl.enableMap(), { primary: ctl.canEnable(), busy: !ctl.canEnable(), key: 'cp-patch' });
                 btn(t('Remove patch'), () => ctl.disableMap(), { confirm: true, busy: !ctl.canDisable(), key: 'cp-unpatch' });
             } else {
                 btn(t('Patch'), () => ctl.enableAa(), { primary: ctl.canEnableAa(), busy: !ctl.canEnableAa(), key: 'aa-patch' });
@@ -249,7 +281,7 @@ mgu.run({
                 cv.text(fit(cv, ctl.cardText(), 20, 180, 'label'), 500, py + 98, 20, ctl.canToggleCard() ? th.text : th.dim, { font: 'label' });
                 toggle(cv, th, 684, py + 72, ctl.cardHidden(), () => ctl.toggleCard(), 'card', !ctl.canToggleCard());
             }
-            if (ctl.restartNeeded()) {
+            if (ctl.restartNeeded() || ctl.restartOffered()) {
                 btn(t('Restart head unit'), () => ctl.requestRestart(), { confirm: true, primary: ctl.canRestart(), busy: !ctl.canRestart(), key: 'restart' });
             }
 
@@ -276,25 +308,35 @@ mgu.run({
             G.button(cv, th, 1376, 376, 60, 48, 'o', () => ctl.centreHud(), { busy: !ctl.canCentreHud(), key: 'centre' });
         }
 
-        function drawInfo(cv, th) {
-            G.panel(cv, th, 24, 44, 760, 468, t('Turn signals'));
-            const st = turns.state();
-            [['left', -1, 120, 'Test left'], ['right', 1, 520, 'Test right']].forEach(([side, dir, x, text]) => {
-                drawArrowAt(cv, x, 112, 144, 96, dir, st[side] && blink ? GREEN : withAlpha('#ffffff', 0.12));
-                G.button(cv, th, x - 8, 226, 160, 48, t(text), () => turns.test(side), { primary: st.test === side, key: 'test-' + side });
+        function drawDisplay(cv, th) {
+            G.panel(cv, th, 24, 44, 640, 468, t('On the HUD'));
+            HUD_ITEMS.forEach(([key, text], i) => {
+                const y = 96 + i * 62;
+                line(cv, th, t(text), 48, y + 30, 480);
+                toggle(cv, th, 564, y + 4, !!settings.get(key), () => settings.set(key, !settings.get(key)), 'hud-' + key);
+                if (i) cv.fillRect(48, y - 8, 592, 1, withAlpha('#ffffff', 0.08));
             });
-            label(cv, th, t("The car's fields that may carry them"), 48, 316);
-            const f = turns.find();
-            if (f.error) line(cv, th, t(CATALOG_ERRORS[f.error] || CATALOG_ERRORS.unreadable), 48, 352, 712, th.dim);
-            else if (!f.fields.length) line(cv, th, t('None found in the car’s signal catalog'), 48, 352, 712, th.dim);
-            f.fields.slice(0, 4).forEach((it, i) => line(cv, th, it.iface.split('.').pop() + ' · ' + it.field, 48, 352 + i * 34, 712));
+            // one reading between the turn signals
+            cv.fillRect(48, 214, 592, 1, withAlpha('#ffffff', 0.08));
+            label(cv, th, t('Between the turn signals'), 48, 254);
+            const now = settings.get('hudData');
+            HUD_DATA.filter(([v]) => v !== 'speed' || settings.get('realSpeed')).forEach(([v, text], i) =>
+                G.button(cv, th, 48 + (i % 2) * 300, 270 + Math.floor(i / 2) * 62, 288, 48, t(text), () => settings.set('hudData', v),
+                    { primary: now === v, key: 'data-' + v }));
 
-            G.panel(cv, th, 804, 44, 772, 468, t('Gear'));
+            G.panel(cv, th, 684, 44, 892, 468, t('HUD'));
+            hudPicture(cv, th, 708, 100, 560);
+            const st = turns.state();
+            [['left', 'Test left'], ['right', 'Test right']].forEach(([side, text], i) =>
+                G.button(cv, th, 1292, 104 + i * 62, 260, 48, t(text), () => turns.test(side), { primary: st.test === side, key: 'test-' + side }));
             const d = car.data(), g = gearText(d);
-            cv.text(g || '-', 1000, 310, 200, g ? th.text : th.dim, { font: 'gear', align: 'center' });
-            line(cv, th, settings.get('hudGear') ? t('On the HUD, under the map') : t('Not on the HUD'), 828, 380, 724, th.dim);
-            if (d && d.demo) line(cv, th, t('Demo: no gear from the car'), 828, 416, 724, th.warn);
-            line(cv, th, t('HUD overlay: {0}', t(HUD_STATES[hud.state()])), 828, 456, 724, th.dim);
+            label(cv, th, t('Gear'), 1292, 262);
+            cv.text(g || '-', 1292, 330, 64, g ? th.text : th.dim, { font: 'gear' });
+            if (d && d.demo) small(cv, th, t('Demo: no gear from the car'), 1292, 366, 260, th.warn);
+            small(cv, th, t('HUD overlay: {0}', t(HUD_STATES[hud.state()])), 708, 470, 560, th.dim);
+            const f = turns.find();
+            small(cv, th, f.error ? t(CATALOG_ERRORS[f.error] || CATALOG_ERRORS.unreadable) : f.fields.length ?
+                f.fields.slice(0, 2).map((it) => it.field).join(', ') : t('None found in the car’s signal catalog'), 708, 498, 844, th.dim);
         }
 
         function drawLog(cv, th) {
@@ -328,7 +370,7 @@ mgu.run({
             if (want !== logsOpen) { logsOpen = want; if (want) logs.open(); else logs.close(); }
             const th = ctx.theme();
             const cv = ctx.canvas(W, H).clear(th.bg);
-            [drawMaps, drawInfo, drawLog][page](cv, th);
+            [drawMaps, drawDisplay, drawLog][page](cv, th);
             G.frame(cv, th, PAGES.map((p) => t(p)), page, [car.data() && car.data().demo && page === 1 && { text: 'DEMO' }]);
             await ui.image('MAIN_GFX', cv);
         }

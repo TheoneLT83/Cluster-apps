@@ -4,18 +4,21 @@
  * hud_overlay - the turn signals and the gear on the HUD, as image layers of the cluster renderer
  * (cluster_render_client.js, target `hud`, 800 x 480), over BMW's own HUD content and the map:
  *
- *   left / right arrow   over the map's top-left and top-right corners (just above the map where the HUD has room,
- *                        else inside its top edge), never past its sides; blinking (BLINK_MS on, BLINK_MS off)
- *                        while that turn signal is on
- *   gear                 under the map, at its right side (inside its bottom edge when the HUD has no room
- *                        under it): P, R, N, D or D1 ... D9
+ *   one row under the map (inside its bottom edge when the HUD has no room under it), within its sides:
+ *   left arrow           after BMW's own speed reading (SPEED_END), blinking (BLINK_MS on, BLINK_MS off) while
+ *                        that turn signal is on
+ *   gear                 beside the left arrow: P, R, N, D or D1 ... D9
+ *   data                 between the gear and the right arrow, the one reading chosen: the electric range with the
+ *                        eDrive power (a slider with its kW), oil and coolant temperatures, or the real speed
+ *   right arrow          at the map's right edge
  *
  * The HUD shows black as nothing: each layer is drawn on transparent pixels and only what is lit shows.
  * A layer stays visible once made and an arrow that is off is sent as blank pixels, so the HUD's slot is not
  * asked for and given back on every blink. Nothing is made while the overlay has nothing to show.
  *
  *   const hud = new HudOverlay({ log });
- *   hud.update({ turn: { left, right }, gear: 'D3', map: { x, y, w, h }, arrowSize: 'medium', showTurn: true, showGear: true });
+ *   hud.update({ turn: { left, right }, gear: 'D3', map: { x, y, w, h }, arrowSize: 'medium', showTurn: true, showGear: true,
+ *                data: [{ kind: 'power', kw }, { kind: 'value', label: 'OIL', text: '92°' }, ...] });
  *   hud.state()      -> 'off' | 'waiting' | 'shown' | 'disabled' | 'unavailable' (the HUD target, as the renderer says)
  *   hud.close();
  */
@@ -25,8 +28,13 @@ const { Canvas } = require('./kit/canvas');
 const HUD_W = 800, HUD_H = 480;
 const BLINK_MS = 400;
 const ARROW = { small: [40, 26], medium: [52, 34], large: [66, 44] };
-const GEAR_W = 84, GEAR_H = 52;
-const GREEN = '#25e05a', WHITE = '#f2f5f8', AMBER = '#ffb020';
+const ROW_H = 46;
+const GEAR_W = 60, GEAR_H = ROW_H;
+/* Where BMW's own speed reading (its km/h) ends on the HUD, from a photo of a G-series HUD: the left arrow
+ * comes after it. */
+const SPEED_END = 356;
+const MAX_KW = 60;
+const GREEN = '#25e05a', WHITE = '#f2f5f8', AMBER = '#ffb020', DIM = '#8d98a3';
 
 /* The map's place on the HUD as waze-on-cluster puts it (map_feed.cpp quad): its width as a share of the HUD's
  * (0: the fitted box, about 57 %), the frame's shape kept (1088 x 480), centred, then moved by the offset and held
@@ -41,19 +49,61 @@ function mapRect(widthPct, offset) {
     return { x, y, w, h };
 }
 
-/* Where the gear goes: under the map, at its right side; inside its bottom edge when the HUD has no room under it. */
-function gearRect(map) {
-    const below = map.y + map.h + 4;
-    return { x: Math.max(0, map.x + map.w - GEAR_W), y: below + GEAR_H <= HUD_H ? below : Math.max(0, map.y + map.h - GEAR_H - 2), w: GEAR_W, h: GEAR_H };
+/* The row under the map; inside its bottom edge when the HUD has no room under it. */
+function rowRect(map) {
+    const below = map.y + map.h + 6;
+    return { x: map.x, y: below + ROW_H <= HUD_H ? below : Math.max(0, map.y + map.h - ROW_H - 4), w: map.w, h: ROW_H };
 }
 
-/* Where an arrow of aw x ah goes: over the map's top corner on its side, just above the map where the HUD has
- * room, else inside the map's top edge; within the map's sides, smaller where the map is narrow. */
+/* Where an arrow of aw x ah goes in the row: the left one after BMW's speed reading (short of the map's middle), the
+ * right one at the map's right edge. */
 function arrowRect(map, side, aw, ah) {
-    const k = Math.min(1, (map.w / 2 - 8) / aw);
-    const w = Math.round(aw * k), h = Math.round(ah * k);
-    const y = map.y - h - 8 >= 0 ? map.y - h - 8 : map.y + 6;
-    return { x: side === 'left' ? map.x + 4 : map.x + map.w - w - 4, y, w, h };
+    const row = rowRect(map), k = Math.min(1, (ROW_H - 8) / ah);
+    const w = Math.round(aw * k), h = Math.round(ah * k), y = row.y + Math.round((ROW_H - h) / 2);
+    if (side === 'right') return { x: map.x + map.w - w - 4, y, w, h };
+    return { x: Math.round(Math.max(map.x + 4, Math.min(SPEED_END, map.x + map.w * 0.55 - w))), y, w, h };
+}
+
+/* The gear, beside the left arrow. */
+function gearRect(map, arrowSize) {
+    const [aw, ah] = ARROW[arrowSize] || ARROW.medium, a = arrowRect(map, 'left', aw, ah);
+    return { x: a.x + a.w + 6, y: rowRect(map).y, w: GEAR_W, h: GEAR_H };
+}
+
+/* The data, between the gear and the right arrow; null when there is no room. */
+function dataRect(map, arrowSize) {
+    const [aw, ah] = ARROW[arrowSize] || ARROW.medium, g = gearRect(map, arrowSize), r = arrowRect(map, 'right', aw, ah);
+    const x = g.x + g.w + 6, w = r.x - 8 - x;
+    return w >= 40 ? { x, y: g.y, w, h: ROW_H } : null;
+}
+
+/* The data items left to right from x, y (the row's top) within w, k the scale: as many as fit. An item:
+ * { kind: 'power', kw } a slider centred on 0 (- regen and charging, green; + driving on the battery) with its kW,
+ * or { kind: 'value', label, text } a small label over its value. */
+function drawData(cv, x, y, w, items, k) {
+    k = k || 1;
+    let at = x;
+    (items || []).some((it) => {
+        if (it.kind === 'power') {
+            const tw = 64 * k;
+            if (at + tw > x + w) return true;
+            const mid = at + tw / 2, cy = y + ROW_H * k / 2, kw = typeof it.kw === 'number' ? it.kw : null;
+            cv.fillRect(at, cy - 2 * k, tw, 4 * k, DIM);
+            cv.fillRect(mid - 1 * k, cy - 8 * k, 2 * k, 16 * k, DIM);
+            const f = kw === null ? 0 : Math.max(-1, Math.min(1, kw / MAX_KW));
+            const kx = Math.max(at, Math.min(at + tw - 36 * k, mid + f * (tw / 2) - 18 * k));
+            cv.roundRect(kx, cy - 12 * k, 36 * k, 24 * k, 12 * k, kw !== null && kw < 0 ? GREEN : WHITE);
+            cv.text(kw === null ? '-' : String(Math.round(Math.abs(kw))), kx + 18 * k, cy + 7 * k, 19 * k, '#000000', { font: 'bold', align: 'center' });
+            at += tw + 8 * k;
+            return false;
+        }
+        const vw = Math.max(cv.textWidth(it.text, 24 * k, { font: 'bold' }), cv.textWidth(it.label, 13 * k, { font: 'bold' }));
+        if (at + vw > x + w) return true;
+        cv.text(it.label, at, y + 14 * k, 13 * k, DIM, { font: 'bold' });
+        cv.text(it.text, at, y + 40 * k, 24 * k, WHITE, { font: 'bold' });
+        at += vw + 10 * k;
+        return false;
+    });
 }
 
 /* An arrow pointing left (dir -1) or right (dir 1), filling w x h. */
@@ -68,8 +118,8 @@ function drawArrow(cv, w, h, dir, color) {
 function drawGear(cv, gear) {
     const g = String(gear || '');
     // one word, as BMW's own gear reading: P, R, N, D, D3; a longer one smaller to fit
-    const size = cv.textWidth(g, 46, { font: 'gear' }) <= GEAR_W - 4 ? 46 : 38;
-    cv.text(g, GEAR_W - 2, GEAR_H - 8, size, g.charAt(0) === 'R' ? AMBER : WHITE, { font: 'gear', align: 'right' });
+    const size = cv.textWidth(g, 40, { font: 'gear' }) <= GEAR_W - 4 ? 40 : 32;
+    cv.text(g, 2, GEAR_H - 8, size, g.charAt(0) === 'R' ? AMBER : WHITE, { font: 'gear' });
 }
 
 class HudOverlay {
@@ -97,7 +147,8 @@ class HudOverlay {
     /* What the HUD should show now (see the top of this file). */
     update(w) {
         this.want = Object.assign({ turn: {}, map: mapRect(0) }, w);
-        const any = (this.want.showTurn && (this.want.turn.left || this.want.turn.right)) || (this.want.showGear && this.want.gear);
+        const any = (this.want.showTurn && (this.want.turn.left || this.want.turn.right)) || (this.want.showGear && this.want.gear) ||
+            (this.want.data && this.want.data.length);
         if (any && !this.connected) { this.connected = true; this.cr.connect(); }
         this._draw();
     }
@@ -144,9 +195,15 @@ class HudOverlay {
             this._layer(name, rect, (cv) => { if (lit) drawArrow(cv, rect.w, rect.h, side === 'left' ? -1 : 1, GREEN); }, (lit ? 'on' : 'off') + rect.w);
         });
         if (w.showGear && w.gear) {
-            this._layer('gear', gearRect(w.map), (cv) => drawGear(cv, w.gear), 'g' + w.gear);
+            this._layer('gear', gearRect(w.map, w.arrowSize), (cv) => drawGear(cv, w.gear), 'g' + w.gear);
         } else {
             this._drop('gear');
+        }
+        const dr = w.data && w.data.length ? dataRect(w.map, w.arrowSize) : null;
+        if (dr) {
+            this._layer('data', dr, (cv) => drawData(cv, 0, 0, dr.w, w.data), JSON.stringify(w.data));
+        } else {
+            this._drop('data');
         }
     }
 
@@ -158,4 +215,5 @@ class HudOverlay {
     }
 }
 
-module.exports = { HudOverlay, mapRect, gearRect, arrowRect, drawArrow, drawGear, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H, GREEN, WHITE, AMBER };
+module.exports = { HudOverlay, mapRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
+    ROW_H, SPEED_END, MAX_KW, GREEN, WHITE, AMBER, DIM };

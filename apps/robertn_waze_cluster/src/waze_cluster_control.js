@@ -359,6 +359,28 @@ class WazeClusterControl extends EventEmitter {
         }
     }
 
+    /* Whether CarPlay's patch wants putting on again: another tool changed carplay, or an older app's patch
+     * is on it. */
+    reinstallWanted() {
+        const ps = this.patchStatus;
+        return !!ps && !this.pending() && ((!!ps.conflict && conflictText(ps.conflict) === t('Changed by another tool')) ||
+            (ps.state === 'patched' && this._outdated(ps)));
+    }
+
+    canReinstall() {
+        return this.reinstallWanted() && (this.canEnable() || this.canDisable());
+    }
+
+    /* Reinstall patch: Patch where it is taken, else Remove patch, then Patch once the original is back. */
+    reinstallMap() {
+        if (this.canEnable()) {
+            this.enableMap();
+        } else if (this.canDisable()) {
+            this._reapply = true;
+            this.disableMap();
+        }
+    }
+
     /* ---- where the map shows: the cluster, the HUD (experimental) or both ---- */
     /* 'cluster', 'hud' or 'both': as just asked for until the render reports
      * it, else as the render last said; null while it has not, or when it
@@ -886,6 +908,13 @@ class WazeClusterControl extends EventEmitter {
         return !!(ps && (ps.carplay === 'deferred' || (ps.aa && (ps.aa.aapd === 'deferred' || ps.aa.pending))));
     }
 
+    /* A patch applied this boot without a restart pending, which may still want one for the map: Restart
+     * head unit is offered (patchd takes it then). */
+    restartOffered() {
+        const ps = this.patchStatus;
+        return !!(ps && ps.offered) && !this.restartNeeded();
+    }
+
     restartRequested() {
         return this._restartRequested;
     }
@@ -899,7 +928,7 @@ class WazeClusterControl extends EventEmitter {
 
     /* Restart head unit is taken: a change waits, nothing runs, the limit allows it. */
     canRestart() {
-        return this.connectedPatch() && this.restartNeeded() && !this.busy() && !this._restartWaitMin();
+        return this.connectedPatch() && (this.restartNeeded() || this.restartOffered()) && !this.busy() && !this._restartWaitMin();
     }
 
     /* The restart's own row: under way, failed, or held by the limit; empty
@@ -1074,6 +1103,13 @@ class WazeClusterControl extends EventEmitter {
             this.patchStatus = !status.aa && prev && prev.aa ? Object.assign({}, status, { aa: prev.aa }) : status;
             this._noteInEffect();
             this._noteCardAsked(msg);
+            // Reinstall patch: the original back, Patch
+            if (this._reapply && this.patchStatus.state === 'error') {
+                this._reapply = false;
+            } else if (this._reapply && this.canEnable()) {
+                this._reapply = false;
+                this.enableMap();
+            }
             this._wake();
             this.emit('change');
         } else if (/^(cluster|hud|hud-size|hud-pos|hud-brightness)-reply$/.test(msg.ev)) {

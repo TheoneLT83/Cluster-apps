@@ -174,6 +174,17 @@ async function main() {
     ok('only Android Auto\'s change pending: the restart is taken, CarPlay has nothing pending', rb.ok === true && !st.pending && !st.carplay,
         JSON.stringify([rb, st]));
 
+    /* a patch applied this boot with carplay restarted at once: nothing pending, the restart still offered */
+    var o = unit(0, 'restart-offered');
+    fs.writeFileSync(o.mode, 'ok');
+    var po = await daemon(o);
+    st = await status(po);
+    po.send({ cmd: 'reboot' });
+    rb = await po.next(reply);
+    await sleep(300);
+    ok('a patch applied this boot: offered in status, the restart taken with nothing pending', st.offered === true && !st.pending &&
+        rb.ok === true && calls(o).length === 1, JSON.stringify([st, rb]));
+
     /* markers from an earlier boot */
     var m = unit(0, 'aa-pending');
     fs.writeFileSync(path.join(m.d, 'shm', 'aa-pending'), JSON.stringify({ action: 'apply', boot: 'boot-1' }) + '\n');

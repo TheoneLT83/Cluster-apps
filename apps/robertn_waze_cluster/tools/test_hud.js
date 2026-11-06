@@ -25,7 +25,7 @@ const STAGE = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-hud-'));
 fs.cpSync(path.join(REPO, 'kit', 'runtime'), path.join(STAGE, 'kit'), { recursive: true });
 ['hud_overlay.js', 'turn_signals.js'].forEach((f) => fs.copyFileSync(path.join(HERE, 'app', f), path.join(STAGE, f)));
 fs.copyFileSync(path.join(REPO, 'native', 'cluster-render', 'js', 'cluster_render_client.js'), path.join(STAGE, 'cluster_render_client.js'));
-const { HudOverlay, mapRect, gearRect, arrowRect, ARROW, GEAR_W, GEAR_H } = require(path.join(STAGE, 'hud_overlay.js'));
+const { HudOverlay, mapRect, rowRect, gearRect, arrowRect, dataRect, ARROW, GEAR_W, GEAR_H, ROW_H, SPEED_END } = require(path.join(STAGE, 'hud_overlay.js'));
 const { ClusterRender } = require(path.join(STAGE, 'cluster_render_client.js'));
 const { search, TurnSignals } = require(path.join(STAGE, 'turn_signals.js'));
 
@@ -46,17 +46,25 @@ async function main() {
     eq(mapRect(85, [400, 400]), { x: 120, y: 180, w: 680, h: 300 }, 'held inside the HUD');
     eq(mapRect(0, [0, 0]).w, 456, 'Standard: about 57 %');
     const m = mapRect(60, [0, 0]);
-    eq(gearRect(m), { x: 640 - GEAR_W, y: 346 + 4, w: GEAR_W, h: GEAR_H }, 'the gear under the map, at its right side');
-    const low = mapRect(60, [0, 400]);
-    eq(gearRect(low).y, low.y + low.h - GEAR_H - 2, 'no room under a map at the HUD\'s bottom: inside its bottom edge');
     const [aw, ah] = ARROW.medium;
-    eq(arrowRect(m, 'left', aw, ah), { x: 164, y: 134 - ah - 8, w: aw, h: ah }, 'the left arrow just above the map, at its left side');
-    eq(arrowRect(m, 'right', aw, ah), { x: 640 - aw - 4, y: 134 - ah - 8, w: aw, h: ah }, 'the right one at its right side');
-    const top = mapRect(60, [0, -400]);
-    eq(arrowRect(top, 'left', aw, ah).y, top.y + 6, 'no room above a map at the HUD\'s top: inside its top edge');
-    const narrow = { x: 300, y: 200, w: 200, h: 88 }, nr = arrowRect(narrow, 'right', ARROW.large[0], ARROW.large[1]);
-    ok(nr.x >= 300 && nr.x + nr.w <= 500 && arrowRect(narrow, 'left', ARROW.large[0], ARROW.large[1]).x + nr.w <= nr.x,
-        'a narrow map: smaller arrows, within its sides, apart');
+    // one row under the map: the left arrow after BMW's speed, the gear beside it, the data, the right arrow at the map's right edge
+    eq(rowRect(m), { x: 160, y: 352, w: 480, h: ROW_H }, 'the row just under the map');
+    const def = mapRect(65, [20, -30]);
+    eq(arrowRect(def, 'left', aw, ah), { x: SPEED_END, y: rowRect(def).y + (ROW_H - ah) / 2, w: aw, h: ah },
+        'the default map: the left arrow right after BMW\'s speed');
+    const small = mapRect(30, [-200, 0]);
+    eq(arrowRect(small, 'left', aw, ah).x, Math.round(small.x + small.w * 0.55 - aw), 'a small map far left: short of its middle');
+    const wide = mapRect(85, [0, 0]);
+    eq(arrowRect(wide, 'left', aw, ah).x, SPEED_END, 'a wide map: the left arrow right after BMW\'s speed');
+    eq(arrowRect(m, 'right', aw, ah), { x: 640 - aw - 4, y: rowRect(m).y + (ROW_H - ah) / 2, w: aw, h: ah }, 'the right one at the map\'s right edge');
+    const g = gearRect(m, 'medium'), l = arrowRect(m, 'left', aw, ah), d = dataRect(m, 'medium'), r = arrowRect(m, 'right', aw, ah);
+    ok(g.x === l.x + l.w + 6 && g.y === rowRect(m).y && g.w === GEAR_W && g.h === GEAR_H, 'the gear beside the left arrow');
+    ok(d && d.x > g.x + g.w && d.x + d.w < r.x, 'the data between the gear and the right arrow');
+    const low = mapRect(60, [0, 400]);
+    eq(rowRect(low).y, low.y + low.h - ROW_H - 4, 'no room under a map at the HUD\'s bottom: inside its bottom edge');
+    const lg = arrowRect(m, 'left', ARROW.large[0], ARROW.large[1]);
+    ok(lg.h <= ROW_H - 8 && lg.h < ARROW.large[1], 'a large arrow: held to the row');
+    eq(dataRect({ x: 300, y: 200, w: 200, h: 88 }, 'large'), null, 'a narrow map: no room for the data');
 
     const sock = path.join(os.tmpdir(), `woc-hud-${process.pid}.sock`);
     const svc = spawn(bin, [sock], { stdio: ['pipe', 'pipe', 'ignore'] });
@@ -76,18 +84,19 @@ async function main() {
 
         hud.update(Object.assign({}, base, { gear: 'D3' }));
         ok(await until(() => hud.layers.gear && layer[hud.layers.gear.ref] === 'shown', 2000), 'the gear: shown on the HUD');
-        eq([hud.layers.gear.x, hud.layers.gear.y], [gearRect(m).x, gearRect(m).y], 'in the map\'s corner');
+        eq([hud.layers.gear.x, hud.layers.gear.y], [gearRect(m, 'medium').x, gearRect(m, 'medium').y], 'beside the left arrow\'s place');
         eq(Object.keys(hud.layers), ['gear'], 'no arrows while no turn signal is on');
         const up = mapRect(60, [0, -40]);
         hud.update(Object.assign({}, base, { gear: 'D3', map: up }));
-        eq([hud.layers.gear.x, hud.layers.gear.y], [gearRect(up).x, gearRect(up).y], 'it follows the map\'s place');
+        eq([hud.layers.gear.x, hud.layers.gear.y], [gearRect(up, 'medium').x, gearRect(up, 'medium').y], 'it follows the map\'s place');
         const n = sent.length;
         hud.update(Object.assign({}, base, { gear: 'D3', map: up }));
         eq(sent.length, n, 'the same gear: nothing sent again');
 
         hud.update(Object.assign({}, base, { gear: 'D3', turn: { left: true } }));
         const left = hud.layers['arrow-left'];
-        ok(left && left.x === m.x + 4 && left.y === m.y - ARROW.medium[1] - 8 && left.w === ARROW.medium[0], 'the left arrow over the map\'s top-left corner');
+        const la = arrowRect(m, 'left', aw, ah);
+        ok(left && left.x === la.x && left.y === la.y && left.w === aw, 'the left arrow in the row under the map');
         ok(!hud.layers['arrow-right'], 'the right one is not made');
         ok(await until(() => layer[left.ref] === 'shown', 2000), 'shown');
         await sleep(1300);
@@ -95,15 +104,23 @@ async function main() {
         ok(blinks.length >= 3 && blinks.some((l) => l) && blinks.some((l) => !l), `it blinks: lit and blank in turn (${blinks})`);
         hud.update(Object.assign({}, base, { gear: 'D3', turn: { right: true }, arrowSize: 'large' }));
         const right = hud.layers['arrow-right'];
-        ok(right && right.x === m.x + m.w - ARROW.large[0] - 4 && right.w === ARROW.large[0], 'the right arrow, large, over the map\'s top-right corner');
+        const ra = arrowRect(m, 'right', ARROW.large[0], ARROW.large[1]);
+        ok(right && right.x === ra.x && right.w === ra.w, 'the right arrow, large, at the map\'s right edge');
         hud.update(Object.assign({}, base, { gear: 'D3' }));
         await sleep(100);
         const after = sent.length;
         await sleep(900);
         eq(sent.slice(after).length, 0, 'both off: blank, and nothing sent while they stay off');
 
+        hud.update(Object.assign({}, base, { gear: 'D3', data: [{ kind: 'power', kw: -12 }, { kind: 'value', label: 'OIL', text: '92°' }] }));
+        const dl = hud.layers.data, dr = dataRect(m, 'medium');
+        ok(dl && dl.x === dr.x && dl.y === dr.y && await until(() => layer[dl.ref] === 'shown', 2000), 'the data: shown between the gear and the right arrow');
+        const nd = sent.length;
+        hud.update(Object.assign({}, base, { gear: 'D3', data: [{ kind: 'power', kw: -12 }, { kind: 'value', label: 'OIL', text: '92°' }] }));
+        eq(sent.length, nd, 'the same data: nothing sent again');
+
         hud.update(Object.assign({}, base, { gear: 'D3', showTurn: false, showGear: false }));
-        eq(Object.keys(hud.layers), [], 'their settings off: the arrows and the gear are dropped');
+        eq(Object.keys(hud.layers), [], 'their settings off, no data: the arrows, the gear and the data are dropped');
     } finally {
         hud.close();
         svc.kill();

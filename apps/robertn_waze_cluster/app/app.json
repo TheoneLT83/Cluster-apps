@@ -1,8 +1,8 @@
 {
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
-  "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness, turn signals and the gear on the HUD",
-  "version": "0.7.0",
+  "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear and one more reading on the HUD: electric range with eDrive power, oil and coolant, or the real speed",
+  "version": "0.8.0",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
   "memoryKB": 153600,
@@ -16,6 +16,25 @@
     "de.bmw.infotainment.hmi.hmicontext.HMIContext": {
       "_instances": "HMI_CID",
       "currentDisplayLanguage": "rs"
+    },
+    "de.bmw.infotainment.vehicle.Vehicle2": {
+      "statusCarSpeed2": "rs",
+      "_optional": "the real speed on the HUD"
+    },
+    "de.bmw.infotainment.vehicle.CDS": {
+      "statusEngineSpeed2": "rs",
+      "statusEngineTemperature": "rs",
+      "_optional": "oil and coolant on the HUD, the electric range"
+    },
+    "com.harman.infotainment.systemfunctions.tasu.tasu.InternalTasu": {
+      "_instances": "SystemFunctionsInternalTasuInst1",
+      "_methods": [
+        "sendTasuRequest"
+      ],
+      "_broadcasts": [
+        "sendTasuResponse"
+      ],
+      "_optional": "eDrive power and the electric range on the HUD (the battery unit)"
     }
   },
   "screens": [
@@ -40,13 +59,46 @@
       "key": "hudTurn",
       "label": "Turn signals on the HUD",
       "type": "bool",
-      "default": true
+      "default": true,
+      "hidden": true
     },
     {
       "key": "hudGear",
       "label": "Gear on the HUD",
       "type": "bool",
-      "default": true
+      "default": true,
+      "hidden": true
+    },
+    {
+      "key": "hudData",
+      "label": "Between the turn signals",
+      "type": "choice",
+      "default": "off",
+      "options": [
+        [
+          "off",
+          "None"
+        ],
+        [
+          "ev",
+          "Electric range"
+        ],
+        [
+          "temps",
+          "Oil and coolant"
+        ],
+        [
+          "speed",
+          "Real speed"
+        ]
+      ],
+      "hidden": true
+    },
+    {
+      "key": "realSpeed",
+      "label": "Real speed on the Display page",
+      "type": "bool",
+      "default": false
     },
     {
       "key": "arrowSize",

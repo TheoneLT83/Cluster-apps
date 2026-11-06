@@ -512,10 +512,10 @@ void define_keys(Config *cfg)
     cfg->define("cluster", "1");
     cfg->define("hud", "0");
     cfg->define("hud_fps", "10");
-    cfg->define("hud_width_pct", "0");
-    cfg->define("hud_offset_x", "0");
-    cfg->define("hud_offset_y", "0");
-    cfg->define("hud_brightness_pct", "100");
+    cfg->define("hud_width_pct", "65");
+    cfg->define("hud_offset_x", "20");
+    cfg->define("hud_offset_y", "-30");
+    cfg->define("hud_brightness_pct", "50");
     cfg->define("hud_scale_down", "1");
     cfg->define("hud_round_corners", "1");
     cfg->define("hud_black_background", "1");

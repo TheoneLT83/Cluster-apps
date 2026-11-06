@@ -341,15 +341,15 @@ cluster-render's `hud` target is slot 0x323 (its README.md "The HUD").
 - **Size** (`hud_width_pct`): Standard (0, the fitted box, about 57 % of the
   HUD's width, 453x200), or 30 % to 85 % (680x300, the widest: wider is cut
   off at the HUD's edges, and a larger saved size is held to it), the
-  picture's shape kept; the app's **Size** slider steps it by 5 %.
+  picture's shape kept (65 % by default); the app's **Size** slider steps it by 5 %.
   A new size is a new layer at that size.
 - **Position** (`hud_offset_x`, `hud_offset_y`): pixels of the HUD's scene
-  moved from the centre (+x right, +y down), held so the map stays whole
+  moved from the centre (+x right, +y down; 20 right, 30 up by default), held so the map stays whole
   inside the HUD (the status then reports the offset as far as it goes); the
   app's **Move left**, **Move right**, **Move up** and **Move down** move it
   10 px a press and **Centre** puts it back. A move only changes the layer's
   place, so it shows at once.
-- **Brightness** (`hud_brightness_pct`): 10 % to 100 % (the default), the map
+- **Brightness** (`hud_brightness_pct`): 10 % to 100 % (50 % by default), the map
   layer's opacity over the HUD's black, so only the map dims: BMW's own HUD
   content keeps its brightness. The app's **Brightness** steps it by 10 %; it
   shows at once.

@@ -7,7 +7,7 @@ for the HUD's turn signals and gear. Its screens are drawn by the Store's render
 tabs, the settings sheet, the colour themes. Everything is done from the HMI; no shell is needed.
 
 Install it from this repository's catalog through the [mgu Store](https://github.com/robertnisipeanu/mgu-store).
-It requires waze-on-cluster 0.9.2, which brings the cluster renderer and writes the CarPlay patch, and the Android
+It requires waze-on-cluster 0.9.3, which brings the cluster renderer and writes the CarPlay patch, and the Android
 Auto patch where the car supports it, as it installs (one head-unit start activates them), and the Store's
 renderer `mgu-render` 0.6.17, which every car with the Store has: the Store updates it first where it is older, and
 the controller gate `mgu-inputgate` 1.0.0, loaded into the HMI at the next start, which gives the app's screen the
@@ -24,10 +24,10 @@ To remove, remove the app in the Store, then the Waze tool, which reverts the pa
 
 | Tab | |
 |---|---|
-| **Maps** | **Show on**: Cluster, HUD or Cluster + HUD; the cluster map's and the HUD map's state; **Hide BMW's turn box**. **CarPlay** or **Android Auto**: its patch's state, **Patch** and **Remove patch** (a confirm step), CarPlay's Wi-Fi band, Android Auto's zoom (- / +) and **Hide phone's turn card**, and **Restart head unit** (a confirm step) while a change waits for it. **HUD map**: a picture of the HUD with the map, the turn arrows and the gear where they show; **Size** (5 % a step, 30-85 %), **Brightness** (10 % a step, 10-100 %: the map alone dims, BMW's own HUD content keeps its brightness), **Position** (10 px a press, the middle button centres it). The HUD map's settings are greyed while the map is not on the HUD or the cluster renderer keeps the HUD off after errors |
-| **Info** | **Turn signals**: the arrows as the HUD shows them, **Test left** / **Test right** (that arrow blinks on the HUD for 6 s), and the fields of the car's own signal catalog whose names say turn signal; **Gear**: the gear the car reports (P, R, N, D, D1 ... D9); the HUD overlay's state |
+| **Maps** | **Show on**: Cluster, HUD or Cluster + HUD; the cluster map's and the HUD map's state; **Hide BMW logo on cluster**. **CarPlay** or **Android Auto**: its patch's state, **Patch** (**Reinstall patch** while another tool's or an older app's patch is on carplay: Remove patch where Patch is not taken, then Patch) and **Remove patch** (a confirm step), CarPlay's Wi-Fi band, Android Auto's zoom (- / +) and **Hide phone's turn card**, and **Restart head unit** (a confirm step) while a change waits for it or after a patch applied without one. **HUD map**: a picture of the HUD with the map, the turn arrows and the gear where they show; **Size** (5 % a step, 30-85 %, 65 % by default), **Brightness** (10 % a step, 10-100 %, 50 % by default: the map alone dims, BMW's own HUD content keeps its brightness), **Position** (10 px a press, 20 px right and 30 px up by default, the middle button centres it). The HUD map's settings are greyed while the map is not on the HUD or the cluster renderer keeps the HUD off after errors |
+| **Display** | **On the HUD**: **Turn signals** and **Gear** on or off, and **Between the turn signals** one reading: **None**, **Electric range**, **Oil and coolant** or **Real speed** (with its setting); a picture of the HUD with them; **Test left** / **Test right** (that arrow blinks on the HUD for 6 s); **Gear**: the gear the car reports (P, R, N, D, D1 ... D9); the HUD overlay's state and the fields of the car's own signal catalog whose names say turn signal |
 | **Log** | the app's log, and the saved logs: **Save logs**, the archives, and the address and QR code a phone on the car's hotspot opens them with |
-| **Settings** | the kit's settings sheet: **Turn signals on the HUD**, **Turn arrow size** (small, medium, large), **Gear on the HUD**, the colour theme, the screen layout, demo data |
+| **Settings** | the kit's settings sheet: **Real speed on the Display page** (for a car with a mileage blocker, whose HUD speed it stops), **Turn arrow size** (small, medium, large), the colour theme, the screen layout, demo data |
 
 Every word is in the HMI's display language, read at the start and on each change, English where a language has
 none: the pages, the kit's header, Settings tab and settings sheet, the tile and the HMI's own screens. The drawn
@@ -39,16 +39,30 @@ screens.
 ## The HUD overlay
 
 `app/hud_overlay.js` draws on the HUD through the cluster renderer (target `hud`, 800 x 480, class `overlay`, over
-the map and BMW's content), with the app's screen closed too: the left and right turn arrows over the map's top
-corners (just above the map where the HUD has room, else inside its top edge, never past its sides), 52 x 34 px
-(small 40 x 26, large 66 x 44), blinking 400 ms on, 400 ms off while their side is on, and the gear under the map at
-its right side (inside its bottom edge where the HUD has no room under it), both following the map's size and place. Each is an image layer drawn on transparent pixels, which the
-HUD shows as nothing; an arrow that is off is blank, not dropped, so a blink asks nothing of the HUD's slot. Nothing
-is asked of the renderer while there is nothing to show. The gear shows only from the car (`VehicleInformation`
-`DataPowerTrain2` and `statusGearboxDrive`, as Live Data reads them), never from demo data.
+the map and BMW's content), with the app's screen closed too, one row under the map (inside its bottom edge where the
+HUD has no room under it, within its sides), following the map's size and place:
+
+- the left turn arrow right after BMW's own speed reading (short of the map's middle), the right one at the map's
+  right edge, 52 x 34 px (small 40 x 26, large 66 x 44, held to the row's height), blinking 400 ms on, 400 ms off
+  while their side is on;
+- the gear beside the left arrow, from the car only (`VehicleInformation` `DataPowerTrain2` and
+  `statusGearboxDrive`, as Live Data reads them), never from demo data;
+- between the gear and the right arrow, the one reading chosen: **Electric range** (`EV`, with the eDrive power: a
+  slider centred on 0 with its kW, green while the battery takes power), **Oil and coolant**, or **Real speed**
+  (`Vehicle2` `statusCarSpeed2`, the car's own speed, which a mileage blocker leaves alone).
+
+eDrive power and the electric range come from a plug-in hybrid's battery unit (SME) with UDS reads over the head
+unit's diagnostic link, the identifiers idrive7-apps' eDrive uses (`app/hv_data.js`; read only while Electric range
+is chosen): pack voltage x current, every 0.5 s, and the charge every 30 s. The range is the charge above the engine-start
+point (8 %) times the km per % this car drives on electric power, learned from its own driving (engine off, the last
+60 km; until 3 % of it, 50 km from a full battery).
+
+Each is an image layer drawn on transparent pixels, which the HUD shows as nothing; an arrow that is off is blank,
+not dropped, so a blink asks nothing of the HUD's slot. Nothing is asked of the renderer while there is nothing to
+show.
 
 Which of the car's signals carries the turn signals is not known yet: `app/turn_signals.js` searches the car's
-signal catalog (`/etc/oap/someip/someip-interfaces.json`) for fields named for turn signals and the Info page lists
+signal catalog (`/etc/oap/someip/someip-interfaces.json`) for fields named for turn signals and the Display page lists
 them; until one is read, the arrows show for **Test left** / **Test right**.
 
 ## Started with the car
@@ -69,7 +83,7 @@ second; the tools keep running without it. The render takes one owner at a
 time: `waze-on-cluster run` from a shell is told `busy` while the app runs.
 
 - **Render** `/dev/shm/waze-on-cluster/ctl.sock`. The app sends
-  `{"cmd":"guide","hide":0|1}` (Hide BMW's turn box), `{"cmd":"cluster"|"hud","on"}` (Show on),
+  `{"cmd":"guide","hide":0|1}` (Hide BMW logo on cluster), `{"cmd":"cluster"|"hud","on"}` (Show on),
   `{"cmd":"hud","hud_width_pct"}`, `{"cmd":"hud","hud_x","hud_y"}` and `{"cmd":"hud","hud_brightness_pct"}`. The tool sends
   `{"ev":"status","state","target","page","reason","upload_cap_kb_per_s","upload_reason","hide_bmw_guidance","guide_disabled",
   "cluster","hud","hud_state","hud_width_pct","hud_brightness_pct","hud_x","hud_y"}`

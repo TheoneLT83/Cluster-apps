@@ -83,6 +83,9 @@
  *                    (chosen), densities [min, max, step], changeAt (while a
  *                    density or card change is refused: when one is taken
  *                    again), error (why the last Android Auto change failed)}
+ *                    offered: true while a patch applied this boot with its service
+ *                    restarted (no restart pending) may still want a head-unit
+ *                    restart for the map: reboot takes it then too
  *                    busy: carplay | aa | restart while an operation runs, else null
  *                    restart: {state: idle | restarting | failed, code (when
  *                    failed: refused, stayed or error), reason, possibleAt
@@ -678,6 +681,7 @@ function status(extra, aaExtra) {
             var cpBusy = busy === 'carplay';
             var msg = { ev: 'status', state: cpBusy ? 'busy' : st.state, panel: st.panel, mode: st.mode, res: st.res, safe: st.safe,
                         removable: !!st.restorable, busy: busy || (rebooting ? 'restart' : null), restart: restartMsg() };
+            if (restartOffered()) msg.offered = true;
             if (!cpBusy && st.reason) msg.reason = st.reason;
             if (!cpBusy && st.carplay) msg.carplay = st.carplay;
             if (!cpBusy && st.pending) msg.pending = st.pending;
@@ -1377,6 +1381,12 @@ function recordReboots(times) {
 
 function reply(sock, obj) { try { sock.write(JSON.stringify(obj) + '\n'); } catch (e) {} }
 
+/* A patch applied this boot whose service was restarted at once: the map can
+ * still need a head-unit restart (seen after another tool's patch), so the app
+ * offers one. A marker beside the socket, which the next start clears. */
+var OFFERED = path.join(path.dirname(SOCK), 'restart-offered');
+function restartOffered() { try { return fs.existsSync(OFFERED); } catch (e) { return false; } }
+
 /* Activate a deferred change with a normal head-unit restart. Guarded so a stray or
  * repeated press cannot reboot at the wrong time: only when a change is
  * actually pending, not while an operation runs, once, and at most once per
@@ -1387,7 +1397,7 @@ function rebootCmd(sock) {
     var deny = rebooting ? 'a restart is already in progress'
         : busy ? 'another operation is running'
         : quitting ? 'patchd is stopping'
-        : !readPending(CP) && !readPending(AA) ? 'no restart is pending'
+        : !readPending(CP) && !readPending(AA) && !restartOffered() ? 'no restart is pending'
         : null;
     if (!deny) {
         recent = recentReboots(now);
@@ -1453,6 +1463,7 @@ function operate(target, label, fn) {
                 if (target === 'aa') aaError = null;
                 var pend = activation === 'deferred' ? readPending(t) : null;
                 log(label + ' done' + (activation === 'restarted' ? '' : activation === 'deferred' ? ' (' + (pend ? pend.reason : t.reasons.apply) + ')' : ' (no change)'));
+                if (activation === 'restarted' && label === 'applying') try { saveFile(OFFERED, (bootId() || '') + '\n'); } catch (e) { log('restart offer: ' + e.message); }
                 if (target === 'aa') status(null, activation ? { aapd: activation } : null);
                 else status(activation ? { carplay: activation } : {});
             }
