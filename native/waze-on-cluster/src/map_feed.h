@@ -69,6 +69,9 @@ struct FeedConfig {
     /* On the HUD: the map moved from its centred place, in the HUD scene's
      * pixels (+x right, +y down), held inside the HUD's scene. */
     int hud_offset_x = 0, hud_offset_y = 0;
+    /* On the HUD: the map's brightness, % (10-100), its layer's opacity over the
+     * HUD's black, so the map dims and BMW's own HUD content does not. */
+    unsigned hud_brightness_pct = 100;
     /* A target shown smaller than the decoded frame (the HUD) gets the frame
      * scaled on the head unit to the size it is shown at (atlas_scale.h), on
      * a worker thread, at most video.fps a second, rounded to these level
@@ -99,6 +102,7 @@ struct FeedStatus {
     std::string hud_state = "off";   /* off, disabled, or the HUD feed's state */
     unsigned hud_width_pct = 0;   /* the HUD map's size setting (0: the default) */
     int hud_offset_x = 0, hud_offset_y = 0;   /* and where it is moved to from the centre */
+    unsigned hud_brightness_pct = 100;   /* and how bright, % */
 };
 
 /* Whether a status is worth a log line: its state, reason or target differs
@@ -143,6 +147,8 @@ public:
      * the map is at (hud_offset_x/y, the status's) then is as far as it
      * goes, and the one asked for is kept for the next size. */
     void set_hud_offset(int dx, int dy);
+    /* The HUD map's brightness (FeedConfig::hud_brightness_pct), at once. */
+    void set_hud_brightness(unsigned pct);
     int hud_offset_x() const { return placed_x_; }
     int hud_offset_y() const { return placed_y_; }
     /* A layer to take frames: made, and not disabled by cluster-render's

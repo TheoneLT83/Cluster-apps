@@ -64,6 +64,7 @@ public:
      * later; the status has the place as far as the HUD's feed puts it. */
     void set_hud_width(unsigned pct);
     void set_hud_offset(int dx, int dy);
+    void set_hud_brightness(unsigned pct);
     int hud_offset_x() const { return base_.hud_offset_x; }
     int hud_offset_y() const { return base_.hud_offset_y; }
     /* The cluster map layer's guide_hold. */

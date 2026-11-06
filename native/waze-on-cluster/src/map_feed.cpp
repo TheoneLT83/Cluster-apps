@@ -128,6 +128,7 @@ void MapFeed::make_layer()
     lo_.w = q.w;
     lo_.h = q.h;
     lo_.visible = live_ && !frozen_ && picture_ == Picture::Shown;
+    lo_.opacity = cfg_.target == "hud" ? (float)cfg_.hud_brightness_pct / 100.0f : 1.0f;
     show_due_ = false;
     refused_.clear();
     layer_state_ = "stalled";
@@ -184,6 +185,18 @@ void MapFeed::set_hud_offset(int dx, int dy)
     lo_.y = (int)q.y;
     client_.set(layer_, lo_);
     log_info("render: HUD map moved to %u,%u (offset %+d,%+d)", q.x, q.y, placed_x_, placed_y_);
+}
+
+void MapFeed::set_hud_brightness(unsigned pct)
+{
+    if (pct == cfg_.hud_brightness_pct)
+        return;
+    cfg_.hud_brightness_pct = pct;
+    if (cfg_.target != "hud" || !layer_)
+        return;
+    lo_.opacity = (float)pct / 100.0f;
+    client_.set(layer_, lo_);
+    log_info("render: HUD map at %u%% brightness", pct);
 }
 
 void MapFeed::set_hud_width(unsigned pct)
@@ -442,6 +455,7 @@ FeedStatus MapFeed::status(const std::string &decode, const std::string &stream)
     FeedStatus s;
     s.target = cfg_.target;
     s.hud_width_pct = cfg_.hud_width_pct;
+    s.hud_brightness_pct = cfg_.hud_brightness_pct;
     s.hud_offset_x = placed_x_;
     s.hud_offset_y = placed_y_;
     s.upload_cap_kb = cap_kb_;

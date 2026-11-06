@@ -44,16 +44,19 @@
  *                  {"cmd":"hud","on":0|1}
  *                  {"cmd":"hud-size","hud_width_pct":0|20..100}   (over 85 saved as 85)
  *                  {"cmd":"hud-pos","hud_x":-800..800,"hud_y":-800..800}
+ *                  {"cmd":"hud-brightness","hud_brightness_pct":10..100}
  *                                   the map on the cluster on or off, on the HUD on
  *                                   or off, the HUD's size
  *                                   (0: the default box) and where it is moved from
  *                                   the centre (HUD pixels), saved for the render's
  *                                   next start as "cluster", "hud", "hud_width_pct",
- *                                   "hud_offset_x" and "hud_offset_y" in MAP_STATE
+ *                                   "hud_offset_x", "hud_offset_y" and
+ *                                   "hud_brightness_pct" in MAP_STATE
  *                                   (the app changes the running render itself).
  *                                   Changes are written together MAP_SAVE_MS
  *                                   after the last one; the reply (cluster-reply,
- *                                   hud-reply, hud-size-reply, hud-pos-reply)
+ *                                   hud-reply, hud-size-reply, hud-pos-reply,
+ *                                   hud-brightness-reply)
  *                                   follows the write and carries ok, the values
  *                                   saved and reason.
  *                  {"cmd":"capture-start"|"capture-stop"|"capture-status"}
@@ -218,7 +221,7 @@ var LOCAL_CONF = process.env.WOC_LOCAL_CONF || '/var/opt/waze-on-cluster/waze-on
  * configuration. Not in LOCAL_CONF, which waze-on-cluster 0.8 refuses to
  * start with any of MAP_KEYS in. */
 var MAP_STATE = path.join(STATE_DIR, 'map.state.conf');
-var MAP_KEYS = ['cluster', 'hud', 'hud_width_pct', 'hud_offset_x', 'hud_offset_y'];
+var MAP_KEYS = ['cluster', 'hud', 'hud_width_pct', 'hud_offset_x', 'hud_offset_y', 'hud_brightness_pct'];
 
 /* A key = value file's settings; none when it cannot be read. */
 function readConf(file) {
@@ -249,6 +252,7 @@ function rewriteConf(file, set, drop) {
 function mapValueOk(k, v) {
     var n = Number(v);
     return /^-?\d+$/.test(v) && (k === 'hud_width_pct' ? n === 0 || (n >= 20 && n <= 100)
+        : k === 'hud_brightness_pct' ? n >= 10 && n <= 100
         : /^hud_offset_/.test(k) ? n >= -800 && n <= 800 : n === 0 || n === 1);
 }
 
@@ -1511,6 +1515,15 @@ function handle(line, sock) {
             return;
         }
         saveMapSettings(sock, 'hud-pos-reply', { hud_offset_x: msg.hud_x, hud_offset_y: msg.hud_y }, 'the HUD map position');
+        return;
+    }
+    if (msg.cmd === 'hud-brightness') {
+        var b = msg.hud_brightness_pct;
+        if (!(typeof b === 'number' && b >= 10 && b <= 100 && b === Math.floor(b))) {
+            reply(sock, { ev: 'hud-brightness-reply', ok: false, reason: 'HUD map brightness must be 10-100 %' });
+            return;
+        }
+        saveMapSettings(sock, 'hud-brightness-reply', { hud_brightness_pct: b }, 'the HUD map brightness');
         return;
     }
     if (msg.cmd === 'reboot') { rebootCmd(sock); return; }

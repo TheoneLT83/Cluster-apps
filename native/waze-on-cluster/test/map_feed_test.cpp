@@ -741,8 +741,19 @@ int main()
     ok("start: back on map, the HUD's feed again", feeds.set_target("map") && feeds.hud_feed());
     bpump(2500, &f2);
 
-    /* ---- the HUD map's size ---- */
+    /* ---- the HUD map's brightness: its layer's opacity, the HUD's other layers untouched ---- */
     const crs::Layer *hl = layer_on(2);
+    ok("the HUD map at full brightness by default", hl && hl->params.opacity == 1.0f && feeds.status("decode").hud_brightness_pct == 100);
+    feeds.set_hud_brightness(40);
+    bpump(300, &f2);
+    hl = layer_on(2);
+    ok("40 %: the HUD map's layer at 0.4 opacity, live", hl && hl->params.opacity > 0.39f && hl->params.opacity < 0.41f &&
+                                                        feeds.status("decode").hud_brightness_pct == 40);
+    feeds.set_hud_brightness(100);
+    bpump(300, &f2);
+
+    /* ---- the HUD map's size ---- */
+    hl = layer_on(2);
     const unsigned default_w = hl ? hl->params.rect.w : 0;
     ok("the default HUD map is the kit's fitted box, narrower than the HUD", hl && default_w > 0 && default_w < 800);
     feeds.set_hud_width(100);

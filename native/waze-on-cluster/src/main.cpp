@@ -87,6 +87,7 @@ std::string status_line(const FeedStatus &s)
            ",\"cluster\":" + (s.cluster ? "1" : "0") +
            ",\"hud\":" + (s.hud ? "1" : "0") + ",\"hud_state\":" + json_escape(s.hud_state) +
            ",\"hud_width_pct\":" + std::to_string(s.hud_width_pct) +
+           ",\"hud_brightness_pct\":" + std::to_string(s.hud_brightness_pct) +
            ",\"hud_x\":" + std::to_string(s.hud_offset_x) + ",\"hud_y\":" + std::to_string(s.hud_offset_y) + "}";
 }
 
@@ -107,6 +108,7 @@ public:
         auto hide = msg.find("hide");
         auto pct = msg.find("hud_width_pct");
         auto hx = msg.find("hud_x"), hy = msg.find("hud_y"), on = msg.find("on");
+        auto bright = msg.find("hud_brightness_pct");
         if (cmd == "start" && it != msg.end()) {
             log_info("start %s", it->second.c_str());
             if (!feeds_->set_target(it->second))
@@ -116,7 +118,8 @@ public:
             feeds_->set_guide_hold(guide_->hide());
         } else if (cmd == "cluster" && on != msg.end() && (on->second == "0" || on->second == "1")) {
             feeds_->set_cluster(on->second == "1");
-        } else if (cmd == "hud" && (on != msg.end() || pct != msg.end() || hx != msg.end() || hy != msg.end())) {
+        } else if (cmd == "hud" && (on != msg.end() || pct != msg.end() || hx != msg.end() || hy != msg.end() ||
+                                    bright != msg.end())) {
             if (on != msg.end()) {
                 if (on->second == "0" || on->second == "1")
                     feeds_->set_hud(on->second == "1");
@@ -130,6 +133,16 @@ public:
                     feeds_->set_hud_width((unsigned)v);
                 } else {
                     log_warn("hud: width %s out of range (0, or 20-100)", pct->second.c_str());
+                }
+            }
+            /* how bright the map is (its layer's opacity; BMW's HUD content keeps its own brightness) */
+            if (bright != msg.end()) {
+                const long v = std::strtol(bright->second.c_str(), nullptr, 10);
+                if (v >= 10 && v <= 100) {
+                    log_info("hud: map at %ld%% brightness", v);
+                    feeds_->set_hud_brightness((unsigned)v);
+                } else {
+                    log_warn("hud: brightness %s out of range (10-100)", bright->second.c_str());
                 }
             }
             /* and where it is: moved from the centre, in HUD pixels (-800..800 each; held inside the HUD) */
@@ -209,6 +222,7 @@ int serve(Config cfg)
         {"cluster", 0, 1},          {"hud", 0, 1},                   {"hud_fps", 1, 30},
         {"hud_width_pct", 0, 100},  {"hud_offset_x", -800, 800},     {"hud_offset_y", -800, 800},
         {"hud_scale_down", 0, 1},   {"hud_round_corners", 0, 1},     {"hud_black_background", 0, 1},
+        {"hud_brightness_pct", 10, 100},
         {"freeze_ms", 0, 600000},   {"freeze_min_fps", 1, 60},       {"alt_screen_port", 0, 65535},
         {"idle_ms", 1000, 600000},  {"blank_ms", 1000, 600000},
         {"alt_screen_uid", 0, 4294967294L}, {"gpu_copy", 0, 1}};
@@ -236,6 +250,7 @@ int serve(Config cfg)
     }
     fc.hud_offset_x = (int)cfg.num("hud_offset_x");
     fc.hud_offset_y = (int)cfg.num("hud_offset_y");
+    fc.hud_brightness_pct = (unsigned)cfg.num("hud_brightness_pct");
     fc.scale_down = cfg.num("hud_scale_down") != 0;
     fc.hud_round_corners = cfg.num("hud_round_corners") != 0;
     fc.hud_black_background = cfg.num("hud_black_background") != 0;
@@ -500,6 +515,7 @@ void define_keys(Config *cfg)
     cfg->define("hud_width_pct", "0");
     cfg->define("hud_offset_x", "0");
     cfg->define("hud_offset_y", "0");
+    cfg->define("hud_brightness_pct", "100");
     cfg->define("hud_scale_down", "1");
     cfg->define("hud_round_corners", "1");
     cfg->define("hud_black_background", "1");

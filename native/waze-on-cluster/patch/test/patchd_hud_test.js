@@ -87,7 +87,7 @@ function ask(obj) {
             buf.split('\n').forEach(function (l) {
                 var m = null;
                 try { m = JSON.parse(l); } catch (e) {}
-                if (m && /^(cluster|hud|hud-size|hud-pos)-reply$/.test(m.ev)) { s.end(); resolve(m); }
+                if (m && /^(cluster|hud|hud-size|hud-pos|hud-brightness)-reply$/.test(m.ev)) { s.end(); resolve(m); }
             });
         });
         s.on('error', reject);
@@ -137,6 +137,10 @@ function ok(name, cond) {
         fs.readFileSync(STATE, 'utf8') === 'hud = 1\nhud_width_pct = 85\nhud_offset_x = 40\nhud_offset_y = -20\n');
     r = await ask({ cmd: 'hud-pos', hud_x: 0, hud_y: 0 });
     ok('centred again: both replaced', r.ok && /hud_offset_x = 0\nhud_offset_y = 0\n$/.test(fs.readFileSync(STATE, 'utf8')));
+    r = await ask({ cmd: 'hud-brightness', hud_brightness_pct: 40 });
+    ok('the HUD map brightness is saved next to them', r.ok && r.hud_brightness_pct === 40 && /hud_brightness_pct = 40\n$/.test(fs.readFileSync(STATE, 'utf8')));
+    r = await ask({ cmd: 'hud-brightness', hud_brightness_pct: 5 });
+    ok('a brightness under 10 % is refused, nothing written', !r.ok && /hud_brightness_pct = 40\n$/.test(fs.readFileSync(STATE, 'utf8')));
     r = await ask({ cmd: 'hud-pos', hud_x: 900, hud_y: 0 });
     ok('an out-of-range position is refused, nothing written', !r.ok && /hud_offset_x = 0\n/.test(fs.readFileSync(STATE, 'utf8')));
     r = await ask({ cmd: 'hud-pos', hud_x: 1.5, hud_y: 0 });
