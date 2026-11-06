@@ -349,7 +349,7 @@ cluster-render's `hud` target is slot 0x323 (its README.md "The HUD").
   app's **Move left**, **Move right**, **Move up** and **Move down** move it
   10 px a press and **Centre** puts it back. A move only changes the layer's
   place, so it shows at once.
-- **Soft edges**: on the HUD the map's edges fade out over 16 px each side (cluster-render's `feather`), so it has
+- **Soft edges**: on the HUD the map's edges fade out over 40 px each side (cluster-render's `feather`), so it has
   no hard cut; the cluster's map keeps its edges.
 - **Brightness** (`hud_brightness_pct`): 10 % to 100 % (50 % by default), the map
   layer's opacity over the HUD's black, so only the map dims: BMW's own HUD

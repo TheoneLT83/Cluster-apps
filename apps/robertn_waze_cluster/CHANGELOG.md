@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.8.3
+
+- **A phone call shows on the HUD**: the HUD steps aside while BMW's call notification shows (its slot 0x321;
+  cluster-render 0.4.3), as it does for the media pop-ups.
+- **HUD map**: its edges fade out over 40 px each side, as the cluster's own map fades, a little narrower
+  (waze-on-cluster 0.9.6).
+- **Electric range** comes from idrive7-apps' eDrive (its power and its real range), and is offered only while eDrive
+  is installed: this app no longer reads the battery unit itself, which disturbed eDrive's own reads.
+- **Power and torque**: on a hybrid the power counts what the battery gives the motor (from eDrive), so electric
+  driving shows its power.
+- **Turn arrows**: one size, smaller, with a shorter tail; they blink at BMW's own pace (330 ms), the first flash
+  whole; the row under the map sits closer to it, and the reading between the arrows is wider.
+- **Displays on HUD** is on once more on every car (on by default).
+
 ## 0.8.2
 
 - **Turn signals on the HUD from the car**: the arrows follow the indicator stalk and the hazard switch (both arrows),

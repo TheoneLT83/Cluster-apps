@@ -117,7 +117,8 @@ cluster is offered, and what differs is in "iDrive 8".
   wanting it, it is released at once, with no linger.
 - **Giving way** (contributed by [eroobeeroo](https://github.com/eroobeeroo)).
   A target with `<target>_yield_slots` (the HUD: `0x322`, where its media
-  and list pop-ups show, VERIFIED on a G05) gives way while the stock HMI
+  and list pop-ups show, VERIFIED on a G05, and `0x321`, where a phone call's
+  notification shows, content `0x1000600`, seen on a G-series) gives way while the stock HMI
   shows content there: asking for the target again while a pop-up showed
   pushed the pop-up from the HUD to the cluster. It is asked for again
   `<target>_yield_ms` (1500) after the pop-up goes, and an overlay-only

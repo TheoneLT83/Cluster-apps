@@ -15,7 +15,7 @@
  *             turn signals none, the electric range with the eDrive power, oil and coolant, boost, power and torque
  *             (torque x rpm, in M Vitals' units where it has them), or engine speed; with a picture of it
  *   Log       the app's log, and the saved logs for a phone on the car's hotspot
- *   Settings  the kit's settings sheet: Displays on HUD (off: nothing of this app on the HUD), Real speed on HUD (left of BMW's own speed), the arrows' size, the colours, the
+ *   Settings  the kit's settings sheet: Displays on HUD (off: nothing of this app on the HUD), Real speed on HUD (left of BMW's own speed), the colours, the
  *             layout
  * Every word is in the HMI's display language (i18n.js), English where a language has none, with the glyphs of
  * fonts/ (tools/bake_fonts.py). Arabic, Hebrew and Thai are drawn in English: the kit draws no shaping or
@@ -111,10 +111,11 @@ async function background(bg) {
         },
     });
     const units = new Units({ settings, appRoot: bg.dataDir && path.dirname(bg.dataDir), log });
-    const dataChoice = () => settings.get('hudData');
-    const hv = new HvData({ signals: bg.signals, log, file: bg.dataDir && path.join(bg.dataDir, 'hv.json') });
+    // the electric range only while eDrive is installed (it has the battery's numbers)
+    const hv = new HvData({ log, appRoot: bg.dataDir && path.dirname(bg.dataDir) });
+    const dataChoice = () => (settings.get('hudData') === 'ev' && !hv.installed() ? 'off' : settings.get('hudData'));
     // the battery unit is read only while its power or the range is shown
-    const hvWanted = () => { if (settings.get('hudOn') !== false && dataChoice() === 'ev') hv.start(); else hv.stop(); };
+    const hvWanted = () => { if (settings.get('hudOn') !== false && ['ev', 'power'].indexOf(dataChoice()) >= 0) hv.start(); else hv.stop(); };
     const mapNow = () => mapRect(ctl.hudWidth() || 0, ctl.hudOffset() || [0, 0]);
     // the HUD shows the car's gear only, never demo data
     const gearNow = () => { const d = car.data(); return d && !d.demo ? gearText(d) : null; };
@@ -133,7 +134,10 @@ async function background(bg) {
             const b = units.boost(G.isNum(boost) && !(d && d.demo) ? boost : NaN);
             slider(b.value, 0, b.max, G.isNum(b.value) ? (b.unit === 'bar' ? b.value.toFixed(1) : Math.round(b.value)) + ' ' + b.unit : '');
         } else if (c === 'power') {
-            const nm = real.torque, rpm = real.rpm, p = units.power(G.isNum(nm) && G.isNum(rpm) ? nm * rpm / 9549 : NaN), q = units.torque(G.isNum(nm) ? nm : NaN);
+            // the engine's (torque x rpm), and on a hybrid what the battery gives the motor (eDrive's), so electric driving shows
+            const nm = real.torque, rpm = real.rpm, engine = G.isNum(nm) && G.isNum(rpm) ? Math.max(0, nm * rpm / 9549) : null, kw = hv.power();
+            const p = units.power(engine === null && !G.isNum(kw) ? NaN : (engine || 0) + (G.isNum(kw) ? Math.max(0, kw) : 0));
+            const q = units.torque(G.isNum(nm) ? nm : NaN);
             value(t('POWER'), p.value, ' ' + p.unit);
             value(t('TORQUE'), q.value, ' ' + q.unit);
         } else if (c === 'rpm') {
@@ -149,10 +153,10 @@ async function background(bg) {
     // Displays on HUD off: nothing of ours on the HUD, which the renderer then gives back to BMW's own layout
     const toHud = () => (settings.get('hudOn') === false ? hud.update({ turn: {}, gear: null, map: mapNow(), showTurn: false, showGear: false,
         data: [], speed: null }) : hud.update({
-        turn: turns.state(), gear: gearNow(), map: mapNow(), arrowSize: settings.get('arrowSize'),
+        turn: turns.state(), gear: gearNow(), map: mapNow(),
         showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'), data: dataNow(false), speed: speedNow(),
     }));
-    car.onSample(() => { hv.feed(car.data().demo ? null : car.data()); toHud(); changed(); });
+    car.onSample(() => { toHud(); changed(); });
     hv.on('change', () => { toHud(); changed(); });
     ctl.on('change', () => { toHud(); changed(); });
     logs.on('change', changed);
@@ -257,7 +261,7 @@ mgu.run({
                 withAlpha('#ff4040', a(1)));
             const st = turns.state();
             if (settings.get('hudTurn')) {
-                const [aw, ah] = ARROW[settings.get('arrowSize')] || ARROW.medium;
+                const [aw, ah] = ARROW.medium;
                 ['left', 'right'].forEach((side) => {
                     const r = arrowRect(m, side, aw, ah);
                     drawArrowAt(cv, x + r.x * k, y + r.y * k, r.w * k, r.h * k, side === 'left' ? -1 : 1,
@@ -265,7 +269,7 @@ mgu.run({
                 });
             }
             if (settings.get('hudGear')) {
-                const g = gearRect(m, settings.get('arrowSize')), gt = gearText(car.data()) || 'D';
+                const g = gearRect(m), gt = gearText(car.data()) || 'D';
                 cv.text(gt, x + (g.x + 2) * k, y + (g.y + g.h - 8) * k, 40 * k, gearNow() ? '#f2f5f8' : withAlpha('#f2f5f8', 0.35), { font: 'gear' });
             }
             if (settings.get('realSpeed')) {
@@ -273,7 +277,7 @@ mgu.run({
                 cv.text(sp === null ? '--' : String(sp), x + (SPEED_RECT.x + SPEED_RECT.w) * k, y + (SPEED_RECT.y + SPEED_RECT.h - 8) * k, 40 * k,
                     sp === null ? withAlpha('#f2f5f8', 0.35) : '#f2f5f8', { font: 'bold', align: 'right' });
             }
-            const dr = dataRect(m, settings.get('arrowSize'));
+            const dr = dataRect(m);
             if (dr) drawData(cv, x + dr.x * k, y + dr.y * k, dr.w * k, dataNow(true), k);
             return h;
         };
@@ -358,7 +362,7 @@ mgu.run({
             cv.fillRect(48, 214, 592, 1, withAlpha('#ffffff', 0.08));
             label(cv, th, t('Between the turn signals'), 48, 254);
             const now = settings.get('hudData');
-            HUD_DATA.forEach(([v, text], i) =>
+            HUD_DATA.filter(([v]) => v !== 'ev' || hv.installed()).forEach(([v, text], i) =>
                 G.button(cv, th, 48 + (i % 2) * 300, 268 + Math.floor(i / 2) * 60, 288, 48, t(text), () => settings.set('hudData', v),
                     { primary: now === v, key: 'data-' + v }));
 

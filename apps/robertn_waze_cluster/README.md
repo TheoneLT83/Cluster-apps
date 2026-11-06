@@ -7,7 +7,7 @@ for the HUD's turn signals and gear. Its screens are drawn by the Store's render
 tabs, the settings sheet, the colour themes. Everything is done from the HMI; no shell is needed.
 
 Install it from this repository's catalog through the [mgu Store](https://github.com/robertnisipeanu/mgu-store).
-It requires waze-on-cluster 0.9.5, which brings the cluster renderer and writes the CarPlay patch, and the Android
+It requires waze-on-cluster 0.9.6, which brings the cluster renderer and writes the CarPlay patch, and the Android
 Auto patch where the car supports it, as it installs (one head-unit start activates them), and the Store's
 renderer `mgu-render` 0.6.17, which every car with the Store has: the Store updates it first where it is older, and
 the controller gate `mgu-inputgate` 1.0.0, loaded into the HMI at the next start, which gives the app's screen the
@@ -27,7 +27,7 @@ To remove, remove the app in the Store, then the Waze tool, which reverts the pa
 | **Maps** | **Show on**: Cluster, HUD or Cluster + HUD; the cluster map's and the HUD map's state; **Hide BMW logo on cluster**. **CarPlay** or **Android Auto**: its patch's state, **Patch** (**Reinstall patch** while another tool's or an older app's patch is on carplay: Remove patch where Patch is not taken, then Patch) and **Remove patch** (a confirm step), CarPlay's Wi-Fi band, Android Auto's zoom (- / +) and **Hide phone's turn card**, and **Restart head unit** (a confirm step) while a change waits for it or after a patch applied without one. **HUD map**: a picture of the HUD with the map, the turn arrows and the gear where they show; **Size** (5 % a step, 30-85 %, 65 % by default), **Brightness** (10 % a step, 10-100 %, 50 % by default: the map alone dims, BMW's own HUD content keeps its brightness), **Position** (10 px a press, 20 px right and 30 px up by default, the middle button centres it). The HUD map's settings are greyed while the map is not on the HUD or the cluster renderer keeps the HUD off after errors |
 | **Display** | **On the HUD**: **Turn signals** and **Gear** on or off, and **Between the turn signals** one reading: **None**, **Electric range**, **Oil and coolant**, **Boost**, **Power and torque** or **Engine speed**; a picture of the HUD with them. The HUD overlay's state, where the gear comes from and whether the turn signals are subscribed are in the log |
 | **Log** | the app's log, and the saved logs: **Save logs**, the archives, and the address and QR code a phone on the car's hotspot opens them with |
-| **Settings** | the kit's settings sheet: **Displays on HUD** (off: nothing of this app on the HUD, which goes back to BMW's own layout), **Real speed on HUD** (for a car with a mileage blocker, which stops BMW's own speed: the car's own speed left of it), **Power unit**, **Torque unit** and **Boost unit** (Auto: M Vitals', Dyno's or Live Data's where one is installed and its settings can be read, else kW, Nm, bar), **Turn arrow size** (small, medium, large), the colour theme, the screen layout, demo data |
+| **Settings** | the kit's settings sheet: **Displays on HUD** (off: nothing of this app on the HUD, which goes back to BMW's own layout), **Real speed on HUD** (for a car with a mileage blocker, which stops BMW's own speed: the car's own speed left of it), **Power unit**, **Torque unit** and **Boost unit** (Auto: M Vitals', Dyno's or Live Data's where one is installed and its settings can be read, else kW, Nm, bar), the colour theme, the screen layout, demo data |
 
 Every word is in the HMI's display language, read at the start and on each change, English where a language has
 none: the pages, the kit's header, Settings tab and settings sheet, the tile and the HMI's own screens. The drawn
@@ -43,8 +43,7 @@ the map and BMW's content), with the app's screen closed too, one row under the 
 HUD has no room under it, within its sides), following the map's size and place:
 
 - the left turn arrow right after BMW's own speed reading (short of the map's middle), the right one at the map's
-  right edge, 52 x 34 px (small 40 x 26, large 66 x 44, held to the row's height), blinking 400 ms on, 400 ms off
-  while their side is on;
+  right edge, 34 x 26 px, blinking 330 ms on, 330 ms off (BMW's own pace, lit first) while their side is on;
 - the gear beside the left arrow, from the car only (`VehicleInformation` `DataPowerTrain2` and
   `statusGearboxDrive`, as Live Data reads them), never from demo data;
 - between the gear and the right arrow, the one reading chosen: **Electric range** (`EV`, with the eDrive power: a
@@ -54,11 +53,10 @@ HUD has no room under it, within its sides), following the map's size and place:
 - with **Real speed on HUD**, the car's own speed (`Vehicle2` `statusCarSpeed2`, which a mileage blocker leaves
   alone) left of BMW's speed reading, right of its speed-limit sign.
 
-eDrive power and the electric range come from a plug-in hybrid's battery unit (SME) with UDS reads over the head
-unit's diagnostic link, the identifiers idrive7-apps' eDrive uses (`app/hv_data.js`; read only while Electric range
-is chosen): pack voltage x current, every 0.5 s, and the charge every 30 s. The range is the charge above the engine-start
-point (8 %) times the km per % this car drives on electric power, learned from its own driving (engine off, the last
-60 km; until 3 % of it, 50 km from a full battery).
+The electric range and the eDrive power come from idrive7-apps' eDrive, which reads the battery unit; two apps
+reading it at once disturb each other, so this app does not: eDrive writes its power and its real range once a second
+to `/tmp/mgu-edrive.json`, and `app/hv_data.js` reads it. **Electric range** is offered only while eDrive is installed.
+With **Power and torque** a hybrid's power is the engine's (torque x rpm) plus what the battery gives the motor.
 
 Each is an image layer drawn on transparent pixels, which the HUD shows as nothing; an arrow that is off is blank,
 not dropped, so a blink asks nothing of the HUD's slot. Nothing is asked of the renderer while there is nothing to
@@ -68,7 +66,7 @@ The turn signals come from the car: `de.bmw.body.Light` instance 1, `StatusFunct
 its value sent when subscribed and on each change), member `activeFunctionIndicateDirection`: `DAUERBLINKEN_LINKS`
 and `TIPPBLINKEN_LINKS` (the comfort blink of a tap) the left arrow, the `..._RECHTS` ones the right, `WARNBLINKEN_MANUELL`
 and `CRASH_BLINKEN` both, anything else none (`app/turn_signals.js`). It holds steady while the stalk or the hazard
-switch is set; the arrows blink on the overlay's own 400 ms.
+switch is set; the arrows blink on the overlay's own 330 ms.
 
 ## Started with the car
 

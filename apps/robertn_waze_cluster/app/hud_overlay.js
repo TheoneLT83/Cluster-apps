@@ -5,7 +5,7 @@
  * (cluster_render_client.js, target `hud`, 800 x 480), over BMW's own HUD content and the map:
  *
  *   one row under the map (inside its bottom edge when the HUD has no room under it), within its sides:
- *   left arrow           after BMW's own speed reading (SPEED_END), blinking (BLINK_MS on, BLINK_MS off) while
+ *   left arrow           after BMW's own speed reading (SPEED_END), blinking (BLINK_MS on, BLINK_MS off, lit first) while
  *                        that turn signal is on
  *   gear                 beside the left arrow: P, R, N, D or D1 ... D9
  *   data                 between the gear and the right arrow, the one reading chosen: the electric range with the
@@ -29,8 +29,10 @@ const { ClusterRender } = require('./cluster_render_client.js');
 const { Canvas } = require('./kit/canvas');
 
 const HUD_W = 800, HUD_H = 480;
-const BLINK_MS = 400;
-const ARROW = { small: [40, 26], medium: [52, 34], large: [66, 44] };
+/* BMW's own indicator's pace: about 1.5 flashes a second */
+const BLINK_MS = 330;
+/* The arrow, one size, its tail short: the space it leaves goes to the data */
+const ARROW = { medium: [34, 26] };
 const ROW_H = 46;
 const GEAR_W = 38, GEAR_H = ROW_H;          // D1 ... D9 at 36 px are 36 wide
 /* Where BMW's own speed reading (its km/h) ends on the HUD, from a photo of a G-series HUD: the left arrow
@@ -56,7 +58,7 @@ function mapRect(widthPct, offset) {
 
 /* The row under the map; inside its bottom edge when the HUD has no room under it. */
 function rowRect(map) {
-    const below = map.y + map.h + 6;
+    const below = map.y + map.h;
     return { x: map.x, y: below + ROW_H <= HUD_H ? below : Math.max(0, map.y + map.h - ROW_H - 4), w: map.w, h: ROW_H };
 }
 
@@ -123,7 +125,7 @@ function drawData(cv, x, y, w, items, k) {
 
 /* An arrow pointing left (dir -1) or right (dir 1), filling w x h. */
 function drawArrow(cv, w, h, dir, color) {
-    const head = Math.round(w * 0.48), shaft = Math.round(h * 0.42);
+    const head = Math.round(w * 0.62), shaft = Math.round(h * 0.42);
     const tip = dir < 0 ? 4 : w - 4, base = dir < 0 ? head : w - head, tail = dir < 0 ? w - 6 : 6;
     cv.quad([[tip, h / 2], [base, 4], [base, h - 4], [tip, h / 2]], color);
     const x0 = Math.min(base, tail), x1 = Math.max(base, tail);
@@ -153,6 +155,14 @@ class HudOverlay {
         this.cr.on('ready', () => { Object.keys(this.layers).forEach((n) => { this.layers[n].key = null; }); this._draw(); });
         this.cr.on('error', (op, ref, reason) => this.log.warn('hud overlay: ' + op + ' refused: ' + reason));
         this.connected = false;
+        this.timer = null;
+        this._blink();
+    }
+
+    /* The blink, lit from now: (re)started as a turn signal comes on, so its first flash is a whole one. */
+    _blink() {
+        clearInterval(this.timer);
+        this.blinkOn = true;
         this.timer = setInterval(() => {
             this.blinkOn = !this.blinkOn;
             if (this.want && (this.want.turn.left || this.want.turn.right)) this._draw();
@@ -161,7 +171,9 @@ class HudOverlay {
 
     /* What the HUD should show now (see the top of this file). */
     update(w) {
+        const was = this.want && (this.want.turn.left || this.want.turn.right);
         this.want = Object.assign({ turn: {}, map: mapRect(0) }, w);
+        if (!was && (this.want.turn.left || this.want.turn.right)) this._blink();
         const any = (this.want.showTurn && (this.want.turn.left || this.want.turn.right)) || (this.want.showGear && this.want.gear) ||
             (this.want.data && this.want.data.length) || typeof this.want.speed === 'number';
         if (any && !this.connected) { this.connected = true; this.cr.connect(); }

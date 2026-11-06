@@ -48,7 +48,7 @@ async function main() {
     const m = mapRect(60, [0, 0]);
     const [aw, ah] = ARROW.medium;
     // one row under the map: the left arrow after BMW's speed, the gear beside it, the data, the right arrow at the map's right edge
-    eq(rowRect(m), { x: 160, y: 352, w: 480, h: ROW_H }, 'the row just under the map');
+    eq(rowRect(m), { x: 160, y: 346, w: 480, h: ROW_H }, 'the row right under the map');
     const def = mapRect(65, [20, -30]);
     eq(arrowRect(def, 'left', aw, ah), { x: SPEED_END, y: rowRect(def).y + (ROW_H - ah) / 2, w: aw, h: ah },
         'the default map: the left arrow right after BMW\'s speed');
@@ -62,9 +62,8 @@ async function main() {
     ok(d && d.x > g.x + g.w && d.x + d.w < r.x, 'the data between the gear and the right arrow');
     const low = mapRect(60, [0, 400]);
     eq(rowRect(low).y, low.y + low.h - ROW_H - 4, 'no room under a map at the HUD\'s bottom: inside its bottom edge');
-    const lg = arrowRect(m, 'left', ARROW.large[0], ARROW.large[1]);
-    ok(lg.h <= ROW_H - 8 && lg.h < ARROW.large[1], 'a large arrow: held to the row');
-    eq(dataRect({ x: 300, y: 200, w: 200, h: 88 }, 'large'), null, 'a narrow map: no room for the data');
+    eq(rowRect(m).y, m.y + m.h, 'the row right under the map');
+    eq(dataRect({ x: 300, y: 200, w: 160, h: 70 }), null, 'a narrow map: no room for the data');
 
     const sock = path.join(os.tmpdir(), `woc-hud-${process.pid}.sock`);
     const svc = spawn(bin, [sock], { stdio: ['pipe', 'pipe', 'ignore'] });
@@ -76,7 +75,7 @@ async function main() {
     const layer = {};
     cr.on('layer', (ref, state) => { layer[ref] = state; });
     const hud = new HudOverlay({ client: cr });
-    const base = { turn: {}, gear: null, map: m, arrowSize: 'medium', showTurn: true, showGear: true };
+    const base = { turn: {}, gear: null, map: m, showTurn: true, showGear: true };
     try {
         hud.update(base);
         await sleep(200);
@@ -95,6 +94,7 @@ async function main() {
 
         hud.update(Object.assign({}, base, { gear: 'D3', turn: { left: true } }));
         const left = hud.layers['arrow-left'];
+        ok(sent.filter((s) => s.ref === (left && left.ref)).map((s) => s.lit)[0] === true, 'a turn signal coming on: its first flash lit');
         const la = arrowRect(m, 'left', aw, ah);
         ok(left && left.x === la.x && left.y === la.y && left.w === aw, 'the left arrow in the row under the map');
         ok(!hud.layers['arrow-right'], 'the right one is not made');
@@ -102,10 +102,10 @@ async function main() {
         await sleep(1300);
         const blinks = sent.filter((s) => s.ref === left.ref).map((s) => s.lit);
         ok(blinks.length >= 3 && blinks.some((l) => l) && blinks.some((l) => !l), `it blinks: lit and blank in turn (${blinks})`);
-        hud.update(Object.assign({}, base, { gear: 'D3', turn: { right: true }, arrowSize: 'large' }));
+        hud.update(Object.assign({}, base, { gear: 'D3', turn: { right: true } }));
         const right = hud.layers['arrow-right'];
-        const ra = arrowRect(m, 'right', ARROW.large[0], ARROW.large[1]);
-        ok(right && right.x === ra.x && right.w === ra.w, 'the right arrow, large, at the map\'s right edge');
+        const ra = arrowRect(m, 'right', aw, ah);
+        ok(right && right.x === ra.x && right.w === ra.w, 'the right arrow at the map\'s right edge');
         hud.update(Object.assign({}, base, { gear: 'D3' }));
         await sleep(100);
         const after = sent.length;
@@ -149,6 +149,21 @@ async function main() {
     ts.test('left');
     eq(ts.state(), { left: true, right: false, test: 'left' }, 'Test left: the left arrow on');
     ts.test(null);
+    // eDrive's numbers, from the file it shares
+    fs.copyFileSync(path.join(HERE, 'app', 'hv_data.js'), path.join(os.tmpdir(), `hv_data-${process.pid}.js`));
+    const { HvData } = require(path.join(os.tmpdir(), `hv_data-${process.pid}.js`));
+    const shared = path.join(os.tmpdir(), `mgu-edrive-${process.pid}.json`);
+    const hv = new HvData({ file: shared, appRoot: '/nonexistent/oap_1' });
+    hv.start();
+    eq([hv.installed(), hv.power(), hv.range()], [false, null, null], 'eDrive not installed, not running: nothing');
+    fs.writeFileSync(shared, JSON.stringify({ t: Date.now(), kw: -12.5, soc: 40, rangeKm: 22 }));
+    await sleep(1200);
+    eq([hv.installed(), hv.power(), hv.range()], [true, -12.5, 22], 'eDrive\'s file: installed, its power and its range');
+    fs.writeFileSync(shared, JSON.stringify({ t: Date.now() - 60000, kw: 30, soc: 40, rangeKm: 21 }));
+    await sleep(1200);
+    eq([hv.power(), hv.range()], [null, 21], 'a minute old: no power, the range still');
+    hv.stop();
+    fs.unlinkSync(shared);
     console.log(`hud: ${checks} checks pass`);
 }
 

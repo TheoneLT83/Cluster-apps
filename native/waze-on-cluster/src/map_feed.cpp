@@ -16,9 +16,9 @@ const char *const MapFeed::kWaiting = "Waiting for the phone's map";
 
 namespace {
 
-/* The HUD map's edges fade out over this many of the HUD scene's pixels each side: a soft edge that takes little of
- * the map (about 3 % of its width at the default size, 7 % of its height). */
-const float kHudFeatherPx = 16.0f;
+/* The HUD map's edges fade out over this many of the HUD scene's pixels each side, as the cluster's own map fades, a
+ * little narrower (about 8 % of its width at the default size, 17 % of its height). */
+const float kHudFeatherPx = 40.0f;
 
 /* The size of a target in the renderer's hello ("map:1088x480,panel:..."). */
 bool target_size(const std::string &targets, const std::string &name, uint32_t *w, uint32_t *h)

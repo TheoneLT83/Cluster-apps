@@ -2,7 +2,7 @@
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
   "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range, oil and coolant, boost, power and torque, or engine speed",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
   "memoryKB": 153600,
@@ -25,16 +25,6 @@
       "statusEngineSpeed2": "rs",
       "statusEngineTemperature": "rs",
       "_optional": "oil and coolant on the HUD, the electric range"
-    },
-    "com.harman.infotainment.systemfunctions.tasu.tasu.InternalTasu": {
-      "_instances": "SystemFunctionsInternalTasuInst1",
-      "_methods": [
-        "sendTasuRequest"
-      ],
-      "_broadcasts": [
-        "sendTasuResponse"
-      ],
-      "_optional": "eDrive power and the electric range on the HUD (the battery unit)"
     },
     "de.bmw.infotainment.drivingexcitement.FES": {
       "statusActualValueTorque2": "rs",
@@ -69,7 +59,8 @@
       "key": "hudOn",
       "label": "Displays on HUD",
       "type": "bool",
-      "default": true
+      "default": true,
+      "reset": 1
     },
     {
       "key": "hudTurn",
@@ -200,30 +191,6 @@
         "hudData": [
           "boost"
         ]
-      }
-    },
-    {
-      "key": "arrowSize",
-      "label": "Turn arrow size",
-      "type": "choice",
-      "default": "medium",
-      "options": [
-        [
-          "small",
-          "Small"
-        ],
-        [
-          "medium",
-          "Medium"
-        ],
-        [
-          "large",
-          "Large"
-        ]
-      ],
-      "when": {
-        "hudOn": true,
-        "hudTurn": true
       }
     },
     {
