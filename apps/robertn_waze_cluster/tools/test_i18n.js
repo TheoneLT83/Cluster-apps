@@ -34,8 +34,7 @@ const DYNAMIC = {
     'waze_cluster_control.js': ['t(RESTART_FAILED[r.code] || RESTART_FAILED.error)'],
     'logs_control.js': ['t(ERRORS[s.error] || ERRORS.failed)'],
     // (the match ends at the first ')': HUD_STATES[hud.state()] reads as its start)
-    'main.js': ['t(s._en.label)', 't(s._en.options[i])', 't(text)', 't(text)', 't(text)', 't(text)', 't(HUD_STATES[hud.state()',
-        't(CATALOG_ERRORS[f.error] || CATALOG_ERRORS.unreadable)', 't(p)']
+    'main.js': ['t(s._en.label)', 't(s._en.options[i])', 't(text)', 't(text)', 't(text)', 't(p)']
 };
 const MODULES = ['src/waze_cluster_control.js', 'src/logs_control.js', 'app/main.js'];
 MODULES.forEach((m) => {
@@ -58,10 +57,10 @@ const list = (name) => {
     const v = Function(`return ${m[1]};`)();
     return Array.isArray(v) ? v : Object.values(v);
 };
-['PAGES', 'HUD_STATES', 'CATALOG_ERRORS'].forEach((n) => list(n).forEach((w) => used.add(w)));
+list('PAGES').forEach((w) => used.add(w));
 // the Display page's switches and readings: [setting or value, words]
 ['HUD_ITEMS', 'HUD_DATA'].forEach((n) => Function(`return ${new RegExp(`const ${n} = (\\[[\\s\\S]*?\\]\\]);`).exec(MAIN)[1]};`)().forEach((it) => used.add(it[1])));
-['Cluster', 'HUD', 'Cluster + HUD', 'Test left', 'Test right'].forEach((w) => { ok(MAIN.indexOf(`'${w}']`) >= 0, `app/main.js: ${w}`); used.add(w); });
+['Cluster', 'HUD', 'Cluster + HUD'].forEach((w) => { ok(MAIN.indexOf(`'${w}']`) >= 0, `app/main.js: ${w}`); used.add(w); });
 // the settings' labels and choices (translated at a language change), and the HMI's strings the kit writes
 const APP = JSON.parse(fs.readFileSync(path.join(HERE, 'app', 'app.json'), 'utf8'));
 APP.settings.forEach((s) => { used.add(s.label); (s.options || []).forEach((o) => used.add(o[1])); });
@@ -69,7 +68,7 @@ APP.screens.forEach((sc) => (sc.buttons || []).forEach((b) => used.add(b[1])));
 used.add(APP.title);
 ok(used.size > 40, `the app's words (${used.size})`);
 ['Status: {0}', 'Patched', 'Restart: {0}', 'the head unit stayed on', 'Not enough space', 'HUD map: {0}', 'Brightness: {0}', 'Maps',
-    'Turn signals on the HUD', 'Cluster functions', 'Settings', 'nothing to show']
+    'Turn signals on the HUD', 'Cluster functions', 'Settings']
     .forEach((w) => ok(used.has(w), `"${w}" is a key`));
 
 // WOC_I18N_WORDS=1: print the words and stop (for translating them)

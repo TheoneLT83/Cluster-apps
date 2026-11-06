@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1
+
+- **Display**: the switches and the reading on the left, a larger picture of the HUD on the right. Test left / Test
+  right and the gear's readout are gone; the HUD overlay's state, where the gear comes from (the car or demo data) and
+  the signal catalog's turn-signal fields are in the log, each when it changes.
+
 ## 0.8.0
 
 - **HUD**: the turn arrows, the gear and one reading in one row under the map, BMW's own speed and limit sign left

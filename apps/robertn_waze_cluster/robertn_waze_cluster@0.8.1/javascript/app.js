@@ -11,7 +11,7 @@
  *             Auto: its patch (Patch, Reinstall patch over another tool's, Remove patch), Android Auto's zoom and turn
  *             card, CarPlay's Wi-Fi, Restart head unit while a change waits for it or after a patch; the HUD map's
  *             size, brightness and place, with a picture of the HUD
- *   Display   what the HUD shows under the map: turn signals (Test left / Test right), the gear, and between the
+ *   Display   what the HUD shows under the map: the turn signals and the gear on or off, and between the
  *             turn signals none, the electric range with the eDrive power, or oil and coolant; with a picture of it
  *   Log       the app's log, and the saved logs for a phone on the car's hotspot
  *   Settings  the kit's settings sheet: Real speed on HUD (left of BMW's own speed), the arrows' size, the colours, the
@@ -43,7 +43,7 @@ const HUD_ITEMS = [['hudTurn', 'Turn signals'], ['hudGear', 'Gear']];
 const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['temps', 'Oil and coolant']];
 const LOG_LINES = 60;
 const HMI_CONTEXT = ['de.bmw.infotainment.hmi.hmicontext.HMIContext', 'HMI_CID'];
-/* The HUD overlay's state, by hud.state() (English keys of i18n.js). */
+/* The HUD overlay's state, by hud.state(), for the log. */
 const HUD_STATES = { off: 'nothing to show', waiting: 'waiting for the HUD', shown: 'shown', disabled: 'off after errors', unavailable: 'no HUD' };
 /* The display languages drawn in English. */
 const DRAWN_ENGLISH = ['ar', 'he', 'th'];
@@ -54,7 +54,7 @@ function useFonts(code) {
         korean: 'woc-korean', cjk: code === 'ja' ? 'woc-japanese' : code === 'zh-TW' ? 'woc-cjk-tc' : 'woc-cjk-sc' });
 }
 
-/* The signal catalog's errors, by turn_signals.js's find() (English keys of i18n.js). */
+/* The signal catalog's errors, by turn_signals.js's find(), for the log. */
 const CATALOG_ERRORS = { absent: 'No signal catalog on this unit', unreadable: 'The signal catalog cannot be read' };
 
 /* P / R / N / D, D1 ... D9 from car.js's data: its gear (-1 R, 0 N/P, 1...) and the selector stage. */
@@ -164,6 +164,20 @@ async function background(bg) {
             .then(language)
             .catch((e) => log.warn('display language unavailable: ' + (e && e.message)));
     } catch (e) { log.warn('display language unavailable: ' + e.message); }
+
+    // what the Display page does not show: in the log when it changes
+    let said = {};
+    const say = (key, text) => { if (text && said[key] !== text) { said[key] = text; log.info(text); } };
+    const sayStates = () => {
+        say('hud', 'HUD overlay: ' + HUD_STATES[hud.state()]);
+        const d = car.data();
+        say('gear', d && d.demo ? 'demo: no gear from the car' : gearNow() ? 'gear from the car' : 'no gear from the car yet');
+    };
+    setInterval(sayStates, 2000);
+    const f = turns.find();
+    log.info(f.error ? CATALOG_ERRORS[f.error] || CATALOG_ERRORS.unreadable : f.fields.length ?
+        'signal catalog: may carry the turn signals: ' + f.fields.map((it) => it.iface + '.' + it.field).join(', ') :
+        'signal catalog: no field named for the turn signals');
 
     ctl.open();
     toHud();
@@ -330,18 +344,7 @@ mgu.run({
                     { primary: now === v, key: 'data-' + v }));
 
             G.panel(cv, th, 684, 44, 892, 468, t('HUD'));
-            hudPicture(cv, th, 708, 100, 560);
-            const st = turns.state();
-            [['left', 'Test left'], ['right', 'Test right']].forEach(([side, text], i) =>
-                G.button(cv, th, 1292, 104 + i * 62, 260, 48, t(text), () => turns.test(side), { primary: st.test === side, key: 'test-' + side }));
-            const d = car.data(), g = gearText(d);
-            label(cv, th, t('Gear'), 1292, 262);
-            cv.text(g || '-', 1292, 330, 64, g ? th.text : th.dim, { font: 'gear' });
-            if (d && d.demo) small(cv, th, t('Demo: no gear from the car'), 1292, 366, 260, th.warn);
-            small(cv, th, t('HUD overlay: {0}', t(HUD_STATES[hud.state()])), 708, 470, 560, th.dim);
-            const f = turns.find();
-            small(cv, th, f.error ? t(CATALOG_ERRORS[f.error] || CATALOG_ERRORS.unreadable) : f.fields.length ?
-                f.fields.slice(0, 2).map((it) => it.field).join(', ') : t('None found in the car’s signal catalog'), 708, 498, 844, th.dim);
+            hudPicture(cv, th, 784, 100, 692);
         }
 
         function drawLog(cv, th) {
@@ -376,7 +379,7 @@ mgu.run({
             const th = ctx.theme();
             const cv = ctx.canvas(W, H).clear(th.bg);
             [drawMaps, drawDisplay, drawLog][page](cv, th);
-            G.frame(cv, th, PAGES.map((p) => t(p)), page, [car.data() && car.data().demo && page === 1 && { text: 'DEMO' }]);
+            G.frame(cv, th, PAGES.map((p) => t(p)), page, []);
             await ui.image('MAIN_GFX', cv);
         }
 

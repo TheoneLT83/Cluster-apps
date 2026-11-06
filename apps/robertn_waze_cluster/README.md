@@ -25,7 +25,7 @@ To remove, remove the app in the Store, then the Waze tool, which reverts the pa
 | Tab | |
 |---|---|
 | **Maps** | **Show on**: Cluster, HUD or Cluster + HUD; the cluster map's and the HUD map's state; **Hide BMW logo on cluster**. **CarPlay** or **Android Auto**: its patch's state, **Patch** (**Reinstall patch** while another tool's or an older app's patch is on carplay: Remove patch where Patch is not taken, then Patch) and **Remove patch** (a confirm step), CarPlay's Wi-Fi band, Android Auto's zoom (- / +) and **Hide phone's turn card**, and **Restart head unit** (a confirm step) while a change waits for it or after a patch applied without one. **HUD map**: a picture of the HUD with the map, the turn arrows and the gear where they show; **Size** (5 % a step, 30-85 %, 65 % by default), **Brightness** (10 % a step, 10-100 %, 50 % by default: the map alone dims, BMW's own HUD content keeps its brightness), **Position** (10 px a press, 20 px right and 30 px up by default, the middle button centres it). The HUD map's settings are greyed while the map is not on the HUD or the cluster renderer keeps the HUD off after errors |
-| **Display** | **On the HUD**: **Turn signals** and **Gear** on or off, and **Between the turn signals** one reading: **None**, **Electric range** or **Oil and coolant**; a picture of the HUD with them; **Test left** / **Test right** (that arrow blinks on the HUD for 6 s); **Gear**: the gear the car reports (P, R, N, D, D1 ... D9); the HUD overlay's state and the fields of the car's own signal catalog whose names say turn signal |
+| **Display** | **On the HUD**: **Turn signals** and **Gear** on or off, and **Between the turn signals** one reading: **None**, **Electric range** or **Oil and coolant**; a picture of the HUD with them. The HUD overlay's state, where the gear comes from and the fields of the car's signal catalog whose names say turn signal are in the log |
 | **Log** | the app's log, and the saved logs: **Save logs**, the archives, and the address and QR code a phone on the car's hotspot opens them with |
 | **Settings** | the kit's settings sheet: **Real speed on HUD** (for a car with a mileage blocker, which stops BMW's own speed: the car's own speed left of it), **Turn arrow size** (small, medium, large), the colour theme, the screen layout, demo data |
 
@@ -63,8 +63,8 @@ not dropped, so a blink asks nothing of the HUD's slot. Nothing is asked of the 
 show.
 
 Which of the car's signals carries the turn signals is not known yet: `app/turn_signals.js` searches the car's
-signal catalog (`/etc/oap/someip/someip-interfaces.json`) for fields named for turn signals and the Display page lists
-them; until one is read, the arrows show for **Test left** / **Test right**.
+signal catalog (`/etc/oap/someip/someip-interfaces.json`) for fields named for turn signals and logs them; until one is
+read, the arrows do not show.
 
 ## Started with the car
 
