@@ -40,6 +40,11 @@
       "statusActualValueTorque2": "rs",
       "statusSwitchDriveDynamicSport2": "rs",
       "_optional": "boost, power and torque on the HUD"
+    },
+    "de.bmw.body.Light": {
+      "_instances": "1",
+      "StatusFunctionsIndicators": "s",
+      "_optional": "the turn signals on the HUD"
     }
   },
   "screens": [

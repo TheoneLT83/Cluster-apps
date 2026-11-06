@@ -163,6 +163,12 @@
         "statusActualValueTorque2": "rs",
         "statusSwitchDriveDynamicSport2": "rs"
       }
+    },
+    "de.bmw.body.Light": {
+      "instances": "1",
+      "attributes": {
+        "StatusFunctionsIndicators": "s"
+      }
     }
   },
   "services": {

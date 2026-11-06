@@ -7,7 +7,7 @@
  * and place; the turn arrows over the map's top
  * corners (above it where the HUD has room, else inside its top edge), never past its sides, blinking (lit and
  * blank pixels in turn) while their side is on, blank and no longer sent once it is off; arrows and gear dropped when their setting is off; the arrows' three sizes; the map's
- * place as waze-on-cluster puts it. The turn signals' catalog search (app/turn_signals.js) too.
+ * place as waze-on-cluster puts it. The turn signals from the car's Light.StatusFunctionsIndicators (app/turn_signals.js) too.
  *
  *   make -C native/cluster-render build/host/host_service
  *   node apps/robertn_waze_cluster/tools/test_hud.js native/cluster-render/build/host/host_service
@@ -27,7 +27,7 @@ fs.cpSync(path.join(REPO, 'kit', 'runtime'), path.join(STAGE, 'kit'), { recursiv
 fs.copyFileSync(path.join(REPO, 'native', 'cluster-render', 'js', 'cluster_render_client.js'), path.join(STAGE, 'cluster_render_client.js'));
 const { HudOverlay, mapRect, rowRect, gearRect, arrowRect, dataRect, ARROW, GEAR_W, GEAR_H, ROW_H, SPEED_END, SPEED_RECT } = require(path.join(STAGE, 'hud_overlay.js'));
 const { ClusterRender } = require(path.join(STAGE, 'cluster_render_client.js'));
-const { search, TurnSignals } = require(path.join(STAGE, 'turn_signals.js'));
+const { sideOf, TurnSignals } = require(path.join(STAGE, 'turn_signals.js'));
 
 let checks = 0;
 const ok = (cond, msg) => { checks++; assert(cond, msg); };
@@ -131,14 +131,21 @@ async function main() {
         fs.rmSync(STAGE, { recursive: true, force: true });
     }
 
-    // the car's catalog: the fields that may carry the turn signals, with their interface
-    const db = { interfaces: {
-        'de.bmw.infotainment.vehicle.Lights': { attributes: { statusDirectionIndicator: {}, statusHeadlight: {} } },
-        'de.bmw.x.Kombi': { attributes: [{ name: 'blinkerState' }, { name: 'speed' }] } } };
-    eq(search(db), [{ iface: 'de.bmw.infotainment.vehicle.Lights', field: 'statusDirectionIndicator' }, { iface: 'de.bmw.x.Kombi', field: 'blinkerState' }],
-        'the catalog search: the turn signal fields alone');
-    const ts = new TurnSignals({ catalog: '/nonexistent/catalog.json' });
-    eq(ts.find(), { fields: [], error: 'absent' }, 'no catalog: said so');
+    // the car's turn signals: Light.StatusFunctionsIndicators.activeFunctionIndicateDirection, as a G-series car sent them
+    const v = (a) => ({ controlIndicateDirection: 'BLINKEN_AUS', activeFunctionIndicateDirection: a });
+    eq(['DAUERBLINKEN_LINKS', 'TIPPBLINKEN_LINKS', 'DAUERBLINKEN_RECHTS', 'TIPPBLINKEN_RECHTS', 'WARNBLINKEN_MANUELL', 'CRASH_BLINKEN',
+        'BLINKEN_AUS', 'ALARM_BLINKEN'].map((a) => sideOf(v(a))), ['left', 'left', 'right', 'right', 'both', 'both', null, null],
+        'latched and tap blinks to their side, hazard to both, anything else to none');
+    const ts = new TurnSignals({});
+    let changes = 0;
+    ts.on('change', () => changes++);
+    ts.onValue(v('TIPPBLINKEN_LINKS'));
+    ts.onValue(v('DAUERBLINKEN_LINKS'));
+    eq([ts.state(), changes], [{ left: true, right: false, test: null }, 1], 'a tap then latched left: the left arrow, one change');
+    ts.onValue(v('WARNBLINKEN_MANUELL'));
+    eq(ts.state(), { left: true, right: true, test: null }, 'hazard: both arrows');
+    ts.onValue(v('BLINKEN_AUS'));
+    eq(ts.state(), { left: false, right: false, test: null }, 'off: none');
     ts.test('left');
     eq(ts.state(), { left: true, right: false, test: 'left' }, 'Test left: the left arrow on');
     ts.test(null);

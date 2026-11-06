@@ -2,6 +2,8 @@
 
 ## 0.8.2
 
+- **Turn signals on the HUD from the car**: the arrows follow the indicator stalk and the hazard switch (both arrows),
+  from `de.bmw.body.Light` `StatusFunctionsIndicators`.
 - **Displays on HUD** (Settings): off, nothing of this app shows on the HUD, and the cluster renderer gives the HUD
   back to BMW's own layout a few seconds later (the HUD map stays under Maps' Show on).
 - The cluster renderer 0.4.2 (with waze-on-cluster 0.9.5) logs what BMW shows in the HUD's slots, so where a phone

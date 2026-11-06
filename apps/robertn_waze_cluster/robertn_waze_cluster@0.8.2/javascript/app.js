@@ -58,8 +58,6 @@ function useFonts(code) {
         korean: 'woc-korean', cjk: code === 'ja' ? 'woc-japanese' : code === 'zh-TW' ? 'woc-cjk-tc' : 'woc-cjk-sc' });
 }
 
-/* The signal catalog's errors, by turn_signals.js's find(), for the log. */
-const CATALOG_ERRORS = { absent: 'No signal catalog on this unit', unreadable: 'The signal catalog cannot be read' };
 
 /* P / R / N / D, D1 ... D9 from car.js's data: its gear (-1 R, 0 N/P, 1...) and the selector stage. */
 function gearText(d) {
@@ -103,7 +101,7 @@ async function background(bg) {
 
     const ctl = new WazeClusterControl({ log });
     const logs = new LogsControl({ log });
-    const turns = new TurnSignals();
+    const turns = new TurnSignals({ signals: bg.signals, log });
     const hud = new HudOverlay({ log });
     // boost from the sport display (FES), as M Vitals reads it: bar, 0.01 a step, 255 no value
     let boost = null;
@@ -198,10 +196,7 @@ async function background(bg) {
         say('gear', d && d.demo ? 'demo: no gear from the car' : gearNow() ? 'gear from the car' : 'no gear from the car yet');
     };
     setInterval(sayStates, 2000);
-    const f = turns.find();
-    log.info(f.error ? CATALOG_ERRORS[f.error] || CATALOG_ERRORS.unreadable : f.fields.length ?
-        'signal catalog: may carry the turn signals: ' + f.fields.map((it) => it.iface + '.' + it.field).join(', ') :
-        'signal catalog: no field named for the turn signals');
+    turns.start();
 
     ctl.open();
     toHud();
@@ -422,4 +417,4 @@ mgu.run({
     },
 });
 
-module.exports = { gearText, HUD_STATES, CATALOG_ERRORS };
+module.exports = { gearText, HUD_STATES };
