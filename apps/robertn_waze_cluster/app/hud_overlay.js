@@ -31,7 +31,7 @@ const HUD_W = 800, HUD_H = 480;
 const BLINK_MS = 400;
 const ARROW = { small: [40, 26], medium: [52, 34], large: [66, 44] };
 const ROW_H = 46;
-const GEAR_W = 60, GEAR_H = ROW_H;
+const GEAR_W = 44, GEAR_H = ROW_H;          // D1 ... D9 at 40 px are 40 wide
 /* Where BMW's own speed reading (its km/h) ends on the HUD, from a photo of a G-series HUD: the left arrow
  * comes after it. */
 const SPEED_END = 356;
@@ -77,7 +77,7 @@ function gearRect(map, arrowSize) {
 /* The data, between the gear and the right arrow; null when there is no room. */
 function dataRect(map, arrowSize) {
     const [aw, ah] = ARROW[arrowSize] || ARROW.medium, g = gearRect(map, arrowSize), r = arrowRect(map, 'right', aw, ah);
-    const x = g.x + g.w + 6, w = r.x - 8 - x;
+    const x = g.x + g.w + 12, w = r.x - 8 - x;
     return w >= 40 ? { x, y: g.y, w, h: ROW_H } : null;
 }
 
@@ -130,7 +130,7 @@ function drawArrow(cv, w, h, dir, color) {
 function drawGear(cv, gear) {
     const g = String(gear || '');
     // one word, as BMW's own gear reading: P, R, N, D, D3; a longer one smaller to fit
-    const size = cv.textWidth(g, 40, { font: 'gear' }) <= GEAR_W - 4 ? 40 : 32;
+    const size = cv.textWidth(g, 40, { font: 'gear' }) <= GEAR_W - 2 ? 40 : 32;
     cv.text(g, 2, GEAR_H - 8, size, g.charAt(0) === 'R' ? AMBER : WHITE, { font: 'gear' });
 }
 

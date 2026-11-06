@@ -6,7 +6,7 @@
   right and the gear's readout are gone; the HUD overlay's state, where the gear comes from (the car or demo data) and
   the signal catalog's turn-signal fields are in the log, each when it changes.
 - **HUD**: the reading fills the space between the gear and the right arrow: the eDrive slider takes what the range
-  leaves, oil and coolant are spread across it.
+  leaves, oil and coolant are spread across it; the gear's place is as narrow as D1 ... D9.
 
 ## 0.8.0
 
