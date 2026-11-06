@@ -7,7 +7,7 @@ for the HUD's turn signals and gear. Its screens are drawn by the Store's render
 tabs, the settings sheet, the colour themes. Everything is done from the HMI; no shell is needed.
 
 Install it from this repository's catalog through the [mgu Store](https://github.com/robertnisipeanu/mgu-store).
-It requires waze-on-cluster 0.9.3, which brings the cluster renderer and writes the CarPlay patch, and the Android
+It requires waze-on-cluster 0.9.4, which brings the cluster renderer and writes the CarPlay patch, and the Android
 Auto patch where the car supports it, as it installs (one head-unit start activates them), and the Store's
 renderer `mgu-render` 0.6.17, which every car with the Store has: the Store updates it first where it is older, and
 the controller gate `mgu-inputgate` 1.0.0, loaded into the HMI at the next start, which gives the app's screen the

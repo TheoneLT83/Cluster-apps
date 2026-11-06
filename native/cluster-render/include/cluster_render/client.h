@@ -54,6 +54,7 @@ struct LayerOptions {
     bool contend = false;            /* retries a slot the stock HMI takes */
     bool guide_hold = true;          /* false: the stock HMI's guidance box shows while this layer wants the map */
     float opacity = 1.0f;
+    float feather = 0;               /* video: the edges faded out over this many pixels (0: none) */
     /* Video, image and effect layers: turned (degrees clockwise) and scaled about
      * the pivot, in pixels from the layer's top-left (its centre unless
      * pivot). */

@@ -38,6 +38,8 @@ struct LayerParams {
     bool guide_hold = true;   /* false: no guide hold for its target while it wants it (slots.h) */
     Rect rect;
     float opacity = 1.0f;
+    /* Video layers: the edges faded out over this many pixels each side (0: a hard edge). */
+    float feather = 0;
     /* A quad turned (degrees clockwise) and scaled about its pivot: px, py
      * from the rect's top-left, its centre unless set. */
     float rotate = 0, sx = 1, sy = 1, px = 0, py = 0;

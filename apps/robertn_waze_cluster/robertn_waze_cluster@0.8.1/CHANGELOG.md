@@ -2,6 +2,8 @@
 
 ## 0.8.1
 
+- **HUD**: the map's edges fade out, 16 px each side, instead of a hard cut (waze-on-cluster 0.9.4 with cluster-render
+  0.4.1); the cluster's map is as it was.
 - **Display**: the switches and the reading on the left, a larger picture of the HUD on the right. Test left / Test
   right and the gear's readout are gone; the HUD overlay's state, where the gear comes from (the car or demo data) and
   the signal catalog's turn-signal fields are in the log, each when it changes.

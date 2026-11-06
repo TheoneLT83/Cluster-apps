@@ -23,7 +23,14 @@ precision highp float;
 uniform sampler2D u_image;
 uniform vec2 u_size;
 uniform float u_opacity;
+uniform vec2 u_feather;
 varying vec2 v_uv;
+/* The edges faded out over u_feather (a share of the width and height each side; 0: none). */
+float edge_fade() {
+    vec2 d = min(v_uv, 1.0 - v_uv);
+    vec2 e = vec2(u_feather.x > 0.0 ? smoothstep(0.0, u_feather.x, d.x) : 1.0, u_feather.y > 0.0 ? smoothstep(0.0, u_feather.y, d.y) : 1.0);
+    return e.x * e.y;
+}
 float byte_of(float s) { return floor(s * 255.0 + 0.5); }
 vec3 rgb565(float lo, float hi) {
     float v = hi * 256.0 + lo;
@@ -45,7 +52,7 @@ void main() {
     float div = q.x < 1.0 ? 1.0 : q.x < 2.0 ? 4.0 : q.x < 3.0 ? 16.0 : 64.0;
     float sel = mod(floor(row / div), 4.0);
     vec3 c = sel < 0.5 ? c0 : sel < 1.5 ? c1 : sel < 2.5 ? (2.0 * c0 + c1) / 3.0 : (c0 + 2.0 * c1) / 3.0;
-    gl_FragColor = vec4(c, u_opacity);
+    gl_FragColor = vec4(c, u_opacity * edge_fade());
 })";
 
 namespace {

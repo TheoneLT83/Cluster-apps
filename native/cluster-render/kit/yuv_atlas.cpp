@@ -104,7 +104,14 @@ precision highp float;
 uniform sampler2D u_image;
 uniform vec2 u_size;
 uniform float u_opacity;
+uniform vec2 u_feather;
 varying vec2 v_uv;
+/* The edges faded out over u_feather (a share of the width and height each side; 0: none). */
+float edge_fade() {
+    vec2 d = min(v_uv, 1.0 - v_uv);
+    vec2 e = vec2(u_feather.x > 0.0 ? smoothstep(0.0, u_feather.x, d.x) : 1.0, u_feather.y > 0.0 ? smoothstep(0.0, u_feather.y, d.y) : 1.0);
+    return e.x * e.y;
+}
 void main() {
     vec2 l = v_uv * u_size;
     float th = u_size.y * 1.5;
@@ -113,7 +120,7 @@ void main() {
     float u = texture2D(u_image, vec2(c.x / u_size.x, (u_size.y + c.y) / th)).r - 128.0 / 255.0;
     float v = texture2D(u_image, vec2((u_size.x * 0.5 + c.x) / u_size.x, (u_size.y + c.y) / th)).r - 128.0 / 255.0;
     vec3 rgb = vec3(y + 1.402 * v, y - 0.344136 * u - 0.714136 * v, y + 1.772 * u);
-    gl_FragColor = vec4(clamp(rgb, 0.0, 1.0), u_opacity);
+    gl_FragColor = vec4(clamp(rgb, 0.0, 1.0), u_opacity * edge_fade());
 })";
 
 namespace {

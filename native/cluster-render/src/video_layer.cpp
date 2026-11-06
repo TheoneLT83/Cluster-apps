@@ -96,11 +96,12 @@ bool VideoLayer::attach(Graph *g, int64_t now_ms, std::string *err)
     refine_due_ms_ = -1;
     drawn_ = false;
 
-    const float size[2] = {(float)p_.w, (float)p_.h}, zero = 0.0f;
+    const float size[2] = {(float)p_.w, (float)p_.h}, zero = 0.0f, none[2] = {0.0f, 0.0f};
     atlas_buf_ = g->buffer(TexFormat::R8, p_.w, atlas_h_, Sampling::Bilinear);
     atlas_quad_ = atlas_buf_ ? g->quad(atlas_effect_, params.rect) : 0;
     bool good = atlas_quad_ && g->turn(atlas_quad_, params.turn()) && g->texture(atlas_quad_, "u_image", atlas_buf_) &&
                 g->uniform(atlas_quad_, "u_size", size, 2) && g->uniform(atlas_quad_, "u_opacity", &zero, 1) &&
+                g->uniform(atlas_quad_, "u_feather", none, 2) &&
                 g->show(atlas_quad_, false) && g->order(atlas_quad_, order_);
     if (good && p_.pan_blocks) {
         const uint32_t bw = crk::block_texels_w(p_.w), bh = crk::block_texels_h(p_.h);
@@ -109,6 +110,7 @@ bool VideoLayer::attach(Graph *g, int64_t now_ms, std::string *err)
         block_quad_ = good ? g->quad(block_effect_, params.rect) : 0;
         good = block_quad_ && g->turn(block_quad_, params.turn()) && g->texture(block_quad_, "u_image", block_buf_[0]) &&
                g->uniform(block_quad_, "u_size", size, 2) && g->uniform(block_quad_, "u_opacity", &zero, 1) &&
+               g->uniform(block_quad_, "u_feather", none, 2) &&
                g->show(block_quad_, false) && g->order(block_quad_, order_ + 1);
         block_bank_ = 0;
     }
@@ -162,9 +164,15 @@ void VideoLayer::show_blocks(bool on)
 void VideoLayer::set_opacity()
 {
     const float a = opaque_ ? params.opacity * fade_ : 0.0f;
+    /* the feather as a share of the rect, at most half of it */
+    const float f[2] = {params.rect.w ? std::min(0.5f, params.feather / (float)params.rect.w) : 0.0f,
+                        params.rect.h ? std::min(0.5f, params.feather / (float)params.rect.h) : 0.0f};
     g_->uniform(atlas_quad_, "u_opacity", &a, 1);
-    if (block_quad_)
+    g_->uniform(atlas_quad_, "u_feather", f, 2);
+    if (block_quad_) {
         g_->uniform(block_quad_, "u_opacity", &a, 1);
+        g_->uniform(block_quad_, "u_feather", f, 2);
+    }
 }
 
 void VideoLayer::arrange(bool drawn, int32_t order)

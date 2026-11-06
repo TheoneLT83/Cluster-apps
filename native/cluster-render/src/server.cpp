@@ -215,7 +215,7 @@ bool layer_params(const cr::Json &j, LayerParams *p, std::string *err)
     v = n.opacity;
     if (!num(j, "opacity", 0, 1, &v, err)) return false;
     n.opacity = (float)v;
-    if (!fnum(j, "rotate", -36000, 36000, &n.rotate, err) || !fnum(j, "sx", -1000, 1000, &n.sx, err) ||
+    if (!fnum(j, "feather", 0, 256, &n.feather, err) || !fnum(j, "rotate", -36000, 36000, &n.rotate, err) || !fnum(j, "sx", -1000, 1000, &n.sx, err) ||
         !fnum(j, "sy", -1000, 1000, &n.sy, err) || !fnum(j, "px", -8192, 8192, &n.px, err) ||
         !fnum(j, "py", -8192, 8192, &n.py, err))
         return false;
