@@ -81,33 +81,41 @@ function dataRect(map, arrowSize) {
     return w >= 40 ? { x, y: g.y, w, h: ROW_H } : null;
 }
 
-/* The data items left to right from x, y (the row's top) within w, k the scale: as many as fit. An item:
+/* The data items across x, y (the row's top) to x + w, k the scale, filling it: the eDrive slider takes the width
+ * the values leave (at least 64 px), the values end at the right edge; values alone are spread, the first at the
+ * left edge, the last ending at the right one. What does not fit is left out from the end. An item:
  * { kind: 'power', kw } a slider centred on 0 (- regen and charging, green; + driving on the battery) with its kW,
  * or { kind: 'value', label, text } a small label over its value. */
 function drawData(cv, x, y, w, items, k) {
     k = k || 1;
+    const GAP = 10 * k, MIN_TW = 64 * k;
+    const width = (it) => Math.max(cv.textWidth(it.text, 24 * k, { font: 'bold' }), cv.textWidth(it.label, 13 * k, { font: 'bold' }));
+    const power = (items || []).filter((it) => it.kind === 'power')[0];
+    let vals = (items || []).filter((it) => it.kind !== 'power').map((it) => ({ it, w: width(it) }));
+    const need = () => vals.reduce((a, v) => a + v.w, 0) + GAP * (power ? vals.length : Math.max(0, vals.length - 1)) + (power ? MIN_TW : 0);
+    while (vals.length && need() > w) vals.pop();
+    const value = (v, at) => {
+        cv.text(v.it.label, at, y + 14 * k, 13 * k, DIM, { font: 'bold' });
+        cv.text(v.it.text, at, y + 40 * k, 24 * k, WHITE, { font: 'bold' });
+    };
+    const sum = vals.reduce((a, v) => a + v.w, 0);
+    if (power) {
+        if (MIN_TW > w) return;
+        const tw = w - sum - GAP * vals.length;
+        const mid = x + tw / 2, cy = y + ROW_H * k / 2, kw = typeof power.kw === 'number' ? power.kw : null;
+        cv.fillRect(x, cy - 2 * k, tw, 4 * k, DIM);
+        cv.fillRect(mid - 1 * k, cy - 8 * k, 2 * k, 16 * k, DIM);
+        const f = kw === null ? 0 : Math.max(-1, Math.min(1, kw / MAX_KW));
+        const kx = Math.max(x, Math.min(x + tw - 36 * k, mid + f * (tw / 2) - 18 * k));
+        cv.roundRect(kx, cy - 12 * k, 36 * k, 24 * k, 12 * k, kw !== null && kw < 0 ? GREEN : WHITE);
+        cv.text(kw === null ? '-' : String(Math.round(Math.abs(kw))), kx + 18 * k, cy + 7 * k, 19 * k, '#000000', { font: 'bold', align: 'center' });
+        let at = x + tw + GAP;
+        vals.forEach((v) => { value(v, at); at += v.w + GAP; });
+        return;
+    }
+    const free = vals.length > 1 ? (w - sum) / (vals.length - 1) : 0;
     let at = x;
-    (items || []).some((it) => {
-        if (it.kind === 'power') {
-            const tw = 64 * k;
-            if (at + tw > x + w) return true;
-            const mid = at + tw / 2, cy = y + ROW_H * k / 2, kw = typeof it.kw === 'number' ? it.kw : null;
-            cv.fillRect(at, cy - 2 * k, tw, 4 * k, DIM);
-            cv.fillRect(mid - 1 * k, cy - 8 * k, 2 * k, 16 * k, DIM);
-            const f = kw === null ? 0 : Math.max(-1, Math.min(1, kw / MAX_KW));
-            const kx = Math.max(at, Math.min(at + tw - 36 * k, mid + f * (tw / 2) - 18 * k));
-            cv.roundRect(kx, cy - 12 * k, 36 * k, 24 * k, 12 * k, kw !== null && kw < 0 ? GREEN : WHITE);
-            cv.text(kw === null ? '-' : String(Math.round(Math.abs(kw))), kx + 18 * k, cy + 7 * k, 19 * k, '#000000', { font: 'bold', align: 'center' });
-            at += tw + 8 * k;
-            return false;
-        }
-        const vw = Math.max(cv.textWidth(it.text, 24 * k, { font: 'bold' }), cv.textWidth(it.label, 13 * k, { font: 'bold' }));
-        if (at + vw > x + w) return true;
-        cv.text(it.label, at, y + 14 * k, 13 * k, DIM, { font: 'bold' });
-        cv.text(it.text, at, y + 40 * k, 24 * k, WHITE, { font: 'bold' });
-        at += vw + 10 * k;
-        return false;
-    });
+    vals.forEach((v) => { value(v, at); at += v.w + free; });
 }
 
 /* An arrow pointing left (dir -1) or right (dir 1), filling w x h. */
