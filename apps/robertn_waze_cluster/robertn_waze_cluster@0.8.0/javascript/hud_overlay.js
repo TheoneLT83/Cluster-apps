@@ -9,8 +9,10 @@
  *                        that turn signal is on
  *   gear                 beside the left arrow: P, R, N, D or D1 ... D9
  *   data                 between the gear and the right arrow, the one reading chosen: the electric range with the
- *                        eDrive power (a slider with its kW), oil and coolant temperatures, or the real speed
+ *                        eDrive power (a slider with its kW), or oil and coolant temperatures
  *   right arrow          at the map's right edge
+ *   real speed           left of BMW's own speed reading, in its row (SPEED_RECT, where the HUD has room for its
+ *                        digits): the car's own speed, for a car whose mileage blocker stops BMW's
  *
  * The HUD shows black as nothing: each layer is drawn on transparent pixels and only what is lit shows.
  * A layer stays visible once made and an arrow that is off is sent as blank pixels, so the HUD's slot is not
@@ -18,7 +20,7 @@
  *
  *   const hud = new HudOverlay({ log });
  *   hud.update({ turn: { left, right }, gear: 'D3', map: { x, y, w, h }, arrowSize: 'medium', showTurn: true, showGear: true,
- *                data: [{ kind: 'power', kw }, { kind: 'value', label: 'OIL', text: '92°' }, ...] });
+ *                data: [{ kind: 'power', kw }, { kind: 'value', label: 'OIL', text: '92°' }, ...], speed: 87 });
  *   hud.state()      -> 'off' | 'waiting' | 'shown' | 'disabled' | 'unavailable' (the HUD target, as the renderer says)
  *   hud.close();
  */
@@ -33,6 +35,8 @@ const GEAR_W = 60, GEAR_H = ROW_H;
 /* Where BMW's own speed reading (its km/h) ends on the HUD, from a photo of a G-series HUD: the left arrow
  * comes after it. */
 const SPEED_END = 356;
+/* The real speed, left of BMW's own speed and right of its speed-limit sign (the same photo), right-aligned. */
+const SPEED_RECT = { x: 200, y: 328, w: 70, h: 52 };
 const MAX_KW = 60;
 const GREEN = '#25e05a', WHITE = '#f2f5f8', AMBER = '#ffb020', DIM = '#8d98a3';
 
@@ -148,7 +152,7 @@ class HudOverlay {
     update(w) {
         this.want = Object.assign({ turn: {}, map: mapRect(0) }, w);
         const any = (this.want.showTurn && (this.want.turn.left || this.want.turn.right)) || (this.want.showGear && this.want.gear) ||
-            (this.want.data && this.want.data.length);
+            (this.want.data && this.want.data.length) || typeof this.want.speed === 'number';
         if (any && !this.connected) { this.connected = true; this.cr.connect(); }
         this._draw();
     }
@@ -199,6 +203,12 @@ class HudOverlay {
         } else {
             this._drop('gear');
         }
+        if (typeof w.speed === 'number') {
+            this._layer('speed', SPEED_RECT, (cv) => cv.text(String(w.speed), SPEED_RECT.w - 2, SPEED_RECT.h - 8, 40, WHITE,
+                { font: 'bold', align: 'right' }), 's' + w.speed);
+        } else {
+            this._drop('speed');
+        }
         const dr = w.data && w.data.length ? dataRect(w.map, w.arrowSize) : null;
         if (dr) {
             this._layer('data', dr, (cv) => drawData(cv, 0, 0, dr.w, w.data), JSON.stringify(w.data));
@@ -216,4 +226,4 @@ class HudOverlay {
 }
 
 module.exports = { HudOverlay, mapRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
-    ROW_H, SPEED_END, MAX_KW, GREEN, WHITE, AMBER, DIM };
+    ROW_H, SPEED_END, SPEED_RECT, MAX_KW, GREEN, WHITE, AMBER, DIM };

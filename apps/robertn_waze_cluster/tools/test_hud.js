@@ -25,7 +25,7 @@ const STAGE = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-hud-'));
 fs.cpSync(path.join(REPO, 'kit', 'runtime'), path.join(STAGE, 'kit'), { recursive: true });
 ['hud_overlay.js', 'turn_signals.js'].forEach((f) => fs.copyFileSync(path.join(HERE, 'app', f), path.join(STAGE, f)));
 fs.copyFileSync(path.join(REPO, 'native', 'cluster-render', 'js', 'cluster_render_client.js'), path.join(STAGE, 'cluster_render_client.js'));
-const { HudOverlay, mapRect, rowRect, gearRect, arrowRect, dataRect, ARROW, GEAR_W, GEAR_H, ROW_H, SPEED_END } = require(path.join(STAGE, 'hud_overlay.js'));
+const { HudOverlay, mapRect, rowRect, gearRect, arrowRect, dataRect, ARROW, GEAR_W, GEAR_H, ROW_H, SPEED_END, SPEED_RECT } = require(path.join(STAGE, 'hud_overlay.js'));
 const { ClusterRender } = require(path.join(STAGE, 'cluster_render_client.js'));
 const { search, TurnSignals } = require(path.join(STAGE, 'turn_signals.js'));
 
@@ -118,6 +118,10 @@ async function main() {
         const nd = sent.length;
         hud.update(Object.assign({}, base, { gear: 'D3', data: [{ kind: 'power', kw: -12 }, { kind: 'value', label: 'OIL', text: '92°' }] }));
         eq(sent.length, nd, 'the same data: nothing sent again');
+
+        hud.update(Object.assign({}, base, { gear: 'D3', speed: 87 }));
+        const sl = hud.layers.speed;
+        ok(sl && sl.x === SPEED_RECT.x && sl.y === SPEED_RECT.y && await until(() => layer[sl.ref] === 'shown', 2000), 'the real speed: left of BMW\'s speed');
 
         hud.update(Object.assign({}, base, { gear: 'D3', showTurn: false, showGear: false }));
         eq(Object.keys(hud.layers), [], 'their settings off, no data: the arrows, the gear and the data are dropped');

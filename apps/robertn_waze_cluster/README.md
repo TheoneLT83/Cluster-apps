@@ -25,9 +25,9 @@ To remove, remove the app in the Store, then the Waze tool, which reverts the pa
 | Tab | |
 |---|---|
 | **Maps** | **Show on**: Cluster, HUD or Cluster + HUD; the cluster map's and the HUD map's state; **Hide BMW logo on cluster**. **CarPlay** or **Android Auto**: its patch's state, **Patch** (**Reinstall patch** while another tool's or an older app's patch is on carplay: Remove patch where Patch is not taken, then Patch) and **Remove patch** (a confirm step), CarPlay's Wi-Fi band, Android Auto's zoom (- / +) and **Hide phone's turn card**, and **Restart head unit** (a confirm step) while a change waits for it or after a patch applied without one. **HUD map**: a picture of the HUD with the map, the turn arrows and the gear where they show; **Size** (5 % a step, 30-85 %, 65 % by default), **Brightness** (10 % a step, 10-100 %, 50 % by default: the map alone dims, BMW's own HUD content keeps its brightness), **Position** (10 px a press, 20 px right and 30 px up by default, the middle button centres it). The HUD map's settings are greyed while the map is not on the HUD or the cluster renderer keeps the HUD off after errors |
-| **Display** | **On the HUD**: **Turn signals** and **Gear** on or off, and **Between the turn signals** one reading: **None**, **Electric range**, **Oil and coolant** or **Real speed** (with its setting); a picture of the HUD with them; **Test left** / **Test right** (that arrow blinks on the HUD for 6 s); **Gear**: the gear the car reports (P, R, N, D, D1 ... D9); the HUD overlay's state and the fields of the car's own signal catalog whose names say turn signal |
+| **Display** | **On the HUD**: **Turn signals** and **Gear** on or off, and **Between the turn signals** one reading: **None**, **Electric range** or **Oil and coolant**; a picture of the HUD with them; **Test left** / **Test right** (that arrow blinks on the HUD for 6 s); **Gear**: the gear the car reports (P, R, N, D, D1 ... D9); the HUD overlay's state and the fields of the car's own signal catalog whose names say turn signal |
 | **Log** | the app's log, and the saved logs: **Save logs**, the archives, and the address and QR code a phone on the car's hotspot opens them with |
-| **Settings** | the kit's settings sheet: **Real speed on the Display page** (for a car with a mileage blocker, whose HUD speed it stops), **Turn arrow size** (small, medium, large), the colour theme, the screen layout, demo data |
+| **Settings** | the kit's settings sheet: **Real speed on HUD** (for a car with a mileage blocker, which stops BMW's own speed: the car's own speed left of it), **Turn arrow size** (small, medium, large), the colour theme, the screen layout, demo data |
 
 Every word is in the HMI's display language, read at the start and on each change, English where a language has
 none: the pages, the kit's header, Settings tab and settings sheet, the tile and the HMI's own screens. The drawn
@@ -48,8 +48,9 @@ HUD has no room under it, within its sides), following the map's size and place:
 - the gear beside the left arrow, from the car only (`VehicleInformation` `DataPowerTrain2` and
   `statusGearboxDrive`, as Live Data reads them), never from demo data;
 - between the gear and the right arrow, the one reading chosen: **Electric range** (`EV`, with the eDrive power: a
-  slider centred on 0 with its kW, green while the battery takes power), **Oil and coolant**, or **Real speed**
-  (`Vehicle2` `statusCarSpeed2`, the car's own speed, which a mileage blocker leaves alone).
+  slider centred on 0 with its kW, green while the battery takes power) or **Oil and coolant**;
+- with **Real speed on HUD**, the car's own speed (`Vehicle2` `statusCarSpeed2`, which a mileage blocker leaves
+  alone) left of BMW's speed reading, right of its speed-limit sign.
 
 eDrive power and the electric range come from a plug-in hybrid's battery unit (SME) with UDS reads over the head
 unit's diagnostic link, the identifiers idrive7-apps' eDrive uses (`app/hv_data.js`; read only while Electric range

@@ -136,8 +136,7 @@
     "Display": "Ekran",
     "Electric range": "Elektrikli menzil",
     "Oil and coolant": "Yağ ve soğutma sıvısı",
-    "Real speed": "Gerçek hız",
-    "Real speed on the Display page": "Ekran sayfasında gerçek hız",
-    "Between the turn signals": "Sinyallerin arasında"
+    "Between the turn signals": "Sinyallerin arasında",
+    "Real speed on HUD": "HUD’da gerçek hız"
   }
 }

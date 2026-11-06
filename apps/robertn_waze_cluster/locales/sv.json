@@ -136,8 +136,7 @@
     "Display": "Visning",
     "Electric range": "Elektrisk räckvidd",
     "Oil and coolant": "Olja och kylvätska",
-    "Real speed": "Verklig hastighet",
-    "Real speed on the Display page": "Verklig hastighet på sidan Visning",
-    "Between the turn signals": "Mellan körriktningsvisarna"
+    "Between the turn signals": "Mellan körriktningsvisarna",
+    "Real speed on HUD": "Verklig hastighet på HUD"
   }
 }

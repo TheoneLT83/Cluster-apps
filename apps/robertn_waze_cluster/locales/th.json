@@ -136,8 +136,7 @@
     "Display": "การแสดงผล",
     "Electric range": "ระยะทางไฟฟ้า",
     "Oil and coolant": "น้ำมันและน้ำหล่อเย็น",
-    "Real speed": "ความเร็วจริง",
-    "Real speed on the Display page": "ความเร็วจริงในหน้าการแสดงผล",
-    "Between the turn signals": "ระหว่างไฟเลี้ยว"
+    "Between the turn signals": "ระหว่างไฟเลี้ยว",
+    "Real speed on HUD": "ความเร็วจริงบน HUD"
   }
 }

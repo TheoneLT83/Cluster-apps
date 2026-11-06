@@ -11,10 +11,11 @@
  *             Auto: its patch (Patch, Reinstall patch over another tool's, Remove patch), Android Auto's zoom and turn
  *             card, CarPlay's Wi-Fi, Restart head unit while a change waits for it or after a patch; the HUD map's
  *             size, brightness and place, with a picture of the HUD
- *   Display   what the HUD shows under the map: turn signals (Test left / Test right), the gear, eDrive power,
- *             electric range, oil and coolant, the real speed (with the setting realSpeed), with a picture of it
+ *   Display   what the HUD shows under the map: turn signals (Test left / Test right), the gear, and between the
+ *             turn signals none, the electric range with the eDrive power, or oil and coolant; with a picture of it
  *   Log       the app's log, and the saved logs for a phone on the car's hotspot
- *   Settings  the kit's settings sheet: Real speed on the Display page, the arrows' size, the colours, the layout
+ *   Settings  the kit's settings sheet: Real speed on HUD (left of BMW's own speed), the arrows' size, the colours, the
+ *             layout
  * Every word is in the HMI's display language (i18n.js), English where a language has none, with the glyphs of
  * fonts/ (tools/bake_fonts.py). Arabic, Hebrew and Thai are drawn in English: the kit draws no shaping or
  * right-to-left; their words show on the tile and the HMI's own screens.
@@ -28,7 +29,7 @@ const i18n = require('./i18n.js');
 const { WazeClusterControl, HUD_SIZE_STEPS, ZOOM_STEP } = require('./waze_cluster_control.js');
 const { LogsControl } = require('./logs_control.js');
 const path = require('path');
-const { HudOverlay, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN } = require('./hud_overlay.js');
+const { HudOverlay, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
 const { TurnSignals } = require('./turn_signals.js');
 const qrcodegen = require('./qrcodegen.js');
@@ -38,8 +39,8 @@ const W = 1600, H = 520;
 const PAGES = ['Maps', 'Display', 'Log'];
 /* The Display page's switches: the setting, its words. */
 const HUD_ITEMS = [['hudTurn', 'Turn signals'], ['hudGear', 'Gear']];
-/* What shows between the turn signals (the setting hudData), one at a time; speed: only with the setting realSpeed. */
-const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['temps', 'Oil and coolant'], ['speed', 'Real speed']];
+/* What shows between the turn signals (the setting hudData), one at a time. */
+const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['temps', 'Oil and coolant']];
 const LOG_LINES = 60;
 const HMI_CONTEXT = ['de.bmw.infotainment.hmi.hmicontext.HMIContext', 'HMI_CID'];
 /* The HUD overlay's state, by hud.state() (English keys of i18n.js). */
@@ -101,8 +102,7 @@ async function background(bg) {
     const turns = new TurnSignals();
     const hud = new HudOverlay({ log });
     const car = new Car(Object.assign({}, bg, { log }), ['gear', 'speed', 'rpm', 'temps']);
-    // the real speed only while its setting offers it
-    const dataChoice = () => { const c = settings.get('hudData'); return c === 'speed' && !settings.get('realSpeed') ? 'off' : c; };
+    const dataChoice = () => settings.get('hudData');
     const hv = new HvData({ signals: bg.signals, log, file: bg.dataDir && path.join(bg.dataDir, 'hv.json') });
     // the battery unit is read only while its power or the range is shown
     const hvWanted = () => { if (dataChoice() === 'ev') hv.start(); else hv.stop(); };
@@ -121,14 +121,14 @@ async function background(bg) {
         } else if (c === 'temps') {
             value(t('OIL'), real.oil, '°');
             value(t('COOLANT'), real.coolant, '°');
-        } else if (c === 'speed') {
-            value('km/h', real.speed, '');
         }
         return out;
     };
+    // the car's own speed (a mileage blocker leaves it alone), with the setting realSpeed
+    const speedNow = () => { const d = car.data(); return settings.get('realSpeed') && d && !d.demo && G.isNum(d.speed) ? Math.round(d.speed) : null; };
     const toHud = () => hud.update({
         turn: turns.state(), gear: gearNow(), map: mapNow(), arrowSize: settings.get('arrowSize'),
-        showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'), data: dataNow(false),
+        showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'), data: dataNow(false), speed: speedNow(),
     });
     car.onSample(() => { hv.feed(car.data().demo ? null : car.data()); toHud(); changed(); });
     hv.on('change', () => { toHud(); changed(); });
@@ -235,6 +235,11 @@ mgu.run({
                 const g = gearRect(m, settings.get('arrowSize')), gt = gearText(car.data()) || 'D';
                 cv.text(gt, x + (g.x + 2) * k, y + (g.y + g.h - 8) * k, 40 * k, gearNow() ? '#f2f5f8' : withAlpha('#f2f5f8', 0.35), { font: 'gear' });
             }
+            if (settings.get('realSpeed')) {
+                const sp = car.data() && !car.data().demo && G.isNum(car.data().speed) ? Math.round(car.data().speed) : null;
+                cv.text(sp === null ? '--' : String(sp), x + (SPEED_RECT.x + SPEED_RECT.w) * k, y + (SPEED_RECT.y + SPEED_RECT.h - 8) * k, 40 * k,
+                    sp === null ? withAlpha('#f2f5f8', 0.35) : '#f2f5f8', { font: 'bold', align: 'right' });
+            }
             const dr = dataRect(m, settings.get('arrowSize'));
             if (dr) drawData(cv, x + dr.x * k, y + dr.y * k, dr.w * k, dataNow(true), k);
             return h;
@@ -320,7 +325,7 @@ mgu.run({
             cv.fillRect(48, 214, 592, 1, withAlpha('#ffffff', 0.08));
             label(cv, th, t('Between the turn signals'), 48, 254);
             const now = settings.get('hudData');
-            HUD_DATA.filter(([v]) => v !== 'speed' || settings.get('realSpeed')).forEach(([v, text], i) =>
+            HUD_DATA.forEach(([v, text], i) =>
                 G.button(cv, th, 48 + (i % 2) * 300, 270 + Math.floor(i / 2) * 62, 288, 48, t(text), () => settings.set('hudData', v),
                     { primary: now === v, key: 'data-' + v }));
 

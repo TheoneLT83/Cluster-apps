@@ -136,8 +136,7 @@
     "Display": "表示",
     "Electric range": "電気航続距離",
     "Oil and coolant": "油温と水温",
-    "Real speed": "実速度",
-    "Real speed on the Display page": "表示ページに実速度",
-    "Between the turn signals": "ウインカーの間"
+    "Between the turn signals": "ウインカーの間",
+    "Real speed on HUD": "HUDに実速度"
   }
 }

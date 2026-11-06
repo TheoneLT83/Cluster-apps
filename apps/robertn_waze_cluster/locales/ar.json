@@ -136,8 +136,7 @@
     "Display": "العرض",
     "Electric range": "المدى الكهربائي",
     "Oil and coolant": "الزيت والتبريد",
-    "Real speed": "السرعة الحقيقية",
-    "Real speed on the Display page": "السرعة الحقيقية في صفحة العرض",
-    "Between the turn signals": "بين إشارتي الانعطاف"
+    "Between the turn signals": "بين إشارتي الانعطاف",
+    "Real speed on HUD": "السرعة الحقيقية على HUD"
   }
 }

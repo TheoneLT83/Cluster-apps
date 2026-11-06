@@ -136,8 +136,7 @@
     "Display": "Näyttö",
     "Electric range": "Sähköinen toimintamatka",
     "Oil and coolant": "Öljy ja jäähdytysneste",
-    "Real speed": "Todellinen nopeus",
-    "Real speed on the Display page": "Todellinen nopeus Näyttö-sivulla",
-    "Between the turn signals": "Suuntavilkkujen välissä"
+    "Between the turn signals": "Suuntavilkkujen välissä",
+    "Real speed on HUD": "Todellinen nopeus HUD:ssa"
   }
 }

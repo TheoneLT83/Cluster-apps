@@ -140,9 +140,8 @@ module.exports = [
    "Display": "العرض",
    "Electric range": "المدى الكهربائي",
    "Oil and coolant": "الزيت والتبريد",
-   "Real speed": "السرعة الحقيقية",
-   "Real speed on the Display page": "السرعة الحقيقية في صفحة العرض",
-   "Between the turn signals": "بين إشارتي الانعطاف"
+   "Between the turn signals": "بين إشارتي الانعطاف",
+   "Real speed on HUD": "السرعة الحقيقية على HUD"
   }
  },
  {
@@ -284,9 +283,8 @@ module.exports = [
    "Display": "Zobrazení",
    "Electric range": "Elektrický dojezd",
    "Oil and coolant": "Olej a chladicí kapalina",
-   "Real speed": "Skutečná rychlost",
-   "Real speed on the Display page": "Skutečná rychlost na stránce Zobrazení",
-   "Between the turn signals": "Mezi směrovkami"
+   "Between the turn signals": "Mezi směrovkami",
+   "Real speed on HUD": "Skutečná rychlost na HUD"
   }
  },
  {
@@ -428,9 +426,8 @@ module.exports = [
    "Display": "Visning",
    "Electric range": "Elektrisk rækkevidde",
    "Oil and coolant": "Olie og kølevæske",
-   "Real speed": "Reel hastighed",
-   "Real speed on the Display page": "Reel hastighed på siden Visning",
-   "Between the turn signals": "Mellem blinklysene"
+   "Between the turn signals": "Mellem blinklysene",
+   "Real speed on HUD": "Reel hastighed på HUD"
   }
  },
  {
@@ -572,9 +569,8 @@ module.exports = [
    "Display": "Anzeige",
    "Electric range": "Elektrische Reichweite",
    "Oil and coolant": "Öl und Kühlmittel",
-   "Real speed": "Echte Geschwindigkeit",
-   "Real speed on the Display page": "Echte Geschwindigkeit auf der Seite Anzeige",
-   "Between the turn signals": "Zwischen den Blinkern"
+   "Between the turn signals": "Zwischen den Blinkern",
+   "Real speed on HUD": "Echte Geschwindigkeit im HUD"
   }
  },
  {
@@ -716,9 +712,8 @@ module.exports = [
    "Display": "Οθόνη",
    "Electric range": "Ηλεκτρική αυτονομία",
    "Oil and coolant": "Λάδι και ψυκτικό",
-   "Real speed": "Πραγματική ταχύτητα",
-   "Real speed on the Display page": "Πραγματική ταχύτητα στη σελίδα Οθόνη",
-   "Between the turn signals": "Ανάμεσα στα φλας"
+   "Between the turn signals": "Ανάμεσα στα φλας",
+   "Real speed on HUD": "Πραγματική ταχύτητα στο HUD"
   }
  },
  {
@@ -860,9 +855,8 @@ module.exports = [
    "Display": "Pantalla",
    "Electric range": "Autonomía eléctrica",
    "Oil and coolant": "Aceite y refrigerante",
-   "Real speed": "Velocidad real",
-   "Real speed on the Display page": "Velocidad real en la página Pantalla",
-   "Between the turn signals": "Entre las direccionales"
+   "Between the turn signals": "Entre las direccionales",
+   "Real speed on HUD": "Velocidad real en el HUD"
   }
  },
  {
@@ -1004,9 +998,8 @@ module.exports = [
    "Display": "Pantalla",
    "Electric range": "Autonomía eléctrica",
    "Oil and coolant": "Aceite y refrigerante",
-   "Real speed": "Velocidad real",
-   "Real speed on the Display page": "Velocidad real en la página Pantalla",
-   "Between the turn signals": "Entre los intermitentes"
+   "Between the turn signals": "Entre los intermitentes",
+   "Real speed on HUD": "Velocidad real en el HUD"
   }
  },
  {
@@ -1148,9 +1141,8 @@ module.exports = [
    "Display": "Näyttö",
    "Electric range": "Sähköinen toimintamatka",
    "Oil and coolant": "Öljy ja jäähdytysneste",
-   "Real speed": "Todellinen nopeus",
-   "Real speed on the Display page": "Todellinen nopeus Näyttö-sivulla",
-   "Between the turn signals": "Suuntavilkkujen välissä"
+   "Between the turn signals": "Suuntavilkkujen välissä",
+   "Real speed on HUD": "Todellinen nopeus HUD:ssa"
   }
  },
  {
@@ -1292,9 +1284,8 @@ module.exports = [
    "Display": "Affichage",
    "Electric range": "Autonomie électrique",
    "Oil and coolant": "Huile et liquide de refroidissement",
-   "Real speed": "Vitesse réelle",
-   "Real speed on the Display page": "Vitesse réelle sur la page Affichage",
-   "Between the turn signals": "Entre les clignotants"
+   "Between the turn signals": "Entre les clignotants",
+   "Real speed on HUD": "Vitesse réelle sur l’affichage tête haute"
   }
  },
  {
@@ -1436,9 +1427,8 @@ module.exports = [
    "Display": "Affichage",
    "Electric range": "Autonomie électrique",
    "Oil and coolant": "Huile et liquide de refroidissement",
-   "Real speed": "Vitesse réelle",
-   "Real speed on the Display page": "Vitesse réelle sur la page Affichage",
-   "Between the turn signals": "Entre les clignotants"
+   "Between the turn signals": "Entre les clignotants",
+   "Real speed on HUD": "Vitesse réelle sur le HUD"
   }
  },
  {
@@ -1580,9 +1570,8 @@ module.exports = [
    "Display": "תצוגה",
    "Electric range": "טווח חשמלי",
    "Oil and coolant": "שמן ונוזל קירור",
-   "Real speed": "מהירות אמיתית",
-   "Real speed on the Display page": "מהירות אמיתית בעמוד תצוגה",
-   "Between the turn signals": "בין האיתותים"
+   "Between the turn signals": "בין האיתותים",
+   "Real speed on HUD": "מהירות אמיתית ב-HUD"
   }
  },
  {
@@ -1724,9 +1713,8 @@ module.exports = [
    "Display": "Kijelző",
    "Electric range": "Elektromos hatótáv",
    "Oil and coolant": "Olaj és hűtőfolyadék",
-   "Real speed": "Valódi sebesség",
-   "Real speed on the Display page": "Valódi sebesség a Kijelző oldalon",
-   "Between the turn signals": "Az irányjelzők között"
+   "Between the turn signals": "Az irányjelzők között",
+   "Real speed on HUD": "Valódi sebesség a HUD-on"
   }
  },
  {
@@ -1868,9 +1856,8 @@ module.exports = [
    "Display": "Tampilan",
    "Electric range": "Jarak tempuh listrik",
    "Oil and coolant": "Oli dan pendingin",
-   "Real speed": "Kecepatan sebenarnya",
-   "Real speed on the Display page": "Kecepatan sebenarnya di halaman Tampilan",
-   "Between the turn signals": "Di antara lampu sein"
+   "Between the turn signals": "Di antara lampu sein",
+   "Real speed on HUD": "Kecepatan sebenarnya di HUD"
   }
  },
  {
@@ -2012,9 +1999,8 @@ module.exports = [
    "Display": "Display",
    "Electric range": "Autonomia elettrica",
    "Oil and coolant": "Olio e refrigerante",
-   "Real speed": "Velocità reale",
-   "Real speed on the Display page": "Velocità reale nella pagina Display",
-   "Between the turn signals": "Tra gli indicatori"
+   "Between the turn signals": "Tra gli indicatori",
+   "Real speed on HUD": "Velocità reale nell’HUD"
   }
  },
  {
@@ -2156,9 +2142,8 @@ module.exports = [
    "Display": "表示",
    "Electric range": "電気航続距離",
    "Oil and coolant": "油温と水温",
-   "Real speed": "実速度",
-   "Real speed on the Display page": "表示ページに実速度",
-   "Between the turn signals": "ウインカーの間"
+   "Between the turn signals": "ウインカーの間",
+   "Real speed on HUD": "HUDに実速度"
   }
  },
  {
@@ -2300,9 +2285,8 @@ module.exports = [
    "Display": "표시",
    "Electric range": "전기 주행 가능 거리",
    "Oil and coolant": "오일과 냉각수",
-   "Real speed": "실제 속도",
-   "Real speed on the Display page": "표시 페이지에 실제 속도",
-   "Between the turn signals": "방향 지시등 사이"
+   "Between the turn signals": "방향 지시등 사이",
+   "Real speed on HUD": "HUD에 실제 속도"
   }
  },
  {
@@ -2444,9 +2428,8 @@ module.exports = [
    "Display": "Visning",
    "Electric range": "Elektrisk rekkevidde",
    "Oil and coolant": "Olje og kjølevæske",
-   "Real speed": "Faktisk hastighet",
-   "Real speed on the Display page": "Faktisk hastighet på Visning-siden",
-   "Between the turn signals": "Mellom blinklysene"
+   "Between the turn signals": "Mellom blinklysene",
+   "Real speed on HUD": "Faktisk hastighet på HUD"
   }
  },
  {
@@ -2590,9 +2573,8 @@ module.exports = [
    "Display": "Weergave",
    "Electric range": "Elektrisch bereik",
    "Oil and coolant": "Olie en koelvloeistof",
-   "Real speed": "Werkelijke snelheid",
-   "Real speed on the Display page": "Werkelijke snelheid op de pagina Weergave",
-   "Between the turn signals": "Tussen de richtingaanwijzers"
+   "Between the turn signals": "Tussen de richtingaanwijzers",
+   "Real speed on HUD": "Werkelijke snelheid op het HUD"
   }
  },
  {
@@ -2734,9 +2716,8 @@ module.exports = [
    "Display": "Wyświetlanie",
    "Electric range": "Zasięg elektryczny",
    "Oil and coolant": "Olej i płyn chłodzący",
-   "Real speed": "Rzeczywista prędkość",
-   "Real speed on the Display page": "Rzeczywista prędkość na stronie Wyświetlanie",
-   "Between the turn signals": "Między kierunkowskazami"
+   "Between the turn signals": "Między kierunkowskazami",
+   "Real speed on HUD": "Rzeczywista prędkość na HUD"
   }
  },
  {
@@ -2878,9 +2859,8 @@ module.exports = [
    "Display": "Exibição",
    "Electric range": "Autonomia elétrica",
    "Oil and coolant": "Óleo e arrefecimento",
-   "Real speed": "Velocidade real",
-   "Real speed on the Display page": "Velocidade real na página Exibição",
-   "Between the turn signals": "Entre as setas"
+   "Between the turn signals": "Entre as setas",
+   "Real speed on HUD": "Velocidade real no HUD"
   }
  },
  {
@@ -3022,9 +3002,8 @@ module.exports = [
    "Display": "Visualização",
    "Electric range": "Autonomia elétrica",
    "Oil and coolant": "Óleo e líquido de refrigeração",
-   "Real speed": "Velocidade real",
-   "Real speed on the Display page": "Velocidade real na página Visualização",
-   "Between the turn signals": "Entre os piscas"
+   "Between the turn signals": "Entre os piscas",
+   "Real speed on HUD": "Velocidade real no HUD"
   }
  },
  {
@@ -3166,9 +3145,8 @@ module.exports = [
    "Display": "Afișaj",
    "Electric range": "Autonomie electrică",
    "Oil and coolant": "Ulei și lichid de răcire",
-   "Real speed": "Viteză reală",
-   "Real speed on the Display page": "Viteză reală pe pagina Afișaj",
-   "Between the turn signals": "Între semnalizatoare"
+   "Between the turn signals": "Între semnalizatoare",
+   "Real speed on HUD": "Viteză reală pe HUD"
   }
  },
  {
@@ -3310,9 +3288,8 @@ module.exports = [
    "Display": "Дисплей",
    "Electric range": "Запас хода на электричестве",
    "Oil and coolant": "Масло и охлаждающая жидкость",
-   "Real speed": "Реальная скорость",
-   "Real speed on the Display page": "Реальная скорость на странице Дисплей",
-   "Between the turn signals": "Между указателями поворота"
+   "Between the turn signals": "Между указателями поворота",
+   "Real speed on HUD": "Реальная скорость на HUD"
   }
  },
  {
@@ -3454,9 +3431,8 @@ module.exports = [
    "Display": "Zobrazenie",
    "Electric range": "Elektrický dojazd",
    "Oil and coolant": "Olej a chladiaca kvapalina",
-   "Real speed": "Skutočná rýchlosť",
-   "Real speed on the Display page": "Skutočná rýchlosť na stránke Zobrazenie",
-   "Between the turn signals": "Medzi smerovkami"
+   "Between the turn signals": "Medzi smerovkami",
+   "Real speed on HUD": "Skutočná rýchlosť na HUD"
   }
  },
  {
@@ -3598,9 +3574,8 @@ module.exports = [
    "Display": "Prikaz",
    "Electric range": "Električni doseg",
    "Oil and coolant": "Olje in hladilna tekočina",
-   "Real speed": "Dejanska hitrost",
-   "Real speed on the Display page": "Dejanska hitrost na strani Prikaz",
-   "Between the turn signals": "Med smerniki"
+   "Between the turn signals": "Med smerniki",
+   "Real speed on HUD": "Dejanska hitrost na HUD"
   }
  },
  {
@@ -3742,9 +3717,8 @@ module.exports = [
    "Display": "Visning",
    "Electric range": "Elektrisk räckvidd",
    "Oil and coolant": "Olja och kylvätska",
-   "Real speed": "Verklig hastighet",
-   "Real speed on the Display page": "Verklig hastighet på sidan Visning",
-   "Between the turn signals": "Mellan körriktningsvisarna"
+   "Between the turn signals": "Mellan körriktningsvisarna",
+   "Real speed on HUD": "Verklig hastighet på HUD"
   }
  },
  {
@@ -3886,9 +3860,8 @@ module.exports = [
    "Display": "การแสดงผล",
    "Electric range": "ระยะทางไฟฟ้า",
    "Oil and coolant": "น้ำมันและน้ำหล่อเย็น",
-   "Real speed": "ความเร็วจริง",
-   "Real speed on the Display page": "ความเร็วจริงในหน้าการแสดงผล",
-   "Between the turn signals": "ระหว่างไฟเลี้ยว"
+   "Between the turn signals": "ระหว่างไฟเลี้ยว",
+   "Real speed on HUD": "ความเร็วจริงบน HUD"
   }
  },
  {
@@ -4030,9 +4003,8 @@ module.exports = [
    "Display": "Ekran",
    "Electric range": "Elektrikli menzil",
    "Oil and coolant": "Yağ ve soğutma sıvısı",
-   "Real speed": "Gerçek hız",
-   "Real speed on the Display page": "Ekran sayfasında gerçek hız",
-   "Between the turn signals": "Sinyallerin arasında"
+   "Between the turn signals": "Sinyallerin arasında",
+   "Real speed on HUD": "HUD’da gerçek hız"
   }
  },
  {
@@ -4174,9 +4146,8 @@ module.exports = [
    "Display": "Дисплей",
    "Electric range": "Запас ходу на електриці",
    "Oil and coolant": "Олива та охолоджувальна рідина",
-   "Real speed": "Реальна швидкість",
-   "Real speed on the Display page": "Реальна швидкість на сторінці Дисплей",
-   "Between the turn signals": "Між покажчиками повороту"
+   "Between the turn signals": "Між покажчиками повороту",
+   "Real speed on HUD": "Реальна швидкість на HUD"
   }
  },
  {
@@ -4318,9 +4289,8 @@ module.exports = [
    "Display": "Hiển thị",
    "Electric range": "Quãng đường điện",
    "Oil and coolant": "Dầu và nước làm mát",
-   "Real speed": "Tốc độ thực",
-   "Real speed on the Display page": "Tốc độ thực trên trang Hiển thị",
-   "Between the turn signals": "Giữa hai xi nhan"
+   "Between the turn signals": "Giữa hai xi nhan",
+   "Real speed on HUD": "Tốc độ thực trên HUD"
   }
  },
  {
@@ -4464,9 +4434,8 @@ module.exports = [
    "Display": "显示",
    "Electric range": "纯电续航",
    "Oil and coolant": "机油和冷却液",
-   "Real speed": "实际车速",
-   "Real speed on the Display page": "显示页面上的实际车速",
-   "Between the turn signals": "转向灯之间"
+   "Between the turn signals": "转向灯之间",
+   "Real speed on HUD": "抬头显示器上的实际车速"
   }
  },
  {
@@ -4610,9 +4579,8 @@ module.exports = [
    "Display": "顯示",
    "Electric range": "純電續航",
    "Oil and coolant": "機油與冷卻液",
-   "Real speed": "實際車速",
-   "Real speed on the Display page": "顯示頁面上的實際車速",
-   "Between the turn signals": "方向燈之間"
+   "Between the turn signals": "方向燈之間",
+   "Real speed on HUD": "抬頭顯示器上的實際車速"
   }
  }
 ];

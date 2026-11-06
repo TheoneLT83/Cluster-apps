@@ -51,17 +51,13 @@
     [
      "temps",
      "Oil and coolant"
-    ],
-    [
-     "speed",
-     "Real speed"
     ]
    ],
    "hidden": true
   },
   {
    "key": "realSpeed",
-   "label": "Real speed on the Display page",
+   "label": "Real speed on HUD",
    "type": "bool",
    "default": false
   },

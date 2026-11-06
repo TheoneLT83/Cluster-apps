@@ -1,7 +1,7 @@
 {
   "name": "robertn_waze_cluster",
   "version": "0.8.0",
-  "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear and one more reading on the HUD: electric range with eDrive power, oil and coolant, or the real speed",
+  "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range with eDrive power, or oil and coolant",
   "main": "javascript/app.js",
   "private": false,
   "author": "Robert Nisipeanu",

@@ -136,8 +136,7 @@
     "Display": "Affichage",
     "Electric range": "Autonomie électrique",
     "Oil and coolant": "Huile et liquide de refroidissement",
-    "Real speed": "Vitesse réelle",
-    "Real speed on the Display page": "Vitesse réelle sur la page Affichage",
-    "Between the turn signals": "Entre les clignotants"
+    "Between the turn signals": "Entre les clignotants",
+    "Real speed on HUD": "Vitesse réelle sur le HUD"
   }
 }

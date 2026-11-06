@@ -5,9 +5,11 @@
 - **HUD**: the turn arrows, the gear and one reading in one row under the map, BMW's own speed and limit sign left
   as they are: the left arrow right after BMW's speed, the gear beside it, the right arrow at the map's right edge,
   and between them the reading chosen: **Electric range** with the eDrive power (a slider with its kW, green while
-  regenerating), **Oil and coolant**, or **Real speed** (the car's own speed, for a car with a mileage blocker).
-- **Display** (was Info): **Turn signals** and **Gear** on or off, the reading **Between the turn signals** (None or
-  one of them), with a picture of the HUD; **Real speed on the Display page** in Settings offers Real speed.
+  regenerating) or **Oil and coolant**.
+- **Real speed on HUD** (Settings): the car's own speed left of BMW's speed reading, for a car whose mileage blocker
+  stops BMW's.
+- **Display** (was Info): **Turn signals** and **Gear** on or off, the reading **Between the turn signals** (None,
+  Electric range, Oil and coolant), with a picture of the HUD.
 - **Maps**: **Reinstall patch** while another tool's or an older app's patch is on carplay, and **Restart head unit**
   after a patch applied without one too (waze-on-cluster 0.9.3). **Hide BMW logo on cluster** names the switch that was
   Hide BMW's turn box.

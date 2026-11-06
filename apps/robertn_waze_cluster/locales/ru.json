@@ -136,8 +136,7 @@
     "Display": "Дисплей",
     "Electric range": "Запас хода на электричестве",
     "Oil and coolant": "Масло и охлаждающая жидкость",
-    "Real speed": "Реальная скорость",
-    "Real speed on the Display page": "Реальная скорость на странице Дисплей",
-    "Between the turn signals": "Между указателями поворота"
+    "Between the turn signals": "Между указателями поворота",
+    "Real speed on HUD": "Реальная скорость на HUD"
   }
 }

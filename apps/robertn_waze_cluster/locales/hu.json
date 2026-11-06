@@ -136,8 +136,7 @@
     "Display": "Kijelző",
     "Electric range": "Elektromos hatótáv",
     "Oil and coolant": "Olaj és hűtőfolyadék",
-    "Real speed": "Valódi sebesség",
-    "Real speed on the Display page": "Valódi sebesség a Kijelző oldalon",
-    "Between the turn signals": "Az irányjelzők között"
+    "Between the turn signals": "Az irányjelzők között",
+    "Real speed on HUD": "Valódi sebesség a HUD-on"
   }
 }
