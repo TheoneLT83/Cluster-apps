@@ -125,6 +125,20 @@
     "Electric range": "Запас хода на электричестве",
     "Oil and coolant": "Масло и охлаждающая жидкость",
     "Between the turn signals": "Между указателями поворота",
-    "Real speed on HUD": "Реальная скорость на HUD"
+    "Real speed on HUD": "Реальная скорость на HUD",
+    "POWER": "МОЩН.",
+    "TORQUE": "МОМЕНТ",
+    "Boost": "Давление наддува",
+    "Power and torque": "Мощность и крутящий момент",
+    "Engine speed": "Обороты двигателя",
+    "Power unit": "Единица мощности",
+    "Torque unit": "Единица крутящего момента",
+    "Boost unit": "Единица давления наддува",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

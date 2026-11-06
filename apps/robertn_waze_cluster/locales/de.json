@@ -125,6 +125,20 @@
     "Electric range": "Elektrische Reichweite",
     "Oil and coolant": "Öl und Kühlmittel",
     "Between the turn signals": "Zwischen den Blinkern",
-    "Real speed on HUD": "Echte Geschwindigkeit im HUD"
+    "Real speed on HUD": "Echte Geschwindigkeit im HUD",
+    "POWER": "LEISTUNG",
+    "TORQUE": "DREHM.",
+    "Boost": "Ladedruck",
+    "Power and torque": "Leistung und Drehmoment",
+    "Engine speed": "Motordrehzahl",
+    "Power unit": "Leistungseinheit",
+    "Torque unit": "Drehmomenteinheit",
+    "Boost unit": "Ladedruckeinheit",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

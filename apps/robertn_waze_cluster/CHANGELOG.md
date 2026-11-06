@@ -6,7 +6,11 @@
   right and the gear's readout are gone; the HUD overlay's state, where the gear comes from (the car or demo data) and
   the signal catalog's turn-signal fields are in the log, each when it changes.
 - **HUD**: the reading fills the space between the gear and the right arrow: the eDrive slider takes what the range
-  leaves, oil and coolant are spread across it; the gear's place is as narrow as D1 ... D9.
+  leaves, oil and coolant are spread across it; the gear is slimmer and next to the left arrow.
+- **Between the turn signals**, three more readings: **Boost** (the sport display's, a slider up to M Vitals' boost
+  limit, else 2 bar, with the value in the knob), **Power and torque** (the car's crankshaft torque and torque x rpm)
+  and **Engine speed** (a 0-7000 rpm slider with the rpm in the knob). **Power unit**, **Torque unit** and **Boost
+  unit** in Settings: Auto takes M Vitals', Dyno's or Live Data's where one is installed and readable, else kW, Nm, bar.
 
 ## 0.8.0
 

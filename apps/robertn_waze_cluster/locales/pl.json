@@ -125,6 +125,20 @@
     "Electric range": "Zasięg elektryczny",
     "Oil and coolant": "Olej i płyn chłodzący",
     "Between the turn signals": "Między kierunkowskazami",
-    "Real speed on HUD": "Rzeczywista prędkość na HUD"
+    "Real speed on HUD": "Rzeczywista prędkość na HUD",
+    "POWER": "MOC",
+    "TORQUE": "MOMENT",
+    "Boost": "Ciśnienie doładowania",
+    "Power and torque": "Moc i moment obrotowy",
+    "Engine speed": "Obroty silnika",
+    "Power unit": "Jednostka mocy",
+    "Torque unit": "Jednostka momentu",
+    "Boost unit": "Jednostka ciśnienia doładowania",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

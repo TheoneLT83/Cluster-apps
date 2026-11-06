@@ -125,6 +125,20 @@
     "Electric range": "ระยะทางไฟฟ้า",
     "Oil and coolant": "น้ำมันและน้ำหล่อเย็น",
     "Between the turn signals": "ระหว่างไฟเลี้ยว",
-    "Real speed on HUD": "ความเร็วจริงบน HUD"
+    "Real speed on HUD": "ความเร็วจริงบน HUD",
+    "POWER": "กำลัง",
+    "TORQUE": "แรงบิด",
+    "Boost": "แรงดันบูสต์",
+    "Power and torque": "กำลังและแรงบิด",
+    "Engine speed": "รอบเครื่องยนต์",
+    "Power unit": "หน่วยกำลัง",
+    "Torque unit": "หน่วยแรงบิด",
+    "Boost unit": "หน่วยแรงดันบูสต์",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

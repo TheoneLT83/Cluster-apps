@@ -125,6 +125,20 @@
     "Electric range": "Ηλεκτρική αυτονομία",
     "Oil and coolant": "Λάδι και ψυκτικό",
     "Between the turn signals": "Ανάμεσα στα φλας",
-    "Real speed on HUD": "Πραγματική ταχύτητα στο HUD"
+    "Real speed on HUD": "Πραγματική ταχύτητα στο HUD",
+    "POWER": "ΙΣΧΥΣ",
+    "TORQUE": "ΡΟΠΗ",
+    "Boost": "Πίεση υπερπλήρωσης",
+    "Power and torque": "Ισχύς και ροπή",
+    "Engine speed": "Στροφές κινητήρα",
+    "Power unit": "Μονάδα ισχύος",
+    "Torque unit": "Μονάδα ροπής",
+    "Boost unit": "Μονάδα πίεσης υπερπλήρωσης",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

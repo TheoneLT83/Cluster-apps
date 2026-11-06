@@ -125,6 +125,20 @@
     "Electric range": "Elektrický dojezd",
     "Oil and coolant": "Olej a chladicí kapalina",
     "Between the turn signals": "Mezi směrovkami",
-    "Real speed on HUD": "Skutečná rychlost na HUD"
+    "Real speed on HUD": "Skutečná rychlost na HUD",
+    "POWER": "VÝKON",
+    "TORQUE": "MOMENT",
+    "Boost": "Plnicí tlak",
+    "Power and torque": "Výkon a točivý moment",
+    "Engine speed": "Otáčky motoru",
+    "Power unit": "Jednotka výkonu",
+    "Torque unit": "Jednotka točivého momentu",
+    "Boost unit": "Jednotka plnicího tlaku",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

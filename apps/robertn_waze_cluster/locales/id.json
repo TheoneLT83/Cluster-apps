@@ -125,6 +125,20 @@
     "Electric range": "Jarak tempuh listrik",
     "Oil and coolant": "Oli dan pendingin",
     "Between the turn signals": "Di antara lampu sein",
-    "Real speed on HUD": "Kecepatan sebenarnya di HUD"
+    "Real speed on HUD": "Kecepatan sebenarnya di HUD",
+    "POWER": "TENAGA",
+    "TORQUE": "TORSI",
+    "Boost": "Tekanan turbo",
+    "Power and torque": "Tenaga dan torsi",
+    "Engine speed": "Putaran mesin",
+    "Power unit": "Satuan tenaga",
+    "Torque unit": "Satuan torsi",
+    "Boost unit": "Satuan tekanan turbo",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

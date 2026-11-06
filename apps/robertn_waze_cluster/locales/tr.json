@@ -125,6 +125,20 @@
     "Electric range": "Elektrikli menzil",
     "Oil and coolant": "Yağ ve soğutma sıvısı",
     "Between the turn signals": "Sinyallerin arasında",
-    "Real speed on HUD": "HUD’da gerçek hız"
+    "Real speed on HUD": "HUD’da gerçek hız",
+    "POWER": "GÜÇ",
+    "TORQUE": "TORK",
+    "Boost": "Turbo basıncı",
+    "Power and torque": "Güç ve tork",
+    "Engine speed": "Motor devri",
+    "Power unit": "Güç birimi",
+    "Torque unit": "Tork birimi",
+    "Boost unit": "Turbo basıncı birimi",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

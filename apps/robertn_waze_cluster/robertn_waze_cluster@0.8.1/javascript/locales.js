@@ -129,7 +129,21 @@ module.exports = [
    "Electric range": "المدى الكهربائي",
    "Oil and coolant": "الزيت والتبريد",
    "Between the turn signals": "بين إشارتي الانعطاف",
-   "Real speed on HUD": "السرعة الحقيقية على HUD"
+   "Real speed on HUD": "السرعة الحقيقية على HUD",
+   "POWER": "القدرة",
+   "TORQUE": "العزم",
+   "Boost": "الضغط",
+   "Power and torque": "القدرة والعزم",
+   "Engine speed": "سرعة المحرك",
+   "Power unit": "وحدة القدرة",
+   "Torque unit": "وحدة العزم",
+   "Boost unit": "وحدة الضغط",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -260,7 +274,21 @@ module.exports = [
    "Electric range": "Elektrický dojezd",
    "Oil and coolant": "Olej a chladicí kapalina",
    "Between the turn signals": "Mezi směrovkami",
-   "Real speed on HUD": "Skutečná rychlost na HUD"
+   "Real speed on HUD": "Skutečná rychlost na HUD",
+   "POWER": "VÝKON",
+   "TORQUE": "MOMENT",
+   "Boost": "Plnicí tlak",
+   "Power and torque": "Výkon a točivý moment",
+   "Engine speed": "Otáčky motoru",
+   "Power unit": "Jednotka výkonu",
+   "Torque unit": "Jednotka točivého momentu",
+   "Boost unit": "Jednotka plnicího tlaku",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -391,7 +419,21 @@ module.exports = [
    "Electric range": "Elektrisk rækkevidde",
    "Oil and coolant": "Olie og kølevæske",
    "Between the turn signals": "Mellem blinklysene",
-   "Real speed on HUD": "Reel hastighed på HUD"
+   "Real speed on HUD": "Reel hastighed på HUD",
+   "POWER": "EFFEKT",
+   "TORQUE": "MOMENT",
+   "Boost": "Ladetryk",
+   "Power and torque": "Effekt og moment",
+   "Engine speed": "Motoromdrejninger",
+   "Power unit": "Effektenhed",
+   "Torque unit": "Momentenhed",
+   "Boost unit": "Ladetryksenhed",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -522,7 +564,21 @@ module.exports = [
    "Electric range": "Elektrische Reichweite",
    "Oil and coolant": "Öl und Kühlmittel",
    "Between the turn signals": "Zwischen den Blinkern",
-   "Real speed on HUD": "Echte Geschwindigkeit im HUD"
+   "Real speed on HUD": "Echte Geschwindigkeit im HUD",
+   "POWER": "LEISTUNG",
+   "TORQUE": "DREHM.",
+   "Boost": "Ladedruck",
+   "Power and torque": "Leistung und Drehmoment",
+   "Engine speed": "Motordrehzahl",
+   "Power unit": "Leistungseinheit",
+   "Torque unit": "Drehmomenteinheit",
+   "Boost unit": "Ladedruckeinheit",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -653,7 +709,21 @@ module.exports = [
    "Electric range": "Ηλεκτρική αυτονομία",
    "Oil and coolant": "Λάδι και ψυκτικό",
    "Between the turn signals": "Ανάμεσα στα φλας",
-   "Real speed on HUD": "Πραγματική ταχύτητα στο HUD"
+   "Real speed on HUD": "Πραγματική ταχύτητα στο HUD",
+   "POWER": "ΙΣΧΥΣ",
+   "TORQUE": "ΡΟΠΗ",
+   "Boost": "Πίεση υπερπλήρωσης",
+   "Power and torque": "Ισχύς και ροπή",
+   "Engine speed": "Στροφές κινητήρα",
+   "Power unit": "Μονάδα ισχύος",
+   "Torque unit": "Μονάδα ροπής",
+   "Boost unit": "Μονάδα πίεσης υπερπλήρωσης",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -784,7 +854,21 @@ module.exports = [
    "Electric range": "Autonomía eléctrica",
    "Oil and coolant": "Aceite y refrigerante",
    "Between the turn signals": "Entre las direccionales",
-   "Real speed on HUD": "Velocidad real en el HUD"
+   "Real speed on HUD": "Velocidad real en el HUD",
+   "POWER": "POTENCIA",
+   "TORQUE": "TORQUE",
+   "Boost": "Presión del turbo",
+   "Power and torque": "Potencia y torque",
+   "Engine speed": "Revoluciones del motor",
+   "Power unit": "Unidad de potencia",
+   "Torque unit": "Unidad de torque",
+   "Boost unit": "Unidad de presión del turbo",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -915,7 +999,21 @@ module.exports = [
    "Electric range": "Autonomía eléctrica",
    "Oil and coolant": "Aceite y refrigerante",
    "Between the turn signals": "Entre los intermitentes",
-   "Real speed on HUD": "Velocidad real en el HUD"
+   "Real speed on HUD": "Velocidad real en el HUD",
+   "POWER": "POTENCIA",
+   "TORQUE": "PAR",
+   "Boost": "Presión del turbo",
+   "Power and torque": "Potencia y par",
+   "Engine speed": "Régimen del motor",
+   "Power unit": "Unidad de potencia",
+   "Torque unit": "Unidad de par",
+   "Boost unit": "Unidad de presión del turbo",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -1046,7 +1144,21 @@ module.exports = [
    "Electric range": "Sähköinen toimintamatka",
    "Oil and coolant": "Öljy ja jäähdytysneste",
    "Between the turn signals": "Suuntavilkkujen välissä",
-   "Real speed on HUD": "Todellinen nopeus HUD:ssa"
+   "Real speed on HUD": "Todellinen nopeus HUD:ssa",
+   "POWER": "TEHO",
+   "TORQUE": "VÄÄNTÖ",
+   "Boost": "Ahtopaine",
+   "Power and torque": "Teho ja vääntö",
+   "Engine speed": "Moottorin kierrosluku",
+   "Power unit": "Tehon yksikkö",
+   "Torque unit": "Väännön yksikkö",
+   "Boost unit": "Ahtopaineen yksikkö",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -1177,7 +1289,21 @@ module.exports = [
    "Electric range": "Autonomie électrique",
    "Oil and coolant": "Huile et liquide de refroidissement",
    "Between the turn signals": "Entre les clignotants",
-   "Real speed on HUD": "Vitesse réelle sur l’affichage tête haute"
+   "Real speed on HUD": "Vitesse réelle sur l’affichage tête haute",
+   "POWER": "PUISSANCE",
+   "TORQUE": "COUPLE",
+   "Boost": "Pression du turbo",
+   "Power and torque": "Puissance et couple",
+   "Engine speed": "Régime moteur",
+   "Power unit": "Unité de puissance",
+   "Torque unit": "Unité de couple",
+   "Boost unit": "Unité de pression du turbo",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -1308,7 +1434,21 @@ module.exports = [
    "Electric range": "Autonomie électrique",
    "Oil and coolant": "Huile et liquide de refroidissement",
    "Between the turn signals": "Entre les clignotants",
-   "Real speed on HUD": "Vitesse réelle sur le HUD"
+   "Real speed on HUD": "Vitesse réelle sur le HUD",
+   "POWER": "PUISSANCE",
+   "TORQUE": "COUPLE",
+   "Boost": "Pression du turbo",
+   "Power and torque": "Puissance et couple",
+   "Engine speed": "Régime moteur",
+   "Power unit": "Unité de puissance",
+   "Torque unit": "Unité de couple",
+   "Boost unit": "Unité de pression du turbo",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -1439,7 +1579,21 @@ module.exports = [
    "Electric range": "טווח חשמלי",
    "Oil and coolant": "שמן ונוזל קירור",
    "Between the turn signals": "בין האיתותים",
-   "Real speed on HUD": "מהירות אמיתית ב-HUD"
+   "Real speed on HUD": "מהירות אמיתית ב-HUD",
+   "POWER": "הספק",
+   "TORQUE": "מומנט",
+   "Boost": "לחץ טורבו",
+   "Power and torque": "הספק ומומנט",
+   "Engine speed": "סל״ד מנוע",
+   "Power unit": "יחידת הספק",
+   "Torque unit": "יחידת מומנט",
+   "Boost unit": "יחידת לחץ טורבו",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -1570,7 +1724,21 @@ module.exports = [
    "Electric range": "Elektromos hatótáv",
    "Oil and coolant": "Olaj és hűtőfolyadék",
    "Between the turn signals": "Az irányjelzők között",
-   "Real speed on HUD": "Valódi sebesség a HUD-on"
+   "Real speed on HUD": "Valódi sebesség a HUD-on",
+   "POWER": "TELJESÍTMÉNY",
+   "TORQUE": "NYOMATÉK",
+   "Boost": "Töltőnyomás",
+   "Power and torque": "Teljesítmény és nyomaték",
+   "Engine speed": "Motorfordulatszám",
+   "Power unit": "Teljesítmény mértékegysége",
+   "Torque unit": "Nyomaték mértékegysége",
+   "Boost unit": "Töltőnyomás mértékegysége",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -1701,7 +1869,21 @@ module.exports = [
    "Electric range": "Jarak tempuh listrik",
    "Oil and coolant": "Oli dan pendingin",
    "Between the turn signals": "Di antara lampu sein",
-   "Real speed on HUD": "Kecepatan sebenarnya di HUD"
+   "Real speed on HUD": "Kecepatan sebenarnya di HUD",
+   "POWER": "TENAGA",
+   "TORQUE": "TORSI",
+   "Boost": "Tekanan turbo",
+   "Power and torque": "Tenaga dan torsi",
+   "Engine speed": "Putaran mesin",
+   "Power unit": "Satuan tenaga",
+   "Torque unit": "Satuan torsi",
+   "Boost unit": "Satuan tekanan turbo",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -1832,7 +2014,21 @@ module.exports = [
    "Electric range": "Autonomia elettrica",
    "Oil and coolant": "Olio e refrigerante",
    "Between the turn signals": "Tra gli indicatori",
-   "Real speed on HUD": "Velocità reale nell’HUD"
+   "Real speed on HUD": "Velocità reale nell’HUD",
+   "POWER": "POTENZA",
+   "TORQUE": "COPPIA",
+   "Boost": "Pressione turbo",
+   "Power and torque": "Potenza e coppia",
+   "Engine speed": "Regime motore",
+   "Power unit": "Unità di potenza",
+   "Torque unit": "Unità di coppia",
+   "Boost unit": "Unità di pressione turbo",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -1963,7 +2159,21 @@ module.exports = [
    "Electric range": "電気航続距離",
    "Oil and coolant": "油温と水温",
    "Between the turn signals": "ウインカーの間",
-   "Real speed on HUD": "HUDに実速度"
+   "Real speed on HUD": "HUDに実速度",
+   "POWER": "出力",
+   "TORQUE": "トルク",
+   "Boost": "過給圧",
+   "Power and torque": "出力とトルク",
+   "Engine speed": "エンジン回転数",
+   "Power unit": "出力の単位",
+   "Torque unit": "トルクの単位",
+   "Boost unit": "過給圧の単位",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -2094,7 +2304,21 @@ module.exports = [
    "Electric range": "전기 주행 가능 거리",
    "Oil and coolant": "오일과 냉각수",
    "Between the turn signals": "방향 지시등 사이",
-   "Real speed on HUD": "HUD에 실제 속도"
+   "Real speed on HUD": "HUD에 실제 속도",
+   "POWER": "출력",
+   "TORQUE": "토크",
+   "Boost": "부스트",
+   "Power and torque": "출력과 토크",
+   "Engine speed": "엔진 회전수",
+   "Power unit": "출력 단위",
+   "Torque unit": "토크 단위",
+   "Boost unit": "부스트 단위",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -2225,7 +2449,21 @@ module.exports = [
    "Electric range": "Elektrisk rekkevidde",
    "Oil and coolant": "Olje og kjølevæske",
    "Between the turn signals": "Mellom blinklysene",
-   "Real speed on HUD": "Faktisk hastighet på HUD"
+   "Real speed on HUD": "Faktisk hastighet på HUD",
+   "POWER": "EFFEKT",
+   "TORQUE": "MOMENT",
+   "Boost": "Ladetrykk",
+   "Power and torque": "Effekt og dreiemoment",
+   "Engine speed": "Turtall",
+   "Power unit": "Effektenhet",
+   "Torque unit": "Dreiemomentenhet",
+   "Boost unit": "Ladetrykkenhet",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -2358,7 +2596,21 @@ module.exports = [
    "Electric range": "Elektrisch bereik",
    "Oil and coolant": "Olie en koelvloeistof",
    "Between the turn signals": "Tussen de richtingaanwijzers",
-   "Real speed on HUD": "Werkelijke snelheid op het HUD"
+   "Real speed on HUD": "Werkelijke snelheid op het HUD",
+   "POWER": "VERMOGEN",
+   "TORQUE": "KOPPEL",
+   "Boost": "Turbodruk",
+   "Power and torque": "Vermogen en koppel",
+   "Engine speed": "Toerental",
+   "Power unit": "Vermogenseenheid",
+   "Torque unit": "Koppeleenheid",
+   "Boost unit": "Turbodrukeenheid",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -2489,7 +2741,21 @@ module.exports = [
    "Electric range": "Zasięg elektryczny",
    "Oil and coolant": "Olej i płyn chłodzący",
    "Between the turn signals": "Między kierunkowskazami",
-   "Real speed on HUD": "Rzeczywista prędkość na HUD"
+   "Real speed on HUD": "Rzeczywista prędkość na HUD",
+   "POWER": "MOC",
+   "TORQUE": "MOMENT",
+   "Boost": "Ciśnienie doładowania",
+   "Power and torque": "Moc i moment obrotowy",
+   "Engine speed": "Obroty silnika",
+   "Power unit": "Jednostka mocy",
+   "Torque unit": "Jednostka momentu",
+   "Boost unit": "Jednostka ciśnienia doładowania",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -2620,7 +2886,21 @@ module.exports = [
    "Electric range": "Autonomia elétrica",
    "Oil and coolant": "Óleo e arrefecimento",
    "Between the turn signals": "Entre as setas",
-   "Real speed on HUD": "Velocidade real no HUD"
+   "Real speed on HUD": "Velocidade real no HUD",
+   "POWER": "POTÊNCIA",
+   "TORQUE": "TORQUE",
+   "Boost": "Pressão do turbo",
+   "Power and torque": "Potência e torque",
+   "Engine speed": "Rotação do motor",
+   "Power unit": "Unidade de potência",
+   "Torque unit": "Unidade de torque",
+   "Boost unit": "Unidade de pressão do turbo",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -2751,7 +3031,21 @@ module.exports = [
    "Electric range": "Autonomia elétrica",
    "Oil and coolant": "Óleo e líquido de refrigeração",
    "Between the turn signals": "Entre os piscas",
-   "Real speed on HUD": "Velocidade real no HUD"
+   "Real speed on HUD": "Velocidade real no HUD",
+   "POWER": "POTÊNCIA",
+   "TORQUE": "BINÁRIO",
+   "Boost": "Pressão do turbo",
+   "Power and torque": "Potência e binário",
+   "Engine speed": "Rotação do motor",
+   "Power unit": "Unidade de potência",
+   "Torque unit": "Unidade de binário",
+   "Boost unit": "Unidade de pressão do turbo",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -2882,7 +3176,21 @@ module.exports = [
    "Electric range": "Autonomie electrică",
    "Oil and coolant": "Ulei și lichid de răcire",
    "Between the turn signals": "Între semnalizatoare",
-   "Real speed on HUD": "Viteză reală pe HUD"
+   "Real speed on HUD": "Viteză reală pe HUD",
+   "POWER": "PUTERE",
+   "TORQUE": "CUPLU",
+   "Boost": "Presiune turbo",
+   "Power and torque": "Putere și cuplu",
+   "Engine speed": "Turația motorului",
+   "Power unit": "Unitate de putere",
+   "Torque unit": "Unitate de cuplu",
+   "Boost unit": "Unitate de presiune turbo",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -3013,7 +3321,21 @@ module.exports = [
    "Electric range": "Запас хода на электричестве",
    "Oil and coolant": "Масло и охлаждающая жидкость",
    "Between the turn signals": "Между указателями поворота",
-   "Real speed on HUD": "Реальная скорость на HUD"
+   "Real speed on HUD": "Реальная скорость на HUD",
+   "POWER": "МОЩН.",
+   "TORQUE": "МОМЕНТ",
+   "Boost": "Давление наддува",
+   "Power and torque": "Мощность и крутящий момент",
+   "Engine speed": "Обороты двигателя",
+   "Power unit": "Единица мощности",
+   "Torque unit": "Единица крутящего момента",
+   "Boost unit": "Единица давления наддува",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -3144,7 +3466,21 @@ module.exports = [
    "Electric range": "Elektrický dojazd",
    "Oil and coolant": "Olej a chladiaca kvapalina",
    "Between the turn signals": "Medzi smerovkami",
-   "Real speed on HUD": "Skutočná rýchlosť na HUD"
+   "Real speed on HUD": "Skutočná rýchlosť na HUD",
+   "POWER": "VÝKON",
+   "TORQUE": "MOMENT",
+   "Boost": "Plniaci tlak",
+   "Power and torque": "Výkon a krútiaci moment",
+   "Engine speed": "Otáčky motora",
+   "Power unit": "Jednotka výkonu",
+   "Torque unit": "Jednotka krútiaceho momentu",
+   "Boost unit": "Jednotka plniaceho tlaku",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -3275,7 +3611,21 @@ module.exports = [
    "Electric range": "Električni doseg",
    "Oil and coolant": "Olje in hladilna tekočina",
    "Between the turn signals": "Med smerniki",
-   "Real speed on HUD": "Dejanska hitrost na HUD"
+   "Real speed on HUD": "Dejanska hitrost na HUD",
+   "POWER": "MOČ",
+   "TORQUE": "NAVOR",
+   "Boost": "Polnilni tlak",
+   "Power and torque": "Moč in navor",
+   "Engine speed": "Vrtljaji motorja",
+   "Power unit": "Enota moči",
+   "Torque unit": "Enota navora",
+   "Boost unit": "Enota polnilnega tlaka",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -3406,7 +3756,21 @@ module.exports = [
    "Electric range": "Elektrisk räckvidd",
    "Oil and coolant": "Olja och kylvätska",
    "Between the turn signals": "Mellan körriktningsvisarna",
-   "Real speed on HUD": "Verklig hastighet på HUD"
+   "Real speed on HUD": "Verklig hastighet på HUD",
+   "POWER": "EFFEKT",
+   "TORQUE": "VRIDM.",
+   "Boost": "Laddtryck",
+   "Power and torque": "Effekt och vridmoment",
+   "Engine speed": "Motorvarvtal",
+   "Power unit": "Effektenhet",
+   "Torque unit": "Vridmomentsenhet",
+   "Boost unit": "Laddtrycksenhet",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -3537,7 +3901,21 @@ module.exports = [
    "Electric range": "ระยะทางไฟฟ้า",
    "Oil and coolant": "น้ำมันและน้ำหล่อเย็น",
    "Between the turn signals": "ระหว่างไฟเลี้ยว",
-   "Real speed on HUD": "ความเร็วจริงบน HUD"
+   "Real speed on HUD": "ความเร็วจริงบน HUD",
+   "POWER": "กำลัง",
+   "TORQUE": "แรงบิด",
+   "Boost": "แรงดันบูสต์",
+   "Power and torque": "กำลังและแรงบิด",
+   "Engine speed": "รอบเครื่องยนต์",
+   "Power unit": "หน่วยกำลัง",
+   "Torque unit": "หน่วยแรงบิด",
+   "Boost unit": "หน่วยแรงดันบูสต์",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -3668,7 +4046,21 @@ module.exports = [
    "Electric range": "Elektrikli menzil",
    "Oil and coolant": "Yağ ve soğutma sıvısı",
    "Between the turn signals": "Sinyallerin arasında",
-   "Real speed on HUD": "HUD’da gerçek hız"
+   "Real speed on HUD": "HUD’da gerçek hız",
+   "POWER": "GÜÇ",
+   "TORQUE": "TORK",
+   "Boost": "Turbo basıncı",
+   "Power and torque": "Güç ve tork",
+   "Engine speed": "Motor devri",
+   "Power unit": "Güç birimi",
+   "Torque unit": "Tork birimi",
+   "Boost unit": "Turbo basıncı birimi",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -3799,7 +4191,21 @@ module.exports = [
    "Electric range": "Запас ходу на електриці",
    "Oil and coolant": "Олива та охолоджувальна рідина",
    "Between the turn signals": "Між покажчиками повороту",
-   "Real speed on HUD": "Реальна швидкість на HUD"
+   "Real speed on HUD": "Реальна швидкість на HUD",
+   "POWER": "ПОТУЖН.",
+   "TORQUE": "МОМЕНТ",
+   "Boost": "Тиск наддуву",
+   "Power and torque": "Потужність і крутний момент",
+   "Engine speed": "Оберти двигуна",
+   "Power unit": "Одиниця потужності",
+   "Torque unit": "Одиниця крутного моменту",
+   "Boost unit": "Одиниця тиску наддуву",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -3930,7 +4336,21 @@ module.exports = [
    "Electric range": "Quãng đường điện",
    "Oil and coolant": "Dầu và nước làm mát",
    "Between the turn signals": "Giữa hai xi nhan",
-   "Real speed on HUD": "Tốc độ thực trên HUD"
+   "Real speed on HUD": "Tốc độ thực trên HUD",
+   "POWER": "CÔNG SUẤT",
+   "TORQUE": "MÔ-MEN",
+   "Boost": "Áp suất tăng áp",
+   "Power and torque": "Công suất và mô-men xoắn",
+   "Engine speed": "Tốc độ động cơ",
+   "Power unit": "Đơn vị công suất",
+   "Torque unit": "Đơn vị mô-men xoắn",
+   "Boost unit": "Đơn vị áp suất tăng áp",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -4063,7 +4483,21 @@ module.exports = [
    "Electric range": "纯电续航",
    "Oil and coolant": "机油和冷却液",
    "Between the turn signals": "转向灯之间",
-   "Real speed on HUD": "抬头显示器上的实际车速"
+   "Real speed on HUD": "抬头显示器上的实际车速",
+   "POWER": "功率",
+   "TORQUE": "扭矩",
+   "Boost": "增压",
+   "Power and torque": "功率和扭矩",
+   "Engine speed": "发动机转速",
+   "Power unit": "功率单位",
+   "Torque unit": "扭矩单位",
+   "Boost unit": "增压单位",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  },
  {
@@ -4196,7 +4630,21 @@ module.exports = [
    "Electric range": "純電續航",
    "Oil and coolant": "機油與冷卻液",
    "Between the turn signals": "方向燈之間",
-   "Real speed on HUD": "抬頭顯示器上的實際車速"
+   "Real speed on HUD": "抬頭顯示器上的實際車速",
+   "POWER": "功率",
+   "TORQUE": "扭力",
+   "Boost": "增壓",
+   "Power and torque": "功率與扭力",
+   "Engine speed": "引擎轉速",
+   "Power unit": "功率單位",
+   "Torque unit": "扭力單位",
+   "Boost unit": "增壓單位",
+   "kW": "kW",
+   "hp": "hp",
+   "Nm": "Nm",
+   "lb-ft": "lb-ft",
+   "bar": "bar",
+   "psi": "psi"
   }
  }
 ];

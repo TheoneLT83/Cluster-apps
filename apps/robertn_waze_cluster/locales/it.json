@@ -125,6 +125,20 @@
     "Electric range": "Autonomia elettrica",
     "Oil and coolant": "Olio e refrigerante",
     "Between the turn signals": "Tra gli indicatori",
-    "Real speed on HUD": "Velocità reale nell’HUD"
+    "Real speed on HUD": "Velocità reale nell’HUD",
+    "POWER": "POTENZA",
+    "TORQUE": "COPPIA",
+    "Boost": "Pressione turbo",
+    "Power and torque": "Potenza e coppia",
+    "Engine speed": "Regime motore",
+    "Power unit": "Unità di potenza",
+    "Torque unit": "Unità di coppia",
+    "Boost unit": "Unità di pressione turbo",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

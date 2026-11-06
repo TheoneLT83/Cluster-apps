@@ -125,6 +125,20 @@
     "Electric range": "電気航続距離",
     "Oil and coolant": "油温と水温",
     "Between the turn signals": "ウインカーの間",
-    "Real speed on HUD": "HUDに実速度"
+    "Real speed on HUD": "HUDに実速度",
+    "POWER": "出力",
+    "TORQUE": "トルク",
+    "Boost": "過給圧",
+    "Power and torque": "出力とトルク",
+    "Engine speed": "エンジン回転数",
+    "Power unit": "出力の単位",
+    "Torque unit": "トルクの単位",
+    "Boost unit": "過給圧の単位",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

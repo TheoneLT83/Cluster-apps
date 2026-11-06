@@ -127,6 +127,20 @@
     "Electric range": "纯电续航",
     "Oil and coolant": "机油和冷却液",
     "Between the turn signals": "转向灯之间",
-    "Real speed on HUD": "抬头显示器上的实际车速"
+    "Real speed on HUD": "抬头显示器上的实际车速",
+    "POWER": "功率",
+    "TORQUE": "扭矩",
+    "Boost": "增压",
+    "Power and torque": "功率和扭矩",
+    "Engine speed": "发动机转速",
+    "Power unit": "功率单位",
+    "Torque unit": "扭矩单位",
+    "Boost unit": "增压单位",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

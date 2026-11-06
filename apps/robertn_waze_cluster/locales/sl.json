@@ -125,6 +125,20 @@
     "Electric range": "Električni doseg",
     "Oil and coolant": "Olje in hladilna tekočina",
     "Between the turn signals": "Med smerniki",
-    "Real speed on HUD": "Dejanska hitrost na HUD"
+    "Real speed on HUD": "Dejanska hitrost na HUD",
+    "POWER": "MOČ",
+    "TORQUE": "NAVOR",
+    "Boost": "Polnilni tlak",
+    "Power and torque": "Moč in navor",
+    "Engine speed": "Vrtljaji motorja",
+    "Power unit": "Enota moči",
+    "Torque unit": "Enota navora",
+    "Boost unit": "Enota polnilnega tlaka",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

@@ -9,7 +9,8 @@
  *                        that turn signal is on
  *   gear                 beside the left arrow: P, R, N, D or D1 ... D9
  *   data                 between the gear and the right arrow, the one reading chosen: the electric range with the
- *                        eDrive power (a slider with its kW), or oil and coolant temperatures
+ *                        eDrive power, oil and coolant, boost, power and torque, or engine speed (sliders carry their
+ *                        value in the knob)
  *   right arrow          at the map's right edge
  *   real speed           left of BMW's own speed reading, in its row (SPEED_RECT, where the HUD has room for its
  *                        digits): the car's own speed, for a car whose mileage blocker stops BMW's
@@ -20,7 +21,7 @@
  *
  *   const hud = new HudOverlay({ log });
  *   hud.update({ turn: { left, right }, gear: 'D3', map: { x, y, w, h }, arrowSize: 'medium', showTurn: true, showGear: true,
- *                data: [{ kind: 'power', kw }, { kind: 'value', label: 'OIL', text: '92°' }, ...], speed: 87 });
+ *                data: [{ kind: 'slider', value, min, max, text }, { kind: 'value', label: 'OIL', text: '92°' }, ...], speed: 87 });
  *   hud.state()      -> 'off' | 'waiting' | 'shown' | 'disabled' | 'unavailable' (the HUD target, as the renderer says)
  *   hud.close();
  */
@@ -31,7 +32,7 @@ const HUD_W = 800, HUD_H = 480;
 const BLINK_MS = 400;
 const ARROW = { small: [40, 26], medium: [52, 34], large: [66, 44] };
 const ROW_H = 46;
-const GEAR_W = 44, GEAR_H = ROW_H;          // D1 ... D9 at 40 px are 40 wide
+const GEAR_W = 38, GEAR_H = ROW_H;          // D1 ... D9 at 36 px are 36 wide
 /* Where BMW's own speed reading (its km/h) ends on the HUD, from a photo of a G-series HUD: the left arrow
  * comes after it. */
 const SPEED_END = 356;
@@ -71,7 +72,7 @@ function arrowRect(map, side, aw, ah) {
 /* The gear, beside the left arrow. */
 function gearRect(map, arrowSize) {
     const [aw, ah] = ARROW[arrowSize] || ARROW.medium, a = arrowRect(map, 'left', aw, ah);
-    return { x: a.x + a.w + 6, y: rowRect(map).y, w: GEAR_W, h: GEAR_H };
+    return { x: a.x + a.w + 2, y: rowRect(map).y, w: GEAR_W, h: GEAR_H };
 }
 
 /* The data, between the gear and the right arrow; null when there is no room. */
@@ -81,41 +82,43 @@ function dataRect(map, arrowSize) {
     return w >= 40 ? { x, y: g.y, w, h: ROW_H } : null;
 }
 
-/* The data items across x, y (the row's top) to x + w, k the scale, filling it: the eDrive slider takes the width
- * the values leave (at least 64 px), the values end at the right edge; values alone are spread, the first at the
- * left edge, the last ending at the right one. What does not fit is left out from the end. An item:
- * { kind: 'power', kw } a slider centred on 0 (- regen and charging, green; + driving on the battery) with its kW,
- * or { kind: 'value', label, text } a small label over its value. */
+/* The data items across x, y (the row's top) to x + w, k the scale, filling it: a slider takes the width the values
+ * leave (at least 64 px), the values end at the right edge; values alone are spread, the first at the left edge, the
+ * last ending at the right one. What does not fit is left out from the end. An item:
+ * { kind: 'slider', value, min, max, text, green } a track from min to max (a mark at 0 when it is inside) and a knob
+ * at the value with text in it, green when green is set; or { kind: 'value', label, text } a small label over its
+ * value. */
 function drawData(cv, x, y, w, items, k) {
     k = k || 1;
     const GAP = 10 * k, MIN_TW = 64 * k;
     const width = (it) => Math.max(cv.textWidth(it.text, 24 * k, { font: 'bold' }), cv.textWidth(it.label, 13 * k, { font: 'bold' }));
-    const power = (items || []).filter((it) => it.kind === 'power')[0];
-    let vals = (items || []).filter((it) => it.kind !== 'power').map((it) => ({ it, w: width(it) }));
-    const need = () => vals.reduce((a, v) => a + v.w, 0) + GAP * (power ? vals.length : Math.max(0, vals.length - 1)) + (power ? MIN_TW : 0);
+    const slider = (items || []).filter((it) => it.kind === 'slider')[0];
+    let vals = (items || []).filter((it) => it.kind !== 'slider').map((it) => ({ it, w: width(it) }));
+    const need = () => vals.reduce((a, v) => a + v.w, 0) + GAP * (slider ? vals.length : Math.max(0, vals.length - 1)) + (slider ? MIN_TW : 0);
     while (vals.length && need() > w) vals.pop();
     const value = (v, at) => {
         cv.text(v.it.label, at, y + 14 * k, 13 * k, DIM, { font: 'bold' });
         cv.text(v.it.text, at, y + 40 * k, 24 * k, WHITE, { font: 'bold' });
     };
     const sum = vals.reduce((a, v) => a + v.w, 0);
-    if (power) {
+    if (slider) {
         if (MIN_TW > w) return;
-        const tw = w - sum - GAP * vals.length;
-        const mid = x + tw / 2, cy = y + ROW_H * k / 2, kw = typeof power.kw === 'number' ? power.kw : null;
+        const tw = w - sum - GAP * vals.length, cy = y + ROW_H * k / 2, v = typeof slider.value === 'number' ? slider.value : null;
+        const span = slider.max - slider.min, at0 = (val) => x + (Math.max(slider.min, Math.min(slider.max, val)) - slider.min) / span * tw;
         cv.fillRect(x, cy - 2 * k, tw, 4 * k, DIM);
-        cv.fillRect(mid - 1 * k, cy - 8 * k, 2 * k, 16 * k, DIM);
-        const f = kw === null ? 0 : Math.max(-1, Math.min(1, kw / MAX_KW));
-        const kx = Math.max(x, Math.min(x + tw - 36 * k, mid + f * (tw / 2) - 18 * k));
-        cv.roundRect(kx, cy - 12 * k, 36 * k, 24 * k, 12 * k, kw !== null && kw < 0 ? GREEN : WHITE);
-        cv.text(kw === null ? '-' : String(Math.round(Math.abs(kw))), kx + 18 * k, cy + 7 * k, 19 * k, '#000000', { font: 'bold', align: 'center' });
+        if (slider.min < 0 && slider.max > 0) cv.fillRect(at0(0) - 1 * k, cy - 8 * k, 2 * k, 16 * k, DIM);
+        const text = v === null ? '-' : String(slider.text);
+        const kw = Math.max(36 * k, cv.textWidth(text, 19 * k, { font: 'bold' }) + 14 * k);
+        const kx = Math.max(x, Math.min(x + tw - kw, (v === null ? at0(Math.max(slider.min, Math.min(0, slider.max))) : at0(v)) - kw / 2));
+        cv.roundRect(kx, cy - 12 * k, kw, 24 * k, 12 * k, slider.green ? GREEN : WHITE);
+        cv.text(text, kx + kw / 2, cy + 7 * k, 19 * k, '#000000', { font: 'bold', align: 'center' });
         let at = x + tw + GAP;
-        vals.forEach((v) => { value(v, at); at += v.w + GAP; });
+        vals.forEach((it) => { value(it, at); at += it.w + GAP; });
         return;
     }
     const free = vals.length > 1 ? (w - sum) / (vals.length - 1) : 0;
     let at = x;
-    vals.forEach((v) => { value(v, at); at += v.w + free; });
+    vals.forEach((it) => { value(it, at); at += it.w + free; });
 }
 
 /* An arrow pointing left (dir -1) or right (dir 1), filling w x h. */
@@ -130,7 +133,7 @@ function drawArrow(cv, w, h, dir, color) {
 function drawGear(cv, gear) {
     const g = String(gear || '');
     // one word, as BMW's own gear reading: P, R, N, D, D3; a longer one smaller to fit
-    const size = cv.textWidth(g, 40, { font: 'gear' }) <= GEAR_W - 2 ? 40 : 32;
+    const size = cv.textWidth(g, 36, { font: 'gear' }) <= GEAR_W - 2 ? 36 : 28;
     cv.text(g, 2, GEAR_H - 8, size, g.charAt(0) === 'R' ? AMBER : WHITE, { font: 'gear' });
 }
 

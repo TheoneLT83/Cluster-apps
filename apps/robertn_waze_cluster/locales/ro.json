@@ -125,6 +125,20 @@
     "Electric range": "Autonomie electrică",
     "Oil and coolant": "Ulei și lichid de răcire",
     "Between the turn signals": "Între semnalizatoare",
-    "Real speed on HUD": "Viteză reală pe HUD"
+    "Real speed on HUD": "Viteză reală pe HUD",
+    "POWER": "PUTERE",
+    "TORQUE": "CUPLU",
+    "Boost": "Presiune turbo",
+    "Power and torque": "Putere și cuplu",
+    "Engine speed": "Turația motorului",
+    "Power unit": "Unitate de putere",
+    "Torque unit": "Unitate de cuplu",
+    "Boost unit": "Unitate de presiune turbo",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

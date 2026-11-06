@@ -127,6 +127,20 @@
     "Electric range": "Elektrisch bereik",
     "Oil and coolant": "Olie en koelvloeistof",
     "Between the turn signals": "Tussen de richtingaanwijzers",
-    "Real speed on HUD": "Werkelijke snelheid op het HUD"
+    "Real speed on HUD": "Werkelijke snelheid op het HUD",
+    "POWER": "VERMOGEN",
+    "TORQUE": "KOPPEL",
+    "Boost": "Turbodruk",
+    "Power and torque": "Vermogen en koppel",
+    "Engine speed": "Toerental",
+    "Power unit": "Vermogenseenheid",
+    "Torque unit": "Koppeleenheid",
+    "Boost unit": "Turbodrukeenheid",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

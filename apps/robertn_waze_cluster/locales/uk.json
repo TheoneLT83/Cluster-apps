@@ -125,6 +125,20 @@
     "Electric range": "Запас ходу на електриці",
     "Oil and coolant": "Олива та охолоджувальна рідина",
     "Between the turn signals": "Між покажчиками повороту",
-    "Real speed on HUD": "Реальна швидкість на HUD"
+    "Real speed on HUD": "Реальна швидкість на HUD",
+    "POWER": "ПОТУЖН.",
+    "TORQUE": "МОМЕНТ",
+    "Boost": "Тиск наддуву",
+    "Power and torque": "Потужність і крутний момент",
+    "Engine speed": "Оберти двигуна",
+    "Power unit": "Одиниця потужності",
+    "Torque unit": "Одиниця крутного моменту",
+    "Boost unit": "Одиниця тиску наддуву",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

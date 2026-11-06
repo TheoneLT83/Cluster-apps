@@ -125,6 +125,20 @@
     "Electric range": "المدى الكهربائي",
     "Oil and coolant": "الزيت والتبريد",
     "Between the turn signals": "بين إشارتي الانعطاف",
-    "Real speed on HUD": "السرعة الحقيقية على HUD"
+    "Real speed on HUD": "السرعة الحقيقية على HUD",
+    "POWER": "القدرة",
+    "TORQUE": "العزم",
+    "Boost": "الضغط",
+    "Power and torque": "القدرة والعزم",
+    "Engine speed": "سرعة المحرك",
+    "Power unit": "وحدة القدرة",
+    "Torque unit": "وحدة العزم",
+    "Boost unit": "وحدة الضغط",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

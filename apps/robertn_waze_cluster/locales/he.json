@@ -125,6 +125,20 @@
     "Electric range": "טווח חשמלי",
     "Oil and coolant": "שמן ונוזל קירור",
     "Between the turn signals": "בין האיתותים",
-    "Real speed on HUD": "מהירות אמיתית ב-HUD"
+    "Real speed on HUD": "מהירות אמיתית ב-HUD",
+    "POWER": "הספק",
+    "TORQUE": "מומנט",
+    "Boost": "לחץ טורבו",
+    "Power and torque": "הספק ומומנט",
+    "Engine speed": "סל״ד מנוע",
+    "Power unit": "יחידת הספק",
+    "Torque unit": "יחידת מומנט",
+    "Boost unit": "יחידת לחץ טורבו",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

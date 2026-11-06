@@ -125,6 +125,20 @@
     "Electric range": "전기 주행 가능 거리",
     "Oil and coolant": "오일과 냉각수",
     "Between the turn signals": "방향 지시등 사이",
-    "Real speed on HUD": "HUD에 실제 속도"
+    "Real speed on HUD": "HUD에 실제 속도",
+    "POWER": "출력",
+    "TORQUE": "토크",
+    "Boost": "부스트",
+    "Power and torque": "출력과 토크",
+    "Engine speed": "엔진 회전수",
+    "Power unit": "출력 단위",
+    "Torque unit": "토크 단위",
+    "Boost unit": "부스트 단위",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

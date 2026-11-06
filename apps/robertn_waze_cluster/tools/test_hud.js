@@ -58,7 +58,7 @@ async function main() {
     eq(arrowRect(wide, 'left', aw, ah).x, SPEED_END, 'a wide map: the left arrow right after BMW\'s speed');
     eq(arrowRect(m, 'right', aw, ah), { x: 640 - aw - 4, y: rowRect(m).y + (ROW_H - ah) / 2, w: aw, h: ah }, 'the right one at the map\'s right edge');
     const g = gearRect(m, 'medium'), l = arrowRect(m, 'left', aw, ah), d = dataRect(m, 'medium'), r = arrowRect(m, 'right', aw, ah);
-    ok(g.x === l.x + l.w + 6 && g.y === rowRect(m).y && g.w === GEAR_W && g.h === GEAR_H, 'the gear beside the left arrow');
+    ok(g.x === l.x + l.w + 2 && g.y === rowRect(m).y && g.w === GEAR_W && g.h === GEAR_H, 'the gear beside the left arrow');
     ok(d && d.x > g.x + g.w && d.x + d.w < r.x, 'the data between the gear and the right arrow');
     const low = mapRect(60, [0, 400]);
     eq(rowRect(low).y, low.y + low.h - ROW_H - 4, 'no room under a map at the HUD\'s bottom: inside its bottom edge');
@@ -112,11 +112,11 @@ async function main() {
         await sleep(900);
         eq(sent.slice(after).length, 0, 'both off: blank, and nothing sent while they stay off');
 
-        hud.update(Object.assign({}, base, { gear: 'D3', data: [{ kind: 'power', kw: -12 }, { kind: 'value', label: 'OIL', text: '92°' }] }));
+        hud.update(Object.assign({}, base, { gear: 'D3', data: [{ kind: 'slider', value: -12, min: -60, max: 60, text: '12', green: true }, { kind: 'value', label: 'OIL', text: '92°' }] }));
         const dl = hud.layers.data, dr = dataRect(m, 'medium');
         ok(dl && dl.x === dr.x && dl.y === dr.y && await until(() => layer[dl.ref] === 'shown', 2000), 'the data: shown between the gear and the right arrow');
         const nd = sent.length;
-        hud.update(Object.assign({}, base, { gear: 'D3', data: [{ kind: 'power', kw: -12 }, { kind: 'value', label: 'OIL', text: '92°' }] }));
+        hud.update(Object.assign({}, base, { gear: 'D3', data: [{ kind: 'slider', value: -12, min: -60, max: 60, text: '12', green: true }, { kind: 'value', label: 'OIL', text: '92°' }] }));
         eq(sent.length, nd, 'the same data: nothing sent again');
 
         hud.update(Object.assign({}, base, { gear: 'D3', speed: 87 }));

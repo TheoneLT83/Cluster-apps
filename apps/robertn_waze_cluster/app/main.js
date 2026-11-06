@@ -12,7 +12,8 @@
  *             card, CarPlay's Wi-Fi, Restart head unit while a change waits for it or after a patch; the HUD map's
  *             size, brightness and place, with a picture of the HUD
  *   Display   what the HUD shows under the map: the turn signals and the gear on or off, and between the
- *             turn signals none, the electric range with the eDrive power, or oil and coolant; with a picture of it
+ *             turn signals none, the electric range with the eDrive power, oil and coolant, boost, power and torque
+ *             (torque x rpm, in M Vitals' units where it has them), or engine speed; with a picture of it
  *   Log       the app's log, and the saved logs for a phone on the car's hotspot
  *   Settings  the kit's settings sheet: Real speed on HUD (left of BMW's own speed), the arrows' size, the colours, the
  *             layout
@@ -31,6 +32,7 @@ const { LogsControl } = require('./logs_control.js');
 const path = require('path');
 const { HudOverlay, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
+const { Units } = require('./units.js');
 const { TurnSignals } = require('./turn_signals.js');
 const qrcodegen = require('./qrcodegen.js');
 
@@ -40,7 +42,9 @@ const PAGES = ['Maps', 'Display', 'Log'];
 /* The Display page's switches: the setting, its words. */
 const HUD_ITEMS = [['hudTurn', 'Turn signals'], ['hudGear', 'Gear']];
 /* What shows between the turn signals (the setting hudData), one at a time. */
-const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['temps', 'Oil and coolant']];
+const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['temps', 'Oil and coolant'], ['boost', 'Boost'], ['power', 'Power and torque'],
+    ['rpm', 'Engine speed']];
+const RPM_MAX = 7000;
 const LOG_LINES = 60;
 const HMI_CONTEXT = ['de.bmw.infotainment.hmi.hmicontext.HMIContext', 'HMI_CID'];
 /* The HUD overlay's state, by hud.state(), for the log. */
@@ -101,7 +105,14 @@ async function background(bg) {
     const logs = new LogsControl({ log });
     const turns = new TurnSignals();
     const hud = new HudOverlay({ log });
-    const car = new Car(Object.assign({}, bg, { log }), ['gear', 'speed', 'rpm', 'temps']);
+    // boost from the sport display (FES), as M Vitals reads it: bar, 0.01 a step, 255 no value
+    let boost = null;
+    const car = new Car(Object.assign({}, bg, { log }), ['gear', 'speed', 'rpm', 'temps', 'torque'], {
+        'de.bmw.infotainment.drivingexcitement.FES': {
+            statusSwitchDriveDynamicSport2: (v) => { const r = v && v.displayBoostPressure; boost = G.isNum(r) && r !== 255 ? r * 0.01 : null; },
+        },
+    });
+    const units = new Units({ settings, appRoot: bg.dataDir && path.dirname(bg.dataDir), log });
     const dataChoice = () => settings.get('hudData');
     const hv = new HvData({ signals: bg.signals, log, file: bg.dataDir && path.join(bg.dataDir, 'hv.json') });
     // the battery unit is read only while its power or the range is shown
@@ -115,9 +126,20 @@ async function background(bg) {
         const d = car.data(), real = d && !d.demo ? d : {}, out = [];
         const value = (label, v, unit) => { if (G.isNum(v) || preview) out.push({ kind: 'value', label, text: G.isNum(v) ? Math.round(v) + unit : '--' }); };
         const c = dataChoice();
+        const slider = (v, min, max, text, green) => { if (G.isNum(v) || preview) out.push({ kind: 'slider', value: G.isNum(v) ? v : null, min, max, text, green }); };
         if (c === 'ev') {
-            if (hv.power() !== null || preview) out.push({ kind: 'power', kw: hv.power() });
+            const kw = hv.power();
+            slider(kw, -60, 60, G.isNum(kw) ? Math.round(Math.abs(kw)) : '', G.isNum(kw) && kw < 0);
             value(t('EV'), hv.range(), ' km');
+        } else if (c === 'boost') {
+            const b = units.boost(G.isNum(boost) && !(d && d.demo) ? boost : NaN);
+            slider(b.value, 0, b.max, G.isNum(b.value) ? (b.unit === 'bar' ? b.value.toFixed(1) : Math.round(b.value)) + ' ' + b.unit : '');
+        } else if (c === 'power') {
+            const nm = real.torque, rpm = real.rpm, p = units.power(G.isNum(nm) && G.isNum(rpm) ? nm * rpm / 9549 : NaN), q = units.torque(G.isNum(nm) ? nm : NaN);
+            value(t('POWER'), p.value, ' ' + p.unit);
+            value(t('TORQUE'), q.value, ' ' + q.unit);
+        } else if (c === 'rpm') {
+            slider(real.rpm, 0, RPM_MAX, G.isNum(real.rpm) ? Math.round(real.rpm / 10) * 10 : '');
         } else if (c === 'temps') {
             value(t('OIL'), real.oil, '°');
             value(t('COOLANT'), real.coolant, '°');
@@ -340,7 +362,7 @@ mgu.run({
             label(cv, th, t('Between the turn signals'), 48, 254);
             const now = settings.get('hudData');
             HUD_DATA.forEach(([v, text], i) =>
-                G.button(cv, th, 48 + (i % 2) * 300, 270 + Math.floor(i / 2) * 62, 288, 48, t(text), () => settings.set('hudData', v),
+                G.button(cv, th, 48 + (i % 2) * 300, 268 + Math.floor(i / 2) * 60, 288, 48, t(text), () => settings.set('hudData', v),
                     { primary: now === v, key: 'data-' + v }));
 
             G.panel(cv, th, 684, 44, 892, 468, t('HUD'));

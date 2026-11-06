@@ -156,6 +156,13 @@
       "broadcasts": [
         "sendTasuResponse"
       ]
+    },
+    "de.bmw.infotainment.drivingexcitement.FES": {
+      "instances": "1",
+      "attributes": {
+        "statusActualValueTorque2": "rs",
+        "statusSwitchDriveDynamicSport2": "rs"
+      }
     }
   },
   "services": {

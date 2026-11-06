@@ -1,7 +1,7 @@
 {
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
-  "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range with eDrive power, or oil and coolant",
+  "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range, oil and coolant, boost, power and torque, or engine speed",
   "version": "0.8.1",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
@@ -35,6 +35,11 @@
         "sendTasuResponse"
       ],
       "_optional": "eDrive power and the electric range on the HUD (the battery unit)"
+    },
+    "de.bmw.infotainment.drivingexcitement.FES": {
+      "statusActualValueTorque2": "rs",
+      "statusSwitchDriveDynamicSport2": "rs",
+      "_optional": "boost, power and torque on the HUD"
     }
   },
   "screens": [
@@ -86,6 +91,18 @@
         [
           "temps",
           "Oil and coolant"
+        ],
+        [
+          "boost",
+          "Boost"
+        ],
+        [
+          "power",
+          "Power and torque"
+        ],
+        [
+          "rpm",
+          "Engine speed"
         ]
       ],
       "hidden": true
@@ -95,6 +112,81 @@
       "label": "Real speed on HUD",
       "type": "bool",
       "default": false
+    },
+    {
+      "key": "powerUnit",
+      "label": "Power unit",
+      "type": "choice",
+      "default": "auto",
+      "options": [
+        [
+          "auto",
+          "Auto"
+        ],
+        [
+          "kw",
+          "kW"
+        ],
+        [
+          "hp",
+          "hp"
+        ]
+      ],
+      "when": {
+        "hudData": [
+          "power"
+        ]
+      }
+    },
+    {
+      "key": "torqueUnit",
+      "label": "Torque unit",
+      "type": "choice",
+      "default": "auto",
+      "options": [
+        [
+          "auto",
+          "Auto"
+        ],
+        [
+          "nm",
+          "Nm"
+        ],
+        [
+          "lbft",
+          "lb-ft"
+        ]
+      ],
+      "when": {
+        "hudData": [
+          "power"
+        ]
+      }
+    },
+    {
+      "key": "pressUnit",
+      "label": "Boost unit",
+      "type": "choice",
+      "default": "auto",
+      "options": [
+        [
+          "auto",
+          "Auto"
+        ],
+        [
+          "bar",
+          "bar"
+        ],
+        [
+          "psi",
+          "psi"
+        ]
+      ],
+      "when": {
+        "hudData": [
+          "boost"
+        ]
+      }
     },
     {
       "key": "arrowSize",

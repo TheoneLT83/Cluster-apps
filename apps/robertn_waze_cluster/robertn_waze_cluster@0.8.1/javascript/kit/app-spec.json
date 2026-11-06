@@ -51,6 +51,18 @@
     [
      "temps",
      "Oil and coolant"
+    ],
+    [
+     "boost",
+     "Boost"
+    ],
+    [
+     "power",
+     "Power and torque"
+    ],
+    [
+     "rpm",
+     "Engine speed"
     ]
    ],
    "hidden": true
@@ -60,6 +72,81 @@
    "label": "Real speed on HUD",
    "type": "bool",
    "default": false
+  },
+  {
+   "key": "powerUnit",
+   "label": "Power unit",
+   "type": "choice",
+   "default": "auto",
+   "options": [
+    [
+     "auto",
+     "Auto"
+    ],
+    [
+     "kw",
+     "kW"
+    ],
+    [
+     "hp",
+     "hp"
+    ]
+   ],
+   "when": {
+    "hudData": [
+     "power"
+    ]
+   }
+  },
+  {
+   "key": "torqueUnit",
+   "label": "Torque unit",
+   "type": "choice",
+   "default": "auto",
+   "options": [
+    [
+     "auto",
+     "Auto"
+    ],
+    [
+     "nm",
+     "Nm"
+    ],
+    [
+     "lbft",
+     "lb-ft"
+    ]
+   ],
+   "when": {
+    "hudData": [
+     "power"
+    ]
+   }
+  },
+  {
+   "key": "pressUnit",
+   "label": "Boost unit",
+   "type": "choice",
+   "default": "auto",
+   "options": [
+    [
+     "auto",
+     "Auto"
+    ],
+    [
+     "bar",
+     "bar"
+    ],
+    [
+     "psi",
+     "psi"
+    ]
+   ],
+   "when": {
+    "hudData": [
+     "boost"
+    ]
+   }
   },
   {
    "key": "arrowSize",

@@ -125,6 +125,20 @@
     "Electric range": "Elektrisk rækkevidde",
     "Oil and coolant": "Olie og kølevæske",
     "Between the turn signals": "Mellem blinklysene",
-    "Real speed on HUD": "Reel hastighed på HUD"
+    "Real speed on HUD": "Reel hastighed på HUD",
+    "POWER": "EFFEKT",
+    "TORQUE": "MOMENT",
+    "Boost": "Ladetryk",
+    "Power and torque": "Effekt og moment",
+    "Engine speed": "Motoromdrejninger",
+    "Power unit": "Effektenhed",
+    "Torque unit": "Momentenhed",
+    "Boost unit": "Ladetryksenhed",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }

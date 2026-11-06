@@ -125,6 +125,20 @@
     "Electric range": "Quãng đường điện",
     "Oil and coolant": "Dầu và nước làm mát",
     "Between the turn signals": "Giữa hai xi nhan",
-    "Real speed on HUD": "Tốc độ thực trên HUD"
+    "Real speed on HUD": "Tốc độ thực trên HUD",
+    "POWER": "CÔNG SUẤT",
+    "TORQUE": "MÔ-MEN",
+    "Boost": "Áp suất tăng áp",
+    "Power and torque": "Công suất và mô-men xoắn",
+    "Engine speed": "Tốc độ động cơ",
+    "Power unit": "Đơn vị công suất",
+    "Torque unit": "Đơn vị mô-men xoắn",
+    "Boost unit": "Đơn vị áp suất tăng áp",
+    "kW": "kW",
+    "hp": "hp",
+    "Nm": "Nm",
+    "lb-ft": "lb-ft",
+    "bar": "bar",
+    "psi": "psi"
   }
 }
