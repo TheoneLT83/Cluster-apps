@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.2
+
+- **Displays on HUD** (Settings): off, nothing of this app shows on the HUD, and the cluster renderer gives the HUD
+  back to BMW's own layout a few seconds later (the HUD map stays under Maps' Show on).
+- The cluster renderer 0.4.2 (with waze-on-cluster 0.9.5) logs what BMW shows in the HUD's slots, so where a phone
+  call's notification goes while this app has the HUD can be read from the saved logs.
+
 ## 0.8.1
 
 - **HUD**: the map's edges fade out, 16 px each side, instead of a hard cut (waze-on-cluster 0.9.4 with cluster-render

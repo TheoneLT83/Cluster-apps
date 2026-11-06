@@ -143,7 +143,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "العرض على HUD"
   }
  },
  {
@@ -288,7 +289,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Zobrazení na HUD"
   }
  },
  {
@@ -433,7 +435,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Visninger på HUD"
   }
  },
  {
@@ -578,7 +581,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Anzeigen im HUD"
   }
  },
  {
@@ -723,7 +727,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Ενδείξεις στο HUD"
   }
  },
  {
@@ -868,7 +873,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Indicaciones en el HUD"
   }
  },
  {
@@ -1013,7 +1019,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Indicaciones en el HUD"
   }
  },
  {
@@ -1158,7 +1165,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Näytöt HUD:ssa"
   }
  },
  {
@@ -1303,7 +1311,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Affichages sur l’affichage tête haute"
   }
  },
  {
@@ -1448,7 +1457,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Affichages sur le HUD"
   }
  },
  {
@@ -1593,7 +1603,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "תצוגות ב-HUD"
   }
  },
  {
@@ -1738,7 +1749,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Kijelzések a HUD-on"
   }
  },
  {
@@ -1883,7 +1895,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Tampilan di HUD"
   }
  },
  {
@@ -2028,7 +2041,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Indicazioni nell’HUD"
   }
  },
  {
@@ -2173,7 +2187,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "HUDに表示"
   }
  },
  {
@@ -2318,7 +2333,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "HUD 표시"
   }
  },
  {
@@ -2463,7 +2479,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Visninger på HUD"
   }
  },
  {
@@ -2610,7 +2627,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Weergaven op het HUD"
   }
  },
  {
@@ -2755,7 +2773,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Wskazania na HUD"
   }
  },
  {
@@ -2900,7 +2919,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Exibições no HUD"
   }
  },
  {
@@ -3045,7 +3065,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Indicações no HUD"
   }
  },
  {
@@ -3190,7 +3211,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Afișări pe HUD"
   }
  },
  {
@@ -3335,7 +3357,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Индикация на HUD"
   }
  },
  {
@@ -3480,7 +3503,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Zobrazenia na HUD"
   }
  },
  {
@@ -3625,7 +3649,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Prikazi na HUD"
   }
  },
  {
@@ -3770,7 +3795,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Visningar på HUD"
   }
  },
  {
@@ -3915,7 +3941,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "การแสดงบน HUD"
   }
  },
  {
@@ -4060,7 +4087,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "HUD’da göstergeler"
   }
  },
  {
@@ -4205,7 +4233,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Індикація на HUD"
   }
  },
  {
@@ -4350,7 +4379,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "Hiển thị trên HUD"
   }
  },
  {
@@ -4497,7 +4527,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "抬头显示器上的显示"
   }
  },
  {
@@ -4644,7 +4675,8 @@ module.exports = [
    "Nm": "Nm",
    "lb-ft": "lb-ft",
    "bar": "bar",
-   "psi": "psi"
+   "psi": "psi",
+   "Displays on HUD": "抬頭顯示器上的顯示"
   }
  }
 ];

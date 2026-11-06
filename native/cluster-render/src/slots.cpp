@@ -866,6 +866,40 @@ void SlotManager::settle_loss(int i, Holder h, bool removal, const std::string &
         t.ladder = ladder;   /* the display's lock, not a contest for the slot */
 }
 
+/* Each change in the slots of a target that gives way to pop-ups (the HUD's: those with its slot's high byte, 0x3xx)
+ * is logged with its rows, so what the stock HMI shows there (a call, a pop-up) and where can be read from the log. */
+void SlotManager::log_watched(const std::map<uint64_t, std::vector<SlotInfo>> &rows)
+{
+    const auto same = [](const std::vector<SlotInfo> &a, const std::vector<SlotInfo> &b) {
+        if (a.size() != b.size())
+            return false;
+        for (size_t k = 0; k < a.size(); k++)
+            if (a[k].status != b[k].status || a[k].content != b[k].content || a[k].klass != b[k].klass ||
+                a[k].map_status != b[k].map_status)
+                return false;
+        return true;
+    };
+    for (const auto &r : rows) {
+        const auto spec = std::find_if(specs_.begin(), specs_.end(), [&](const TargetSpec &t) {
+            return !t.yield_slots.empty() && (t.slot >> 8) == (r.first >> 8);
+        });
+        if (spec == specs_.end())
+            continue;
+        auto old = slots_.find(r.first);
+        if (old != slots_.end() && same(old->second, r.second))
+            continue;
+        std::string text;
+        for (const SlotInfo &s : r.second) {
+            char b[96];
+            std::snprintf(b, sizeof b, "%s0x%llx class %u map %u status %u", text.empty() ? "" : ", ",
+                          (unsigned long long)s.content, s.klass, s.map_status, s.status);
+            text += b;
+        }
+        log_info("target %s: slot 0x%llx: %s", spec->name.c_str(), (unsigned long long)r.first,
+                 text.empty() ? "empty" : text.c_str());
+    }
+}
+
 void SlotManager::on_slots(const std::vector<SlotInfo> &slots, int64_t now_ms)
 {
     /* A slot named in the report is replaced by its rows there; one it
@@ -873,6 +907,7 @@ void SlotManager::on_slots(const std::vector<SlotInfo> &slots, int64_t now_ms)
     std::map<uint64_t, std::vector<SlotInfo>> rows;
     for (const SlotInfo &s : slots)
         rows[s.slot].push_back(s);
+    log_watched(rows);
     /* A hold whose slot comes from the table goes to the slot reported_slot
      * names, once the rows are in. */
     std::map<int, std::pair<uint64_t, std::string>> moves;

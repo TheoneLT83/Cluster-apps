@@ -15,7 +15,7 @@
  *             turn signals none, the electric range with the eDrive power, oil and coolant, boost, power and torque
  *             (torque x rpm, in M Vitals' units where it has them), or engine speed; with a picture of it
  *   Log       the app's log, and the saved logs for a phone on the car's hotspot
- *   Settings  the kit's settings sheet: Real speed on HUD (left of BMW's own speed), the arrows' size, the colours, the
+ *   Settings  the kit's settings sheet: Displays on HUD (off: nothing of this app on the HUD), Real speed on HUD (left of BMW's own speed), the arrows' size, the colours, the
  *             layout
  * Every word is in the HMI's display language (i18n.js), English where a language has none, with the glyphs of
  * fonts/ (tools/bake_fonts.py). Arabic, Hebrew and Thai are drawn in English: the kit draws no shaping or
@@ -116,7 +116,7 @@ async function background(bg) {
     const dataChoice = () => settings.get('hudData');
     const hv = new HvData({ signals: bg.signals, log, file: bg.dataDir && path.join(bg.dataDir, 'hv.json') });
     // the battery unit is read only while its power or the range is shown
-    const hvWanted = () => { if (dataChoice() === 'ev') hv.start(); else hv.stop(); };
+    const hvWanted = () => { if (settings.get('hudOn') !== false && dataChoice() === 'ev') hv.start(); else hv.stop(); };
     const mapNow = () => mapRect(ctl.hudWidth() || 0, ctl.hudOffset() || [0, 0]);
     // the HUD shows the car's gear only, never demo data
     const gearNow = () => { const d = car.data(); return d && !d.demo ? gearText(d) : null; };
@@ -148,10 +148,12 @@ async function background(bg) {
     };
     // the car's own speed (a mileage blocker leaves it alone), with the setting realSpeed
     const speedNow = () => { const d = car.data(); return settings.get('realSpeed') && d && !d.demo && G.isNum(d.speed) ? Math.round(d.speed) : null; };
-    const toHud = () => hud.update({
+    // Displays on HUD off: nothing of ours on the HUD, which the renderer then gives back to BMW's own layout
+    const toHud = () => (settings.get('hudOn') === false ? hud.update({ turn: {}, gear: null, map: mapNow(), showTurn: false, showGear: false,
+        data: [], speed: null }) : hud.update({
         turn: turns.state(), gear: gearNow(), map: mapNow(), arrowSize: settings.get('arrowSize'),
         showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'), data: dataNow(false), speed: speedNow(),
-    });
+    }));
     car.onSample(() => { hv.feed(car.data().demo ? null : car.data()); toHud(); changed(); });
     hv.on('change', () => { toHud(); changed(); });
     ctl.on('change', () => { toHud(); changed(); });

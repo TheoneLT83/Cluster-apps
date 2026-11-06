@@ -122,6 +122,9 @@ cluster is offered, and what differs is in "iDrive 8".
   pushed the pop-up from the HUD to the cluster. It is asked for again
   `<target>_yield_ms` (1500) after the pop-up goes, and an overlay-only
   target gives way to stock content parked behind it the same way.
+  Each change in that target's slots (the HUD's 0x3xx) is logged with its
+  rows (`target hud: slot 0x322: 0x1000251 class 512 map 1 status 2`), so
+  where other stock content (a call) shows can be read from the log.
 - **The HUD** (iDrive 7, `hud`): slot 0x323 only, the slot the HUD map of
   [eroobeeroo](https://github.com/eroobeeroo) was shown in on a G80 and a
   G05 (VERIFIED there), scene 0x01000400, class 0.

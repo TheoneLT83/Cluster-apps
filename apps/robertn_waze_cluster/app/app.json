@@ -2,7 +2,7 @@
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
   "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range, oil and coolant, boost, power and torque, or engine speed",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
   "memoryKB": 153600,
@@ -61,6 +61,12 @@
   ],
   "settings": [
     {
+      "key": "hudOn",
+      "label": "Displays on HUD",
+      "type": "bool",
+      "default": true
+    },
+    {
       "key": "hudTurn",
       "label": "Turn signals on the HUD",
       "type": "bool",
@@ -111,7 +117,10 @@
       "key": "realSpeed",
       "label": "Real speed on HUD",
       "type": "bool",
-      "default": false
+      "default": false,
+      "when": {
+        "hudOn": true
+      }
     },
     {
       "key": "powerUnit",
@@ -208,6 +217,7 @@
         ]
       ],
       "when": {
+        "hudOn": true,
         "hudTurn": true
       }
     },

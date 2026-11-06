@@ -339,6 +339,8 @@ public:
     void on_refused(uint64_t scene_id, Refusal r, const std::string &why, int64_t now_ms);
     void on_lost(uint64_t scene_id, const std::string &why, int64_t now_ms);
     void on_slots(const std::vector<SlotInfo> &slots, int64_t now_ms);
+    /* Logs each change in the slots of a target that gives way to pop-ups (on_slots). */
+    void log_watched(const std::map<uint64_t, std::vector<SlotInfo>> &rows);
 
     void tick(int64_t now_ms);
 
