@@ -8,7 +8,7 @@
     "description": "Affiche la carte CarPlay ou Android Auto sur le combiné d'instruments : un assistant root applique les correctifs réversibles carplay et aapd là où chacun est pris en charge, et la capture, active dès le démarrage, décode le flux H.264 de la carte et l'affiche via le rendu du combiné dès que le flux arrive"
   },
   "robertn_waze_cluster": {
-    "title": "Waze au combiné",
-    "description": "Affiche la carte Waze de CarPlay sur le combiné d'instruments : activez le correctif depuis l'interface du véhicule et la carte suit CarPlay"
+    "title": "Cluster functions",
+    "description": "La carte du téléphone dans le bloc d’instruments et sur l’affichage tête haute (CarPlay et Android Auto), avec la taille, la position et la luminosité de la carte, les clignotants et le rapport sur l’affichage tête haute"
   }
 }

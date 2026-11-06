@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140">
+  <defs>
+    <linearGradient id="bezel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5a6470"/><stop offset="1" stop-color="#1c2128"/>
+    </linearGradient>
+    <linearGradient id="face" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a2230"/><stop offset="1" stop-color="#06090e"/>
+    </linearGradient>
+    <linearGradient id="map" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f4a3a"/><stop offset="1" stop-color="#0f2a22"/>
+    </linearGradient>
+  </defs>
+  <!-- the cluster's hood -->
+  <path d="M8 98 Q8 34 70 30 Q132 34 132 98 Q132 112 118 112 L22 112 Q8 112 8 98 Z" fill="url(#bezel)"/>
+  <path d="M14 97 Q15 40 70 36 Q125 40 126 97 Q126 106 117 106 L23 106 Q14 106 14 97 Z" fill="url(#face)"/>
+  <!-- left dial: speed -->
+  <circle cx="38" cy="78" r="21" fill="none" stroke="#3a4552" stroke-width="5"/>
+  <path d="M23.2 92.8 A21 21 0 1 1 52.8 92.8" fill="none" stroke="#2f8cff" stroke-width="5" stroke-linecap="round" stroke-dasharray="70 200"/>
+  <line x1="38" y1="78" x2="26" y2="68" stroke="#ff3b30" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="38" cy="78" r="3.5" fill="#d8dee6"/>
+  <!-- right dial: rpm -->
+  <circle cx="102" cy="78" r="21" fill="none" stroke="#3a4552" stroke-width="5"/>
+  <path d="M87.2 92.8 A21 21 0 1 1 116.8 92.8" fill="none" stroke="#2f8cff" stroke-width="5" stroke-linecap="round" stroke-dasharray="45 200"/>
+  <path d="M116.8 92.8 A21 21 0 0 0 122 72" fill="none" stroke="#ff3b30" stroke-width="5" stroke-linecap="round"/>
+  <line x1="102" y1="78" x2="96" y2="64" stroke="#ff3b30" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="102" cy="78" r="3.5" fill="#d8dee6"/>
+  <!-- the centre: the map -->
+  <rect x="55" y="52" width="30" height="44" rx="5" fill="url(#map)" stroke="#4a5868" stroke-width="1.5"/>
+  <path d="M62 94 L66 74 L76 66 L74 54" fill="none" stroke="#7ee05a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M66 86 L62 92 L70 92 Z" fill="#ff4040"/>
+  <!-- turn signal arrows -->
+  <path d="M22 46 L32 39 L32 43 L40 43 L40 49 L32 49 L32 53 Z" fill="#25e05a"/>
+  <path d="M118 46 L108 39 L108 43 L100 43 L100 49 L108 49 L108 53 Z" fill="#25e05a"/>
+</svg>

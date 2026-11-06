@@ -39,7 +39,7 @@ a video pipeline:
 Install the app `robertn_waze_cluster` from the catalog of
 [idrive-apps](https://github.com/robertnisipeanu/idrive-apps)
 through the [mgu Store](https://github.com/robertnisipeanu/mgu-store). The
-app requires this tool (0.9.1); this tool requires `cluster-render` 0.4.0 and
+app requires this tool (0.9.2); this tool requires `cluster-render` 0.4.0 and
 `mgu-deploy` 0.7.11, the deploy tool version that runs activate and deactivate
 hooks and puts the tool's `recmgr` and `crashNames` names, `aapd` among
 them, on the lists. Requirements resolve across catalog sources.
@@ -349,6 +349,10 @@ cluster-render's `hud` target is slot 0x323 (its README.md "The HUD").
   app's **Move left**, **Move right**, **Move up** and **Move down** move it
   10 px a press and **Centre** puts it back. A move only changes the layer's
   place, so it shows at once.
+- **Brightness** (`hud_brightness_pct`): 10 % to 100 % (the default), the map
+  layer's opacity over the HUD's black, so only the map dims: BMW's own HUD
+  content keeps its brightness. The app's **Brightness** steps it by 10 %; it
+  shows at once.
 - **Made for a HUD.** At the standard size a frame is 135,600 B instead of
   783,360. On a HUD dark pixels are see-through: the corners are rounded
   (`hud_round_corners`, a twelfth of its height) and fade to black, and a
@@ -368,7 +372,7 @@ cluster-render's `hud` target is slot 0x323 (its README.md "The HUD").
   root, `cluster-render guard-reset` does.
 - Not with `target = panel`, which shares the HUD's scene id.
 - The settings (`cluster`, `hud`, `hud_width_pct`, `hud_offset_x`,
-  `hud_offset_y`) are saved by `patchd` in
+  `hud_offset_y`, `hud_brightness_pct`) are saved by `patchd` in
   `/var/opt/waze-on-cluster/map.state.conf` (`map_state_file`), which this
   tool reads over its configuration at each start, and the app changes the
   running render at once. They stay out of `waze-on-cluster.local.conf`,
@@ -376,7 +380,7 @@ cluster-render's `hud` target is slot 0x323 (its README.md "The HUD").
   finds there into the state file at its start and at an install. Control:
   `{"cmd":"hud","on":"1"}`, `{"cmd":"hud","hud_width_pct":"70"}`,
   `{"cmd":"hud","hud_x":"40","hud_y":"-20"}` (strings; an axis left out
-  stays).
+  stays), `{"cmd":"hud","hud_brightness_pct":"70"}`.
 
 From a shell, `waze-on-cluster -c <conf> run map|panel` (`sail` is an alias
 of `map`) sets the cluster target until the service restarts and prints the

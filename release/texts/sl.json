@@ -8,7 +8,7 @@
     "description": "Prikaže zemljevid CarPlay ali Android Auto na armaturni plošči: pomočnik s pravicami root uveljavi povratna popravka carplay in aapd, kjer je posamezni podprt, zajem, ki teče od zagona, pa dekodira H.264 zemljevida in ga izriše prek izrisa na armaturi, kadar tok teče"
   },
   "robertn_waze_cluster": {
-    "title": "Waze na armaturi",
-    "description": "Prikaže zemljevid Waze iz CarPlay na armaturni plošči: vklopite popravek v sistemu vozila in zemljevid sledi CarPlay"
+    "title": "Cluster functions",
+    "description": "Zemljevid telefona na instrumentni plošči in na HUD (CarPlay in Android Auto), z velikostjo, položajem in svetlostjo zemljevida na HUD ter smerniki in prestavo na HUD"
   }
 }

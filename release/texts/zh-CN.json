@@ -8,7 +8,7 @@
     "description": "在仪表盘上显示 CarPlay 或 Android Auto 地图：root 辅助程序在各自支持的情况下应用可还原的 carplay 和 aapd 补丁，开机即运行的采集程序解码地图的 H.264，并在有视频流时通过仪表盘渲染器绘制"
   },
   "robertn_waze_cluster": {
-    "title": "Waze 仪表盘显示",
-    "description": "将 CarPlay 的 Waze 地图显示在仪表盘上：在 HMI 中启用补丁，地图即跟随 CarPlay"
+    "title": "Cluster functions",
+    "description": "在仪表盘和抬头显示器上显示手机地图（CarPlay 和 Android Auto），可调抬头显示器地图的大小、位置和亮度，并在抬头显示器上显示转向灯和挡位"
   }
 }

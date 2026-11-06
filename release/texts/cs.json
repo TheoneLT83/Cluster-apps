@@ -8,7 +8,7 @@
     "description": "Zobrazuje mapu CarPlay nebo Android Auto na přístrojovém štítu: pomocník s právy root použije vratné opravy carplay a aapd tam, kde je každá podporována, a záznam běžící od spuštění dekóduje obraz H.264 mapy a kreslí jej přes renderer přístrojového štítu, kdykoli je datový proud aktivní"
   },
   "robertn_waze_cluster": {
-    "title": "Waze na přístrojovém štítu",
-    "description": "Přenese mapu Waze z CarPlay na přístrojový štít: zapněte opravu v HMI a mapa sleduje CarPlay"
+    "title": "Cluster functions",
+    "description": "Mapa z telefonu na přístrojovém štítu a na HUD (CarPlay a Android Auto) s velikostí, polohou a jasem mapy na HUD, se směrovými světly a převodovým stupněm na HUD"
   }
 }

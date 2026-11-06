@@ -8,7 +8,7 @@
     "description": "Mostra la mappa di CarPlay o Android Auto sul quadro strumenti: un helper root applica le patch reversibili carplay e aapd dove ciascuna è supportata, e l'acquisizione, attiva dall'avvio, decodifica il flusso H.264 della mappa e lo disegna tramite il renderer del quadro quando il flusso è attivo"
   },
   "robertn_waze_cluster": {
-    "title": "Waze sul quadro",
-    "description": "Porta la mappa Waze di CarPlay sul quadro strumenti: attiva la patch dal sistema dell'auto e la mappa segue CarPlay"
+    "title": "Cluster functions",
+    "description": "La mappa del telefono nel quadro strumenti e nell’HUD (CarPlay e Android Auto), con dimensione, posizione e luminosità della mappa nell’HUD, indicatori di direzione e marcia nell’HUD"
   }
 }

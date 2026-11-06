@@ -8,7 +8,7 @@
     "description": "Wyświetla mapę CarPlay lub Android Auto na zestawie wskaźników: pomocnik z uprawnieniami root stosuje odwracalne poprawki carplay i aapd tam, gdzie każda jest obsługiwana, a rejestracja działająca od uruchomienia dekoduje obraz H.264 mapy i rysuje go przez renderer zestawu wskaźników, gdy tylko płynie strumień"
   },
   "robertn_waze_cluster": {
-    "title": "Waze na zegarach",
-    "description": "Przenosi mapę Waze z CarPlay na zestaw wskaźników: włącz poprawkę w HMI, a mapa podąża za CarPlay"
+    "title": "Cluster functions",
+    "description": "Mapa z telefonu na zestawie wskaźników i na HUD (CarPlay i Android Auto), z rozmiarem, położeniem i jasnością mapy na HUD oraz kierunkowskazami i biegiem na HUD"
   }
 }

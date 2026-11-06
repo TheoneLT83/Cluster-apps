@@ -387,6 +387,38 @@ test('the HUD map size as a slider: 5 % steps from 30 to 85 %, Standard at the s
     assert.deepStrictEqual([c.hudSizeText(), c.hudSizeStep()], ['Size: —', null], 'nothing known while closed');
 });
 
+test('the HUD map brightness: 10 % a step from 10 to 100 %, the render at once, patchd saves it; none from a tool before it', async (render, patch) => {
+    render.hud = 1;
+    const c = control();
+    c.open();
+    await until('connected', () => c.connectedRender() && c.connectedPatch());
+    render.stream(true);
+    await until('on', () => c.renderStatus && c.canChangeHudSize());
+    assert.deepStrictEqual([c.hudBrightnessText(), c.canChangeHudBrightness(1), c.canChangeHudBrightness(-1)], ['Brightness: 100 %', false, true],
+        'full by default: no brighter');
+    c.stepHudBrightness(-1);
+    assert.strictEqual(c.hudBrightnessText(), 'Brightness: 90 %', 'shown at once');
+    await until('90 %', () => render.hudBrightness === 90 && c.renderStatus.hud_brightness_pct === 90);
+    for (let i = 0; i < 9; i++) c.stepHudBrightness(-1);
+    await until('down to 10 %', () => c.renderStatus.hud_brightness_pct === 10 && !c.canChangeHudBrightness(-1));
+    const sent = render.received.length;
+    c.stepHudBrightness(-1);
+    assert.strictEqual(render.received.length, sent, 'nothing sent below 10 %');
+    c.stepHudBrightness(1);
+    await until('saved by patchd, each step', () => patch.received.filter((m) => m.cmd === 'hud-brightness').map((m) => m.hud_brightness_pct).slice(-2).join() === '10,20');
+    render.hud = 0;
+    render.announce(render.state, render.reason);
+    await until('the HUD off: not changed', () => !c.canChangeHudBrightness(1) && !c.canChangeHudBrightness(-1));
+    c.close();
+    render.hudBrightness = null;
+    render.hud = 1;
+    const d = control();
+    d.open();
+    await until('a tool before it', () => d.renderStatus && d.canChangeHudSize());
+    assert.deepStrictEqual([d.hudBrightnessText(), d.canChangeHudBrightness(-1)], ['Brightness: —', false], 'a tool before it: unknown, not offered');
+    d.close();
+});
+
 test('an asked HUD size the render does not show: the render\'s own after a moment, at once on a render reconnect; ' +
     'the same step taken again', async (render, patch) => {
     render.hud = 1;

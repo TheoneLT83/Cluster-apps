@@ -2,16 +2,14 @@
 // Copyright (C) 2026 Robert Nisipeanu
 'use strict';
 /**
- * Offline check of the app's languages (src/i18n.js, locales/*.json and
- * what tools/gen_locales.js writes from them): every word the app shows
- * (the src/*.js t() literals, the words of the lists t() is given an
- * element of, the RHMI string ids' English) is a key, and every t() call
- * is one of those; every locale is one of the Store's languages with the
- * oap-sdk's text file names, and has a translation of every key with the
- * same {n} placeholders and no other; src/locales.js and the RHMI text
- * files are as the tool writes them, one for each HMI display language;
- * the HMI's display language picks the locale, English for any other; a
- * word a language lacks is its English; arguments are data.
+ * Offline check of the languages of the waze-on-cluster clients (src/i18n.js, locales/*.json and
+ * what tools/gen_locales.js writes from them): every word they show (the t() literals of
+ * src/waze_cluster_control.js and src/logs_control.js, the words of the lists t() is given an
+ * element of) is a key, and every t() call is one of those; every locale is one of the Store's
+ * languages with the oap-sdk's text file names, and has a translation of every key with the same
+ * {n} placeholders and no other; src/locales.js is as the tool writes it; every HMI display
+ * language has one locale or English; the HMI's display language picks the locale, English for
+ * any other; a word a language lacks is its English; arguments are data.
  *
  *   node tools/test_i18n.js
  */
@@ -21,7 +19,6 @@ const path = require('path');
 
 const HERE = path.join(__dirname, '..');
 const SRC = path.join(HERE, 'src');
-const TREE = path.join(HERE, fs.readdirSync(HERE).find((n) => /^robertn_waze_cluster@\d+\.\d+\.\d+$/.test(n)));
 const locales = require('./gen_locales.js');
 const i18n = require(path.join(SRC, 'i18n.js'));
 
@@ -35,10 +32,12 @@ const literal = /\bt\(\s*(['"])((?:\\.|(?!\1)[^\\])*)\1\s*[,)]/g;
 // t() given an element of a list: the list's words are keys
 const DYNAMIC = {
     'waze_cluster_control.js': ['t(RESTART_FAILED[r.code] || RESTART_FAILED.error)'],
-    'logs_control.js': ['t(ERRORS[s.error] || ERRORS.failed)']
+    'logs_control.js': ['t(ERRORS[s.error] || ERRORS.failed)'],
+    // (the match ends at the first ')': HUD_STATES[hud.state()] reads as its start)
+    'main.js': ['t(s._en.label)', 't(s._en.options[i])', 't(text)', 't(text)', 't(CATALOG_ERRORS[f.error] || CATALOG_ERRORS.unreadable)',
+        't(HUD_STATES[hud.state()', 't(p)']
 };
-const MODULES = JSON.parse(fs.readFileSync(path.join(HERE, 'mgu-app.json'), 'utf8')).modules
-    .filter((m) => !/locales\.js$|i18n\.js$|qrcodegen\.js$/.test(m));
+const MODULES = ['src/waze_cluster_control.js', 'src/logs_control.js', 'app/main.js'];
 MODULES.forEach((m) => {
     const name = path.basename(m);
     const s = fs.readFileSync(path.join(HERE, m), 'utf8');
@@ -51,10 +50,31 @@ MODULES.forEach((m) => {
 });
 Object.values(require(path.join(SRC, 'waze_cluster_control.js')).RESTART_FAILED).forEach((w) => used.add(w));
 Object.values(require(path.join(SRC, 'logs_control.js')).ERRORS).forEach((w) => used.add(w));
-Object.values(locales.RHMI_TEXTS).forEach((w) => used.add(w));
+// app/main.js's lists t() is given an element of (read from its source: it needs the kit to run)
+const MAIN = fs.readFileSync(path.join(HERE, 'app', 'main.js'), 'utf8');
+const list = (name) => {
+    const m = new RegExp(`const ${name} = (\\[[^\\]]*\\]|\\{[^}]*\\});`).exec(MAIN);
+    assert(m, `app/main.js: ${name}`);
+    const v = Function(`return ${m[1]};`)();
+    return Array.isArray(v) ? v : Object.values(v);
+};
+['PAGES', 'HUD_STATES', 'CATALOG_ERRORS'].forEach((n) => list(n).forEach((w) => used.add(w)));
+['Cluster', 'HUD', 'Cluster + HUD', 'Test left', 'Test right'].forEach((w) => { ok(MAIN.indexOf(`'${w}']`) >= 0, `app/main.js: ${w}`); used.add(w); });
+// the settings' labels and choices (translated at a language change), and the HMI's strings the kit writes
+const APP = JSON.parse(fs.readFileSync(path.join(HERE, 'app', 'app.json'), 'utf8'));
+APP.settings.forEach((s) => { used.add(s.label); (s.options || []).forEach((o) => used.add(o[1])); });
+APP.screens.forEach((sc) => (sc.buttons || []).forEach((b) => used.add(b[1])));
+used.add(APP.title);
 ok(used.size > 40, `the app's words (${used.size})`);
-['Status: {0}', 'Patched', 'Restart: {0}', 'Save logs', 'Waze on cluster', 'the head unit stayed on', 'Not enough space', 'HUD map: {0}', 'Move left']
+['Status: {0}', 'Patched', 'Restart: {0}', 'the head unit stayed on', 'Not enough space', 'HUD map: {0}', 'Brightness: {0}', 'Maps',
+    'Turn signals on the HUD', 'Cluster functions', 'Settings', 'nothing to show']
     .forEach((w) => ok(used.has(w), `"${w}" is a key`));
+
+// WOC_I18N_WORDS=1: print the words and stop (for translating them)
+if (process.env.WOC_I18N_WORDS) {
+    console.log(JSON.stringify(Array.from(used)));
+    process.exit(0);
+}
 
 /* ---- each locale ---- */
 // the oap-sdk's text file of each HMI display language (CommonTypesConverters LANGUAGE_SOMEIP_TO_TS_MAP)
@@ -76,9 +96,6 @@ const all = locales.read();
 eq(all.map((l) => l.code).sort(), CODES.slice().sort(), 'the Store\'s languages');
 eq(fs.readFileSync(locales.OUT, 'utf8'), locales.source(), 'src/locales.js as tools/gen_locales.js writes it');
 eq(i18n.codes(), all.map((l) => l.code), 'every locale in the app');
-const TEXTS = path.join(TREE, 'rhmiData', 'variantGroups', 'Common', 'texts');
-const readText = (name) => JSON.parse(fs.readFileSync(path.join(TEXTS, `${name}.json`), 'utf8'));
-const generated = locales.texts();
 const untranslated = [];
 all.forEach((l) => {
     const n = `${l.code}.json`;
@@ -96,16 +113,24 @@ all.forEach((l) => {
     if (missing.length) {
         untranslated.push(`${n}: ${missing.length} of ${used.size} words without a translation`);
     }
-    l.rhmiTexts.forEach((name) => eq(readText(name), generated[`${name}.json`], `${name}.json: as tools/gen_locales.js writes it`));
 });
-['en_GB', 'en_US'].forEach((name) => eq(readText(name), locales.RHMI_TEXTS, `${name}.json: English`));
-eq(JSON.parse(fs.readFileSync(path.join(TREE, 'rhmiData', 'application.json'), 'utf8')).application.defaultLanguage, 'en_GB',
-    'application.json: English by default');
 // every HMI display language: English or one locale's, with its text file
 const covered = ['ENGLISCH__UK', 'ENGLISCH__US'].concat(...all.map((l) => l.hmiLanguages));
 eq(covered.slice().sort(), Object.keys(SDK_TEXTS).sort(), 'every HMI display language, once');
-eq(fs.readdirSync(TEXTS).sort(), Object.keys(SDK_TEXTS).map((h) => `${SDK_TEXTS[h]}.json`).sort(),
-    'a text file for each HMI display language, no other');
+
+/* ---- the glyphs: every character a drawn language's words have, in the atlas that draws it (app/main.js useFonts) ---- */
+const ATLAS = { vi: 'vietnamese', el: 'greek', ru: 'cyrillic', uk: 'cyrillic', 'zh-CN': 'cjk-sc', 'zh-TW': 'cjk-tc', ja: 'japanese', ko: 'korean' };
+const DRAWN_ENGLISH = ['ar', 'he', 'th'];
+const glyphs = {};
+const atlas = (fam) => glyphs[fam] || (glyphs[fam] = JSON.parse(fs.readFileSync(path.join(HERE, 'fonts', `woc-${fam}.json`), 'utf8')).sizes);
+all.filter((l) => DRAWN_ENGLISH.indexOf(l.code) < 0).forEach((l) => {
+    const text = Object.values(l.words).join('') + Object.values(l.words).map((w) => w.toUpperCase()).join('');
+    ['', '-bold'].forEach((weight) => atlas((ATLAS[l.code] || 'latin') + weight).forEach((size) => {
+        const missing = Array.from(new Set(Array.from(text))).filter((ch) => ch.codePointAt(0) >= 32 && !size.glyphs[ch.codePointAt(0)]);
+        eq(missing, [], `${l.code}: every character in woc-${ATLAS[l.code] || 'latin'}${weight} at ${size.size} px (tools/bake_fonts.py)`);
+    }));
+});
+ok(MAIN.indexOf(`const DRAWN_ENGLISH = ${JSON.stringify(DRAWN_ENGLISH).replace(/"/g, "'").replace(/,/g, ', ')};`) >= 0, 'app/main.js draws ar, he and th in English');
 
 /* ---- the display language ---- */
 const LIVE = require(path.join(SRC, 'locales.js'));

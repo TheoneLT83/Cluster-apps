@@ -1,193 +1,86 @@
-# robertn_waze_cluster
+# robertn_waze_cluster: Cluster functions
 
-The HMI app for [waze-on-cluster](../../native/waze-on-cluster), which shows
-the CarPlay cluster map (Waze, Apple Maps or Google Maps), or Android Auto's,
-on the instrument cluster of an iDrive 7 (MGU) head unit. Everything is done from the HMI; no
-shell is needed.
+The iDrive app for [waze-on-cluster](../../native/waze-on-cluster), which shows the phone's map (CarPlay: Waze,
+Apple Maps or Google Maps; Android Auto) on the instrument cluster and the HUD of an iDrive 7 (MGU) head unit, and
+for the HUD's turn signals and gear. Its screens are drawn by the Store's renderer (mgu-render) with the
+[idrive7-apps](https://github.com/TheoneLT83/idrive7-apps) kit (`../../kit`), in that kit's look: the header's
+tabs, the settings sheet, the colour themes. Everything is done from the HMI; no shell is needed.
 
-Install it from the catalog of
-[idrive-apps](https://github.com/robertnisipeanu/idrive-apps)
-through the [mgu Store](https://github.com/robertnisipeanu/mgu-store). It requires
-waze-on-cluster 0.9.1, which brings the cluster renderer and writes the
-CarPlay patch, and the Android Auto patch where the car supports it, as it
-installs; one head-unit start activates them. After that
-the map is on the cluster whenever CarPlay streams it, whether or not this
-app is open.
+Install it from this repository's catalog through the [mgu Store](https://github.com/robertnisipeanu/mgu-store).
+It requires waze-on-cluster 0.9.2, which brings the cluster renderer and writes the CarPlay patch, and the Android
+Auto patch where the car supports it, as it installs (one head-unit start activates them), and the Store's
+renderer `mgu-render` 0.6.17, which every car with the Store has: the Store updates it first where it is older, and
+the controller gate `mgu-inputgate` 1.0.0, loaded into the HMI at the next start, which gives the app's screen the
+iDrive controller (the tabs, buttons and settings sheet with the knob). Both come from mgu-store; the controller gate
+of idrive7-apps, where installed, is the same and counts. Nothing else of idrive7-apps is needed. After that the map is on the cluster
+whenever the phone streams it, whether or not this app is open.
 
-Set **Instrument cluster > Central display area** to **Map view**: the Waze
-map replaces the stock map while CarPlay's cluster stream shows a map, and
-the stock map is back when the stream ends or shows none. Until a navigation
-app draws on the cluster (in Waze or Google Maps, once a route starts), the
-stock map stays and the page shows `Cluster map: Waiting for the phone's map`.
-**Off** works too, with an empty centre instead of the stock map. With
-Route preview or Assisted Driving View the cluster's own content takes the
-centre. After changing the setting, CarPlay may need reconnecting before
-the map returns: the change can freeze the phone's cluster stream, and the
-page then shows `Cluster map: Frozen` while the stock map (in Off, an
-empty centre) shows.
+Set **Instrument cluster > Central display area** to **Map view**: the phone's map replaces the stock map while
+its cluster stream shows a map (waze-on-cluster's README has the details).
 
-To remove, remove the app in the Store, then the Waze tool, which reverts
-the patch.
+To remove, remove the app in the Store, then the Waze tool, which reverts the patch.
 
-## Languages
+## Pages
 
-The app is in the head unit's display language, every one the iDrive 7 HMI
-offers: English (UK, US), German, Dutch (also Flemish), Danish, Swedish,
-Norwegian, Finnish, Polish, Czech, Slovak, Slovenian, Hungarian, Romanian,
-French (France, Canada), Italian, Turkish, Spanish (Spain, Latin America),
-Portuguese (Portugal, Brazil), Greek, Russian, Ukrainian, Indonesian,
-Vietnamese, Japanese, Korean, Simplified Chinese (also Cantonese
-simplified), Traditional Chinese (also Cantonese traditional), Arabic,
-Hebrew and Thai. A word a language has no translation for is English, as
-is every language the HMI reports that the app does not know. A change of
-the display language shows at once. Values from the tools (reasons,
-addresses, numbers, file names, the cluster map's frame rate) are shown as
-they are; CarPlay and Android Auto are names.
-
-A language is one file, `locales/<code>.json`: the HMI's languages it is
-for (`CommonTypes.Language`), its RHMI text files (named as the oap-sdk
-names those languages) and its words, each keyed by the English (`{0}`,
-`{1}` stand for the values):
-
-```json
-{ "hmiLanguages": ["DEUTSCH"], "rhmiTexts": ["de_DE"],
-  "words": { "Status: {0}": "Status: {0}", "Save logs": "Logs speichern" } }
-```
-
-`node tools/build.js` writes them into the app (`src/locales.js`) and into
-the RHMI text files, which hold the tile's name and the Logs page's title.
-`node tools/test_i18n.js` checks that every language has every word with
-the same `{n}`, and every HMI language its text file.
-
-## Where the map shows
-
-**Show on** in General chooses: **Cluster** (the default), **HUD
-(experimental)** or **Cluster and HUD (experimental)**; Remove patch turns
-the map off. HUD support was contributed by [eroobeeroo](https://github.com/eroobeeroo), and
-the choice of both or one follows [wesleyredhat](https://github.com/wesleyredhat)'s.
-With both, the HUD gets up to half the upload bandwidth, only what it uses;
-alone, all of it. On the HUD the frames are scaled on the head unit to the
-size shown, the corners are rounded and a night map's background is made
-black, which the HUD shows as nothing, so the roads, route and labels float
-in view. The map steps aside while the HUD's media and list pop-ups show.
-With the map on the HUD only, the cluster shows BMW's own content. If the
-instrument cluster restarts right after the HUD map shows, twice, the HUD
-map is disabled; the cluster's map keeps working.
-
-## The page
-
-One `LT_State_Wide` list in four sections, each under a header row
-(`LT_Label_Header_1Row`, which the controller passes over): General, HUD,
-CarPlay, Android Auto; then Restart head unit and the Restart row. CarPlay and Android Auto have the same rows with
-the same words; no row repeats the header's name. Every info row reads
-`Name: Value`, the value starting with a capital (`Zoom: —` while there
-is none), every on/off setting is a checkbox, the choice of where the map
-shows a drop-down (`LT_DropDownMenu_1Row_2Col3070`, as the stock apps'
-settings) and the HUD map's size a slider (`LT_Slider_LeftJustified_Fill_Steps`,
-as the stock seat heating's level). Every row
-stays on the page: one that cannot act now is greyed, and while `patchd`
-runs any operation (`busy`), every operation in both sections is. A greyed
-row pressed sends nothing; a greyed checkbox keeps its label. Four rows
-are shown and hidden: CarPlay Wi-Fi and the line under it, CarPlay's last,
-and the restart's two, the page's last, so no row above them moves.
-`(after restart)` marks a value that waits for the next head-unit start.
-
-Both sections' Status row uses the same words: `Patched`, `Not patched`,
-`Patching…`, `Removing patch…`, `Patched after restart`, `Removed after
-restart`, `Failed`, `Not supported on this car`, `Untested version`,
-`Changed by another tool`, `Partly patched`, `Connecting…`,
-`Unavailable`; CarPlay also `Update needed` (a patch from an older app,
-which Patch brings up to date), and `Removed — head unit kept
-restarting` once boot recovery removed a patch, until Patch applies it
-again. On a head unit
-whose variant the tool cannot read, both read `Not supported on this car`,
-also while a patch waits for the next start to be removed. Every variant is
-supported, HIGH F included.
-
-| Section | Row | What it does |
-|---|---|---|
-| **General** | Show on | a drop-down: `Cluster` (the default), `HUD (experimental)` or `Cluster and HUD (experimental)`; with the HUD alone the cluster shows BMW's own content. A choice takes effect at once and is kept for the next start. Greyed until the map service reports it; `—` while it shows the map on neither (its own configuration) |
-| | Cluster map | `Cluster map: <state>`, the map the shared render draws for either phone: `Off` unless CarPlay's or Android Auto's patch is in effect (on disk with nothing pending, as the last status outside a change said; a running or failed change keeps it), `Starting…`, `Showing Waze map — 16 frames/s`, `Waiting for the phone`, `Waiting for the phone's map`, `Stream lost`, `Frozen`, `Error`, `Unavailable` (the map service is down, or refuses the head unit) |
-| | Hide BMW's turn box | a checkbox: ticked, BMW's turn-by-turn box on the cluster stays hidden while the map shows (the default); unticked, it shows. A press changes it at once and the map service keeps it. Greyed and unticked until the map service reports it and while the cluster renderer keeps the box shown; greyed while the map is not on the cluster |
-| | Logs | opens the Logs page |
-| **HUD** | HUD map | `HUD map: <state>`, the map on the HUD: `Off`, `Starting…`, `Showing`, `Waiting for the phone`, `Frozen`, `Error`, `Disabled after errors` (the cluster renderer turned it off after the cluster restarted right after it showed, twice), `Unavailable` (the map service is down) |
-| | Size | a slider, `Size: Standard` (the fitted box, about 57 % of the HUD's width, at the 55 % step) or `Size: 70 %`: 5 % a step, from 30 % to 85 % of the HUD's width, the picture's shape kept; kept for the next start; greyed while the HUD is off or disabled |
-| | Position | `Position: Centre`, or how far the HUD map is moved: `Position: 20 px right, 10 px up` |
-| | Move left / Move right / Move up / Move down | 10 px a press, held inside the HUD; kept for the next start; greyed as the Size slider |
-| | Centre | puts it back in the middle; enabled while it is moved |
-| **CarPlay** | Status | `Status: <state>`, in the words above |
-| | Patch | applies the patch; enabled while it is off, unknown or out of date, the head unit is supported and no change is pending |
-| | Remove patch | reverts the patch, which turns the map off; enabled while something of the patch is on disk, also while it waits for a restart (`Patched after restart`), and no change runs; a patch waiting over the original is removed at once (`Not patched`), one waiting over a running patch leaves a removal that waits (`Removed after restart`) |
-| | CarPlay Wi-Fi | `CarPlay Wi-Fi: 5 GHz` or `CarPlay Wi-Fi: 2.4 GHz`, the band of the head unit's Wi-Fi the phone joined; shown while CarPlay runs over Wi-Fi and the band is known (waze-on-cluster README, "CarPlay's Wi-Fi band") |
-| | (the line under it) | `Audio may cut out. On your iPhone, turn Wi-Fi off and on.`; shown on 2.4 GHz only, where CarPlay's streams and the cluster's can be more than the link carries |
-| **Android Auto** | Status | `Status: <state>`, in the words above; `Failed` also while the last zoom or turn-card change failed |
-| | Patch | applies its patch, also to an `Untested version`; enabled while it is off or partly patched, supported and nothing is pending |
-| | Remove patch | reverts it; enabled as CarPlay's |
-| | Zoom | `Zoom: 180 dpi`, the density on disk, with `(after restart)` while it differs from the one aapd runs until the next head-unit start; `Zoom: —` without the patch |
-| | Zoom out / Zoom in | 10 dpi a press (150-400): out shows more map; enabled while patched, nothing is pending, no conflict stands but `Untested version`, and the 10 s between changes has passed |
-| | Hide phone's turn card | a checkbox, ticked while the turn card on disk is hidden, or as asked while its change runs: the phone's own turn card cropped off the map; `(after restart)` as for the zoom; enabled as Zoom out and Zoom in |
-| (the page's end) | Restart head unit | the Node State Manager's normal head-unit restart; shown while a written change, CarPlay's or Android Auto's, waits for the next head-unit start; enabled while nothing runs and the restart limit (one every 10 minutes) allows it |
-| | Restart | shown while it has something to say: `Restart: In progress`, `Restart: Failed, not accepted` (NSM did not take it), `Restart: Failed, the head unit stayed on`, `Restart: Failed, command failed`, each with `— possible in 8 min` while the limit holds, `Restart: Possible in 8 min` |
-
-| | |
+| Tab | |
 |---|---|
-| The top of the page: General | ![](docs/main-general.png) |
-| Show on: Cluster (the default) | ![](docs/main-show-on-cluster.png) |
-| Show on, open | ![](docs/main-show-on-open.png) |
-| Show on: HUD (experimental) | ![](docs/main-show-on-hud.png) |
-| Show on: Cluster and HUD (experimental) | ![](docs/main-show-on-both.png) |
-| The HUD map's size, the slider turned | ![](docs/main-hud-size.png) |
-| HUD disabled after errors | ![](docs/main-hud-disabled.png) |
-| CarPlay | ![](docs/main-carplay.png) |
-| Android Auto | ![](docs/main-aa-on.png) |
-| Android Auto alone patched, the cluster map showing | ![](docs/main-aa-only.png) ![](docs/main-aa-only-map.png) |
-| Android Auto not supported | ![](docs/main-aa-unsupported.png) |
-| A change waiting for a restart | ![](docs/main-restart-pending-aa.png) ![](docs/main-restart-pending.png) |
-| The Logs page | ![](docs/logs-page.png) |
+| **Maps** | **Show on**: Cluster, HUD or Cluster + HUD; the cluster map's and the HUD map's state; **Hide BMW's turn box**. **CarPlay** or **Android Auto**: its patch's state, **Patch** and **Remove patch** (a confirm step), CarPlay's Wi-Fi band, Android Auto's zoom (- / +) and **Hide phone's turn card**, and **Restart head unit** (a confirm step) while a change waits for it. **HUD map**: a picture of the HUD with the map, the turn arrows and the gear where they show; **Size** (5 % a step, 30-85 %), **Brightness** (10 % a step, 10-100 %: the map alone dims, BMW's own HUD content keeps its brightness), **Position** (10 px a press, the middle button centres it). The HUD map's settings are greyed while the map is not on the HUD or the cluster renderer keeps the HUD off after errors |
+| **Info** | **Turn signals**: the arrows as the HUD shows them, **Test left** / **Test right** (that arrow blinks on the HUD for 6 s), and the fields of the car's own signal catalog whose names say turn signal; **Gear**: the gear the car reports (P, R, N, D, D1 ... D9); the HUD overlay's state |
+| **Log** | the app's log, and the saved logs: **Save logs**, the archives, and the address and QR code a phone on the car's hotspot opens them with |
+| **Settings** | the kit's settings sheet: **Turn signals on the HUD**, **Turn arrow size** (small, medium, large), **Gear on the HUD**, the colour theme, the screen layout, demo data |
 
-The **Logs** page (`ST_OnlineApps_WazeClusterLogs`, a child of the main
-page):
+Every word is in the HMI's display language, read at the start and on each change, English where a language has
+none: the pages, the kit's header, Settings tab and settings sheet, the tile and the HMI's own screens. The drawn
+screens' letters beyond the kit's come from the app's glyph atlases (`fonts/`, `tools/bake_fonts.py`: accented
+Latin, Vietnamese, Greek, Cyrillic, Chinese, Japanese, Korean). Arabic, Hebrew and Thai are drawn in English (the kit
+draws no shaping or right-to-left), as the Store's drawn screens are; their words show on the tile and the HMI's own
+screens.
 
-| Row | What it does |
-|---|---|
-| Start capture / Stop capture | a bounded DLT capture (5 minutes) for diagnostics; start it, then reconnect CarPlay |
-| Capture | `Capture: On`, `Off`, `Starting…`, `Stopping…`, `Failed`, `Unavailable` |
-| Save logs | saves an archive of the tools' logs, kept journal and status (waze-on-cluster README, "Logs") |
-| Saved logs | `Saved logs: None`, the number kept, `Saving…`, `Not enough space`, `Too large to save`, `Save failed`, `Unavailable`, `Connecting…` |
-| QR code | the download address, for a phone on the car's Wi-Fi hotspot; blank without one |
-| Address | `Address: http://172.16.222.97:8475/<token>/`, `Address: Wi-Fi hotspot off`, or `Address: —` before the logs service answers |
-| 5 rows | the saved archives, newest first, with their size |
+## The HUD overlay
 
-The app holds the logs socket while the Logs page is visible; the logs
-service serves the archives while it is held and for 15 minutes after a
-save. The QR code is a PNG in `/dev/shm/robertn_waze_cluster_qr_<uid>/`
-(`src/qr.js`, with Project Nayuki's QR code generator, `src/qrcodegen.js`),
-replaced when the address changes and removed when the app shuts down.
+`app/hud_overlay.js` draws on the HUD through the cluster renderer (target `hud`, 800 x 480, class `overlay`, over
+the map and BMW's content), with the app's screen closed too: the left and right turn arrows over the map's top
+corners (just above the map where the HUD has room, else inside its top edge, never past its sides), 52 x 34 px
+(small 40 x 26, large 66 x 44), blinking 400 ms on, 400 ms off while their side is on, and the gear under the map at
+its right side (inside its bottom edge where the HUD has no room under it), both following the map's size and place. Each is an image layer drawn on transparent pixels, which the
+HUD shows as nothing; an arrow that is off is blank, not dropped, so a blink asks nothing of the HUD's slot. Nothing
+is asked of the renderer while there is nothing to show. The gear shows only from the car (`VehicleInformation`
+`DataPowerTrain2` and `statusGearboxDrive`, as Live Data reads them), never from demo data.
 
-`Cluster map: Starting…` shows while the cluster renderer starts; an error shows
-only when the renderer stays unreachable for 15 s. Before the patch daemon
-runs (right after the install), the pending patches are read from
-`/dev/shm/waze-on-cluster/activation-pending` (CarPlay) and
-`/dev/shm/waze-on-cluster/aa-pending` (Android Auto); a marker with
-another boot's id is done, one without a boot id counts.
+Which of the car's signals carries the turn signals is not known yet: `app/turn_signals.js` searches the car's
+signal catalog (`/etc/oap/someip/someip-interfaces.json`) for fields named for turn signals and the Info page lists
+them; until one is read, the arrows show for **Test left** / **Test right**.
+
+## Started with the car
+
+The package starts with the platform (`"mguAppStartType": "autostart"` in its `package.json`, which the Store's
+deploy tool lists for the app manager): the app manager starts it with the head unit, starts it again if it stops
+and never stops it for running in the background, so the HUD overlay works without the app being opened, as
+waze-on-cluster's map does. What needs no screen (the waze-on-cluster clients, the gear, the turn signals, the HUD
+overlay, the display language) is `background()` in `app/main.js`, which the kit runs from the start with or without
+the app's screens; the pages are `start()`.
 
 ## The sockets
 
 Unix stream sockets, newline-delimited JSON, group `tm_oap_app`. The app
-holds the first two while one of its pages is visible and the third while
-the Logs page is, and retries each once a second; the tools keep running
-when it closes them.
+holds the first two while it runs (the HUD overlay follows the map's size and
+place) and the third while the Log page is shown, and retries each once a
+second; the tools keep running without it. The render takes one owner at a
+time: `waze-on-cluster run` from a shell is told `busy` while the app runs.
 
 - **Render** `/dev/shm/waze-on-cluster/ctl.sock`. The app sends
-  `{"cmd":"guide","hide":0|1}` (Hide BMW's turn box). The tool sends
-  `{"ev":"status","state","target","page","reason","upload_cap_kb_per_s","upload_reason","hide_bmw_guidance","guide_disabled"}`
+  `{"cmd":"guide","hide":0|1}` (Hide BMW's turn box), `{"cmd":"cluster"|"hud","on"}` (Show on),
+  `{"cmd":"hud","hud_width_pct"}`, `{"cmd":"hud","hud_x","hud_y"}` and `{"cmd":"hud","hud_brightness_pct"}`. The tool sends
+  `{"ev":"status","state","target","page","reason","upload_cap_kb_per_s","upload_reason","hide_bmw_guidance","guide_disabled",
+  "cluster","hud","hud_state","hud_width_pct","hud_brightness_pct","hud_x","hud_y"}`
   (`state` idle, starting, showing, frozen or error; `hide_bmw_guidance` 0
   or 1; `guide_disabled` 1 while the cluster renderer keeps the box shown),
   and `{"ev":"log","line"}`, which the app does not show.
 - **Patch daemon** `/dev/shm/waze-on-cluster/patch.sock` (root). The app sends
   `{"cmd":"apply","panel":"high","mode":"avb"}`, `{"cmd":"revert"}`,
   `{"cmd":"aa-apply"}`, `{"cmd":"aa-revert"}`, `{"cmd":"aa-density","value"}`, `{"cmd":"aa-card","value"}`,
-  `{"cmd":"reboot"}`, `{"cmd":"capture-start"|"capture-stop"}`. The daemon sends
+  `{"cmd":"reboot"}`, `{"cmd":"capture-start"|"capture-stop"}`, and saves the map settings:
+  `{"cmd":"cluster"|"hud","on"}`, `{"cmd":"hud-size"}`, `{"cmd":"hud-pos"}`, `{"cmd":"hud-brightness"}`. The daemon sends
   `{"ev":"status","state","panel","mode","res","safe","carplay","reason","pending","conflict","busy","restart","aa","wifi"}`
   (`aa`: `{"state","reason","conflict","pending","aapd","dpi","diskCard","runDpi","runCard","density","card","densities","changeAt","error"}`;
   `restart`: `{"state","code","reason","possibleAt"}`; `wifi`: `{"band","iface","freq"}`, `band` `"5"` or
@@ -210,35 +103,36 @@ A patch with another sink, panel, size (not `1088x480`) or safe area (not
 ## Build and test
 
 ```sh
-node tools/test_control.js           # the socket client against fake sockets
-node tools/test_page.js              # the page against a fake SDK and HMI
-node tools/test_i18n.js              # every language: its words, placeholders, RHMI text files
-node tools/build.js                  # robertn_waze_cluster@0.6.1.src.tgz
-node tools/build.js --sdk <donor>    # also robertn_waze_cluster@0.6.1.tgz
+python3 tools/bake_fonts.py <fontdir> # fonts/ from locales/ (Pillow; the fonts it names), after a change of words
+node tools/stage.js                  # robertn_waze_cluster@<version>/ from app/, src/, fonts/, locales/ and kit/ (Python 3), committed
+node tools/build.js                  # robertn_waze_cluster@<version>.tgz from it
+node tools/test_control.js           # the socket clients against fake sockets
+node tools/test_i18n.js              # every language: its words, placeholders and glyphs
+make -C ../../native/cluster-render build/host/host_service
+node tools/test_hud.js ../../native/cluster-render/build/host/host_service   # the HUD overlay against the renderer on the host
 ```
 
-The app ships as a source package (`mgu-app.json`; `"build": "unit"` in the
-catalog). The repository carries no oap-sdk, which is BMW's: the head unit's
-deploy tool links the app against the unit's own oap-sdk and takes the
-package's entry point from the unit's own packages. To build the OAP tgz
-locally, pass a donor bundle with `--sdk` (or `MGU_SDK_DONOR`), for example
-the one `mgu-deploy.sh sdk-donor` takes from the unit. The tests need no
-donor.
+The package has no `node_modules/oap-sdk`, which is BMW's: the Store's deploy tool generates it on the head unit
+from the unit's own apps (mgu-store `tools/oap_link.js` `preparePackage`).
 
-`node tools/fakes.js <render.sock> <patch.sock>` runs both fakes by hand;
-Enter starts or stops a fake CarPlay stream.
+`node tools/fakes.js <render.sock> <patch.sock>` runs the fakes by hand; Enter starts or stops a fake CarPlay stream.
 
 | Path | |
 |---|---|
-| `src/robertn_waze_cluster.js` | the app |
-| `src/i18n.js`, `src/locales.js` | the words in the display language; the languages, written from `locales/` |
-| `locales/<code>.json` | a language's words (Languages) |
+| `app/app.json` | the kit's description of the app: its screen, settings and signals |
+| `app/main.js` | the pages |
+| `app/hud_overlay.js`, `app/turn_signals.js` | the HUD's turn arrows and gear; which turn signal is on |
+| `app/icon.png` | the tile's icon (`tools/icon.svg`) |
+| `fonts/` | the app's glyph atlases and their fonts' licences (`tools/bake_fonts.py`) |
 | `src/waze_cluster_control.js` | the render and patch socket clients and the status logic |
 | `src/logs_control.js` | the logs socket client |
-| `src/qr.js`, `src/qrcodegen.js` | the QR code PNG; Project Nayuki's generator (MIT, `LICENSE-qrcodegen.txt`) |
-| `tools/` | build, fakes, tests, icon |
-| `robertn_waze_cluster@0.6.1/` | the package tree (manifest, RHMI UI, config) |
+| `src/i18n.js`, `src/locales.js`, `locales/<code>.json` | the clients' words; the languages, written by `tools/gen_locales.js` |
+| `src/qrcodegen.js` | Project Nayuki's QR code generator (MIT, `LICENSE-qrcodegen.txt`) |
+| `tools/` | stage, build, fakes, tests, icon |
+| `robertn_waze_cluster@<version>/` | the package tree (`tools/stage.js`) |
 
 ## License
 
-GPL-3.0-or-later (`LICENSE`). Third-party files keep their own licenses.
+GPL-3.0-or-later (`LICENSE`). The kit is MIT (`../../kit/LICENSE`, shipped as `LICENSE-kit.txt`); the cluster
+renderer's client is MPL-2.0; the glyph atlases are drawn from the Ubuntu font family (Ubuntu Font Licence) and Noto
+Sans (SIL Open Font License), their licences in `fonts/`. Third-party files keep their own licenses.

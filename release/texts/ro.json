@@ -8,7 +8,7 @@
     "description": "Afișează harta CarPlay sau Android Auto pe bordul digital: un asistent root aplică patch-urile reversibile carplay și aapd acolo unde fiecare este acceptat, iar captura, pornită de la boot, decodează fluxul H.264 al hărții și îl desenează prin randarea bordului cât timp fluxul rulează"
   },
   "robertn_waze_cluster": {
-    "title": "Waze pe bord",
-    "description": "Aduce harta Waze din CarPlay pe bordul digital: activați patch-ul din interfața mașinii, iar harta urmează CarPlay"
+    "title": "Cluster functions",
+    "description": "Harta telefonului pe bordul de instrumente și pe HUD (CarPlay și Android Auto), cu dimensiunea, poziția și luminozitatea hărții pe HUD, semnalizatoarele și treapta de viteză pe HUD"
   }
 }

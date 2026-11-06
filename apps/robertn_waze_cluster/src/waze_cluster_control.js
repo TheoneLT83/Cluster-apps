@@ -108,6 +108,9 @@ const SHOWN_ON = ['cluster', 'hud', 'both'];
  * HUD and reports the offset as far as it went. An asked size or place shows until the render's status has it,
  * HUD_ASKED_MS has passed, the render reconnects or patchd fails to save the size; then the render's own. */
 const HUD_MOVE_PX = 10, HUD_MOVE_MAX = 400, HUD_ASKED_MS = 300;
+/* The HUD map's brightness, % (the map alone; BMW's HUD content keeps its own): HUD_BRIGHT_STEP a press,
+ * HUD_BRIGHT_MIN to 100. A waze-on-cluster before it reports none. */
+const HUD_BRIGHT_MIN = 10, HUD_BRIGHT_STEP = 10;
 const MOVES = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] };
 
 /* One newline-delimited-JSON stream socket, reconnecting while open.
@@ -492,6 +495,45 @@ class WazeClusterControl extends EventEmitter {
     _clearAskedHud() {
         clearTimeout(this._askedHudTimer);
         this._askedHud = null;
+        clearTimeout(this._askedBrightTimer);
+        this._askedBright = null;
+    }
+
+    /* ---- the HUD map's brightness ---- */
+    hudBrightness() {
+        if (this._askedBright != null) {
+            return this._askedBright;
+        }
+        const v = this.renderStatus && this.renderStatus.hud_brightness_pct;
+        return typeof v === 'number' ? v : null;
+    }
+
+    canChangeHudBrightness(step) {
+        const b = this.hudBrightness();
+        return this.canChangeHudSize() && b != null && (step === undefined ||
+            Math.max(HUD_BRIGHT_MIN, Math.min(100, b + step * HUD_BRIGHT_STEP)) !== b);
+    }
+
+    /* A step brighter (+1) or darker (-1): the render at once, patchd saves it. */
+    stepHudBrightness(step) {
+        if (!this.canChangeHudBrightness(step)) {
+            return;
+        }
+        const pct = Math.max(HUD_BRIGHT_MIN, Math.min(100, this.hudBrightness() + step * HUD_BRIGHT_STEP));
+        this._askedBright = pct;
+        clearTimeout(this._askedBrightTimer);
+        this._askedBrightTimer = setTimeout(() => {
+            this._askedBright = null;
+            this.emit('change');
+        }, HUD_ASKED_MS);
+        this.render.send({ cmd: 'hud', hud_brightness_pct: String(pct) });
+        this.patch.send({ cmd: 'hud-brightness', hud_brightness_pct: pct });
+        this.emit('change');
+    }
+
+    hudBrightnessText() {
+        const b = this.hudBrightness();
+        return t('Brightness: {0}', b == null ? '—' : t('{0} %', b));
     }
 
     /* ---- where the HUD map is: moved from its centre, in HUD pixels ---- */
@@ -1007,7 +1049,12 @@ class WazeClusterControl extends EventEmitter {
                 this._askedShownOn = null;
             }
             if (this._askedHud != null && msg.hud_width_pct === this._askedHud) {
-                this._clearAskedHud();
+                clearTimeout(this._askedHudTimer);
+                this._askedHud = null;
+            }
+            if (this._askedBright != null && msg.hud_brightness_pct === this._askedBright) {
+                clearTimeout(this._askedBrightTimer);
+                this._askedBright = null;
             }
             if (this._askedPos && msg.hud_x === this._askedPos[0] && msg.hud_y === this._askedPos[1]) {
                 this._askedPos = null;
@@ -1029,7 +1076,7 @@ class WazeClusterControl extends EventEmitter {
             this._noteCardAsked(msg);
             this._wake();
             this.emit('change');
-        } else if (/^(cluster|hud|hud-size|hud-pos)-reply$/.test(msg.ev)) {
+        } else if (/^(cluster|hud|hud-size|hud-pos|hud-brightness)-reply$/.test(msg.ev)) {
             if (!msg.ok) {
                 this._log.info(`patchd did not save the setting: ${msg.reason || 'refused'}`);
             }
@@ -1054,5 +1101,5 @@ class WazeClusterControl extends EventEmitter {
 module.exports = {
     WazeClusterControl, LineSocket,
     RENDER_PATH, PATCH_PATH, PENDING_PATH, AA_PENDING_PATH, BOOT_ID_PATH,
-    SIZE, SAFE, ZOOM_STEP, RESTART_FAILED, SHOWN_ON, HUD_SIZE_STEPS
+    SIZE, SAFE, ZOOM_STEP, RESTART_FAILED, SHOWN_ON, HUD_SIZE_STEPS, HUD_BRIGHT_MIN, HUD_BRIGHT_STEP
 };

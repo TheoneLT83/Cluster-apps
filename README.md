@@ -7,7 +7,8 @@ Tools and apps for the iDrive 7 head unit (MGU) of a BMW, installed from the
 |---|---|
 | [`native/cluster-render`](native/cluster-render) | the cluster renderer: one service that draws every app's layers on the instrument cluster and the HUD, on iDrive 7 and iDrive 8 |
 | [`native/waze-on-cluster`](native/waze-on-cluster) | the CarPlay map (Waze, Apple Maps or Google Maps), or Android Auto's, on the instrument cluster, drawn through cluster-render |
-| [`apps/robertn_waze_cluster`](apps/robertn_waze_cluster) | the iDrive app for it: Patch and Remove patch for CarPlay and Android Auto, status, Logs |
+| [`apps/robertn_waze_cluster`](apps/robertn_waze_cluster) | **Cluster functions**, the iDrive app for it, drawn by the Store's renderer with the idrive7-apps kit: where the map shows, the HUD map's size, place and brightness, turn signals and the gear on the HUD, Patch and Remove patch, the log |
+| [`kit`](kit) | the idrive7-apps app kit (MIT) the app is built with |
 | [`release`](release) | builds and publishes the Store catalog |
 | `tools` | `oap_pack.js`, `oap_link.js`: pack the app |
 
@@ -32,6 +33,9 @@ bottom right, battery power and temperatures, is a separate app.)*
   fitted box, about 57 %.
 - **Position** - **Move left / right / up / down**, 10 px a press, and **Centre**. The map moves at once and is held
   inside the HUD.
+- **Brightness** - 10 % to 100 %, the map alone: BMW's own HUD content keeps its brightness.
+- **Turn signals and gear** - Cluster functions draws turn arrows in the HUD's top corners and the gear beside the
+  map.
 - **Made for a HUD** - the frames are scaled on the head unit to the size shown, at most 10 a second, the corners are
   rounded, and a night map's background is made black so only the roads, route and labels float in view (green,
   such as parks, is kept).
@@ -48,8 +52,8 @@ On the cluster the map fills the central area:
 ## Install
 
 In the Store, add the GitHub source `robertnisipeanu/idrive-apps` and install
-**Waze on cluster**. The Store installs what it requires first: `mgu-deploy`
-0.7.11 from mgu-store, then `cluster-render` and the Waze tool from here. One
+**Cluster functions**. The Store installs what it requires first: `mgu-deploy`
+0.7.11 and the Store's renderer `mgu-render` from mgu-store, then `cluster-render` and the Waze tool from here. One
 head-unit start activates the CarPlay patch, and the Android Auto patch on a
 car that supports it. The Store removes them again:
 the app, then the tool, then the renderer.
@@ -60,7 +64,7 @@ the app, then the tool, then the renderer.
 make -C native/cluster-render test test-x86 target    # host tests; the unit's toolchain and binary (Docker)
 make -C native/waze-on-cluster test test-x86 target
 node apps/robertn_waze_cluster/tools/test_control.js
-node apps/robertn_waze_cluster/tools/test_page.js
+node apps/robertn_waze_cluster/tools/test_hud.js native/cluster-render/build/host/host_service
 node apps/robertn_waze_cluster/tools/test_i18n.js
 node release/test/release_test.js
 node release/release.js check                         # reproducible artifacts

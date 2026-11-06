@@ -1,0 +1,7 @@
+{
+  "rhmiLoadingEnabled": true,
+  "entryPointLoadingEnabled": true,
+  "settings": {
+    "robertn_waze_cluster": {}
+  }
+}

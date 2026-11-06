@@ -8,7 +8,7 @@
     "description": "Zeigt die CarPlay- oder Android-Auto-Karte im Kombiinstrument: Ein Root-Helfer wendet die umkehrbaren carplay- und aapd-Patches an, wo sie jeweils unterstützt werden, und die ab dem Start laufende Erfassung dekodiert das H.264-Video der Karte und zeichnet es über den Kombi-Renderer, sobald der Stream fließt"
   },
   "robertn_waze_cluster": {
-    "title": "Waze im Kombiinstrument",
-    "description": "Bringt die CarPlay-Waze-Karte ins Kombiinstrument: Patch im HMI aktivieren, und die Karte folgt CarPlay"
+    "title": "Cluster functions",
+    "description": "Die Karte des Telefons im Kombiinstrument und im HUD (CarPlay und Android Auto), mit Größe, Position und Helligkeit der HUD-Karte, Blinker und Gang im HUD"
   }
 }
