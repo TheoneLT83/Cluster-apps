@@ -153,6 +153,7 @@ function components(root = REPO) {
             requires: requiresOf(release, `apps/${id}/release.json`),
             uninstallable: uninstallableOf(release, `apps/${id}/release.json`),
             mguHmi: hmiOf(release, `apps/${id}/release.json`),
+            icon: iconOf(release, root, `apps/${id}`),
             shipped: [`apps/${id}/${id}@${version}`].concat(manifest ?
                 [`apps/${id}/mgu-app.json`].concat(manifest.modules.map((m) => `apps/${id}/${m}`)) : []),
             artifact: `apps/${id}/${id}@${version}${manifest ? '.src' : ''}.tgz`
@@ -337,6 +338,51 @@ function retext(entries, all) {
         } else {
             delete e.texts;
         }
+        return true;
+    });
+}
+
+/* An app's release.json "icon": a PNG of at most 128 KiB in its folder,
+ * which the Store shows before the app is installed; its path from the
+ * repository's root, or null. */
+function iconOf(release, root, dir) {
+    if (release.icon === undefined) {
+        return null;
+    }
+    const rel = path.join(dir, String(release.icon));
+    const file = path.join(root, rel);
+    if (path.relative(path.join(root, dir), file).startsWith('..') || !fs.existsSync(file)) {
+        throw new Error(`${dir}/release.json: "icon" names no file in its folder`);
+    }
+    const b = fs.readFileSync(file);
+    if (b.length > 128 << 10 || b.slice(0, 8).toString('hex') !== '89504e470d0a1a0a') {
+        throw new Error(`${dir}/release.json: "icon" is not a PNG of at most 128 KiB`);
+    }
+    return rel;
+}
+
+/* Gives the entries their components' icons (iconOf) as the publish target
+ * lists them; returns the entries that changed. An icon of unchanged content
+ * keeps its listing. */
+function reicon(entries, all, commit) {
+    return entries.filter((e) => {
+        const c = all.find((x) => x.id === e.id);
+        const sha = c && c.icon ? sha256(path.join(REPO, c.icon)) : null;
+        const ref = sha ? publishTarget.iconRef(c.icon, sha, commit) : null;
+        if (!ref) {
+            if (e.icon === undefined) {
+                return false;
+            }
+            delete e.icon;
+            delete e.iconSha256;
+            return true;
+        }
+        if (e.iconSha256 === sha) {
+            return false;
+        }
+        e.icon = ref;
+        e.iconSha256 = sha;
+        e.iconFile = c.icon;
         return true;
     });
 }
@@ -609,17 +655,25 @@ function cmdPublish(ids, dryRun) {
     });
     // the entries carried over list their titles and descriptions in other languages as release/texts has them
     const retexted = retext([...current.values()].filter((e) => !uploads.some((x) => x.id === e.id)), all);
-    if (!uploads.length && !removed.length && !relisted.length && !retexted.length) {
+    // every entry with its app's icon (uploads included)
+    const commit = git(['rev-parse', 'HEAD']);
+    const reiconed = reicon([...current.values()].filter((e) => !uploads.some((x) => x.id === e.id)).concat(uploads), all, commit);
+    if (!uploads.length && !removed.length && !relisted.length && !retexted.length && !reiconed.length) {
         console.log('nothing new to publish');
         return;
     }
     removed.forEach((id) => console.log(`${dryRun ? 'would remove' : 'removing'} ${id}: not in the repository`));
     relisted.forEach((e) => console.log(`${dryRun ? 'would list' : 'listing'} ${e.id}@${e.version} at ${e.artifact.url}`));
     retexted.forEach((e) => console.log(`${dryRun ? 'would list' : 'listing'} ${e.id}@${e.version} with its texts`));
+    reiconed.forEach((e) => console.log(`${dryRun ? 'would list' : 'listing'} ${e.id}@${e.version} with ${e.icon ? `its icon ${e.icon}` : 'no icon'}`));
     uploads.forEach((e) => console.log(`${dryRun ? 'would publish' : 'publishing'} ${e.id}@${e.version}`));
     if (dryRun) {
         return;
     }
+    reiconed.filter((e) => e.iconFile).forEach((e) => {
+        publishTarget.uploadIcon(e.iconFile, e.icon);
+        delete e.iconFile;
+    });
     uploads.forEach((e) => {
         e.artifact.url = publishTarget.uploadArtifact(e, path.join(staging, e.artifact.name));
         current.set(e.id, e);

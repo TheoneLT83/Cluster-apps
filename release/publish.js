@@ -138,6 +138,14 @@ const targets = {
             fs.copyFileSync(file, path.join(WHERE, entry.artifact.name));
             return entry.artifact.name;
         },
+        /* An app's icon: a copy beside the catalog, named by its content. */
+        iconRef(rel, sha) {
+            return `icon-${sha.slice(0, 16)}.png`;
+        },
+        uploadIcon(rel, ref) {
+            fs.mkdirSync(WHERE, { recursive: true });
+            fs.copyFileSync(path.join(REPO, rel), path.join(WHERE, ref));
+        },
         uploadCatalog(catalogFile) {
             fs.mkdirSync(WHERE, { recursive: true });
             fs.copyFileSync(catalogFile, path.join(WHERE, 'catalog.json.tmp'));
@@ -200,6 +208,12 @@ const targets = {
             }
             return assetUrl(asset);
         },
+        /* An app's icon: the file at the commit published, from GitHub's raw host; none in a private
+         * repository, whose raw files a car reads only with its token. */
+        iconRef(rel, sha, commit) {
+            return isPublic() ? `https://raw.githubusercontent.com/${WHERE}/${commit}/${rel.split(path.sep).join('/')}` : null;
+        },
+        uploadIcon() {},
         uploadCatalog(catalogFile) {
             assertVisibility();
             try {
@@ -228,5 +242,7 @@ module.exports = {
     preflight: (dryRun) => chosen().preflight(dryRun),
     listedUrl: (entry) => chosen().listedUrl(entry),
     uploadArtifact: (entry, file) => chosen().uploadArtifact(entry, file),
+    iconRef: (rel, sha, commit) => chosen().iconRef(rel, sha, commit),
+    uploadIcon: (rel, ref) => chosen().uploadIcon(rel, ref),
     uploadCatalog: (catalogFile) => chosen().uploadCatalog(catalogFile)
 };

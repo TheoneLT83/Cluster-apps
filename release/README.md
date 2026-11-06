@@ -51,7 +51,13 @@ need no new version.
 |---|---|
 | `cluster-render` (tool) | `requires: {"mgu-deploy": "0.4.0"}`, `uninstallable`, `mguHmi: ["ID7"]` (`native/cluster-render/component.json`) |
 | `waze-on-cluster` (tool) | `requires: {"mgu-deploy": "0.7.11", "cluster-render": …}`, `uninstallable`, `mguHmi: ["ID7"]` (`native/waze-on-cluster/component.json`) |
-| `robertn_waze_cluster` (app) | `build: "unit"`, `requires: {"waze-on-cluster": …}`, `uninstallable`, `mguHmi: ["ID7"]` (`apps/robertn_waze_cluster/release.json`) |
+| `robertn_waze_cluster` (app) | `requires: {"waze-on-cluster": …, "mgu-render": …, "mgu-inputgate": …}`, `uninstallable`, `mguHmi: ["ID7"]`, `icon`, `iconSha256` (`apps/robertn_waze_cluster/release.json`) |
+
+An app's release.json `"icon"` (a PNG of at most 128 KiB in its folder) is the
+icon the Store shows before the app is installed: the catalog lists it as the
+file at the published commit on `raw.githubusercontent.com` (in a folder
+target, a copy beside the catalog) with its sha256 (`iconSha256`). `publish`
+lists it on every entry it carries over too, so a new icon needs no new version.
 
 The catalog is not signed: the Store fetches it over HTTPS and checks each
 artifact's size and sha256 against it.
