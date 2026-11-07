@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.6
+
+- **Own settings for this driver** (Maps page, beside Hide BMW logo on cluster): the map's settings (where it
+  shows, the HUD map's size, place and brightness) per driver profile, as the head unit's user account; unticked,
+  the profile uses the shared ones. Greyed while no profile is known. From robertnisipeanu/idrive-apps'
+  robertn_waze_cluster 0.6.3 (waze-on-cluster 0.9.3, here 0.9.9).
+
 ## 0.8.5
 
 - **Gear**: S1 ... S8 in sport and M1 ... M8 in manual, as the cluster shows them (MDrive's gearbox programme, else

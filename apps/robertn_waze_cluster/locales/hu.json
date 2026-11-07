@@ -136,6 +136,7 @@
     "lb-ft": "lb-ft",
     "bar": "bar",
     "psi": "psi",
-    "Displays on HUD": "Kijelzések a HUD-on"
+    "Displays on HUD": "Kijelzések a HUD-on",
+    "Own settings for this driver": "Saját beállítások ennek a vezetőnek"
   }
 }

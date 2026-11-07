@@ -136,6 +136,7 @@
     "lb-ft": "lb-ft",
     "bar": "bar",
     "psi": "psi",
-    "Displays on HUD": "HUD’da göstergeler"
+    "Displays on HUD": "HUD’da göstergeler",
+    "Own settings for this driver": "Bu sürücüye özel ayarlar"
   }
 }

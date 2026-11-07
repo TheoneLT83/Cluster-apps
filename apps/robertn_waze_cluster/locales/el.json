@@ -136,6 +136,7 @@
     "lb-ft": "lb-ft",
     "bar": "bar",
     "psi": "psi",
-    "Displays on HUD": "Ενδείξεις στο HUD"
+    "Displays on HUD": "Ενδείξεις στο HUD",
+    "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό"
   }
 }

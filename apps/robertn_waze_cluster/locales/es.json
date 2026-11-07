@@ -136,6 +136,7 @@
     "lb-ft": "lb-ft",
     "bar": "bar",
     "psi": "psi",
-    "Displays on HUD": "Indicaciones en el HUD"
+    "Displays on HUD": "Indicaciones en el HUD",
+    "Own settings for this driver": "Ajustes propios para este conductor"
   }
 }

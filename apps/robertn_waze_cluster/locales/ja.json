@@ -136,6 +136,7 @@
     "lb-ft": "lb-ft",
     "bar": "bar",
     "psi": "psi",
-    "Displays on HUD": "HUDに表示"
+    "Displays on HUD": "HUDに表示",
+    "Own settings for this driver": "このドライバー専用の設定"
   }
 }

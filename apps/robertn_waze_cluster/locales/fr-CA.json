@@ -136,6 +136,7 @@
     "lb-ft": "lb-ft",
     "bar": "bar",
     "psi": "psi",
-    "Displays on HUD": "Affichages sur l’affichage tête haute"
+    "Displays on HUD": "Affichages sur l’affichage tête haute",
+    "Own settings for this driver": "Réglages propres à ce conducteur"
   }
 }

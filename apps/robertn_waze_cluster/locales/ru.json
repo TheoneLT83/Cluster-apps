@@ -136,6 +136,7 @@
     "lb-ft": "lb-ft",
     "bar": "bar",
     "psi": "psi",
-    "Displays on HUD": "Индикация на HUD"
+    "Displays on HUD": "Индикация на HUD",
+    "Own settings for this driver": "Свои настройки для этого водителя"
   }
 }

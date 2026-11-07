@@ -140,7 +140,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "العرض على HUD"
+   "Displays on HUD": "العرض على HUD",
+   "Own settings for this driver": "إعدادات خاصة لهذا السائق"
   }
  },
  {
@@ -282,7 +283,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Zobrazení na HUD"
+   "Displays on HUD": "Zobrazení na HUD",
+   "Own settings for this driver": "Vlastní nastavení pro tohoto řidiče"
   }
  },
  {
@@ -424,7 +426,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Visninger på HUD"
+   "Displays on HUD": "Visninger på HUD",
+   "Own settings for this driver": "Egne indstillinger for denne fører"
   }
  },
  {
@@ -566,7 +569,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Anzeigen im HUD"
+   "Displays on HUD": "Anzeigen im HUD",
+   "Own settings for this driver": "Eigene Einstellungen für diesen Fahrer"
   }
  },
  {
@@ -708,7 +712,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Ενδείξεις στο HUD"
+   "Displays on HUD": "Ενδείξεις στο HUD",
+   "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό"
   }
  },
  {
@@ -850,7 +855,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Indicaciones en el HUD"
+   "Displays on HUD": "Indicaciones en el HUD",
+   "Own settings for this driver": "Configuración propia para este conductor"
   }
  },
  {
@@ -992,7 +998,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Indicaciones en el HUD"
+   "Displays on HUD": "Indicaciones en el HUD",
+   "Own settings for this driver": "Ajustes propios para este conductor"
   }
  },
  {
@@ -1134,7 +1141,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Näytöt HUD:ssa"
+   "Displays on HUD": "Näytöt HUD:ssa",
+   "Own settings for this driver": "Omat asetukset tälle kuljettajalle"
   }
  },
  {
@@ -1276,7 +1284,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Affichages sur l’affichage tête haute"
+   "Displays on HUD": "Affichages sur l’affichage tête haute",
+   "Own settings for this driver": "Réglages propres à ce conducteur"
   }
  },
  {
@@ -1418,7 +1427,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Affichages sur le HUD"
+   "Displays on HUD": "Affichages sur le HUD",
+   "Own settings for this driver": "Réglages propres à ce conducteur"
   }
  },
  {
@@ -1560,7 +1570,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "תצוגות ב-HUD"
+   "Displays on HUD": "תצוגות ב-HUD",
+   "Own settings for this driver": "הגדרות נפרדות לנהג זה"
   }
  },
  {
@@ -1702,7 +1713,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Kijelzések a HUD-on"
+   "Displays on HUD": "Kijelzések a HUD-on",
+   "Own settings for this driver": "Saját beállítások ennek a vezetőnek"
   }
  },
  {
@@ -1844,7 +1856,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Tampilan di HUD"
+   "Displays on HUD": "Tampilan di HUD",
+   "Own settings for this driver": "Pengaturan sendiri untuk pengemudi ini"
   }
  },
  {
@@ -1986,7 +1999,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Indicazioni nell’HUD"
+   "Displays on HUD": "Indicazioni nell’HUD",
+   "Own settings for this driver": "Impostazioni proprie per questo conducente"
   }
  },
  {
@@ -2128,7 +2142,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "HUDに表示"
+   "Displays on HUD": "HUDに表示",
+   "Own settings for this driver": "このドライバー専用の設定"
   }
  },
  {
@@ -2270,7 +2285,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "HUD 표시"
+   "Displays on HUD": "HUD 표시",
+   "Own settings for this driver": "이 운전자 전용 설정"
   }
  },
  {
@@ -2412,7 +2428,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Visninger på HUD"
+   "Displays on HUD": "Visninger på HUD",
+   "Own settings for this driver": "Egne innstillinger for denne føreren"
   }
  },
  {
@@ -2556,7 +2573,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Weergaven op het HUD"
+   "Displays on HUD": "Weergaven op het HUD",
+   "Own settings for this driver": "Eigen instellingen voor deze bestuurder"
   }
  },
  {
@@ -2698,7 +2716,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Wskazania na HUD"
+   "Displays on HUD": "Wskazania na HUD",
+   "Own settings for this driver": "Własne ustawienia dla tego kierowcy"
   }
  },
  {
@@ -2840,7 +2859,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Exibições no HUD"
+   "Displays on HUD": "Exibições no HUD",
+   "Own settings for this driver": "Configurações próprias para este motorista"
   }
  },
  {
@@ -2982,7 +3002,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Indicações no HUD"
+   "Displays on HUD": "Indicações no HUD",
+   "Own settings for this driver": "Definições próprias para este condutor"
   }
  },
  {
@@ -3124,7 +3145,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Afișări pe HUD"
+   "Displays on HUD": "Afișări pe HUD",
+   "Own settings for this driver": "Setări proprii pentru acest șofer"
   }
  },
  {
@@ -3266,7 +3288,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Индикация на HUD"
+   "Displays on HUD": "Индикация на HUD",
+   "Own settings for this driver": "Свои настройки для этого водителя"
   }
  },
  {
@@ -3408,7 +3431,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Zobrazenia na HUD"
+   "Displays on HUD": "Zobrazenia na HUD",
+   "Own settings for this driver": "Vlastné nastavenia pre tohto vodiča"
   }
  },
  {
@@ -3550,7 +3574,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Prikazi na HUD"
+   "Displays on HUD": "Prikazi na HUD",
+   "Own settings for this driver": "Lastne nastavitve za tega voznika"
   }
  },
  {
@@ -3692,7 +3717,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Visningar på HUD"
+   "Displays on HUD": "Visningar på HUD",
+   "Own settings for this driver": "Egna inställningar för den här föraren"
   }
  },
  {
@@ -3834,7 +3860,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "การแสดงบน HUD"
+   "Displays on HUD": "การแสดงบน HUD",
+   "Own settings for this driver": "การตั้งค่าเฉพาะสำหรับผู้ขับขี่คนนี้"
   }
  },
  {
@@ -3976,7 +4003,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "HUD’da göstergeler"
+   "Displays on HUD": "HUD’da göstergeler",
+   "Own settings for this driver": "Bu sürücüye özel ayarlar"
   }
  },
  {
@@ -4118,7 +4146,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Індикація на HUD"
+   "Displays on HUD": "Індикація на HUD",
+   "Own settings for this driver": "Власні налаштування для цього водія"
   }
  },
  {
@@ -4260,7 +4289,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "Hiển thị trên HUD"
+   "Displays on HUD": "Hiển thị trên HUD",
+   "Own settings for this driver": "Cài đặt riêng cho người lái này"
   }
  },
  {
@@ -4404,7 +4434,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "抬头显示器上的显示"
+   "Displays on HUD": "抬头显示器上的显示",
+   "Own settings for this driver": "此驾驶员的专属设置"
   }
  },
  {
@@ -4548,7 +4579,8 @@ module.exports = [
    "lb-ft": "lb-ft",
    "bar": "bar",
    "psi": "psi",
-   "Displays on HUD": "抬頭顯示器上的顯示"
+   "Displays on HUD": "抬頭顯示器上的顯示",
+   "Own settings for this driver": "此駕駛的專屬設定"
   }
  }
 ];

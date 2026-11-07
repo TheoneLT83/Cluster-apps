@@ -34,6 +34,7 @@ const { HudOverlay, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData,
 const { HvData } = require('./hv_data.js');
 const { Units } = require('./units.js');
 const { TurnSignals } = require('./turn_signals.js');
+const { ProfileSync, sessionReader } = require('./profile_sync.js');
 const qrcodegen = require('./qrcodegen.js');
 
 const { t } = i18n;
@@ -108,6 +109,10 @@ async function background(bg) {
     const ctl = new WazeClusterControl({ log });
     const logs = new LogsControl({ log });
     const turns = new TurnSignals({ signals: bg.signals, log });
+    // the map settings per driver profile (the head unit's user account), page shown or not
+    let readProfile = null;
+    try { readProfile = sessionReader(require('oap-sdk').someipBuilders, log); } catch (e) { log.warn('driver profiles unavailable: ' + e.message); }
+    const profiles = new ProfileSync({ control: ctl, log, readProfile });
     const hud = new HudOverlay({ log });
     // boost from the sport display (FES), as M Vitals reads it: bar, 0.01 a step, 255 no value
     let boost = null, program = null;
@@ -175,6 +180,7 @@ async function background(bg) {
     hv.on('change', () => { toHud(); changed(); });
     ctl.on('change', () => { toHud(); changed(); });
     logs.on('change', changed);
+    profiles.on('change', changed);
     turns.on('change', () => { toHud(); changed(); });
     settings.onChange(() => { hvWanted(); toHud(); changed(); });
     // boost, torque, the temperatures and the programme come without a sample of their own: the HUD looks again
@@ -221,9 +227,10 @@ async function background(bg) {
     turns.start();
 
     ctl.open();
+    profiles.start();
     toHud();
     log.info('Cluster functions ' + bg.spec.version + ' started (' + (bg.app && bg.app.startReason) + ')');
-    return { ctl, logs, turns, hud, hv, car, lines, log, mapNow, gearNow, dataNow, onChange: (fn) => listeners.push(fn) };
+    return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, onChange: (fn) => listeners.push(fn) };
 }
 
 mgu.run({
@@ -232,7 +239,7 @@ mgu.run({
     async start(ctx) {
         const { ui, settings } = ctx;
         const b = ctx.background || await background(ctx);
-        const { ctl, logs, turns, hud, hv, car, lines, log, mapNow, gearNow, dataNow } = b;
+        const { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow } = b;
         let page = 0, version = 0, drawn = -1, blink = true, phone = 'carplay';
         // the kit's header and Settings tab in the display language too
         const changed = () => {
@@ -313,8 +320,12 @@ mgu.run({
             small(cv, th, ctl.mapText(), 48, 204, 712);
             small(cv, th, ctl.hudText(), 48, 230, 712, ctl.hudDisabled() ? th.warn : null);
             const gu = ctl.guidanceUnavailable(), hide = ctl.hideGuidance();
-            cv.text(fit(cv, t('Hide BMW logo on cluster'), 22, 600, 'label'), 48, 276, 22, gu ? th.dim : th.text, { font: 'label' });
-            toggle(cv, th, 684, 252, !!hide, () => ctl.toggleGuidance(), 'guide', gu || hide === null);
+            cv.text(fit(cv, t('Hide BMW logo on cluster'), 22, 258, 'label'), 48, 276, 22, gu ? th.dim : th.text, { font: 'label' });
+            toggle(cv, th, 314, 252, !!hide, () => ctl.toggleGuidance(), 'guide', gu || hide === null);
+            // the map settings of this driver profile, its own or the shared ones (greyed while no profile is known)
+            const po = profiles.canChooseOwn();
+            cv.text(fit(cv, t('Own settings for this driver'), 22, 258, 'label'), 418, 276, 22, po ? th.text : th.dim, { font: 'label' });
+            toggle(cv, th, 684, 252, profiles.ownShown(), () => profiles.setOwn(!profiles.ownShown()), 'profile-own', !po);
 
             // the phone: CarPlay or Android Auto, its patch and its own settings
             cv.fillRect(48, 300 + ex / 4, 712, 1, withAlpha('#ffffff', 0.12));
@@ -432,7 +443,7 @@ mgu.run({
         ctx.loop('MAIN', 4, () => render(false));
         const redraw = () => { changed(); setTimeout(changed, 600); };
         ui.onVisible((name, on) => {
-            if (name === 'MAIN' && on) redraw();
+            if (name === 'MAIN' && on) { profiles.refresh(); redraw(); }
             if (name === 'MAIN' && !on && logsOpen) { logsOpen = false; logs.close(); }
         });
         render(true).catch((e) => log.warn('first render: ' + e));

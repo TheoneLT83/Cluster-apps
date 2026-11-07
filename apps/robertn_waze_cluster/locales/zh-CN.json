@@ -138,6 +138,7 @@
     "lb-ft": "lb-ft",
     "bar": "bar",
     "psi": "psi",
-    "Displays on HUD": "抬头显示器上的显示"
+    "Displays on HUD": "抬头显示器上的显示",
+    "Own settings for this driver": "此驾驶员的专属设置"
   }
 }

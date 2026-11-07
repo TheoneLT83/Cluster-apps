@@ -20,7 +20,7 @@ const cp = require('child_process');
 const HERE = path.join(__dirname, '..');
 const REPO = path.join(HERE, '..', '..');
 const ID = 'robertn_waze_cluster';
-const SRC_MODULES = ['waze_cluster_control.js', 'logs_control.js', 'i18n.js', 'locales.js', 'qrcodegen.js'];
+const SRC_MODULES = ['waze_cluster_control.js', 'logs_control.js', 'i18n.js', 'locales.js', 'qrcodegen.js', 'profile_sync.js'];
 
 function main() {
     const spec = JSON.parse(fs.readFileSync(path.join(HERE, 'app', 'app.json'), 'utf8'));

@@ -149,6 +149,7 @@ jobs:
       - run: node apps/robertn_waze_cluster/tools/test_hud.js native/cluster-render/build/host/host_service
       # the committed package tree is what the kit stages from app/, src/ and kit/
       - run: node apps/robertn_waze_cluster/tools/stage.js && git diff --exit-code -- apps/robertn_waze_cluster
+      - run: node apps/robertn_waze_cluster/tools/test_profiles.js
       - run: node apps/robertn_waze_cluster/tools/test_i18n.js
       - run: node apps/robertn_waze_cluster/tools/test_gear.js
 
