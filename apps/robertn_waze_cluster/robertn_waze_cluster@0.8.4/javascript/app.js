@@ -205,7 +205,7 @@ async function background(bg) {
     ctl.open();
     toHud();
     log.info('Cluster functions ' + bg.spec.version + ' started (' + (bg.app && bg.app.startReason) + ')');
-    return { ctl, logs, turns, hud, car, lines, log, mapNow, gearNow, dataNow, onChange: (fn) => listeners.push(fn) };
+    return { ctl, logs, turns, hud, hv, car, lines, log, mapNow, gearNow, dataNow, onChange: (fn) => listeners.push(fn) };
 }
 
 mgu.run({
@@ -214,7 +214,7 @@ mgu.run({
     async start(ctx) {
         const { ui, settings } = ctx;
         const b = ctx.background || await background(ctx);
-        const { ctl, logs, turns, hud, car, lines, log, mapNow, gearNow, dataNow } = b;
+        const { ctl, logs, turns, hud, hv, car, lines, log, mapNow, gearNow, dataNow } = b;
         let page = 0, version = 0, drawn = -1, blink = true, phone = 'carplay';
         // the kit's header and Settings tab in the display language too
         const changed = () => {

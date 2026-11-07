@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.4
+
+- **Display page** draws again: it stopped with an error before drawing anything, and while open the screen
+  stopped updating, so the Maps page's choices (Cluster / HUD / Cluster + HUD, Hide BMW logo on cluster) seemed
+  not to take.
+
 ## 0.8.3
 
 - **A phone call shows on the HUD**: the HUD steps aside while BMW's call notification shows (its slot 0x321;
