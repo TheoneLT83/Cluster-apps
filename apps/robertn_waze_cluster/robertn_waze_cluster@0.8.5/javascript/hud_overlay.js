@@ -136,7 +136,8 @@ function drawGear(cv, gear) {
     const g = String(gear || '');
     // one word, as BMW's own gear reading: P, R, N, D, D3; a longer one smaller to fit
     const size = cv.textWidth(g, 36, { font: 'gear' }) <= GEAR_W - 2 ? 36 : 28;
-    cv.text(g, 2, GEAR_H - 8, size, g.charAt(0) === 'R' ? AMBER : WHITE, { font: 'gear' });
+    // the capitals (0.7 of the size) centred in the row, as the arrows are
+    cv.text(g, 2, Math.round((GEAR_H + 0.7 * size) / 2), size, g.charAt(0) === 'R' ? AMBER : WHITE, { font: 'gear' });
 }
 
 class HudOverlay {
@@ -191,7 +192,7 @@ class HudOverlay {
         if (l && (l.w !== rect.w || l.h !== rect.h)) { this.cr.drop(l.ref); l = null; }
         if (!l) {
             const ref = this.cr.image({ target: 'hud', klass: 'overlay', z: 10, x: rect.x, y: rect.y, w: rect.w, h: rect.h,
-                iw: rect.w, ih: rect.h, fps: 10 });
+                iw: rect.w, ih: rect.h, fps: 25 });
             l = this.layers[name] = { ref, w: rect.w, h: rect.h, x: rect.x, y: rect.y, key: null };
         } else if (l.x !== rect.x || l.y !== rect.y) {
             this.cr.set(l.ref, { x: rect.x, y: rect.y });

@@ -16,9 +16,11 @@ const char *const MapFeed::kWaiting = "Waiting for the phone's map";
 
 namespace {
 
-/* The HUD map's edges fade out over this many of the HUD scene's pixels each side, as the cluster's own map fades, a
- * little narrower (about 8 % of its width at the default size, 17 % of its height). */
-const float kHudFeatherPx = 40.0f;
+/* The HUD map's edges fade out over this many of the HUD scene's pixels: the top and the sides softly, as the
+ * cluster's own map fades (about 12 % of its width at the default size, 26 % of its height), the bottom over a
+ * narrow band, so the road ahead stays in full above the readings under the map. */
+const float kHudFeatherPx = 56.0f;
+const float kHudFeatherBottomPx = 16.0f;
 
 /* The size of a target in the renderer's hello ("map:1088x480,panel:..."). */
 bool target_size(const std::string &targets, const std::string &name, uint32_t *w, uint32_t *h)
@@ -135,6 +137,7 @@ void MapFeed::make_layer()
     lo_.opacity = cfg_.target == "hud" ? (float)cfg_.hud_brightness_pct / 100.0f : 1.0f;
     /* on the HUD the map's edges fade out (cluster-render 0.4.1); the cluster's keep their hard edge */
     lo_.feather = cfg_.target == "hud" ? kHudFeatherPx : 0.0f;
+    lo_.feather_bottom = cfg_.target == "hud" ? kHudFeatherBottomPx : -1.0f;
     show_due_ = false;
     refused_.clear();
     layer_state_ = "stalled";

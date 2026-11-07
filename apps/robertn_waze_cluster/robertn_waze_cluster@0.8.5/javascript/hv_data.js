@@ -5,7 +5,7 @@
  * now and its real electric range (the range eDrive's Range page has, learned from this car's driving).
  *
  * eDrive reads the battery unit over the head unit's diagnostic link; two apps doing that at once disturb each other,
- * so this app does not: eDrive writes what it has once a second to SHARED, a file anyone may read ({ t, kw, soc,
+ * so this app does not: eDrive writes what it has four times a second (2.7.11; once a second before) to SHARED, a file anyone may read ({ t, kw, soc,
  * rangeKm }), and this reads it. Only while eDrive is installed (installed(): an app folder beside this one whose
  * staged id is "edrive", or its file seen) is the electric range offered.
  *
@@ -21,7 +21,7 @@ const path = require('path');
 const EventEmitter = require('events');
 
 const SHARED = '/tmp/mgu-edrive.json';
-const READ_MS = 1000, POWER_FRESH_MS = 5000, RANGE_FRESH_MS = 120000, LOOK_MS = 60000;
+const READ_MS = 250, POWER_FRESH_MS = 5000, RANGE_FRESH_MS = 120000, LOOK_MS = 60000;
 const EDRIVE = 'edrive';
 
 const num = (v) => typeof v === 'number' && isFinite(v);

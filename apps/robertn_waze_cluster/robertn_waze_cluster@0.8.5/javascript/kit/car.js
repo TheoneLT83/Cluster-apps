@@ -13,6 +13,8 @@
  * list the interfaces (see SIGNALS below for the exact entries).
  * Demo: setting "demo" = auto (until the car answers) / on / off.
  * data().stage = the selector position 'P' / 'R' / 'N' / 'D' (gearbox signal), else undefined.
+ * data().mode = the gearbox programme 'S' (sport) / 'M' (manual) from the gearbox signal's selector fields, else
+ * 'D' / 'P' / 'R' / 'N' or undefined (field names differ between cars; each new set is logged).
  * data().condition = BMW's vehicle state number ('condition' group; 10 = drive-ready), else undefined.
  */
 const Sim = require('./sim');
@@ -32,6 +34,24 @@ const gearOf = (x) => (typeof x === 'number' ? (x >= 3 && x <= 12 ? x - 2 : x ==
 // the gear field alone can't tell P from N (both N_OR_P)
 const STAGES = { P: 'P', R: 'R', N: 'N', D: 'D', 1: 'P', 2: 'R', 3: 'N', 4: 'D' };
 const stageOf = (x) => STAGES[x];
+/* The programme (S / M, or D / P / R / N) from a gearbox status's selector-like fields: enum names or on/off flags
+ * (as idrive7-apps' M Vitals reads it). */
+function modeOf(o) {
+    for (const k of Object.keys(o || {})) {
+        if (k === 'statusActualGearDrive' || /StageDrive/.test(k) || !/select|lever|position|program|mode|range|manual|sport|tip/i.test(k)) continue;
+        const v = o[k];
+        if (v === true || v === 1) { if (/manual|tip/i.test(k)) return 'M'; if (/sport/i.test(k)) return 'S'; continue; }
+        const x = String(v).toUpperCase();
+        if (/NOT|INACTIVE|INVALID|SIGNAL|UNKNOWN|OFF|NO_/.test(x)) continue;
+        if (/MANU|TIPP|^M$|^M_|_M$|^M\d/.test(x)) return 'M';
+        if (/SPORT|^S$|_S$|^DS$/.test(x)) return 'S';
+        if (/PARK|^P$/.test(x)) return 'P';
+        if (/REVERSE|^R$/.test(x)) return 'R';
+        if (/NEUTRAL|^N$/.test(x)) return 'N';
+        if (/DRIVE|^D$|^D_|_D$/.test(x)) return 'D';
+    }
+    return undefined;
+}
 // VehicleCondition.statusConditionVehicle (BMW's vehicle state): names or wire numbers -> number.
 // 5 = WOHNEN (living, no ignition), 7 = PRUEFEN_ANALYSE_DIAGNOSE (ignition on), 8 = drive
 // readiness starting, 10 = FAHREN (drive-ready / READY, also with the engine off on a hybrid),
@@ -121,10 +141,13 @@ class Car {
         if (groups.includes('gear')) {
             add('de.bmw.infrastructure.VehicleInformation', 'statusGearboxDrive', (v) => {
                 const g = gearOf(v.statusActualGearDrive), s = stageOf(v.statusActualStageDrive);
+                const keyOf = JSON.stringify(Object.keys(v || {}).filter((x) => x !== 'statusActualGearDrive').map((x) => [x, v[x]]));
+                if (boxSeen.length < 24 && boxSeen.indexOf(keyOf) < 0) { boxSeen.push(keyOf); this.log.info('gearbox: ' + JSON.stringify(v)); }
+                this.live.mode = modeOf(v);
                 if (s !== undefined) put('stage', s);
                 if (g !== undefined) put('gear', g);
             });
-            const selSeen = [];
+            const selSeen = [], boxSeen = [];
             add('de.bmw.infrastructure.VehicleInformation', 'DataPowerTrain2', (v) => {
                 const raw = v && v.statusGearSelectionDrive, sel = selectionOf(raw);
                 if (selSeen.length < 12 && selSeen.indexOf(String(raw)) < 0) { selSeen.push(String(raw)); this.log.info('gear selection: ' + JSON.stringify(raw)); }
@@ -192,3 +215,4 @@ Car.GearGuess = GearGuess;
 Car.selectionOf = selectionOf;
 Car.conditionOf = conditionOf;
 module.exports = Car;
+module.exports.modeOf = modeOf;

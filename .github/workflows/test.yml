@@ -150,6 +150,7 @@ jobs:
       # the committed package tree is what the kit stages from app/, src/ and kit/
       - run: node apps/robertn_waze_cluster/tools/stage.js && git diff --exit-code -- apps/robertn_waze_cluster
       - run: node apps/robertn_waze_cluster/tools/test_i18n.js
+      - run: node apps/robertn_waze_cluster/tools/test_gear.js
 
   waze-on-cluster-x86:
     needs: changes

@@ -101,7 +101,7 @@ bool VideoLayer::attach(Graph *g, int64_t now_ms, std::string *err)
     atlas_quad_ = atlas_buf_ ? g->quad(atlas_effect_, params.rect) : 0;
     bool good = atlas_quad_ && g->turn(atlas_quad_, params.turn()) && g->texture(atlas_quad_, "u_image", atlas_buf_) &&
                 g->uniform(atlas_quad_, "u_size", size, 2) && g->uniform(atlas_quad_, "u_opacity", &zero, 1) &&
-                g->uniform(atlas_quad_, "u_feather", none, 2) &&
+                g->uniform(atlas_quad_, "u_feather", none, 2) && g->uniform(atlas_quad_, "u_feather_bottom", &zero, 1) &&
                 g->show(atlas_quad_, false) && g->order(atlas_quad_, order_);
     if (good && p_.pan_blocks) {
         const uint32_t bw = crk::block_texels_w(p_.w), bh = crk::block_texels_h(p_.h);
@@ -110,7 +110,7 @@ bool VideoLayer::attach(Graph *g, int64_t now_ms, std::string *err)
         block_quad_ = good ? g->quad(block_effect_, params.rect) : 0;
         good = block_quad_ && g->turn(block_quad_, params.turn()) && g->texture(block_quad_, "u_image", block_buf_[0]) &&
                g->uniform(block_quad_, "u_size", size, 2) && g->uniform(block_quad_, "u_opacity", &zero, 1) &&
-               g->uniform(block_quad_, "u_feather", none, 2) &&
+               g->uniform(block_quad_, "u_feather", none, 2) && g->uniform(block_quad_, "u_feather_bottom", &zero, 1) &&
                g->show(block_quad_, false) && g->order(block_quad_, order_ + 1);
         block_bank_ = 0;
     }
@@ -164,14 +164,18 @@ void VideoLayer::show_blocks(bool on)
 void VideoLayer::set_opacity()
 {
     const float a = opaque_ ? params.opacity * fade_ : 0.0f;
-    /* the feather as a share of the rect, at most half of it */
+    /* the feather as a share of the rect, at most half of it: the sides', the top's, the bottom's */
+    const float fb = params.feather_bottom >= 0 ? params.feather_bottom : params.feather;
     const float f[2] = {params.rect.w ? std::min(0.5f, params.feather / (float)params.rect.w) : 0.0f,
                         params.rect.h ? std::min(0.5f, params.feather / (float)params.rect.h) : 0.0f};
+    const float b = params.rect.h ? std::min(0.5f, fb / (float)params.rect.h) : 0.0f;
     g_->uniform(atlas_quad_, "u_opacity", &a, 1);
     g_->uniform(atlas_quad_, "u_feather", f, 2);
+    g_->uniform(atlas_quad_, "u_feather_bottom", &b, 1);
     if (block_quad_) {
         g_->uniform(block_quad_, "u_opacity", &a, 1);
         g_->uniform(block_quad_, "u_feather", f, 2);
+        g_->uniform(block_quad_, "u_feather_bottom", &b, 1);
     }
 }
 

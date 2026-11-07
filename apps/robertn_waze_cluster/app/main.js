@@ -59,13 +59,19 @@ function useFonts(code) {
 }
 
 
-/* P / R / N / D, D1 ... D9 from car.js's data: its gear (-1 R, 0 N/P, 1...) and the selector stage. */
+/* MDrive.dataDisplayGearbox: the programme the cluster shows beside the gear (names or wire numbers). */
+const PROGRAMS = { S_MINUS_PROGRAMM: 'S', M_MINUS_PROGRAMM: 'M', 1: 'S', 2: 'M' };
+
+/* P / R / N / D, D1 ... D9, S1 ... S8 (sport), M1 ... M8 (manual) from car.js's data: its gear (-1 R, 0 N/P, 1...),
+ * the selector stage and the programme (program: the cluster's, else the gearbox status's mode). */
 function gearText(d) {
     if (!d) return null;
-    if (d.stage === 'D') return G.isNum(d.gear) && d.gear > 0 ? 'D' + d.gear : 'D';
+    const p = d.program || (d.mode === 'S' || d.mode === 'M' ? d.mode : null);
+    const ahead = (g) => (p || 'D') + (G.isNum(g) && g > 0 ? g : '');
+    if (d.stage === 'D') return ahead(d.gear);
     if (d.stage) return d.stage;
-    if (!G.isNum(d.gear)) return null;
-    return d.gear < 0 ? 'R' : d.gear === 0 ? 'N' : 'D' + d.gear;
+    if (!G.isNum(d.gear)) return p;
+    return d.gear < 0 ? 'R' : d.gear === 0 ? p || 'N' : ahead(d.gear);
 }
 
 function fit(cv, s, size, w, font) {
@@ -104,10 +110,19 @@ async function background(bg) {
     const turns = new TurnSignals({ signals: bg.signals, log });
     const hud = new HudOverlay({ log });
     // boost from the sport display (FES), as M Vitals reads it: bar, 0.01 a step, 255 no value
-    let boost = null;
+    let boost = null, program = null;
+    const programSeen = [];
     const car = new Car(Object.assign({}, bg, { log }), ['gear', 'speed', 'rpm', 'temps', 'torque'], {
         'de.bmw.infotainment.drivingexcitement.FES': {
             statusSwitchDriveDynamicSport2: (v) => { const r = v && v.displayBoostPressure; boost = G.isNum(r) && r !== 255 ? r * 0.01 : null; },
+        },
+        // S or M beside the gear, as the cluster shows it
+        'de.bmw.infotainment.misc.MDrive': {
+            dataDisplayGearbox: (v) => {
+                const raw = v && v.displayProgramGearbox;
+                if (programSeen.length < 12 && programSeen.indexOf(String(raw)) < 0) { programSeen.push(String(raw)); log.info('gear programme: ' + JSON.stringify(raw)); }
+                program = PROGRAMS[raw] || null;
+            },
         },
     });
     const units = new Units({ settings, appRoot: bg.dataDir && path.dirname(bg.dataDir), log });
@@ -118,7 +133,7 @@ async function background(bg) {
     const hvWanted = () => { if (settings.get('hudOn') !== false && ['ev', 'power'].indexOf(dataChoice()) >= 0) hv.start(); else hv.stop(); };
     const mapNow = () => mapRect(ctl.hudWidth() || 0, ctl.hudOffset() || [0, 0]);
     // the HUD shows the car's gear only, never demo data
-    const gearNow = () => { const d = car.data(); return d && !d.demo ? gearText(d) : null; };
+    const gearNow = () => { const d = car.data(); return d && !d.demo ? gearText(Object.assign({}, d, { program })) : null; };
     /* The data under the map (hud_overlay.js drawData), the car's own only; preview: every chosen one, '--' for
      * a value not known. */
     const dataNow = (preview) => {
@@ -162,6 +177,9 @@ async function background(bg) {
     logs.on('change', changed);
     turns.on('change', () => { toHud(); changed(); });
     settings.onChange(() => { hvWanted(); toHud(); changed(); });
+    // boost, torque, the temperatures and the programme come without a sample of their own: the HUD looks again
+    // often (only what changed is sent; the layers take up to 25 frames a second)
+    setInterval(() => { if (settings.get('hudOn') !== false) toHud(); }, 80);
     hvWanted();
 
     // the HMI's display language, at the start and on each change
@@ -270,7 +288,7 @@ mgu.run({
             }
             if (settings.get('hudGear')) {
                 const g = gearRect(m), gt = gearText(car.data()) || 'D';
-                cv.text(gt, x + (g.x + 2) * k, y + (g.y + g.h - 8) * k, 40 * k, gearNow() ? '#f2f5f8' : withAlpha('#f2f5f8', 0.35), { font: 'gear' });
+                cv.text(gt, x + (g.x + 2) * k, y + (g.y + (g.h + 0.7 * 40) / 2) * k, 40 * k, gearNow() ? '#f2f5f8' : withAlpha('#f2f5f8', 0.35), { font: 'gear' });
             }
             if (settings.get('realSpeed')) {
                 const sp = car.data() && !car.data().demo && G.isNum(car.data().speed) ? Math.round(car.data().speed) : null;

@@ -55,6 +55,7 @@ struct LayerOptions {
     bool guide_hold = true;          /* false: the stock HMI's guidance box shows while this layer wants the map */
     float opacity = 1.0f;
     float feather = 0;               /* video: the edges faded out over this many pixels (0: none) */
+    float feather_bottom = -1;       /* video: the bottom edge's, when not feather's (-1: as feather) */
     /* Video, image and effect layers: turned (degrees clockwise) and scaled about
      * the pivot, in pixels from the layer's top-left (its centre unless
      * pivot). */

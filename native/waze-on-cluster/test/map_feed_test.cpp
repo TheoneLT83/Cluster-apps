@@ -745,7 +745,9 @@ int main()
     const crs::Layer *hl = layer_on(2);
     ok("the HUD map at full brightness by default", hl && hl->params.opacity == 1.0f && feeds.status("decode").hud_brightness_pct == 100);
     const crs::Layer *cl = layer_on(0);
-    ok("the HUD map's edges fade out, the cluster map's are as they were", hl && hl->params.feather == 40.0f && cl && cl->params.feather == 0.0f);
+    ok("the HUD map's edges fade out, the bottom over less; the cluster map's are as they were",
+       hl && hl->params.feather == 56.0f && hl->params.feather_bottom == 16.0f && cl && cl->params.feather == 0.0f &&
+           cl->params.feather_bottom == -1.0f);
     feeds.set_hud_brightness(40);
     bpump(300, &f2);
     hl = layer_on(2);

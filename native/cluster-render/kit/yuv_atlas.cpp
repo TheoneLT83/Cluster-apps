@@ -105,12 +105,16 @@ uniform sampler2D u_image;
 uniform vec2 u_size;
 uniform float u_opacity;
 uniform vec2 u_feather;
+uniform float u_feather_bottom;
 varying vec2 v_uv;
-/* The edges faded out over u_feather (a share of the width and height each side; 0: none). */
+/* The edges faded out: the sides over u_feather.x, the top over u_feather.y, the bottom over u_feather_bottom (a
+ * share of the width or height; 0: none). Row 0 is the top. */
 float edge_fade() {
-    vec2 d = min(v_uv, 1.0 - v_uv);
-    vec2 e = vec2(u_feather.x > 0.0 ? smoothstep(0.0, u_feather.x, d.x) : 1.0, u_feather.y > 0.0 ? smoothstep(0.0, u_feather.y, d.y) : 1.0);
-    return e.x * e.y;
+    float dx = min(v_uv.x, 1.0 - v_uv.x);
+    float ex = u_feather.x > 0.0 ? smoothstep(0.0, u_feather.x, dx) : 1.0;
+    float et = u_feather.y > 0.0 ? smoothstep(0.0, u_feather.y, v_uv.y) : 1.0;
+    float eb = u_feather_bottom > 0.0 ? smoothstep(0.0, u_feather_bottom, 1.0 - v_uv.y) : 1.0;
+    return ex * et * eb;
 }
 void main() {
     vec2 l = v_uv * u_size;

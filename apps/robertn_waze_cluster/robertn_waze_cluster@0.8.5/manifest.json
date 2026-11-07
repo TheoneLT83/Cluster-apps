@@ -155,6 +155,12 @@
         "statusSwitchDriveDynamicSport2": "rs"
       }
     },
+    "de.bmw.infotainment.misc.MDrive": {
+      "instances": "1",
+      "attributes": {
+        "dataDisplayGearbox": "s"
+      }
+    },
     "de.bmw.body.Light": {
       "instances": "1",
       "attributes": {

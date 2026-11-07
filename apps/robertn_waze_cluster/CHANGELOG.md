@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.8.5
+
+- **Gear**: S1 ... S8 in sport and M1 ... M8 in manual, as the cluster shows them (MDrive's gearbox programme, else
+  the gearbox status's selector); the values the car sends are in the log. The gear's letters are centred in the
+  row, level with the arrows.
+- **Faster readings**: boost, power and torque, engine speed, the temperatures and the real speed reach the HUD
+  within about a tenth of a second (each looked at every 80 ms, the layers up to 25 frames a second); the electric
+  range and the battery's power four times a second (with eDrive 2.7.11).
+- **HUD map**: its top and sides fade out more (56 px), its bottom less (16 px) (waze-on-cluster 0.9.8,
+  cluster-render 0.4.5).
+
 ## 0.8.4
 
 - **Display page** draws again: it stopped with an error before drawing anything, and while open the screen

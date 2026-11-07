@@ -61,6 +61,7 @@ Layer fields (all optional):
 | `guide_hold` | 1 | on a target guide holds follow (`map`, iDrive 7): 0 keeps them released while this layer wants the target, so the stock HMI's guidance box shows (README.md "Guide hold") |
 | `opacity` | 1 | 0-1, for video and image layers; drawn times the target's fade in and out |
 | `feather` | 0 | video layers: the edges faded out over this many pixels each side (0-256, at most half the rect), as a smooth ramp of their alpha |
+| `feather_bottom` | -1 | video layers: the bottom edge's fade, when not `feather`'s (0-256; -1: as `feather`) |
 | `rotate` | 0 | video, image and effect layers: degrees clockwise about the pivot |
 | `sx`, `sy` | 1 | video, image and effect layers: scale about the pivot |
 | `px`, `py` | the rect's centre | the pivot, in pixels from the rect's top-left; once set, kept until set again |
