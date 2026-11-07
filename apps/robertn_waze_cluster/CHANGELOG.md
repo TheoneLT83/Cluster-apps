@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.7
+
+- **Why a patch cannot be applied**: under CarPlay's or Android Auto's status, the patch helper's reason (for
+  example the head unit's variant it does not know), and in the log each time it changes.
+
 ## 0.8.6
 
 - **Own settings for this driver** (Maps page, beside Hide BMW logo on cluster): the map's settings (where it

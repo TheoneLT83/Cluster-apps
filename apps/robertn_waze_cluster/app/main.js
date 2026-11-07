@@ -220,6 +220,8 @@ async function background(bg) {
     const say = (key, text) => { if (text && said[key] !== text) { said[key] = text; log.info(text); } };
     const sayStates = () => {
         say('hud', 'HUD overlay: ' + HUD_STATES[hud.state()]);
+        say('cp-conflict', ctl.conflictDetail(false) && 'CarPlay patch: ' + ctl.conflictDetail(false));
+        say('aa-conflict', ctl.conflictDetail(true) && 'Android Auto patch: ' + ctl.conflictDetail(true));
         const d = car.data();
         say('gear', d && d.demo ? 'demo: no gear from the car' : gearNow() ? 'gear from the car' : 'no gear from the car yet');
     };
@@ -336,7 +338,9 @@ mgu.run({
             });
             const cp = phone === 'carplay';
             small(cv, th, (cp ? ctl.statusText() : ctl.aaStatusText()) + (ctl.restartText() ? '  \u00b7  ' + ctl.restartText() : ''), 48, py + 70, 712);
-            small(cv, th, cp ? ctl.wifiText() : ctl.zoomText(), 48, py + 98, cp ? 712 : 300, th.dim);
+            // why the patch cannot be applied (patchd's own words), else the Wi-Fi band or the zoom
+            const why = ctl.conflictDetail(!cp).replace(/^not supported on this car \((.*)\)$/, '$1');
+            small(cv, th, why || (cp ? ctl.wifiText() : ctl.zoomText()), 48, py + 98, cp ? 712 : 300, th.dim);
             let bx = 48;
             const by = py + 112;
             const btn = (text, run, opts) => { bx += G.button(cv, th, bx, by, 0, 42, text, run, opts) + 10; };

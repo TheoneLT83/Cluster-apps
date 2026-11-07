@@ -650,6 +650,13 @@ class WazeClusterControl extends EventEmitter {
         return t('Status: {0}', this._carplayState());
     }
 
+    /* Why CarPlay's (or Android Auto's: aa) patch cannot be applied, as patchd says it (English, for the log and
+     * the line under the status), or '' when nothing keeps it. */
+    conflictDetail(aa) {
+        const ps = this.patchStatus, s = aa ? this.aa() : ps;
+        return this.patch.link === 'up' && s && s.conflict ? String(s.conflict) : '';
+    }
+
     /* CarPlay's patch, in the words both sections use. */
     _carplayState() {
         const p = this.patch.link;
