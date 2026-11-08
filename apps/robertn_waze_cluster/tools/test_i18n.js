@@ -63,7 +63,7 @@ list('PAGES').forEach((w) => used.add(w));
 ['Cluster', 'HUD', 'Cluster + HUD'].forEach((w) => { ok(MAIN.indexOf(`'${w}']`) >= 0, `app/main.js: ${w}`); used.add(w); });
 // the settings' labels and choices (translated at a language change), and the HMI's strings the kit writes
 const APP = JSON.parse(fs.readFileSync(path.join(HERE, 'app', 'app.json'), 'utf8'));
-APP.settings.forEach((s) => { used.add(s.label); (s.options || []).forEach((o) => used.add(o[1])); });
+APP.settings.filter((s) => s.key !== 'hudFound').forEach((s) => { used.add(s.label); (s.options || []).forEach((o) => used.add(o[1])); });
 APP.screens.forEach((sc) => (sc.buttons || []).forEach((b) => used.add(b[1])));
 used.add(APP.title);
 ok(used.size > 40, `the app's words (${used.size})`);

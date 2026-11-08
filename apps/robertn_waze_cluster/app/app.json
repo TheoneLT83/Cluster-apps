@@ -2,7 +2,7 @@
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
   "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range, oil and coolant, boost, power and torque, or engine speed",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
   "memoryKB": 153600,
@@ -39,6 +39,15 @@
       "_instances": "1",
       "StatusFunctionsIndicators": "s",
       "_optional": "the turn signals on the HUD"
+    },
+    "com.harman.infotainment.systemfunctions.tasu.tasu.InternalTasu": {
+      "_instances": "SystemFunctionsInternalTasuInst1",
+      "_methods": [
+        "sendTasuRequest"
+      ],
+      "_broadcasts": [
+        "sendTasuResponse"
+      ]
     }
   },
   "screens": [
@@ -60,11 +69,21 @@
   ],
   "settings": [
     {
+      "key": "hudFound",
+      "label": "Head-up display found",
+      "type": "bool",
+      "default": true,
+      "hidden": true
+    },
+    {
       "key": "hudOn",
       "label": "Displays on HUD",
       "type": "bool",
       "default": true,
-      "reset": 1
+      "reset": 1,
+      "when": {
+        "hudFound": true
+      }
     },
     {
       "key": "hudTurn",
@@ -119,7 +138,8 @@
       "type": "bool",
       "default": false,
       "when": {
-        "hudOn": true
+        "hudOn": true,
+        "hudFound": true
       }
     },
     {
@@ -226,6 +246,7 @@
       "label": "Screen layout",
       "type": "choice",
       "default": "full",
+      "reset": 1,
       "options": [
         [
           "full",

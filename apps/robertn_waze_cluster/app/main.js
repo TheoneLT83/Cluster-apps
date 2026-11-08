@@ -15,6 +15,7 @@
  *             turn signals none, the electric range with the eDrive power, oil and coolant, boost, power and torque
  *             (torque x rpm, in M Vitals' units where it has them), or engine speed; with a picture of it
  *   Log       the app's log, and the saved logs for a phone on the car's hotspot
+ *   (A car without a head-up display, hud_probe.js: no Display page, no HUD map panel or HUD choices.)
  *   Settings  the kit's settings sheet: Displays on HUD (off: nothing of this app on the HUD), Real speed on HUD (left of BMW's own speed), the colours, the
  *             layout
  * Every word is in the HMI's display language (i18n.js), English where a language has none, with the glyphs of
@@ -32,6 +33,7 @@ const { LogsControl } = require('./logs_control.js');
 const path = require('path');
 const { HudOverlay, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
+const { HudProbe } = require('./hud_probe.js');
 const { Units } = require('./units.js');
 const { TurnSignals } = require('./turn_signals.js');
 const { ProfileSync, sessionReader } = require('./profile_sync.js');
@@ -114,6 +116,12 @@ async function background(bg) {
     try { readProfile = sessionReader(require('oap-sdk').someipBuilders, log); } catch (e) { log.warn('driver profiles unavailable: ' + e.message); }
     const profiles = new ProfileSync({ control: ctl, log, readProfile });
     const hud = new HudOverlay({ log });
+    // a car without a head-up display: nothing of ours on it, and none of its settings or pages (hud_probe.js);
+    // not known (the diagnostic channel did not answer): as with one
+    const hudProbe = new HudProbe({ signals: bg.signals, dataDir: bg.dataDir, log });
+    const hudOk = () => hudProbe.found() !== false;
+    const hudFound = (v) => { if (settings.get('hudFound') !== (v !== false)) settings.set('hudFound', v !== false); };
+    hudFound(hudProbe.found());
     // boost from the sport display (FES), as M Vitals reads it: bar, 0.01 a step, 255 no value
     let boost = null, program = null;
     const programSeen = [];
@@ -135,7 +143,7 @@ async function background(bg) {
     const hv = new HvData({ log, appRoot: bg.dataDir && path.dirname(bg.dataDir) });
     const dataChoice = () => (settings.get('hudData') === 'ev' && !hv.installed() ? 'off' : settings.get('hudData'));
     // the battery unit is read only while its power or the range is shown
-    const hvWanted = () => { if (settings.get('hudOn') !== false && ['ev', 'power'].indexOf(dataChoice()) >= 0) hv.start(); else hv.stop(); };
+    const hvWanted = () => { if (settings.get('hudOn') !== false && hudOk() && ['ev', 'power'].indexOf(dataChoice()) >= 0) hv.start(); else hv.stop(); };
     const mapNow = () => mapRect(ctl.hudWidth() || 0, ctl.hudOffset() || [0, 0]);
     // the HUD shows the car's gear only, never demo data
     const gearNow = () => { const d = car.data(); return d && !d.demo ? gearText(Object.assign({}, d, { program })) : null; };
@@ -171,7 +179,7 @@ async function background(bg) {
     // the car's own speed (a mileage blocker leaves it alone), with the setting realSpeed
     const speedNow = () => { const d = car.data(); return settings.get('realSpeed') && d && !d.demo && G.isNum(d.speed) ? Math.round(d.speed) : null; };
     // Displays on HUD off: nothing of ours on the HUD, which the renderer then gives back to BMW's own layout
-    const toHud = () => (settings.get('hudOn') === false ? hud.update({ turn: {}, gear: null, map: mapNow(), showTurn: false, showGear: false,
+    const toHud = () => (settings.get('hudOn') === false || !hudOk() ? hud.update({ turn: {}, gear: null, map: mapNow(), showTurn: false, showGear: false,
         data: [], speed: null }) : hud.update({
         turn: turns.state(), gear: gearNow(), map: mapNow(),
         showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'), data: dataNow(false), speed: speedNow(),
@@ -185,7 +193,7 @@ async function background(bg) {
     settings.onChange(() => { hvWanted(); toHud(); changed(); });
     // boost, torque, the temperatures and the programme come without a sample of their own: the HUD looks again
     // often (only what changed is sent; the layers take up to 25 frames a second)
-    setInterval(() => { if (settings.get('hudOn') !== false) toHud(); }, 80);
+    setInterval(() => { if (settings.get('hudOn') !== false && hudOk()) toHud(); }, 80);
     hvWanted();
 
     // the HMI's display language, at the start and on each change
@@ -231,8 +239,17 @@ async function background(bg) {
     ctl.open();
     profiles.start();
     toHud();
+    hudProbe.run((v) => {
+        hudFound(v);
+        // a map set to show on a HUD this car does not have goes to the cluster
+        if (v === false && ['hud', 'both'].indexOf(ctl.shownOn()) >= 0 && ctl.canChooseShownOn()) {
+            log.info('no HUD: the map shows on the cluster');
+            ctl.showOn('cluster');
+        }
+        hvWanted(); toHud(); changed();
+    });
     log.info('Cluster functions ' + bg.spec.version + ' started (' + (bg.app && bg.app.startReason) + ')');
-    return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, onChange: (fn) => listeners.push(fn) };
+    return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, onChange: (fn) => listeners.push(fn) };
 }
 
 mgu.run({
@@ -241,7 +258,7 @@ mgu.run({
     async start(ctx) {
         const { ui, settings } = ctx;
         const b = ctx.background || await background(ctx);
-        const { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow } = b;
+        const { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk } = b;
         let page = 0, version = 0, drawn = -1, blink = true, phone = 'carplay';
         // the kit's header and Settings tab in the display language too
         const changed = () => {
@@ -310,17 +327,19 @@ mgu.run({
         };
 
         /* ---- the pages ---- */
+        // the Display page is the HUD's: none without one
+        const pagesNow = () => PAGES.filter((p) => p !== 'Display' || hudOk());
         function drawMaps(cv, th) {
             const ex = G.pageBottom(cv) - G.BOTTOM;
             G.panel(cv, th, 24, 44, 760, 468, t('Map'));
             label(cv, th, t('Show on'), 48, 120);
             const on = ctl.shownOn(), can = ctl.canChooseShownOn();
             let x = 48;
-            [['cluster', 'Cluster'], ['hud', 'HUD'], ['both', 'Cluster + HUD']].forEach(([v, text]) => {
+            [['cluster', 'Cluster'], ['hud', 'HUD'], ['both', 'Cluster + HUD']].filter(([v]) => v === 'cluster' || hudOk()).forEach(([v, text]) => {
                 x += G.button(cv, th, x, 130, 0, 44, t(text), () => ctl.showOn(v), { primary: on === v, busy: !can, key: 'show-' + v }) + 10;
             });
             small(cv, th, ctl.mapText(), 48, 204, 712);
-            small(cv, th, ctl.hudText(), 48, 230, 712, ctl.hudDisabled() ? th.warn : null);
+            if (hudOk()) small(cv, th, ctl.hudText(), 48, 230, 712, ctl.hudDisabled() ? th.warn : null);
             const gu = ctl.guidanceUnavailable(), hide = ctl.hideGuidance();
             cv.text(fit(cv, t('Hide BMW logo on cluster'), 22, 258, 'label'), 48, 276, 22, gu ? th.dim : th.text, { font: 'label' });
             toggle(cv, th, 314, 252, !!hide, () => ctl.toggleGuidance(), 'guide', gu || hide === null);
@@ -360,6 +379,7 @@ mgu.run({
                 btn(t('Restart head unit'), () => ctl.requestRestart(), { confirm: true, primary: ctl.canRestart(), busy: !ctl.canRestart(), key: 'restart' });
             }
 
+            if (!hudOk()) return;          // no head-up display: no HUD map panel
             G.panel(cv, th, 804, 44, 772, 468, t('HUD map'));
             const ph = hudPicture(cv, th, 828, 116, 400);
             line(cv, th, ctl.hudBrightnessText(), 828, 116 + ph + 40, 400);
@@ -430,18 +450,20 @@ mgu.run({
         async function render(force) {
             if (!force && drawn === version) return;
             drawn = version;
-            const want = page === 2;
+            const pages = pagesNow();
+            if (page >= pages.length) page = 0;
+            const want = pages[page] === 'Log';
             if (want !== logsOpen) { logsOpen = want; if (want) logs.open(); else logs.close(); }
             const th = ctx.theme();
             const cv = ctx.canvas(W, H).clear(th.bg);
-            [drawMaps, drawDisplay, drawLog][page](cv, th);
-            G.frame(cv, th, PAGES.map((p) => t(p)), page, []);
+            ({ Maps: drawMaps, Display: drawDisplay, Log: drawLog })[pages[page]](cv, th);
+            G.frame(cv, th, pages.map((p) => t(p)), page, []);
             await ui.image('MAIN_GFX', cv);
         }
 
-        ui.onClick('BTN_PAGE', () => { page = (page + 1) % PAGES.length; changed(); });
+        ui.onClick('BTN_PAGE', () => { page = (page + 1) % pagesNow().length; changed(); });
         ctx.hideButton('BTN_PAGE');
-        ctx.onTab((i) => { if (i !== page && i < PAGES.length) { page = i; changed(); } });
+        ctx.onTab((i) => { if (i !== page && i < pagesNow().length) { page = i; changed(); } });
         ctx.onLayout(changed);
         G.onConfirm(changed);
         ctx.loop('MAIN', 4, () => render(false));

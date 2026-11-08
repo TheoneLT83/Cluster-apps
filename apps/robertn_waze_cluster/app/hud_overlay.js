@@ -56,19 +56,27 @@ function mapRect(widthPct, offset) {
     return { x, y, w, h };
 }
 
-/* The row under the map; inside its bottom edge when the HUD has no room under it. */
-function rowRect(map) {
-    const below = map.y + map.h;
-    return { x: map.x, y: below + ROW_H <= HUD_H ? below : Math.max(0, map.y + map.h - ROW_H - 4), w: map.w, h: ROW_H };
+/* What the turn signals, the gear and the data are placed by: a map of the Standard size centred where the map is
+ * (held inside the HUD), so the map's size moves none of them; moving the map moves them with it. */
+function anchorRect(map) {
+    const s = mapRect(0, [0, 0]), cx = map.x + map.w / 2, cy = map.y + map.h / 2;
+    return { x: Math.max(0, Math.min(HUD_W - s.w, Math.round(cx - s.w / 2))), y: Math.max(0, Math.min(HUD_H - s.h, Math.round(cy - s.h / 2))),
+        w: s.w, h: s.h };
 }
 
-/* Where an arrow of aw x ah goes in the row: the left one after BMW's speed reading (short of the map's middle), the
- * right one at the map's right edge. */
+/* The row under the map's Standard-size box (anchorRect); inside its bottom edge when the HUD has no room under it. */
+function rowRect(map) {
+    const a = anchorRect(map), below = a.y + a.h;
+    return { x: a.x, y: below + ROW_H <= HUD_H ? below : Math.max(0, a.y + a.h - ROW_H - 4), w: a.w, h: ROW_H };
+}
+
+/* Where an arrow of aw x ah goes in the row: the left one after BMW's speed reading (short of the box's middle), the
+ * right one at the box's right edge. */
 function arrowRect(map, side, aw, ah) {
-    const row = rowRect(map), k = Math.min(1, (ROW_H - 8) / ah);
+    const a = anchorRect(map), row = rowRect(map), k = Math.min(1, (ROW_H - 8) / ah);
     const w = Math.round(aw * k), h = Math.round(ah * k), y = row.y + Math.round((ROW_H - h) / 2);
-    if (side === 'right') return { x: map.x + map.w - w - 4, y, w, h };
-    return { x: Math.round(Math.max(map.x + 4, Math.min(SPEED_END, map.x + map.w * 0.55 - w))), y, w, h };
+    if (side === 'right') return { x: a.x + a.w - w - 4, y, w, h };
+    return { x: Math.round(Math.max(a.x + 4, Math.min(SPEED_END, a.x + a.w * 0.55 - w))), y, w, h };
 }
 
 /* The gear, beside the left arrow. */
@@ -249,5 +257,5 @@ class HudOverlay {
     }
 }
 
-module.exports = { HudOverlay, mapRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
+module.exports = { HudOverlay, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
     ROW_H, SPEED_END, SPEED_RECT, MAX_KW, GREEN, WHITE, AMBER, DIM };

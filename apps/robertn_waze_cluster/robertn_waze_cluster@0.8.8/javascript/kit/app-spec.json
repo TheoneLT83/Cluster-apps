@@ -1,7 +1,7 @@
 {
  "id": "robertn_waze_cluster",
  "title": "Cluster functions",
- "version": "0.8.7",
+ "version": "0.8.8",
  "screens": [
   {
    "name": "MAIN",
@@ -21,11 +21,21 @@
  ],
  "settings": [
   {
+   "key": "hudFound",
+   "label": "Head-up display found",
+   "type": "bool",
+   "default": true,
+   "hidden": true
+  },
+  {
    "key": "hudOn",
    "label": "Displays on HUD",
    "type": "bool",
    "default": true,
-   "reset": 1
+   "reset": 1,
+   "when": {
+    "hudFound": true
+   }
   },
   {
    "key": "hudTurn",
@@ -80,7 +90,8 @@
    "type": "bool",
    "default": false,
    "when": {
-    "hudOn": true
+    "hudOn": true,
+    "hudFound": true
    }
   },
   {
@@ -187,6 +198,7 @@
    "label": "Screen layout",
    "type": "choice",
    "default": "full",
+   "reset": 1,
    "options": [
     [
      "full",

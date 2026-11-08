@@ -25,7 +25,7 @@ const STAGE = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-hud-'));
 fs.cpSync(path.join(REPO, 'kit', 'runtime'), path.join(STAGE, 'kit'), { recursive: true });
 ['hud_overlay.js', 'turn_signals.js'].forEach((f) => fs.copyFileSync(path.join(HERE, 'app', f), path.join(STAGE, f)));
 fs.copyFileSync(path.join(REPO, 'native', 'cluster-render', 'js', 'cluster_render_client.js'), path.join(STAGE, 'cluster_render_client.js'));
-const { HudOverlay, mapRect, rowRect, gearRect, arrowRect, dataRect, ARROW, GEAR_W, GEAR_H, ROW_H, SPEED_END, SPEED_RECT } = require(path.join(STAGE, 'hud_overlay.js'));
+const { HudOverlay, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, ARROW, GEAR_W, GEAR_H, ROW_H, SPEED_END, SPEED_RECT } = require(path.join(STAGE, 'hud_overlay.js'));
 const { ClusterRender } = require(path.join(STAGE, 'cluster_render_client.js'));
 const { sideOf, TurnSignals } = require(path.join(STAGE, 'turn_signals.js'));
 
@@ -45,25 +45,28 @@ async function main() {
     eq(mapRect(60, [0, -40]), { x: 160, y: 94, w: 480, h: 212 }, 'moved up 40 px');
     eq(mapRect(85, [400, 400]), { x: 120, y: 180, w: 680, h: 300 }, 'held inside the HUD');
     eq(mapRect(0, [0, 0]).w, 456, 'Standard: about 57 %');
-    const m = mapRect(60, [0, 0]);
     const [aw, ah] = ARROW.medium;
-    // one row under the map: the left arrow after BMW's speed, the gear beside it, the data, the right arrow at the map's right edge
-    eq(rowRect(m), { x: 160, y: 346, w: 480, h: ROW_H }, 'the row right under the map');
-    const def = mapRect(65, [20, -30]);
-    eq(arrowRect(def, 'left', aw, ah), { x: SPEED_END, y: rowRect(def).y + (ROW_H - ah) / 2, w: aw, h: ah },
-        'the default map: the left arrow right after BMW\'s speed');
-    const small = mapRect(30, [-200, 0]);
-    eq(arrowRect(small, 'left', aw, ah).x, Math.round(small.x + small.w * 0.55 - aw), 'a small map far left: short of its middle');
-    const wide = mapRect(85, [0, 0]);
-    eq(arrowRect(wide, 'left', aw, ah).x, SPEED_END, 'a wide map: the left arrow right after BMW\'s speed');
-    eq(arrowRect(m, 'right', aw, ah), { x: 640 - aw - 4, y: rowRect(m).y + (ROW_H - ah) / 2, w: aw, h: ah }, 'the right one at the map\'s right edge');
+    // the row (turn signals, gear, data) is placed by a Standard-size box at the map's centre: the map's size moves
+    // none of it, moving the map moves it
+    const std = mapRect(0, [0, 0]), m = mapRect(60, [0, 0]);
+    eq(anchorRect(m), std, 'a 60 % map: the row by the Standard box');
+    eq(rowRect(m), { x: std.x, y: std.y + std.h, w: std.w, h: ROW_H }, 'the row right under the Standard box');
+    [30, 45, 70, 85].forEach((pct) => {
+        const mm = mapRect(pct, [0, 0]);
+        eq([rowRect(mm), arrowRect(mm, 'left', aw, ah), arrowRect(mm, 'right', aw, ah), gearRect(mm, 'medium'), dataRect(mm, 'medium')],
+            [rowRect(m), arrowRect(m, 'left', aw, ah), arrowRect(m, 'right', aw, ah), gearRect(m, 'medium'), dataRect(m, 'medium')],
+            pct + ' %: the turn signals, gear and data where they are at 60 %');
+    });
+    const moved = mapRect(60, [20, -30]);
+    eq(rowRect(moved).y - rowRect(m).y, -30, 'the map moved up: the row with it');
+    eq(arrowRect(moved, 'left', aw, ah).x, SPEED_END, 'the left arrow right after BMW\'s speed');
+    eq(arrowRect(m, 'right', aw, ah), { x: std.x + std.w - aw - 4, y: rowRect(m).y + (ROW_H - ah) / 2, w: aw, h: ah },
+        'the right one at the box\'s right edge');
     const g = gearRect(m, 'medium'), l = arrowRect(m, 'left', aw, ah), d = dataRect(m, 'medium'), r = arrowRect(m, 'right', aw, ah);
     ok(g.x === l.x + l.w + 2 && g.y === rowRect(m).y && g.w === GEAR_W && g.h === GEAR_H, 'the gear beside the left arrow');
     ok(d && d.x > g.x + g.w && d.x + d.w < r.x, 'the data between the gear and the right arrow');
-    const low = mapRect(60, [0, 400]);
-    eq(rowRect(low).y, low.y + low.h - ROW_H - 4, 'no room under a map at the HUD\'s bottom: inside its bottom edge');
-    eq(rowRect(m).y, m.y + m.h, 'the row right under the map');
-    eq(dataRect({ x: 300, y: 200, w: 160, h: 70 }), null, 'a narrow map: no room for the data');
+    const low = mapRect(60, [0, 400]), a = anchorRect(low);
+    eq(rowRect(low).y, a.y + a.h - ROW_H - 4, 'no room under the box at the HUD\'s bottom: inside its bottom edge');
 
     const sock = path.join(os.tmpdir(), `woc-hud-${process.pid}.sock`);
     const svc = spawn(bin, [sock], { stdio: ['pipe', 'pipe', 'ignore'] });

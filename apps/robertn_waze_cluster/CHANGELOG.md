@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.8.8
+
+- **Full screen by default, once more**: the screen layout goes back to Full screen once on a car that kept
+  Standard from before; a later choice is kept.
+- **Cars without a head-up display**: the app asks the HUD's control unit (0x3D) over the head unit's diagnostic
+  channel, the instrument cluster first, and keeps the answer. Without a HUD there is no Display page, no HUD map
+  panel, no HUD choice under Show on, no HUD settings, and nothing of the app on the HUD; a map set to the HUD
+  shows on the cluster. When the cluster does not answer either, the HUD's settings stay shown.
+- **The HUD map's size moves nothing else**: the turn signals, the gear and the data are placed by a
+  Standard-size box at the map's centre, so a bigger or smaller map leaves them where they are; moving the map
+  still moves them with it.
+- **CarPlay multitouch is no other tool**: with waze-on-cluster 0.9.11, the drop-in of mgu-store's CarPlay
+  multitouch (which the iDrive7 Assistant installs with the Store) is not a conflict, so the patch shows as
+  Patch, not as changed by another tool.
+
 ## 0.8.7
 
 - **Why a patch cannot be applied**: under CarPlay's or Android Auto's status, the patch helper's reason (for

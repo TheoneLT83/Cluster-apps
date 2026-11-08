@@ -166,6 +166,15 @@
       "attributes": {
         "StatusFunctionsIndicators": "s"
       }
+    },
+    "com.harman.infotainment.systemfunctions.tasu.tasu.InternalTasu": {
+      "instances": "SystemFunctionsInternalTasuInst1",
+      "methods": [
+        "sendTasuRequest"
+      ],
+      "broadcasts": [
+        "sendTasuResponse"
+      ]
     }
   },
   "services": {
