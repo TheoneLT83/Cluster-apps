@@ -22,13 +22,13 @@
  *   const hud = new HudOverlay({ log });
  *   hud.update({ turn: { left, right }, gear: 'D3', map: { x, y, w, h }, arrowSize: 'medium', showTurn: true, showGear: true,
  *                data: [{ kind: 'slider', value, min, max, text }, { kind: 'value', label: 'OIL', text: '92°' }, ...], speed: 87 });
- *   hud.go(onHud, onCluster)   "GO" (green_light.js) at the top of the map's place on the HUD and in the middle of the
+ *   hud.go(onHud, onCluster)   a traffic light with its green lit (green_light.js) at the top of the map's place on the HUD and in the middle of the
  *                    cluster (target `map`, 1088 x 480), as alerts over the rest, until go(false, false)
  *   hud.state()      -> 'off' | 'waiting' | 'shown' | 'disabled' | 'unavailable' (the HUD target, as the renderer says)
  *   hud.close();
  */
 const { ClusterRender } = require('./cluster_render_client.js');
-const { Canvas } = require('./kit/canvas');
+const { Canvas, withAlpha } = require('./kit/canvas');
 
 const HUD_W = 800, HUD_H = 480;
 /* BMW's own indicator's pace: about 1.5 flashes a second */
@@ -142,14 +142,19 @@ function drawArrow(cv, w, h, dir, color) {
     cv.fillRect(x0 - (dir < 0 ? 1 : 0), (h - shaft) / 2, x1 - x0 + 1, shaft, color);
 }
 
-/* "GO": a lit green lamp and the word, on w x h. */
-function drawGo(cv, w, h) {
-    const r = Math.round(h * 0.36), cx = r + 6, cy = Math.round(h / 2);
-    cv.circle(cx, cy, r, GREEN);
-    cv.text('GO', cx + r + 14, cy + Math.round(h * 0.2), Math.round(h * 0.56), GREEN, { font: 'bold' });
+/* A traffic light, its green lit: on w x h (taller than wide), red and yellow faint, green bright with a glow. */
+function drawLight(cv, w, h) {
+    const r = Math.min(w * 0.36, h * 0.13), cx = w / 2, gap = (h - 6 * r) / 4;
+    cv.roundRect(cx - r * 1.45, 0, r * 2.9, h, r * 0.9, '#1a1d22');
+    cv.strokeRoundRect(cx - r * 1.45, 1, r * 2.9, h - 2, r * 0.9, 2, '#5c636b');
+    const y = (i) => gap + r + i * (2 * r + gap);
+    cv.circle(cx, y(0), r, '#4a1414');
+    cv.circle(cx, y(1), r, '#4a3e10');
+    cv.circle(cx, y(2), r * 1.12, withAlpha(GREEN, 0.35));
+    cv.circle(cx, y(2), r, GREEN);
 }
-const GO_HUD = { w: 150, h: 64 };
-const GO_CLUSTER = { x: 404, y: 180, w: 280, h: 120 };
+const LIGHT_HUD = { w: 44, h: 112 };
+const LIGHT_CLUSTER = { x: 499, y: 120, w: 90, h: 240 };
 
 function drawGear(cv, gear) {
     const g = String(gear || '');
@@ -239,13 +244,13 @@ class HudOverlay {
     _draw() {
         if (!this.connected) return;
         const g = this.goWant;
-        if (g.cluster) this._layer('go-cluster', GO_CLUSTER, (cv) => drawGo(cv, GO_CLUSTER.w, GO_CLUSTER.h), 'go', { target: 'map', klass: 'alert', z: 20 });
+        if (g.cluster) this._layer('go-cluster', LIGHT_CLUSTER, (cv) => drawLight(cv, LIGHT_CLUSTER.w, LIGHT_CLUSTER.h), 'go', { target: 'map', klass: 'alert', z: 20 });
         else this._drop('go-cluster');
         const w = this.want;
         if (g.hud) {
             const a = anchorRect((w && w.map) || mapRect(0));
-            const rect = { x: Math.round(a.x + (a.w - GO_HUD.w) / 2), y: a.y + 4, w: GO_HUD.w, h: GO_HUD.h };
-            this._layer('go-hud', rect, (cv) => drawGo(cv, GO_HUD.w, GO_HUD.h), 'go', { target: 'hud', klass: 'alert', z: 20 });
+            const rect = { x: Math.round(a.x + (a.w - LIGHT_HUD.w) / 2), y: a.y + 4, w: LIGHT_HUD.w, h: LIGHT_HUD.h };
+            this._layer('go-hud', rect, (cv) => drawLight(cv, LIGHT_HUD.w, LIGHT_HUD.h), 'go', { target: 'hud', klass: 'alert', z: 20 });
         } else this._drop('go-hud');
         if (!w) return;
         const [aw, ah] = ARROW[w.arrowSize] || ARROW.medium;
@@ -285,5 +290,5 @@ class HudOverlay {
     }
 }
 
-module.exports = { HudOverlay, drawGo, GO_HUD, GO_CLUSTER, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
+module.exports = { HudOverlay, drawLight, LIGHT_HUD, LIGHT_CLUSTER, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
     ROW_H, SPEED_END, SPEED_RECT, MAX_KW, GREEN, WHITE, AMBER, DIM };

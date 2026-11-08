@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.2
+
+- **The green light alert is a traffic light**: red and yellow faint, green lit, on the cluster and the HUD.
+- **Display page**: the switches on the left, the pictures of the cluster and the HUD on the right.
+- **Hide BMW logo on cluster** is on the Display page only (Cluster tab), no longer on the Maps page.
+- **Sharing the HUD with Redline**: Cluster functions says it is there in /dev/shm/mgu-hud (with
+  idrive7-apps' kit/hud_claim.js), where Redline can read it.
+
 ## 0.9.1
 
 - **Display page: a HUD tab and a Cluster tab.** HUD: Displays on HUD, turn signals, gear, real speed, the green

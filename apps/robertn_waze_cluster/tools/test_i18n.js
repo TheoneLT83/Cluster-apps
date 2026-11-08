@@ -34,7 +34,7 @@ const DYNAMIC = {
     'waze_cluster_control.js': ['t(RESTART_FAILED[r.code] || RESTART_FAILED.error)'],
     'logs_control.js': ['t(ERRORS[s.error] || ERRORS.failed)'],
     // (the match ends at the first ')': HUD_STATES[hud.state()] reads as its start)
-    'main.js': ['t(s._en.label)', 't(s._en.group)', 't(s._en.options[i])', 't(text)', 't(text)', 't(dataWord()', 't(text)', 't(text)', 't(text)', 't(text)', 't(p)']
+    'main.js': ['t(s._en.label)', 't(s._en.group)', 't(s._en.options[i])', 't(text)', 't(text)', 't(text)', 't(text)', 't(text)', 't(text)', 't(dataWord()', 't(p)']
 };
 const MODULES = ['src/waze_cluster_control.js', 'src/logs_control.js', 'app/main.js'];
 MODULES.forEach((m) => {

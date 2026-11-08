@@ -31,7 +31,7 @@ const i18n = require('./i18n.js');
 const { WazeClusterControl, HUD_SIZE_STEPS, ZOOM_STEP } = require('./waze_cluster_control.js');
 const { LogsControl } = require('./logs_control.js');
 const path = require('path');
-const { HudOverlay, drawGo, GO_HUD, anchorRect, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
+const { HudOverlay, drawLight, LIGHT_HUD, anchorRect, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
 const { HudProbe } = require('./hud_probe.js');
 const { HudClaim } = require('./kit/hud_claim');
@@ -205,7 +205,7 @@ async function background(bg) {
     // often (only what changed is sent; the layers take up to 25 frames a second)
     setInterval(() => { if (settings.get('hudOn') !== false && hudOk() && !given()) toHud(); }, 80);
     const claims = () => {
-        HudClaim.standing(bg.dataDir, settings.get('hudOn') !== false && hudOk());
+        HudClaim.standing('robertn_waze_cluster', settings.get('hudOn') !== false && hudOk());
         const now = hudOk() ? HudClaim.others('robertn_waze_cluster') : [];
         if (now.join() === givenTo.join()) return;
         log.info(now.length ? 'HUD: given to ' + now.join(', ') + ' while it holds it' : 'HUD: ours again');
@@ -371,13 +371,11 @@ mgu.run({
             });
             small(cv, th, ctl.mapText(), 48, 204, 712);
             if (hudOk()) small(cv, th, ctl.hudText(), 48, 230, 712, ctl.hudDisabled() ? th.warn : null);
-            const gu = ctl.guidanceUnavailable(), hide = ctl.hideGuidance();
-            cv.text(fit(cv, t('Hide BMW logo on cluster'), 22, 258, 'label'), 48, 276, 22, gu ? th.dim : th.text, { font: 'label' });
-            toggle(cv, th, 314, 252, !!hide, () => ctl.toggleGuidance(), 'guide', gu || hide === null);
             // the map settings of this driver profile, its own or the shared ones (greyed while no profile is known)
+            // (BMW's logo on the cluster: the Display page, Cluster)
             const po = profiles.canChooseOwn();
-            cv.text(fit(cv, t('Own settings for this driver'), 22, 258, 'label'), 418, 276, 22, po ? th.text : th.dim, { font: 'label' });
-            toggle(cv, th, 684, 252, profiles.ownShown(), () => profiles.setOwn(!profiles.ownShown()), 'profile-own', !po);
+            cv.text(fit(cv, t('Own settings for this driver'), 22, 258, 'label'), 48, 276, 22, po ? th.text : th.dim, { font: 'label' });
+            toggle(cv, th, 314, 252, profiles.ownShown(), () => profiles.setOwn(!profiles.ownShown()), 'profile-own', !po);
 
             // the phone: CarPlay or Android Auto, its patch and its own settings
             cv.fillRect(48, 300 + ex / 4, 712, 1, withAlpha('#ffffff', 0.12));
@@ -450,12 +448,17 @@ mgu.run({
                 cv.polyline([[mx + mw * 0.5, my + mh * 0.92], [mx + mw * 0.5, my + mh * 0.5], [mx + mw * 0.38, my + mh * 0.42], [mx + mw * 0.35, my + mh * 0.08]], 4, '#7ee05a');
             } else cv.strokeRoundRect(mx, my, mw, mh, 8, 1, withAlpha('#ffffff', 0.15));
             if (go) {
-                const gh = mh * 0.4, gx = mx + (mw - gh * 2.1) / 2, gy = my + (mh - gh) / 2;
-                cv.roundRect(gx - 6, gy - 6, gh * 2.1 + 12, gh + 12, 8, withAlpha('#000000', 0.7));
-                drawGo({ circle: (cx, cy, rr, c) => cv.circle(gx + cx, gy + cy, rr, c), text: (s2, tx, ty, sz, c, o) => cv.text(s2, gx + tx, gy + ty, sz, c, o) }, gh * 2.1, gh);
+                const lh = mh * 0.92, lw = lh * 0.375;
+                drawLight(scaled(cv, mx + (mw - lw) / 2, my + (mh - lh) / 2, 1), lw, lh);
             }
             return h;
         };
+        /* cv's drawing moved to x, y and scaled by k, for hud_overlay's drawLight. */
+        const scaled = (cv, x, y, k) => ({
+            roundRect: (a, b, w, h, rr, c) => cv.roundRect(x + a * k, y + b * k, w * k, h * k, rr * k, c),
+            strokeRoundRect: (a, b, w, h, rr, lw, c) => cv.strokeRoundRect(x + a * k, y + b * k, w * k, h * k, rr * k, lw, c),
+            circle: (a, b, rr, c) => cv.circle(x + a * k, y + b * k, rr * k, c),
+        });
         /* The functions under a picture: lit when on. */
         const chips = (cv, th, x, y, w, items) => {
             let cx = x, cy = y;
@@ -474,37 +477,15 @@ mgu.run({
             const hasHud = hudOk();
             if (!hasHud) dispTab = 'cluster';
             const goNow = Date.now() % GO_DEMO_MS < GO_DEMO_ON;
-            // the pictures: the cluster, and the HUD beside it, each with what of ours is on there
-            G.panel(cv, th, 24, 44, 760, 468, t('Display'));
-            const cw = hasHud ? 420 : 712;
-            const ch = clusterPicture(cv, th, 48, 100, cw, goNow && settings.get('greenLightCluster') !== false);
-            label(cv, th, t('Cluster'), 48, 100 + ch + 34);
-            chips(cv, th, 48, 100 + ch + 48, cw, [[t('Map'), ctl.clusterOn() === true], [t('Hide BMW logo on cluster'), !!ctl.hideGuidance()],
-                [t('Green light alert'), settings.get('greenLightCluster') !== false]]);
-            if (hasHud) {
-                const hx = 488, hw = 272, hudOnNow = settings.get('hudOn') !== false;
-                demoTurns = true;
-                const hh = hudPicture(cv, th, hx, 100, hw);
-                demoTurns = false;
-                if (hudOnNow && goNow && settings.get('greenLightHud') !== false) {
-                    const k = hw / HUD_W, a = anchorRect(mapNow());
-                    const gx = hx + (a.x + (a.w - GO_HUD.w) / 2) * k, gy = 100 + (a.y + 4) * k;
-                    drawGo({ circle: (cx, cy, rr, c) => cv.circle(gx + cx * k, gy + cy * k, rr * k, c),
-                        text: (s2, tx, ty, sz, c, o) => cv.text(s2, gx + tx * k, gy + ty * k, sz * k, c, o) }, GO_HUD.w, GO_HUD.h);
-                }
-                label(cv, th, t('HUD'), hx, 100 + hh + 34);
-                chips(cv, th, hx, 100 + hh + 48, hw, HUD_ITEMS.map(([key, text]) => [t(text), key === 'hudOn' ? hudOnNow : hudOnNow && !!settings.get(key) && settings.get(key) !== false])
-                    .concat([[t(dataWord()), hudOnNow && settings.get('hudData') !== 'off']]));
-            }
 
-            // the switches: a tab for the HUD, one for the cluster
-            G.panel(cv, th, 804, 44, 772, 468, null);
-            let tx = 828;
+            // the switches on the left: a tab for the HUD, one for the cluster
+            G.panel(cv, th, 24, 44, 760, 468, null);
+            let tx = 48;
             (hasHud ? [['hud', 'HUD'], ['cluster', 'Cluster']] : [['cluster', 'Cluster']]).forEach(([id, text]) => {
                 tx += G.button(cv, th, tx, 60, 200, 46, t(text), () => { dispTab = id; changed(); }, { primary: dispTab === id, key: 'tab-' + id }) + 12;
             });
             const row = (i, key, text, on, run, off) => {
-                const x = 828 + (i % 2) * 372, y = 128 + Math.floor(i / 2) * 58;
+                const x = 48 + (i % 2) * 372, y = 128 + Math.floor(i / 2) * 58;
                 line(cv, th, text, x, y + 28, 260, off ? th.dim : null);
                 toggle(cv, th, x + 268, y + 2, on, run, 'disp-' + key, off);
             };
@@ -512,10 +493,10 @@ mgu.run({
             if (dispTab === 'hud') {
                 const hudOnNow = settings.get('hudOn') !== false;
                 HUD_ITEMS.forEach(([key, text], i) => row(i, key, t(text), settings.get(key) !== false && !!settings.get(key), flip(key), key !== 'hudOn' && !hudOnNow));
-                label(cv, th, t('Between the turn signals'), 828, 330);
+                label(cv, th, t('Between the turn signals'), 48, 330);
                 const now = settings.get('hudData');
                 HUD_DATA.filter(([v]) => v !== 'ev' || hv.installed()).forEach(([v, text], i) =>
-                    G.button(cv, th, 828 + (i % 3) * 244, 346 + Math.floor(i / 3) * 56, 232, 46, t(text), () => settings.set('hudData', v),
+                    G.button(cv, th, 48 + (i % 3) * 244, 346 + Math.floor(i / 3) * 56, 232, 46, t(text), () => settings.set('hudData', v),
                         { primary: now === v, key: 'data-' + v, busy: !hudOnNow }));
             } else {
                 // the map on the cluster: on or off with the HUD's as it is (never on neither)
@@ -525,6 +506,27 @@ mgu.run({
                 const gu = ctl.guidanceUnavailable(), hide = ctl.hideGuidance();
                 row(1, 'guide', t('Hide BMW logo on cluster'), !!hide, () => ctl.toggleGuidance(), gu || hide === null);
                 CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), settings.get(key) !== false, flip(key)));
+            }
+
+            // the pictures on the right: the cluster, and the HUD beside it, each with what of ours is on there
+            G.panel(cv, th, 804, 44, 772, 468, t('Display'));
+            const cw = hasHud ? 420 : 724;
+            const ch = clusterPicture(cv, th, 828, 100, cw, goNow && settings.get('greenLightCluster') !== false);
+            label(cv, th, t('Cluster'), 828, 100 + ch + 34);
+            chips(cv, th, 828, 100 + ch + 48, cw, [[t('Map'), ctl.clusterOn() === true], [t('Hide BMW logo on cluster'), !!ctl.hideGuidance()],
+                [t('Green light alert'), settings.get('greenLightCluster') !== false]]);
+            if (hasHud) {
+                const hx = 1268, hw = 284, hudOnNow = settings.get('hudOn') !== false;
+                demoTurns = true;
+                const hh = hudPicture(cv, th, hx, 100, hw);
+                demoTurns = false;
+                if (hudOnNow && goNow && settings.get('greenLightHud') !== false) {
+                    const k = hw / HUD_W, a = anchorRect(mapNow());
+                    drawLight(scaled(cv, hx + (a.x + (a.w - LIGHT_HUD.w) / 2) * k, 100 + (a.y + 4) * k, k), LIGHT_HUD.w, LIGHT_HUD.h);
+                }
+                label(cv, th, t('HUD'), hx, 100 + hh + 34);
+                chips(cv, th, hx, 100 + hh + 48, hw, HUD_ITEMS.map(([key, text]) => [t(text), key === 'hudOn' ? hudOnNow : hudOnNow && !!settings.get(key) && settings.get(key) !== false])
+                    .concat([[t(dataWord()), hudOnNow && settings.get('hudData') !== 'off']]));
             }
         }
 
