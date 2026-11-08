@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.0
+
+- **Green light alert** (setting, on by default): when the traffic light ahead turns green while the car waits at it,
+  "GO" shows in the middle of the cluster and on the HUD for 4 s. From BMW's own traffic-light display
+  (driver assistance), and the front camera's traffic lights where the car has them; the camera's colour codes are
+  logged once each, so they can be checked. Not while driving; at most once each 10 s.
+
 ## 0.8.9
 
 - **Head-up display: Auto / On / Off** in the settings: Auto goes by what the car answers (as in 0.8.8), On and

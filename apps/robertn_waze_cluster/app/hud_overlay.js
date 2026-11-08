@@ -22,6 +22,8 @@
  *   const hud = new HudOverlay({ log });
  *   hud.update({ turn: { left, right }, gear: 'D3', map: { x, y, w, h }, arrowSize: 'medium', showTurn: true, showGear: true,
  *                data: [{ kind: 'slider', value, min, max, text }, { kind: 'value', label: 'OIL', text: '92°' }, ...], speed: 87 });
+ *   hud.go(onHud, onCluster)   "GO" (green_light.js) at the top of the map's place on the HUD and in the middle of the
+ *                    cluster (target `map`, 1088 x 480), as alerts over the rest, until go(false, false)
  *   hud.state()      -> 'off' | 'waiting' | 'shown' | 'disabled' | 'unavailable' (the HUD target, as the renderer says)
  *   hud.close();
  */
@@ -140,6 +142,15 @@ function drawArrow(cv, w, h, dir, color) {
     cv.fillRect(x0 - (dir < 0 ? 1 : 0), (h - shaft) / 2, x1 - x0 + 1, shaft, color);
 }
 
+/* "GO": a lit green lamp and the word, on w x h. */
+function drawGo(cv, w, h) {
+    const r = Math.round(h * 0.36), cx = r + 6, cy = Math.round(h / 2);
+    cv.circle(cx, cy, r, GREEN);
+    cv.text('GO', cx + r + 14, cy + Math.round(h * 0.2), Math.round(h * 0.56), GREEN, { font: 'bold' });
+}
+const GO_HUD = { w: 150, h: 64 };
+const GO_CLUSTER = { x: 404, y: 180, w: 280, h: 120 };
+
 function drawGear(cv, gear) {
     const g = String(gear || '');
     // one word, as BMW's own gear reading: P, R, N, D, D3; a longer one smaller to fit
@@ -164,6 +175,7 @@ class HudOverlay {
         this.cr.on('ready', () => { Object.keys(this.layers).forEach((n) => { this.layers[n].key = null; }); this._draw(); });
         this.cr.on('error', (op, ref, reason) => this.log.warn('hud overlay: ' + op + ' refused: ' + reason));
         this.connected = false;
+        this.goWant = { hud: false, cluster: false };
         this.timer = null;
         this._blink();
     }
@@ -189,17 +201,24 @@ class HudOverlay {
         this._draw();
     }
 
+    go(onHud, onCluster) {
+        this.goWant = { hud: !!onHud, cluster: !!onCluster };
+        if ((onHud || onCluster) && !this.connected) { this.connected = true; this.cr.connect(); }
+        this._draw();
+    }
+
     state() {
         if (!this.connected) return 'off';
         if (this.target.disabled) return 'disabled';
         return this.target.state === 'shown' ? 'shown' : this.target.state === 'unavailable' ? 'unavailable' : 'waiting';
     }
 
-    _layer(name, rect, draw, key) {
+    _layer(name, rect, draw, key, where) {
         let l = this.layers[name];
         if (l && (l.w !== rect.w || l.h !== rect.h)) { this.cr.drop(l.ref); l = null; }
         if (!l) {
-            const ref = this.cr.image({ target: 'hud', klass: 'overlay', z: 10, x: rect.x, y: rect.y, w: rect.w, h: rect.h,
+            const at = where || { target: 'hud', klass: 'overlay', z: 10 };
+            const ref = this.cr.image({ target: at.target, klass: at.klass, z: at.z, x: rect.x, y: rect.y, w: rect.w, h: rect.h,
                 iw: rect.w, ih: rect.h, fps: 25 });
             l = this.layers[name] = { ref, w: rect.w, h: rect.h, x: rect.x, y: rect.y, key: null };
         } else if (l.x !== rect.x || l.y !== rect.y) {
@@ -218,8 +237,17 @@ class HudOverlay {
     }
 
     _draw() {
+        if (!this.connected) return;
+        const g = this.goWant;
+        if (g.cluster) this._layer('go-cluster', GO_CLUSTER, (cv) => drawGo(cv, GO_CLUSTER.w, GO_CLUSTER.h), 'go', { target: 'map', klass: 'alert', z: 20 });
+        else this._drop('go-cluster');
         const w = this.want;
-        if (!w || !this.connected) return;
+        if (g.hud) {
+            const a = anchorRect((w && w.map) || mapRect(0));
+            const rect = { x: Math.round(a.x + (a.w - GO_HUD.w) / 2), y: a.y + 4, w: GO_HUD.w, h: GO_HUD.h };
+            this._layer('go-hud', rect, (cv) => drawGo(cv, GO_HUD.w, GO_HUD.h), 'go', { target: 'hud', klass: 'alert', z: 20 });
+        } else this._drop('go-hud');
+        if (!w) return;
         const [aw, ah] = ARROW[w.arrowSize] || ARROW.medium;
         ['left', 'right'].forEach((side) => {
             const name = 'arrow-' + side;
@@ -257,5 +285,5 @@ class HudOverlay {
     }
 }
 
-module.exports = { HudOverlay, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
+module.exports = { HudOverlay, drawGo, GO_HUD, GO_CLUSTER, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
     ROW_H, SPEED_END, SPEED_RECT, MAX_KW, GREEN, WHITE, AMBER, DIM };

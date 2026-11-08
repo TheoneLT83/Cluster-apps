@@ -2,7 +2,7 @@
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
   "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range, oil and coolant, boost, power and torque, or engine speed",
-  "version": "0.8.9",
+  "version": "0.9.0",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
   "memoryKB": 153600,
@@ -47,6 +47,16 @@
       ],
       "_broadcasts": [
         "sendTasuResponse"
+      ]
+    },
+    "de.bmw.dass.driverassistanceapplications.TrafficSignDisplayControl": {
+      "_optional": "the green light alert (BMW's own traffic-light display)",
+      "displayForesight": "s"
+    },
+    "de.bmw.environmentalmodel.TrafficLightRecognitionFrontCameraLegacy": {
+      "_optional": "the green light alert (the camera's traffic lights)",
+      "_broadcasts": [
+        "RecognitionTrafficLightCamera"
       ]
     }
   },
@@ -94,6 +104,12 @@
           "Off"
         ]
       ]
+    },
+    {
+      "key": "greenLight",
+      "label": "Green light alert",
+      "type": "bool",
+      "default": true
     },
     {
       "key": "hudOn",

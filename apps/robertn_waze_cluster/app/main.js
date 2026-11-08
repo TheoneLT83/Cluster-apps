@@ -35,6 +35,7 @@ const { HudOverlay, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData,
 const { HvData } = require('./hv_data.js');
 const { HudProbe } = require('./hud_probe.js');
 const { HudClaim } = require('./kit/hud_claim');
+const { GreenLight } = require('./green_light.js');
 const { Units } = require('./units.js');
 const { TurnSignals } = require('./turn_signals.js');
 const { ProfileSync, sessionReader } = require('./profile_sync.js');
@@ -249,6 +250,13 @@ async function background(bg) {
     };
     setInterval(sayStates, 2000);
     turns.start();
+    // the light ahead turned green while the car waits: "GO" on the cluster, and on the HUD while ours is shown there
+    const green = new GreenLight({ signals: bg.signals, log, speed: () => { const d = car.data(); return d && !d.demo ? d.speed : null; } });
+    green.on('go', (on) => {
+        const show = on && settings.get('greenLight') !== false;
+        hud.go(show && hudOk() && settings.get('hudOn') !== false && !given(), show);
+    });
+    green.start().catch((e) => log.warn('green light: ' + e.message));
 
     ctl.open();
     profiles.start();

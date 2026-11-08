@@ -139,6 +139,7 @@
     "Displays on HUD": "HUDに表示",
     "Own settings for this driver": "このドライバー専用の設定",
     "Head-up display": "ヘッドアップ・ディスプレイ",
-    "Given to another app": "他のアプリが使用中"
+    "Given to another app": "他のアプリが使用中",
+    "Green light alert": "青信号の通知"
   }
 }

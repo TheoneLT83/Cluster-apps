@@ -139,6 +139,7 @@
     "Displays on HUD": "Näytöt HUD:ssa",
     "Own settings for this driver": "Omat asetukset tälle kuljettajalle",
     "Head-up display": "Tuulilasinäyttö",
-    "Given to another app": "Annettu toiselle sovellukselle"
+    "Given to another app": "Annettu toiselle sovellukselle",
+    "Green light alert": "Vihreän valon ilmoitus"
   }
 }

@@ -143,7 +143,8 @@ module.exports = [
    "Displays on HUD": "العرض على HUD",
    "Own settings for this driver": "إعدادات خاصة لهذا السائق",
    "Head-up display": "شاشة العرض الأمامية",
-   "Given to another app": "لتطبيق آخر"
+   "Given to another app": "لتطبيق آخر",
+   "Green light alert": "تنبيه الإشارة الخضراء"
   }
  },
  {
@@ -288,7 +289,8 @@ module.exports = [
    "Displays on HUD": "Zobrazení na HUD",
    "Own settings for this driver": "Vlastní nastavení pro tohoto řidiče",
    "Head-up display": "Head-up displej",
-   "Given to another app": "Předáno jiné aplikaci"
+   "Given to another app": "Předáno jiné aplikaci",
+   "Green light alert": "Upozornění na zelenou"
   }
  },
  {
@@ -433,7 +435,8 @@ module.exports = [
    "Displays on HUD": "Visninger på HUD",
    "Own settings for this driver": "Egne indstillinger for denne fører",
    "Head-up display": "Head-up-display",
-   "Given to another app": "Overladt til en anden app"
+   "Given to another app": "Overladt til en anden app",
+   "Green light alert": "Grønt lys-advarsel"
   }
  },
  {
@@ -578,7 +581,8 @@ module.exports = [
    "Displays on HUD": "Anzeigen im HUD",
    "Own settings for this driver": "Eigene Einstellungen für diesen Fahrer",
    "Head-up display": "Head-up-Display",
-   "Given to another app": "An andere App abgegeben"
+   "Given to another app": "An andere App abgegeben",
+   "Green light alert": "Grün-Hinweis an der Ampel"
   }
  },
  {
@@ -723,7 +727,8 @@ module.exports = [
    "Displays on HUD": "Ενδείξεις στο HUD",
    "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό",
    "Head-up display": "Head-Up Display",
-   "Given to another app": "Σε άλλη εφαρμογή"
+   "Given to another app": "Σε άλλη εφαρμογή",
+   "Green light alert": "Ειδοποίηση πράσινου φαναριού"
   }
  },
  {
@@ -868,7 +873,8 @@ module.exports = [
    "Displays on HUD": "Indicaciones en el HUD",
    "Own settings for this driver": "Configuración propia para este conductor",
    "Head-up display": "Head-Up Display",
-   "Given to another app": "Cedido a otra app"
+   "Given to another app": "Cedido a otra app",
+   "Green light alert": "Aviso de luz verde"
   }
  },
  {
@@ -1013,7 +1019,8 @@ module.exports = [
    "Displays on HUD": "Indicaciones en el HUD",
    "Own settings for this driver": "Ajustes propios para este conductor",
    "Head-up display": "Head-Up Display",
-   "Given to another app": "Cedido a otra app"
+   "Given to another app": "Cedido a otra app",
+   "Green light alert": "Aviso de semáforo en verde"
   }
  },
  {
@@ -1158,7 +1165,8 @@ module.exports = [
    "Displays on HUD": "Näytöt HUD:ssa",
    "Own settings for this driver": "Omat asetukset tälle kuljettajalle",
    "Head-up display": "Tuulilasinäyttö",
-   "Given to another app": "Annettu toiselle sovellukselle"
+   "Given to another app": "Annettu toiselle sovellukselle",
+   "Green light alert": "Vihreän valon ilmoitus"
   }
  },
  {
@@ -1303,7 +1311,8 @@ module.exports = [
    "Displays on HUD": "Affichages sur l’affichage tête haute",
    "Own settings for this driver": "Réglages propres à ce conducteur",
    "Head-up display": "Affichage tête haute",
-   "Given to another app": "Cédé à une autre app"
+   "Given to another app": "Cédé à une autre app",
+   "Green light alert": "Alerte feu vert"
   }
  },
  {
@@ -1448,7 +1457,8 @@ module.exports = [
    "Displays on HUD": "Affichages sur le HUD",
    "Own settings for this driver": "Réglages propres à ce conducteur",
    "Head-up display": "Affichage tête haute",
-   "Given to another app": "Cédé à une autre app"
+   "Given to another app": "Cédé à une autre app",
+   "Green light alert": "Alerte feu vert"
   }
  },
  {
@@ -1593,7 +1603,8 @@ module.exports = [
    "Displays on HUD": "תצוגות ב-HUD",
    "Own settings for this driver": "הגדרות נפרדות לנהג זה",
    "Head-up display": "תצוגה עילית",
-   "Given to another app": "הועבר לאפליקציה אחרת"
+   "Given to another app": "הועבר לאפליקציה אחרת",
+   "Green light alert": "התראת אור ירוק"
   }
  },
  {
@@ -1738,7 +1749,8 @@ module.exports = [
    "Displays on HUD": "Kijelzések a HUD-on",
    "Own settings for this driver": "Saját beállítások ennek a vezetőnek",
    "Head-up display": "Head-up kijelző",
-   "Given to another app": "Másik alkalmazásnak átadva"
+   "Given to another app": "Másik alkalmazásnak átadva",
+   "Green light alert": "Zöld lámpa jelzés"
   }
  },
  {
@@ -1883,7 +1895,8 @@ module.exports = [
    "Displays on HUD": "Tampilan di HUD",
    "Own settings for this driver": "Pengaturan sendiri untuk pengemudi ini",
    "Head-up display": "Head-up display",
-   "Given to another app": "Diserahkan ke aplikasi lain"
+   "Given to another app": "Diserahkan ke aplikasi lain",
+   "Green light alert": "Peringatan lampu hijau"
   }
  },
  {
@@ -2028,7 +2041,8 @@ module.exports = [
    "Displays on HUD": "Indicazioni nell’HUD",
    "Own settings for this driver": "Impostazioni proprie per questo conducente",
    "Head-up display": "Head-up display",
-   "Given to another app": "Ceduto a un'altra app"
+   "Given to another app": "Ceduto a un'altra app",
+   "Green light alert": "Avviso semaforo verde"
   }
  },
  {
@@ -2173,7 +2187,8 @@ module.exports = [
    "Displays on HUD": "HUDに表示",
    "Own settings for this driver": "このドライバー専用の設定",
    "Head-up display": "ヘッドアップ・ディスプレイ",
-   "Given to another app": "他のアプリが使用中"
+   "Given to another app": "他のアプリが使用中",
+   "Green light alert": "青信号の通知"
   }
  },
  {
@@ -2318,7 +2333,8 @@ module.exports = [
    "Displays on HUD": "HUD 표시",
    "Own settings for this driver": "이 운전자 전용 설정",
    "Head-up display": "헤드업 디스플레이",
-   "Given to another app": "다른 앱이 사용 중"
+   "Given to another app": "다른 앱이 사용 중",
+   "Green light alert": "녹색 신호 알림"
   }
  },
  {
@@ -2463,7 +2479,8 @@ module.exports = [
    "Displays on HUD": "Visninger på HUD",
    "Own settings for this driver": "Egne innstillinger for denne føreren",
    "Head-up display": "Head-up-display",
-   "Given to another app": "Overlatt til en annen app"
+   "Given to another app": "Overlatt til en annen app",
+   "Green light alert": "Varsel om grønt lys"
   }
  },
  {
@@ -2610,7 +2627,8 @@ module.exports = [
    "Displays on HUD": "Weergaven op het HUD",
    "Own settings for this driver": "Eigen instellingen voor deze bestuurder",
    "Head-up display": "Head-up display",
-   "Given to another app": "Overgedragen aan andere app"
+   "Given to another app": "Overgedragen aan andere app",
+   "Green light alert": "Groen-licht-melding"
   }
  },
  {
@@ -2755,7 +2773,8 @@ module.exports = [
    "Displays on HUD": "Wskazania na HUD",
    "Own settings for this driver": "Własne ustawienia dla tego kierowcy",
    "Head-up display": "Wyświetlacz Head-Up",
-   "Given to another app": "Przekazano innej aplikacji"
+   "Given to another app": "Przekazano innej aplikacji",
+   "Green light alert": "Powiadomienie o zielonym świetle"
   }
  },
  {
@@ -2900,7 +2919,8 @@ module.exports = [
    "Displays on HUD": "Exibições no HUD",
    "Own settings for this driver": "Configurações próprias para este motorista",
    "Head-up display": "Head-up display",
-   "Given to another app": "Cedido a outro app"
+   "Given to another app": "Cedido a outro app",
+   "Green light alert": "Alerta de sinal verde"
   }
  },
  {
@@ -3045,7 +3065,8 @@ module.exports = [
    "Displays on HUD": "Indicações no HUD",
    "Own settings for this driver": "Definições próprias para este condutor",
    "Head-up display": "Head-up display",
-   "Given to another app": "Cedido a outra aplicação"
+   "Given to another app": "Cedido a outra aplicação",
+   "Green light alert": "Alerta de semáforo verde"
   }
  },
  {
@@ -3190,7 +3211,8 @@ module.exports = [
    "Displays on HUD": "Afișări pe HUD",
    "Own settings for this driver": "Setări proprii pentru acest șofer",
    "Head-up display": "Afișaj head-up",
-   "Given to another app": "Cedat altei aplicații"
+   "Given to another app": "Cedat altei aplicații",
+   "Green light alert": "Alertă semafor verde"
   }
  },
  {
@@ -3335,7 +3357,8 @@ module.exports = [
    "Displays on HUD": "Индикация на HUD",
    "Own settings for this driver": "Свои настройки для этого водителя",
    "Head-up display": "Проекционный дисплей",
-   "Given to another app": "Передан другому приложению"
+   "Given to another app": "Передан другому приложению",
+   "Green light alert": "Сигнал о зелёном свете"
   }
  },
  {
@@ -3480,7 +3503,8 @@ module.exports = [
    "Displays on HUD": "Zobrazenia na HUD",
    "Own settings for this driver": "Vlastné nastavenia pre tohto vodiča",
    "Head-up display": "Head-up displej",
-   "Given to another app": "Prenechané inej aplikácii"
+   "Given to another app": "Prenechané inej aplikácii",
+   "Green light alert": "Upozornenie na zelenú"
   }
  },
  {
@@ -3625,7 +3649,8 @@ module.exports = [
    "Displays on HUD": "Prikazi na HUD",
    "Own settings for this driver": "Lastne nastavitve za tega voznika",
    "Head-up display": "Prikazovalnik head-up",
-   "Given to another app": "Prepuščeno drugi aplikaciji"
+   "Given to another app": "Prepuščeno drugi aplikaciji",
+   "Green light alert": "Opozorilo na zeleno luč"
   }
  },
  {
@@ -3770,7 +3795,8 @@ module.exports = [
    "Displays on HUD": "Visningar på HUD",
    "Own settings for this driver": "Egna inställningar för den här föraren",
    "Head-up display": "Head-up-display",
-   "Given to another app": "Överlämnad till en annan app"
+   "Given to another app": "Överlämnad till en annan app",
+   "Green light alert": "Varning för grönt ljus"
   }
  },
  {
@@ -3915,7 +3941,8 @@ module.exports = [
    "Displays on HUD": "การแสดงบน HUD",
    "Own settings for this driver": "การตั้งค่าเฉพาะสำหรับผู้ขับขี่คนนี้",
    "Head-up display": "จอแสดงผลบนกระจกหน้า",
-   "Given to another app": "ให้แอปอื่นใช้อยู่"
+   "Given to another app": "ให้แอปอื่นใช้อยู่",
+   "Green light alert": "แจ้งเตือนไฟเขียว"
   }
  },
  {
@@ -4060,7 +4087,8 @@ module.exports = [
    "Displays on HUD": "HUD’da göstergeler",
    "Own settings for this driver": "Bu sürücüye özel ayarlar",
    "Head-up display": "Head-up ekran",
-   "Given to another app": "Başka bir uygulamaya bırakıldı"
+   "Given to another app": "Başka bir uygulamaya bırakıldı",
+   "Green light alert": "Yeşil ışık uyarısı"
   }
  },
  {
@@ -4205,7 +4233,8 @@ module.exports = [
    "Displays on HUD": "Індикація на HUD",
    "Own settings for this driver": "Власні налаштування для цього водія",
    "Head-up display": "Проекційний дисплей",
-   "Given to another app": "Передано іншому застосунку"
+   "Given to another app": "Передано іншому застосунку",
+   "Green light alert": "Сповіщення про зелене світло"
   }
  },
  {
@@ -4350,7 +4379,8 @@ module.exports = [
    "Displays on HUD": "Hiển thị trên HUD",
    "Own settings for this driver": "Cài đặt riêng cho người lái này",
    "Head-up display": "Màn hình HUD",
-   "Given to another app": "Đã nhường cho ứng dụng khác"
+   "Given to another app": "Đã nhường cho ứng dụng khác",
+   "Green light alert": "Báo đèn xanh"
   }
  },
  {
@@ -4497,7 +4527,8 @@ module.exports = [
    "Displays on HUD": "抬头显示器上的显示",
    "Own settings for this driver": "此驾驶员的专属设置",
    "Head-up display": "抬头显示",
-   "Given to another app": "已让给其他应用"
+   "Given to another app": "已让给其他应用",
+   "Green light alert": "绿灯提醒"
   }
  },
  {
@@ -4644,7 +4675,8 @@ module.exports = [
    "Displays on HUD": "抬頭顯示器上的顯示",
    "Own settings for this driver": "此駕駛的專屬設定",
    "Head-up display": "抬頭顯示器",
-   "Given to another app": "已讓給其他應用程式"
+   "Given to another app": "已讓給其他應用程式",
+   "Green light alert": "綠燈提醒"
   }
  }
 ];
