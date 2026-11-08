@@ -31,7 +31,7 @@ const i18n = require('./i18n.js');
 const { WazeClusterControl, HUD_SIZE_STEPS, ZOOM_STEP } = require('./waze_cluster_control.js');
 const { LogsControl } = require('./logs_control.js');
 const path = require('path');
-const { HudOverlay, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
+const { HudOverlay, drawGo, GO_HUD, anchorRect, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
 const { HudProbe } = require('./hud_probe.js');
 const { HudClaim } = require('./kit/hud_claim');
@@ -44,8 +44,12 @@ const qrcodegen = require('./qrcodegen.js');
 const { t } = i18n;
 const W = 1600, H = 520;
 const PAGES = ['Maps', 'Display', 'Log'];
-/* The Display page's switches: the setting, its words. */
-const HUD_ITEMS = [['hudTurn', 'Turn signals'], ['hudGear', 'Gear']];
+/* The Display page's switches, its HUD tab's and its Cluster tab's: the setting, its words. */
+const HUD_ITEMS = [['hudOn', 'Displays on HUD'], ['hudTurn', 'Turn signals'], ['hudGear', 'Gear'], ['realSpeed', 'Real speed on HUD'],
+    ['greenLightHud', 'Green light alert']];
+const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert']];
+/* The picture's "GO" in its loop: shown GO_DEMO_ON of each GO_DEMO_MS while that alert is on. */
+const GO_DEMO_MS = 4000, GO_DEMO_ON = 1500;
 /* What shows between the turn signals (the setting hudData), one at a time. */
 const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['temps', 'Oil and coolant'], ['boost', 'Boost'], ['power', 'Power and torque'],
     ['rpm', 'Engine speed']];
@@ -89,8 +93,9 @@ function fit(cv, s, size, w, font) {
 /* The settings' labels and choices in the display language: the English ones kept, the schema's translated. */
 function translateSettings(settings) {
     (settings.schema || []).forEach((s) => {
-        s._en = s._en || { label: s.label, options: (s.options || []).map((o) => o[1]) };
+        s._en = s._en || { label: s.label, group: s.group, options: (s.options || []).map((o) => o[1]) };
         s.label = t(s._en.label);
+        if (s._en.group) s.group = t(s._en.group);
         (s.options || []).forEach((o, i) => { o[1] = t(s._en.options[i]); });
     });
 }
@@ -253,8 +258,8 @@ async function background(bg) {
     // the light ahead turned green while the car waits: "GO" on the cluster, and on the HUD while ours is shown there
     const green = new GreenLight({ signals: bg.signals, log, speed: () => { const d = car.data(); return d && !d.demo ? d.speed : null; } });
     green.on('go', (on) => {
-        const show = on && settings.get('greenLight') !== false;
-        hud.go(show && hudOk() && settings.get('hudOn') !== false && !given(), show);
+        hud.go(on && settings.get('greenLightHud') !== false && hudOk() && settings.get('hudOn') !== false && !given(),
+            on && settings.get('greenLightCluster') !== false);
     });
     green.start().catch((e) => log.warn('green light: ' + e.message));
 
@@ -289,7 +294,8 @@ mgu.run({
             if (ctx.display.screen) ctx.display.screen.title = t('Cluster functions');
         };
         b.onChange(changed);
-        setInterval(() => { blink = !blink; if (turns.state().test) changed(); }, 400);
+        // the turn signals' blink; the Display page's pictures move with it
+        setInterval(() => { blink = !blink; if (turns.state().test || pagesNow()[page] === 'Display') changed(); }, 400);
         setInterval(changed, 1000);
         changed();
 
@@ -325,7 +331,9 @@ mgu.run({
                 [mx + 0.36 * mw, my + mh * 0.1]], 6, withAlpha('#7ee05a', a(1)));
             cv.quad([[mx + 0.5 * mw, my + mh * 0.78], [mx + 0.47 * mw, my + mh * 0.9], [mx + 0.53 * mw, my + mh * 0.9], [mx + 0.5 * mw, my + mh * 0.78]],
                 withAlpha('#ff4040', a(1)));
-            const st = turns.state();
+            // on the Display page, the arrows blink one side then the other while the car's are off
+            const real = turns.state(), cyc = Date.now() % 3000;
+            const st = demoTurns && !real.left && !real.right ? { left: cyc < 1500, right: cyc >= 1500 } : real;
             if (settings.get('hudTurn')) {
                 const [aw, ah] = ARROW.medium;
                 ['left', 'right'].forEach((side) => {
@@ -349,8 +357,9 @@ mgu.run({
         };
 
         /* ---- the pages ---- */
-        // the Display page is the HUD's: none without one
-        const pagesNow = () => PAGES.filter((p) => p !== 'Display' || hudOk());
+        const pagesNow = () => PAGES;
+        let dispTab = 'hud';
+        let demoTurns = false;         // hudPicture's arrows blink by themselves (the Display page)           // the Display page's tab: 'hud' or 'cluster' (the HUD's only with one)
         function drawMaps(cv, th) {
             const ex = G.pageBottom(cv) - G.BOTTOM;
             G.panel(cv, th, 24, 44, 760, 468, t('Map'));
@@ -425,24 +434,98 @@ mgu.run({
             G.button(cv, th, 1376, 376, 60, 48, 'o', () => ctl.centreHud(), { busy: !ctl.canCentreHud(), key: 'centre' });
         }
 
-        function drawDisplay(cv, th) {
-            G.panel(cv, th, 24, 44, 640, 468, t('On the HUD'));
-            HUD_ITEMS.forEach(([key, text], i) => {
-                const y = 96 + i * 62;
-                line(cv, th, t(text), 48, y + 30, 480);
-                toggle(cv, th, 564, y + 4, !!settings.get(key), () => settings.set(key, !settings.get(key)), 'hud-' + key);
-                if (i) cv.fillRect(48, y - 8, 592, 1, withAlpha('#ffffff', 0.08));
+        /* A picture of the cluster: its two dials, the map in the middle while it shows there, "GO" over it. */
+        const clusterPicture = (cv, th, x, y, w, go) => {
+            const h = Math.round(w * 720 / 1920), r = Math.min(h * 0.4, w * 0.13);
+            cv.roundRect(x, y, w, h, 12, '#05070a');
+            cv.strokeRoundRect(x, y, w, h, 12, 1.5, withAlpha('#ffffff', 0.25));
+            [x + w * 0.16, x + w * 0.84].forEach((cx) => {
+                cv.arc(cx, y + h * 0.55, r - 4, r, -130, 130, withAlpha('#ffffff', 0.35));
+                const ang = (blink ? -40 : 25) * Math.PI / 180;      // the needle swings with the blink
+                cv.line(cx, y + h * 0.55, cx + r * 0.6 * Math.sin(ang), y + h * 0.55 - r * 0.6 * Math.cos(ang), 3, '#ff4040');
             });
-            // one reading between the turn signals
-            cv.fillRect(48, 214, 592, 1, withAlpha('#ffffff', 0.08));
-            label(cv, th, t('Between the turn signals'), 48, 254);
-            const now = settings.get('hudData');
-            HUD_DATA.filter(([v]) => v !== 'ev' || hv.installed()).forEach(([v, text], i) =>
-                G.button(cv, th, 48 + (i % 2) * 300, 268 + Math.floor(i / 2) * 60, 288, 48, t(text), () => settings.set('hudData', v),
-                    { primary: now === v, key: 'data-' + v }));
+            const mx = x + w * 0.33, my = y + h * 0.18, mw = w * 0.34, mh = h * 0.64;
+            if (ctl.clusterOn() === true) {
+                cv.roundRect(mx, my, mw, mh, 8, '#1c3a2c');
+                cv.polyline([[mx + mw * 0.5, my + mh * 0.92], [mx + mw * 0.5, my + mh * 0.5], [mx + mw * 0.38, my + mh * 0.42], [mx + mw * 0.35, my + mh * 0.08]], 4, '#7ee05a');
+            } else cv.strokeRoundRect(mx, my, mw, mh, 8, 1, withAlpha('#ffffff', 0.15));
+            if (go) {
+                const gh = mh * 0.4, gx = mx + (mw - gh * 2.1) / 2, gy = my + (mh - gh) / 2;
+                cv.roundRect(gx - 6, gy - 6, gh * 2.1 + 12, gh + 12, 8, withAlpha('#000000', 0.7));
+                drawGo({ circle: (cx, cy, rr, c) => cv.circle(gx + cx, gy + cy, rr, c), text: (s2, tx, ty, sz, c, o) => cv.text(s2, gx + tx, gy + ty, sz, c, o) }, gh * 2.1, gh);
+            }
+            return h;
+        };
+        /* The functions under a picture: lit when on. */
+        const chips = (cv, th, x, y, w, items) => {
+            let cx = x, cy = y;
+            items.forEach(([text, on]) => {
+                const tw = Math.min(w, cv.textWidth(text, 18, { font: 'label' }) + 24);
+                if (cx + tw > x + w) { cx = x; cy += 36; }
+                cv.roundRect(cx, cy, tw, 28, 14, on ? withAlpha(GREEN, 0.25) : withAlpha('#ffffff', 0.06));
+                cv.text(fit(cv, text, 18, tw - 20, 'label'), cx + 12, cy + 20, 18, on ? '#f2f5f8' : th.dim, { font: 'label' });
+                cx += tw + 8;
+            });
+        };
 
-            G.panel(cv, th, 684, 44, 892, 468, t('HUD'));
-            hudPicture(cv, th, 784, 100, 692);
+        /* The words of the reading between the turn signals now (HUD_DATA). */
+        const dataWord = () => (HUD_DATA.find(([v]) => v === settings.get('hudData')) || HUD_DATA[0])[1];
+        function drawDisplay(cv, th) {
+            const hasHud = hudOk();
+            if (!hasHud) dispTab = 'cluster';
+            const goNow = Date.now() % GO_DEMO_MS < GO_DEMO_ON;
+            // the pictures: the cluster, and the HUD beside it, each with what of ours is on there
+            G.panel(cv, th, 24, 44, 760, 468, t('Display'));
+            const cw = hasHud ? 420 : 712;
+            const ch = clusterPicture(cv, th, 48, 100, cw, goNow && settings.get('greenLightCluster') !== false);
+            label(cv, th, t('Cluster'), 48, 100 + ch + 34);
+            chips(cv, th, 48, 100 + ch + 48, cw, [[t('Map'), ctl.clusterOn() === true], [t('Hide BMW logo on cluster'), !!ctl.hideGuidance()],
+                [t('Green light alert'), settings.get('greenLightCluster') !== false]]);
+            if (hasHud) {
+                const hx = 488, hw = 272, hudOnNow = settings.get('hudOn') !== false;
+                demoTurns = true;
+                const hh = hudPicture(cv, th, hx, 100, hw);
+                demoTurns = false;
+                if (hudOnNow && goNow && settings.get('greenLightHud') !== false) {
+                    const k = hw / HUD_W, a = anchorRect(mapNow());
+                    const gx = hx + (a.x + (a.w - GO_HUD.w) / 2) * k, gy = 100 + (a.y + 4) * k;
+                    drawGo({ circle: (cx, cy, rr, c) => cv.circle(gx + cx * k, gy + cy * k, rr * k, c),
+                        text: (s2, tx, ty, sz, c, o) => cv.text(s2, gx + tx * k, gy + ty * k, sz * k, c, o) }, GO_HUD.w, GO_HUD.h);
+                }
+                label(cv, th, t('HUD'), hx, 100 + hh + 34);
+                chips(cv, th, hx, 100 + hh + 48, hw, HUD_ITEMS.map(([key, text]) => [t(text), key === 'hudOn' ? hudOnNow : hudOnNow && !!settings.get(key) && settings.get(key) !== false])
+                    .concat([[t(dataWord()), hudOnNow && settings.get('hudData') !== 'off']]));
+            }
+
+            // the switches: a tab for the HUD, one for the cluster
+            G.panel(cv, th, 804, 44, 772, 468, null);
+            let tx = 828;
+            (hasHud ? [['hud', 'HUD'], ['cluster', 'Cluster']] : [['cluster', 'Cluster']]).forEach(([id, text]) => {
+                tx += G.button(cv, th, tx, 60, 200, 46, t(text), () => { dispTab = id; changed(); }, { primary: dispTab === id, key: 'tab-' + id }) + 12;
+            });
+            const row = (i, key, text, on, run, off) => {
+                const x = 828 + (i % 2) * 372, y = 128 + Math.floor(i / 2) * 58;
+                line(cv, th, text, x, y + 28, 260, off ? th.dim : null);
+                toggle(cv, th, x + 268, y + 2, on, run, 'disp-' + key, off);
+            };
+            const flip = (key) => () => settings.set(key, settings.get(key) === false ? true : !settings.get(key));
+            if (dispTab === 'hud') {
+                const hudOnNow = settings.get('hudOn') !== false;
+                HUD_ITEMS.forEach(([key, text], i) => row(i, key, t(text), settings.get(key) !== false && !!settings.get(key), flip(key), key !== 'hudOn' && !hudOnNow));
+                label(cv, th, t('Between the turn signals'), 828, 330);
+                const now = settings.get('hudData');
+                HUD_DATA.filter(([v]) => v !== 'ev' || hv.installed()).forEach(([v, text], i) =>
+                    G.button(cv, th, 828 + (i % 3) * 244, 346 + Math.floor(i / 3) * 56, 232, 46, t(text), () => settings.set('hudData', v),
+                        { primary: now === v, key: 'data-' + v, busy: !hudOnNow }));
+            } else {
+                // the map on the cluster: on or off with the HUD's as it is (never on neither)
+                const shown = ctl.shownOn(), clusterNow = ctl.clusterOn() === true, hudMap = ctl.hudOn() === true;
+                const canMap = ctl.canChooseShownOn() && (!clusterNow || hudMap);
+                row(0, 'map', t('Map'), clusterNow, () => ctl.showOn(clusterNow ? 'hud' : hudMap ? 'both' : 'cluster'), !canMap || shown === null && !ctl.canChooseShownOn());
+                const gu = ctl.guidanceUnavailable(), hide = ctl.hideGuidance();
+                row(1, 'guide', t('Hide BMW logo on cluster'), !!hide, () => ctl.toggleGuidance(), gu || hide === null);
+                CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), settings.get(key) !== false, flip(key)));
+            }
         }
 
         function drawLog(cv, th) {

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.1
+
+- **Display page: a HUD tab and a Cluster tab.** HUD: Displays on HUD, turn signals, gear, real speed, the green
+  light alert and the reading between the turn signals. Cluster: the map, hiding BMW's logo and the green light
+  alert. On the left, the cluster and the HUD as pictures that move (the needles, the turn signals, "GO" now and
+  then), each with what of the app is on there. The Display page is there on a car without a HUD too (Cluster only).
+- **Green light alert on each display**: its own switch for the HUD and for the cluster.
+- In Settings, the HUD's settings are under "On the HUD", the cluster's under "Cluster".
+
 ## 0.9.0
 
 - **Green light alert** (setting, on by default): when the traffic light ahead turns green while the car waits at it,
