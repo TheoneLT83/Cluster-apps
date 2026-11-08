@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.3
+
+- **Hide logo on the cluster** (the switch's new name).
+- **Green light alert**: the Display page says whether the car's traffic-light camera was found (looked for 30 s
+  after the start); without one the alert cannot show.
+- The Store shows this update log (the catalog names CHANGELOG.md from this release on).
+
 ## 0.9.2
 
 - **The green light alert is a traffic light**: red and yellow faint, green lit, on the cluster and the HUD.

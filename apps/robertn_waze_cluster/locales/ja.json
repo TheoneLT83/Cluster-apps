@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "油温",
     "COOLANT": "水温",
-    "Hide BMW logo on cluster": "メーターのBMWロゴを隠す",
+    "Hide logo on the cluster": "メーターのロゴを隠す",
     "Reinstall patch": "パッチを再適用",
     "On the HUD": "HUDに表示",
     "Display": "表示",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "このドライバー専用の設定",
     "Head-up display": "ヘッドアップ・ディスプレイ",
     "Given to another app": "他のアプリが使用中",
-    "Green light alert": "青信号の通知"
+    "Green light alert": "青信号の通知",
+    "Traffic-light camera found": "信号カメラあり",
+    "Traffic-light camera not found": "信号カメラが見つかりません"
   }
 }

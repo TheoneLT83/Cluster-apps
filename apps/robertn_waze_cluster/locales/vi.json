@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "DẦU",
     "COOLANT": "LÀM MÁT",
-    "Hide BMW logo on cluster": "Ẩn logo BMW trên đồng hồ",
+    "Hide logo on the cluster": "Ẩn logo trên đồng hồ",
     "Reinstall patch": "Cài lại bản vá",
     "On the HUD": "Trên HUD",
     "Display": "Hiển thị",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Cài đặt riêng cho người lái này",
     "Head-up display": "Màn hình HUD",
     "Given to another app": "Đã nhường cho ứng dụng khác",
-    "Green light alert": "Báo đèn xanh"
+    "Green light alert": "Báo đèn xanh",
+    "Traffic-light camera found": "Đã tìm thấy camera đèn giao thông",
+    "Traffic-light camera not found": "Không tìm thấy camera đèn giao thông"
   }
 }

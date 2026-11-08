@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "OLI",
     "COOLANT": "PENDINGIN",
-    "Hide BMW logo on cluster": "Sembunyikan logo BMW di klaster",
+    "Hide logo on the cluster": "Sembunyikan logo di klaster",
     "Reinstall patch": "Pasang ulang patch",
     "On the HUD": "Di HUD",
     "Display": "Tampilan",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Pengaturan sendiri untuk pengemudi ini",
     "Head-up display": "Head-up display",
     "Given to another app": "Diserahkan ke aplikasi lain",
-    "Green light alert": "Peringatan lampu hijau"
+    "Green light alert": "Peringatan lampu hijau",
+    "Traffic-light camera found": "Kamera lampu lalu lintas ditemukan",
+    "Traffic-light camera not found": "Kamera lampu lalu lintas tidak ditemukan"
   }
 }

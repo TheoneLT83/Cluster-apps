@@ -276,7 +276,7 @@ async function background(bg) {
         hvWanted(); toHud(); changed();
     });
     log.info('Cluster functions ' + bg.spec.version + ' started (' + (bg.app && bg.app.startReason) + ')');
-    return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, onChange: (fn) => listeners.push(fn) };
+    return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, green, onChange: (fn) => listeners.push(fn) };
 }
 
 mgu.run({
@@ -285,7 +285,7 @@ mgu.run({
     async start(ctx) {
         const { ui, settings } = ctx;
         const b = ctx.background || await background(ctx);
-        const { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk } = b;
+        const { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, green } = b;
         let page = 0, version = 0, drawn = -1, blink = true, phone = 'carplay';
         // the kit's header and Settings tab in the display language too
         const changed = () => {
@@ -490,9 +490,17 @@ mgu.run({
                 toggle(cv, th, x + 268, y + 2, on, run, 'disp-' + key, off);
             };
             const flip = (key) => () => settings.set(key, settings.get(key) === false ? true : !settings.get(key));
+            // beside the green light alert's switch (slot i): whether the car's traffic-light camera answers
+            const camera = (i) => {
+                const f = green.found();
+                if (f === null) return;
+                const x = 48 + (i % 2) * 372, y = 128 + Math.floor(i / 2) * 58;
+                small(cv, th, f ? t('Traffic-light camera found') : t('Traffic-light camera not found'), x, y + 28, 340, f ? th.dim : th.warn);
+            };
             if (dispTab === 'hud') {
                 const hudOnNow = settings.get('hudOn') !== false;
                 HUD_ITEMS.forEach(([key, text], i) => row(i, key, t(text), settings.get(key) !== false && !!settings.get(key), flip(key), key !== 'hudOn' && !hudOnNow));
+                camera(HUD_ITEMS.length);
                 label(cv, th, t('Between the turn signals'), 48, 330);
                 const now = settings.get('hudData');
                 HUD_DATA.filter(([v]) => v !== 'ev' || hv.installed()).forEach(([v, text], i) =>
@@ -504,8 +512,9 @@ mgu.run({
                 const canMap = ctl.canChooseShownOn() && (!clusterNow || hudMap);
                 row(0, 'map', t('Map'), clusterNow, () => ctl.showOn(clusterNow ? 'hud' : hudMap ? 'both' : 'cluster'), !canMap || shown === null && !ctl.canChooseShownOn());
                 const gu = ctl.guidanceUnavailable(), hide = ctl.hideGuidance();
-                row(1, 'guide', t('Hide BMW logo on cluster'), !!hide, () => ctl.toggleGuidance(), gu || hide === null);
+                row(1, 'guide', t('Hide logo on the cluster'), !!hide, () => ctl.toggleGuidance(), gu || hide === null);
                 CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), settings.get(key) !== false, flip(key)));
+                camera(2 + CLUSTER_ITEMS.length);
             }
 
             // the pictures on the right: the cluster, and the HUD beside it, each with what of ours is on there
@@ -513,7 +522,7 @@ mgu.run({
             const cw = hasHud ? 420 : 724;
             const ch = clusterPicture(cv, th, 828, 100, cw, goNow && settings.get('greenLightCluster') !== false);
             label(cv, th, t('Cluster'), 828, 100 + ch + 34);
-            chips(cv, th, 828, 100 + ch + 48, cw, [[t('Map'), ctl.clusterOn() === true], [t('Hide BMW logo on cluster'), !!ctl.hideGuidance()],
+            chips(cv, th, 828, 100 + ch + 48, cw, [[t('Map'), ctl.clusterOn() === true], [t('Hide logo on the cluster'), !!ctl.hideGuidance()],
                 [t('Green light alert'), settings.get('greenLightCluster') !== false]]);
             if (hasHud) {
                 const hx = 1268, hw = 284, hudOnNow = settings.get('hudOn') !== false;

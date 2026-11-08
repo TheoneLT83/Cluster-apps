@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "OLEJ",
     "COOLANT": "CHLAZ.",
-    "Hide BMW logo on cluster": "Skrýt logo BMW na přístrojovce",
+    "Hide logo on the cluster": "Skrýt logo na přístrojovce",
     "Reinstall patch": "Znovu použít opravu",
     "On the HUD": "Na HUD",
     "Display": "Zobrazení",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Vlastní nastavení pro tohoto řidiče",
     "Head-up display": "Head-up displej",
     "Given to another app": "Předáno jiné aplikaci",
-    "Green light alert": "Upozornění na zelenou"
+    "Green light alert": "Upozornění na zelenou",
+    "Traffic-light camera found": "Kamera semaforů nalezena",
+    "Traffic-light camera not found": "Kamera semaforů nenalezena"
   }
 }

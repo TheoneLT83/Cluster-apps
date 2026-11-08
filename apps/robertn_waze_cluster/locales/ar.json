@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "زيت",
     "COOLANT": "تبريد",
-    "Hide BMW logo on cluster": "إخفاء شعار BMW على العدادات",
+    "Hide logo on the cluster": "إخفاء الشعار على العدادات",
     "Reinstall patch": "إعادة تثبيت التصحيح",
     "On the HUD": "على HUD",
     "Display": "العرض",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "إعدادات خاصة لهذا السائق",
     "Head-up display": "شاشة العرض الأمامية",
     "Given to another app": "لتطبيق آخر",
-    "Green light alert": "تنبيه الإشارة الخضراء"
+    "Green light alert": "تنبيه الإشارة الخضراء",
+    "Traffic-light camera found": "تم العثور على كاميرا إشارات المرور",
+    "Traffic-light camera not found": "لم يتم العثور على كاميرا إشارات المرور"
   }
 }

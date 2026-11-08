@@ -85,6 +85,11 @@ function requiresOf(release, where) {
     return r;
 }
 
+/* The component's CHANGELOG.md in the repository, for the Store's update log, or undefined. */
+function changelogOf(root, dir) {
+    return fs.existsSync(path.join(root, dir, 'CHANGELOG.md')) ? `${dir}/CHANGELOG.md` : undefined;
+}
+
 /* "uninstallable" (an app's release.json, a tool's component.json): the
  * Store offers Remove. */
 function uninstallableOf(c, where) {
@@ -156,7 +161,8 @@ function components(root = REPO) {
             icon: iconOf(release, root, `apps/${id}`),
             shipped: [`apps/${id}/${id}@${version}`].concat(manifest ?
                 [`apps/${id}/mgu-app.json`].concat(manifest.modules.map((m) => `apps/${id}/${m}`)) : []),
-            artifact: `apps/${id}/${id}@${version}${manifest ? '.src' : ''}.tgz`
+            artifact: `apps/${id}/${id}@${version}${manifest ? '.src' : ''}.tgz`,
+            changelog: changelogOf(root, `apps/${id}/${staged[0]}`)
         });
     });
     const tool = (dir, id, shipped) => {
@@ -181,7 +187,8 @@ function components(root = REPO) {
             uninstallable: uninstallableOf(c, `${dir}/component.json`),
             mguHmi: hmiOf(c, `${dir}/component.json`),
             shipped,
-            artifact: null
+            artifact: null,
+            changelog: changelogOf(root, dir)
         });
     };
     fs.readdirSync(path.join(root, 'native')).sort().forEach((id) => {
@@ -412,6 +419,10 @@ function catalogEntry(c, file) {
     }
     if (c.texts) {
         entry.texts = c.texts;
+    }
+    // the Store's update log: the CHANGELOG.md at the published commit
+    if (c.changelog) {
+        entry.changelog = c.changelog;
     }
     return entry;
 }

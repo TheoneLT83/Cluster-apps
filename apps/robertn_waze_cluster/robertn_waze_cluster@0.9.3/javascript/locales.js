@@ -118,7 +118,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "زيت",
    "COOLANT": "تبريد",
-   "Hide BMW logo on cluster": "إخفاء شعار BMW على العدادات",
+   "Hide logo on the cluster": "إخفاء الشعار على العدادات",
    "Reinstall patch": "إعادة تثبيت التصحيح",
    "On the HUD": "على HUD",
    "Display": "العرض",
@@ -144,7 +144,9 @@ module.exports = [
    "Own settings for this driver": "إعدادات خاصة لهذا السائق",
    "Head-up display": "شاشة العرض الأمامية",
    "Given to another app": "لتطبيق آخر",
-   "Green light alert": "تنبيه الإشارة الخضراء"
+   "Green light alert": "تنبيه الإشارة الخضراء",
+   "Traffic-light camera found": "تم العثور على كاميرا إشارات المرور",
+   "Traffic-light camera not found": "لم يتم العثور على كاميرا إشارات المرور"
   }
  },
  {
@@ -264,7 +266,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLEJ",
    "COOLANT": "CHLAZ.",
-   "Hide BMW logo on cluster": "Skrýt logo BMW na přístrojovce",
+   "Hide logo on the cluster": "Skrýt logo na přístrojovce",
    "Reinstall patch": "Znovu použít opravu",
    "On the HUD": "Na HUD",
    "Display": "Zobrazení",
@@ -290,7 +292,9 @@ module.exports = [
    "Own settings for this driver": "Vlastní nastavení pro tohoto řidiče",
    "Head-up display": "Head-up displej",
    "Given to another app": "Předáno jiné aplikaci",
-   "Green light alert": "Upozornění na zelenou"
+   "Green light alert": "Upozornění na zelenou",
+   "Traffic-light camera found": "Kamera semaforů nalezena",
+   "Traffic-light camera not found": "Kamera semaforů nenalezena"
   }
  },
  {
@@ -410,7 +414,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLIE",
    "COOLANT": "KØLEV.",
-   "Hide BMW logo on cluster": "Skjul BMW-logo i instrumentbrættet",
+   "Hide logo on the cluster": "Skjul logo i instrumentbrættet",
    "Reinstall patch": "Geninstaller patch",
    "On the HUD": "På HUD",
    "Display": "Visning",
@@ -436,7 +440,9 @@ module.exports = [
    "Own settings for this driver": "Egne indstillinger for denne fører",
    "Head-up display": "Head-up-display",
    "Given to another app": "Overladt til en anden app",
-   "Green light alert": "Grønt lys-advarsel"
+   "Green light alert": "Grønt lys-advarsel",
+   "Traffic-light camera found": "Trafiklyskamera fundet",
+   "Traffic-light camera not found": "Intet trafiklyskamera fundet"
   }
  },
  {
@@ -556,7 +562,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "ÖL",
    "COOLANT": "KÜHLM.",
-   "Hide BMW logo on cluster": "BMW-Logo im Kombi ausblenden",
+   "Hide logo on the cluster": "Logo im Kombi ausblenden",
    "Reinstall patch": "Patch neu installieren",
    "On the HUD": "Im HUD",
    "Display": "Anzeige",
@@ -582,7 +588,9 @@ module.exports = [
    "Own settings for this driver": "Eigene Einstellungen für diesen Fahrer",
    "Head-up display": "Head-up-Display",
    "Given to another app": "An andere App abgegeben",
-   "Green light alert": "Grün-Hinweis an der Ampel"
+   "Green light alert": "Grün-Hinweis an der Ampel",
+   "Traffic-light camera found": "Ampelkamera gefunden",
+   "Traffic-light camera not found": "Keine Ampelkamera gefunden"
   }
  },
  {
@@ -702,7 +710,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "ΛΑΔΙ",
    "COOLANT": "ΨΥΚΤ.",
-   "Hide BMW logo on cluster": "Απόκρυψη λογότυπου BMW στον πίνακα οργάνων",
+   "Hide logo on the cluster": "Απόκρυψη λογότυπου στον πίνακα οργάνων",
    "Reinstall patch": "Επανεγκατάσταση διόρθωσης",
    "On the HUD": "Στο HUD",
    "Display": "Οθόνη",
@@ -728,7 +736,9 @@ module.exports = [
    "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό",
    "Head-up display": "Head-Up Display",
    "Given to another app": "Σε άλλη εφαρμογή",
-   "Green light alert": "Ειδοποίηση πράσινου φαναριού"
+   "Green light alert": "Ειδοποίηση πράσινου φαναριού",
+   "Traffic-light camera found": "Βρέθηκε κάμερα φαναριών",
+   "Traffic-light camera not found": "Δεν βρέθηκε κάμερα φαναριών"
   }
  },
  {
@@ -848,7 +858,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "ACEITE",
    "COOLANT": "REFRIG.",
-   "Hide BMW logo on cluster": "Ocultar el logo de BMW en el tablero",
+   "Hide logo on the cluster": "Ocultar el logo en el tablero",
    "Reinstall patch": "Reinstalar parche",
    "On the HUD": "En el HUD",
    "Display": "Pantalla",
@@ -874,7 +884,9 @@ module.exports = [
    "Own settings for this driver": "Configuración propia para este conductor",
    "Head-up display": "Head-Up Display",
    "Given to another app": "Cedido a otra app",
-   "Green light alert": "Aviso de luz verde"
+   "Green light alert": "Aviso de luz verde",
+   "Traffic-light camera found": "Cámara de semáforos encontrada",
+   "Traffic-light camera not found": "No se encontró la cámara de semáforos"
   }
  },
  {
@@ -994,7 +1006,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "ACEITE",
    "COOLANT": "REFRIG.",
-   "Hide BMW logo on cluster": "Ocultar el logo de BMW en el cuadro",
+   "Hide logo on the cluster": "Ocultar el logo en el cuadro",
    "Reinstall patch": "Reinstalar parche",
    "On the HUD": "En el HUD",
    "Display": "Pantalla",
@@ -1020,7 +1032,9 @@ module.exports = [
    "Own settings for this driver": "Ajustes propios para este conductor",
    "Head-up display": "Head-Up Display",
    "Given to another app": "Cedido a otra app",
-   "Green light alert": "Aviso de semáforo en verde"
+   "Green light alert": "Aviso de semáforo en verde",
+   "Traffic-light camera found": "Cámara de semáforos encontrada",
+   "Traffic-light camera not found": "No se encontró la cámara de semáforos"
   }
  },
  {
@@ -1140,7 +1154,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "ÖLJY",
    "COOLANT": "JÄÄHD.",
-   "Hide BMW logo on cluster": "Piilota BMW-logo mittaristosta",
+   "Hide logo on the cluster": "Piilota logo mittaristosta",
    "Reinstall patch": "Asenna korjaus uudelleen",
    "On the HUD": "HUD:ssa",
    "Display": "Näyttö",
@@ -1166,7 +1180,9 @@ module.exports = [
    "Own settings for this driver": "Omat asetukset tälle kuljettajalle",
    "Head-up display": "Tuulilasinäyttö",
    "Given to another app": "Annettu toiselle sovellukselle",
-   "Green light alert": "Vihreän valon ilmoitus"
+   "Green light alert": "Vihreän valon ilmoitus",
+   "Traffic-light camera found": "Liikennevalokamera löytyi",
+   "Traffic-light camera not found": "Liikennevalokameraa ei löytynyt"
   }
  },
  {
@@ -1286,7 +1302,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "HUILE",
    "COOLANT": "REFROID.",
-   "Hide BMW logo on cluster": "Masquer le logo BMW au tableau de bord",
+   "Hide logo on the cluster": "Masquer le logo au tableau de bord",
    "Reinstall patch": "Réinstaller le correctif",
    "On the HUD": "Sur l’affichage tête haute",
    "Display": "Affichage",
@@ -1312,7 +1328,9 @@ module.exports = [
    "Own settings for this driver": "Réglages propres à ce conducteur",
    "Head-up display": "Affichage tête haute",
    "Given to another app": "Cédé à une autre app",
-   "Green light alert": "Alerte feu vert"
+   "Green light alert": "Alerte feu vert",
+   "Traffic-light camera found": "Caméra de feux trouvée",
+   "Traffic-light camera not found": "Aucune caméra de feux trouvée"
   }
  },
  {
@@ -1432,7 +1450,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "HUILE",
    "COOLANT": "REFROID.",
-   "Hide BMW logo on cluster": "Masquer le logo BMW au combiné",
+   "Hide logo on the cluster": "Masquer le logo au combiné",
    "Reinstall patch": "Réinstaller le correctif",
    "On the HUD": "Sur le HUD",
    "Display": "Affichage",
@@ -1458,7 +1476,9 @@ module.exports = [
    "Own settings for this driver": "Réglages propres à ce conducteur",
    "Head-up display": "Affichage tête haute",
    "Given to another app": "Cédé à une autre app",
-   "Green light alert": "Alerte feu vert"
+   "Green light alert": "Alerte feu vert",
+   "Traffic-light camera found": "Caméra de feux trouvée",
+   "Traffic-light camera not found": "Aucune caméra de feux trouvée"
   }
  },
  {
@@ -1578,7 +1598,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "שמן",
    "COOLANT": "קירור",
-   "Hide BMW logo on cluster": "הסתרת לוגו BMW בלוח המחוונים",
+   "Hide logo on the cluster": "הסתרת הלוגו בלוח המחוונים",
    "Reinstall patch": "התקנה מחדש של התיקון",
    "On the HUD": "ב-HUD",
    "Display": "תצוגה",
@@ -1604,7 +1624,9 @@ module.exports = [
    "Own settings for this driver": "הגדרות נפרדות לנהג זה",
    "Head-up display": "תצוגה עילית",
    "Given to another app": "הועבר לאפליקציה אחרת",
-   "Green light alert": "התראת אור ירוק"
+   "Green light alert": "התראת אור ירוק",
+   "Traffic-light camera found": "נמצאה מצלמת רמזורים",
+   "Traffic-light camera not found": "לא נמצאה מצלמת רמזורים"
   }
  },
  {
@@ -1724,7 +1746,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLAJ",
    "COOLANT": "HŰTŐF.",
-   "Hide BMW logo on cluster": "BMW-logó elrejtése a műszerfalon",
+   "Hide logo on the cluster": "Logó elrejtése a műszerfalon",
    "Reinstall patch": "Javítás újratelepítése",
    "On the HUD": "A HUD-on",
    "Display": "Kijelző",
@@ -1750,7 +1772,9 @@ module.exports = [
    "Own settings for this driver": "Saját beállítások ennek a vezetőnek",
    "Head-up display": "Head-up kijelző",
    "Given to another app": "Másik alkalmazásnak átadva",
-   "Green light alert": "Zöld lámpa jelzés"
+   "Green light alert": "Zöld lámpa jelzés",
+   "Traffic-light camera found": "Közlekedésilámpa-kamera megtalálva",
+   "Traffic-light camera not found": "Nem található közlekedésilámpa-kamera"
   }
  },
  {
@@ -1870,7 +1894,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLI",
    "COOLANT": "PENDINGIN",
-   "Hide BMW logo on cluster": "Sembunyikan logo BMW di klaster",
+   "Hide logo on the cluster": "Sembunyikan logo di klaster",
    "Reinstall patch": "Pasang ulang patch",
    "On the HUD": "Di HUD",
    "Display": "Tampilan",
@@ -1896,7 +1920,9 @@ module.exports = [
    "Own settings for this driver": "Pengaturan sendiri untuk pengemudi ini",
    "Head-up display": "Head-up display",
    "Given to another app": "Diserahkan ke aplikasi lain",
-   "Green light alert": "Peringatan lampu hijau"
+   "Green light alert": "Peringatan lampu hijau",
+   "Traffic-light camera found": "Kamera lampu lalu lintas ditemukan",
+   "Traffic-light camera not found": "Kamera lampu lalu lintas tidak ditemukan"
   }
  },
  {
@@ -2016,7 +2042,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLIO",
    "COOLANT": "REFRIG.",
-   "Hide BMW logo on cluster": "Nascondi il logo BMW nel quadro",
+   "Hide logo on the cluster": "Nascondi il logo nel quadro",
    "Reinstall patch": "Reinstalla la patch",
    "On the HUD": "Nell’HUD",
    "Display": "Display",
@@ -2042,7 +2068,9 @@ module.exports = [
    "Own settings for this driver": "Impostazioni proprie per questo conducente",
    "Head-up display": "Head-up display",
    "Given to another app": "Ceduto a un'altra app",
-   "Green light alert": "Avviso semaforo verde"
+   "Green light alert": "Avviso semaforo verde",
+   "Traffic-light camera found": "Telecamera semafori trovata",
+   "Traffic-light camera not found": "Nessuna telecamera semafori trovata"
   }
  },
  {
@@ -2162,7 +2190,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "油温",
    "COOLANT": "水温",
-   "Hide BMW logo on cluster": "メーターのBMWロゴを隠す",
+   "Hide logo on the cluster": "メーターのロゴを隠す",
    "Reinstall patch": "パッチを再適用",
    "On the HUD": "HUDに表示",
    "Display": "表示",
@@ -2188,7 +2216,9 @@ module.exports = [
    "Own settings for this driver": "このドライバー専用の設定",
    "Head-up display": "ヘッドアップ・ディスプレイ",
    "Given to another app": "他のアプリが使用中",
-   "Green light alert": "青信号の通知"
+   "Green light alert": "青信号の通知",
+   "Traffic-light camera found": "信号カメラあり",
+   "Traffic-light camera not found": "信号カメラが見つかりません"
   }
  },
  {
@@ -2308,7 +2338,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "오일",
    "COOLANT": "냉각수",
-   "Hide BMW logo on cluster": "클러스터의 BMW 로고 숨기기",
+   "Hide logo on the cluster": "클러스터의 로고 숨기기",
    "Reinstall patch": "패치 다시 적용",
    "On the HUD": "HUD에 표시",
    "Display": "표시",
@@ -2334,7 +2364,9 @@ module.exports = [
    "Own settings for this driver": "이 운전자 전용 설정",
    "Head-up display": "헤드업 디스플레이",
    "Given to another app": "다른 앱이 사용 중",
-   "Green light alert": "녹색 신호 알림"
+   "Green light alert": "녹색 신호 알림",
+   "Traffic-light camera found": "신호등 카메라 있음",
+   "Traffic-light camera not found": "신호등 카메라를 찾을 수 없음"
   }
  },
  {
@@ -2454,7 +2486,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLJE",
    "COOLANT": "KJØLEV.",
-   "Hide BMW logo on cluster": "Skjul BMW-logo i instrumentpanelet",
+   "Hide logo on the cluster": "Skjul logo i instrumentpanelet",
    "Reinstall patch": "Installer patch på nytt",
    "On the HUD": "På HUD",
    "Display": "Visning",
@@ -2480,7 +2512,9 @@ module.exports = [
    "Own settings for this driver": "Egne innstillinger for denne føreren",
    "Head-up display": "Head-up-display",
    "Given to another app": "Overlatt til en annen app",
-   "Green light alert": "Varsel om grønt lys"
+   "Green light alert": "Varsel om grønt lys",
+   "Traffic-light camera found": "Trafikklyskamera funnet",
+   "Traffic-light camera not found": "Fant ikke trafikklyskamera"
   }
  },
  {
@@ -2602,7 +2636,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLIE",
    "COOLANT": "KOELV.",
-   "Hide BMW logo on cluster": "BMW-logo in het instrumentenpaneel verbergen",
+   "Hide logo on the cluster": "Logo in het instrumentenpaneel verbergen",
    "Reinstall patch": "Patch opnieuw installeren",
    "On the HUD": "Op het HUD",
    "Display": "Weergave",
@@ -2628,7 +2662,9 @@ module.exports = [
    "Own settings for this driver": "Eigen instellingen voor deze bestuurder",
    "Head-up display": "Head-up display",
    "Given to another app": "Overgedragen aan andere app",
-   "Green light alert": "Groen-licht-melding"
+   "Green light alert": "Groen-licht-melding",
+   "Traffic-light camera found": "Verkeerslichtcamera gevonden",
+   "Traffic-light camera not found": "Geen verkeerslichtcamera gevonden"
   }
  },
  {
@@ -2748,7 +2784,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLEJ",
    "COOLANT": "PŁYN",
-   "Hide BMW logo on cluster": "Ukryj logo BMW na zegarach",
+   "Hide logo on the cluster": "Ukryj logo na zegarach",
    "Reinstall patch": "Zainstaluj poprawkę ponownie",
    "On the HUD": "Na HUD",
    "Display": "Wyświetlanie",
@@ -2774,7 +2810,9 @@ module.exports = [
    "Own settings for this driver": "Własne ustawienia dla tego kierowcy",
    "Head-up display": "Wyświetlacz Head-Up",
    "Given to another app": "Przekazano innej aplikacji",
-   "Green light alert": "Powiadomienie o zielonym świetle"
+   "Green light alert": "Powiadomienie o zielonym świetle",
+   "Traffic-light camera found": "Znaleziono kamerę świateł",
+   "Traffic-light camera not found": "Nie znaleziono kamery świateł"
   }
  },
  {
@@ -2894,7 +2932,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "ÓLEO",
    "COOLANT": "ARREF.",
-   "Hide BMW logo on cluster": "Ocultar o logo da BMW no painel",
+   "Hide logo on the cluster": "Ocultar o logo no painel",
    "Reinstall patch": "Reinstalar patch",
    "On the HUD": "No HUD",
    "Display": "Exibição",
@@ -2920,7 +2958,9 @@ module.exports = [
    "Own settings for this driver": "Configurações próprias para este motorista",
    "Head-up display": "Head-up display",
    "Given to another app": "Cedido a outro app",
-   "Green light alert": "Alerta de sinal verde"
+   "Green light alert": "Alerta de sinal verde",
+   "Traffic-light camera found": "Câmera de semáforos encontrada",
+   "Traffic-light camera not found": "Câmera de semáforos não encontrada"
   }
  },
  {
@@ -3040,7 +3080,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "ÓLEO",
    "COOLANT": "REFRIG.",
-   "Hide BMW logo on cluster": "Ocultar o logótipo BMW no quadrante",
+   "Hide logo on the cluster": "Ocultar o logótipo no quadrante",
    "Reinstall patch": "Reinstalar correção",
    "On the HUD": "No HUD",
    "Display": "Visualização",
@@ -3066,7 +3106,9 @@ module.exports = [
    "Own settings for this driver": "Definições próprias para este condutor",
    "Head-up display": "Head-up display",
    "Given to another app": "Cedido a outra aplicação",
-   "Green light alert": "Alerta de semáforo verde"
+   "Green light alert": "Alerta de semáforo verde",
+   "Traffic-light camera found": "Câmara de semáforos encontrada",
+   "Traffic-light camera not found": "Câmara de semáforos não encontrada"
   }
  },
  {
@@ -3186,7 +3228,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "ULEI",
    "COOLANT": "RĂCIRE",
-   "Hide BMW logo on cluster": "Ascunde logoul BMW pe bord",
+   "Hide logo on the cluster": "Ascunde logoul pe bord",
    "Reinstall patch": "Reinstalare patch",
    "On the HUD": "Pe HUD",
    "Display": "Afișaj",
@@ -3212,7 +3254,9 @@ module.exports = [
    "Own settings for this driver": "Setări proprii pentru acest șofer",
    "Head-up display": "Afișaj head-up",
    "Given to another app": "Cedat altei aplicații",
-   "Green light alert": "Alertă semafor verde"
+   "Green light alert": "Alertă semafor verde",
+   "Traffic-light camera found": "Cameră pentru semafoare găsită",
+   "Traffic-light camera not found": "Nu s-a găsit camera pentru semafoare"
   }
  },
  {
@@ -3332,7 +3376,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "МАСЛО",
    "COOLANT": "ОЖ",
-   "Hide BMW logo on cluster": "Скрыть логотип BMW на приборной панели",
+   "Hide logo on the cluster": "Скрыть логотип на приборной панели",
    "Reinstall patch": "Переустановить патч",
    "On the HUD": "На HUD",
    "Display": "Дисплей",
@@ -3358,7 +3402,9 @@ module.exports = [
    "Own settings for this driver": "Свои настройки для этого водителя",
    "Head-up display": "Проекционный дисплей",
    "Given to another app": "Передан другому приложению",
-   "Green light alert": "Сигнал о зелёном свете"
+   "Green light alert": "Сигнал о зелёном свете",
+   "Traffic-light camera found": "Камера светофоров найдена",
+   "Traffic-light camera not found": "Камера светофоров не найдена"
   }
  },
  {
@@ -3478,7 +3524,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLEJ",
    "COOLANT": "CHLAD.",
-   "Hide BMW logo on cluster": "Skryť logo BMW na prístrojovke",
+   "Hide logo on the cluster": "Skryť logo na prístrojovke",
    "Reinstall patch": "Znova použiť opravu",
    "On the HUD": "Na HUD",
    "Display": "Zobrazenie",
@@ -3504,7 +3550,9 @@ module.exports = [
    "Own settings for this driver": "Vlastné nastavenia pre tohto vodiča",
    "Head-up display": "Head-up displej",
    "Given to another app": "Prenechané inej aplikácii",
-   "Green light alert": "Upozornenie na zelenú"
+   "Green light alert": "Upozornenie na zelenú",
+   "Traffic-light camera found": "Kamera semaforov nájdená",
+   "Traffic-light camera not found": "Kamera semaforov nenájdená"
   }
  },
  {
@@ -3624,7 +3672,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLJE",
    "COOLANT": "HLAD.",
-   "Hide BMW logo on cluster": "Skrij logotip BMW na merilniku",
+   "Hide logo on the cluster": "Skrij logotip na merilniku",
    "Reinstall patch": "Znova uveljavi popravek",
    "On the HUD": "Na HUD",
    "Display": "Prikaz",
@@ -3650,7 +3698,9 @@ module.exports = [
    "Own settings for this driver": "Lastne nastavitve za tega voznika",
    "Head-up display": "Prikazovalnik head-up",
    "Given to another app": "Prepuščeno drugi aplikaciji",
-   "Green light alert": "Opozorilo na zeleno luč"
+   "Green light alert": "Opozorilo na zeleno luč",
+   "Traffic-light camera found": "Kamera za semaforje najdena",
+   "Traffic-light camera not found": "Kamere za semaforje ni"
   }
  },
  {
@@ -3770,7 +3820,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "OLJA",
    "COOLANT": "KYLV.",
-   "Hide BMW logo on cluster": "Dölj BMW-logotypen i instrumentpanelen",
+   "Hide logo on the cluster": "Dölj logotypen i instrumentpanelen",
    "Reinstall patch": "Installera om patch",
    "On the HUD": "På HUD",
    "Display": "Visning",
@@ -3796,7 +3846,9 @@ module.exports = [
    "Own settings for this driver": "Egna inställningar för den här föraren",
    "Head-up display": "Head-up-display",
    "Given to another app": "Överlämnad till en annan app",
-   "Green light alert": "Varning för grönt ljus"
+   "Green light alert": "Varning för grönt ljus",
+   "Traffic-light camera found": "Trafikljuskamera hittad",
+   "Traffic-light camera not found": "Ingen trafikljuskamera hittades"
   }
  },
  {
@@ -3916,7 +3968,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "น้ำมัน",
    "COOLANT": "น้ำหล่อเย็น",
-   "Hide BMW logo on cluster": "ซ่อนโลโก้ BMW บนหน้าปัด",
+   "Hide logo on the cluster": "ซ่อนโลโก้บนหน้าปัด",
    "Reinstall patch": "ติดตั้งแพตช์ใหม่",
    "On the HUD": "บน HUD",
    "Display": "การแสดงผล",
@@ -3942,7 +3994,9 @@ module.exports = [
    "Own settings for this driver": "การตั้งค่าเฉพาะสำหรับผู้ขับขี่คนนี้",
    "Head-up display": "จอแสดงผลบนกระจกหน้า",
    "Given to another app": "ให้แอปอื่นใช้อยู่",
-   "Green light alert": "แจ้งเตือนไฟเขียว"
+   "Green light alert": "แจ้งเตือนไฟเขียว",
+   "Traffic-light camera found": "พบกล้องไฟจราจร",
+   "Traffic-light camera not found": "ไม่พบกล้องไฟจราจร"
   }
  },
  {
@@ -4062,7 +4116,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "YAĞ",
    "COOLANT": "SOĞUTMA",
-   "Hide BMW logo on cluster": "Göstergedeki BMW logosunu gizle",
+   "Hide logo on the cluster": "Göstergedeki logoyu gizle",
    "Reinstall patch": "Yamayı yeniden yükle",
    "On the HUD": "HUD’da",
    "Display": "Ekran",
@@ -4088,7 +4142,9 @@ module.exports = [
    "Own settings for this driver": "Bu sürücüye özel ayarlar",
    "Head-up display": "Head-up ekran",
    "Given to another app": "Başka bir uygulamaya bırakıldı",
-   "Green light alert": "Yeşil ışık uyarısı"
+   "Green light alert": "Yeşil ışık uyarısı",
+   "Traffic-light camera found": "Trafik ışığı kamerası bulundu",
+   "Traffic-light camera not found": "Trafik ışığı kamerası bulunamadı"
   }
  },
  {
@@ -4208,7 +4264,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "ОЛИВА",
    "COOLANT": "ОР",
-   "Hide BMW logo on cluster": "Приховати логотип BMW на панелі приладів",
+   "Hide logo on the cluster": "Приховати логотип на панелі приладів",
    "Reinstall patch": "Перевстановити патч",
    "On the HUD": "На HUD",
    "Display": "Дисплей",
@@ -4234,7 +4290,9 @@ module.exports = [
    "Own settings for this driver": "Власні налаштування для цього водія",
    "Head-up display": "Проекційний дисплей",
    "Given to another app": "Передано іншому застосунку",
-   "Green light alert": "Сповіщення про зелене світло"
+   "Green light alert": "Сповіщення про зелене світло",
+   "Traffic-light camera found": "Камеру світлофорів знайдено",
+   "Traffic-light camera not found": "Камеру світлофорів не знайдено"
   }
  },
  {
@@ -4354,7 +4412,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "DẦU",
    "COOLANT": "LÀM MÁT",
-   "Hide BMW logo on cluster": "Ẩn logo BMW trên đồng hồ",
+   "Hide logo on the cluster": "Ẩn logo trên đồng hồ",
    "Reinstall patch": "Cài lại bản vá",
    "On the HUD": "Trên HUD",
    "Display": "Hiển thị",
@@ -4380,7 +4438,9 @@ module.exports = [
    "Own settings for this driver": "Cài đặt riêng cho người lái này",
    "Head-up display": "Màn hình HUD",
    "Given to another app": "Đã nhường cho ứng dụng khác",
-   "Green light alert": "Báo đèn xanh"
+   "Green light alert": "Báo đèn xanh",
+   "Traffic-light camera found": "Đã tìm thấy camera đèn giao thông",
+   "Traffic-light camera not found": "Không tìm thấy camera đèn giao thông"
   }
  },
  {
@@ -4502,7 +4562,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "机油",
    "COOLANT": "冷却液",
-   "Hide BMW logo on cluster": "隐藏仪表上的 BMW 标志",
+   "Hide logo on the cluster": "隐藏仪表上的标志",
    "Reinstall patch": "重新应用补丁",
    "On the HUD": "抬头显示器上",
    "Display": "显示",
@@ -4528,7 +4588,9 @@ module.exports = [
    "Own settings for this driver": "此驾驶员的专属设置",
    "Head-up display": "抬头显示",
    "Given to another app": "已让给其他应用",
-   "Green light alert": "绿灯提醒"
+   "Green light alert": "绿灯提醒",
+   "Traffic-light camera found": "已找到红绿灯摄像头",
+   "Traffic-light camera not found": "未找到红绿灯摄像头"
   }
  },
  {
@@ -4650,7 +4712,7 @@ module.exports = [
    "EV": "EV",
    "OIL": "機油",
    "COOLANT": "冷卻液",
-   "Hide BMW logo on cluster": "隱藏儀表上的 BMW 標誌",
+   "Hide logo on the cluster": "隱藏儀表上的標誌",
    "Reinstall patch": "重新套用修補",
    "On the HUD": "抬頭顯示器上",
    "Display": "顯示",
@@ -4676,7 +4738,9 @@ module.exports = [
    "Own settings for this driver": "此駕駛的專屬設定",
    "Head-up display": "抬頭顯示器",
    "Given to another app": "已讓給其他應用程式",
-   "Green light alert": "綠燈提醒"
+   "Green light alert": "綠燈提醒",
+   "Traffic-light camera found": "已找到紅綠燈攝影機",
+   "Traffic-light camera not found": "找不到紅綠燈攝影機"
   }
  }
 ];

@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "ULEI",
     "COOLANT": "RĂCIRE",
-    "Hide BMW logo on cluster": "Ascunde logoul BMW pe bord",
+    "Hide logo on the cluster": "Ascunde logoul pe bord",
     "Reinstall patch": "Reinstalare patch",
     "On the HUD": "Pe HUD",
     "Display": "Afișaj",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Setări proprii pentru acest șofer",
     "Head-up display": "Afișaj head-up",
     "Given to another app": "Cedat altei aplicații",
-    "Green light alert": "Alertă semafor verde"
+    "Green light alert": "Alertă semafor verde",
+    "Traffic-light camera found": "Cameră pentru semafoare găsită",
+    "Traffic-light camera not found": "Nu s-a găsit camera pentru semafoare"
   }
 }

@@ -116,7 +116,7 @@
     "EV": "EV",
     "OIL": "OLIE",
     "COOLANT": "KOELV.",
-    "Hide BMW logo on cluster": "BMW-logo in het instrumentenpaneel verbergen",
+    "Hide logo on the cluster": "Logo in het instrumentenpaneel verbergen",
     "Reinstall patch": "Patch opnieuw installeren",
     "On the HUD": "Op het HUD",
     "Display": "Weergave",
@@ -142,6 +142,8 @@
     "Own settings for this driver": "Eigen instellingen voor deze bestuurder",
     "Head-up display": "Head-up display",
     "Given to another app": "Overgedragen aan andere app",
-    "Green light alert": "Groen-licht-melding"
+    "Green light alert": "Groen-licht-melding",
+    "Traffic-light camera found": "Verkeerslichtcamera gevonden",
+    "Traffic-light camera not found": "Geen verkeerslichtcamera gevonden"
   }
 }

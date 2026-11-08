@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "OLIE",
     "COOLANT": "KØLEV.",
-    "Hide BMW logo on cluster": "Skjul BMW-logo i instrumentbrættet",
+    "Hide logo on the cluster": "Skjul logo i instrumentbrættet",
     "Reinstall patch": "Geninstaller patch",
     "On the HUD": "På HUD",
     "Display": "Visning",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Egne indstillinger for denne fører",
     "Head-up display": "Head-up-display",
     "Given to another app": "Overladt til en anden app",
-    "Green light alert": "Grønt lys-advarsel"
+    "Green light alert": "Grønt lys-advarsel",
+    "Traffic-light camera found": "Trafiklyskamera fundet",
+    "Traffic-light camera not found": "Intet trafiklyskamera fundet"
   }
 }

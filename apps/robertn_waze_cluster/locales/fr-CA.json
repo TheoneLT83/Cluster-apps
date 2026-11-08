@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "HUILE",
     "COOLANT": "REFROID.",
-    "Hide BMW logo on cluster": "Masquer le logo BMW au tableau de bord",
+    "Hide logo on the cluster": "Masquer le logo au tableau de bord",
     "Reinstall patch": "Réinstaller le correctif",
     "On the HUD": "Sur l’affichage tête haute",
     "Display": "Affichage",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Réglages propres à ce conducteur",
     "Head-up display": "Affichage tête haute",
     "Given to another app": "Cédé à une autre app",
-    "Green light alert": "Alerte feu vert"
+    "Green light alert": "Alerte feu vert",
+    "Traffic-light camera found": "Caméra de feux trouvée",
+    "Traffic-light camera not found": "Aucune caméra de feux trouvée"
   }
 }

@@ -13,7 +13,8 @@
  * stands (below STILL_KMH), shows "GO" for GO_MS; at most one each QUIET_MS.
  *
  *   const g = new GreenLight({ signals, log, speed: () => kmh, now });
- *   await g.start();     g.on('go', (on) => ...)      g.showing() -> true while "GO" is up
+ *   await g.start();     g.on('go', (on) => ...)      g.showing() -> true while the light is up
+ *   g.found() -> true (a source answers), false (none did within LOOK_MS of the start), null (still looking)
  */
 const EventEmitter = require('events');
 
@@ -26,6 +27,7 @@ const STILL_KMH = 3;
 const RED_KEEP_MS = 120000;
 const GO_MS = 4000;
 const QUIET_MS = 10000;
+const LOOK_MS = 30000;
 
 /* A dispForesightEvent (name or number) -> 'red' | 'green' | null. */
 function foresightColour(ev) {
@@ -47,20 +49,26 @@ class GreenLight extends EventEmitter {
         this.lastGo = -Infinity;
         this.rawSeen = [];
         this.timer = null;
+        this.startedAt = null;
+        this.foresight = null;     // the display's watch, available once its provider answers
+        this.cameraUp = false;     // the camera's provider answered, or a light came
     }
 
     async start() {
-        const f = await this.signals.watch(FORESIGHT, '1', { displayForesight: (v) => this.light('foresight', foresightColour(v && v.dispForesightEvent)) }, this.log);
+        this.startedAt = this.now();
+        const f = this.foresight = await this.signals.watch(FORESIGHT, '1', { displayForesight: (v) => this.light('foresight', foresightColour(v && v.dispForesightEvent)) }, this.log);
         if (f.error) this.log.warn('green light: BMW\'s traffic-light display: ' + f.error);
         try {
             const p = await this.signals.proxy(CAMERA, '1');
             await this.signals.on(p, 'RecognitionTrafficLightCamera', (v) => this.camera(v), this.log);
+            if (this.signals.onAvailable) await this.signals.onAvailable(p, (on) => { if (on) this.cameraUp = true; });
         } catch (e) { this.log.warn('green light: the camera\'s traffic lights: ' + (e && e.message || e)); }
     }
 
     /* One light object of the camera. */
     camera(v) {
         if (!v) return;
+        this.cameraUp = true;
         const code = Number(v.trafficLightColor);
         if (this.rawSeen.length < 16 && this.rawSeen.indexOf(code) < 0) {
             this.rawSeen.push(code);
@@ -88,7 +96,12 @@ class GreenLight extends EventEmitter {
 
     showing() { return this.now() < this.goUntil; }
 
+    found() {
+        if (this.cameraUp || (this.foresight && this.foresight.available)) return true;
+        return this.startedAt !== null && this.now() - this.startedAt > LOOK_MS ? false : null;
+    }
+
     stop() { clearTimeout(this.timer); this.timer = null; }
 }
 
-module.exports = { GreenLight, foresightColour, RAW_RED, RAW_GREEN, STILL_KMH, GO_MS, QUIET_MS };
+module.exports = { GreenLight, foresightColour, RAW_RED, RAW_GREEN, STILL_KMH, GO_MS, QUIET_MS, LOOK_MS };

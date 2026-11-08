@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "ÓLEO",
     "COOLANT": "REFRIG.",
-    "Hide BMW logo on cluster": "Ocultar o logótipo BMW no quadrante",
+    "Hide logo on the cluster": "Ocultar o logótipo no quadrante",
     "Reinstall patch": "Reinstalar correção",
     "On the HUD": "No HUD",
     "Display": "Visualização",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Definições próprias para este condutor",
     "Head-up display": "Head-up display",
     "Given to another app": "Cedido a outra aplicação",
-    "Green light alert": "Alerta de semáforo verde"
+    "Green light alert": "Alerta de semáforo verde",
+    "Traffic-light camera found": "Câmara de semáforos encontrada",
+    "Traffic-light camera not found": "Câmara de semáforos não encontrada"
   }
 }

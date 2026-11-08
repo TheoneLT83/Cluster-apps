@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "OLEJ",
     "COOLANT": "PŁYN",
-    "Hide BMW logo on cluster": "Ukryj logo BMW na zegarach",
+    "Hide logo on the cluster": "Ukryj logo na zegarach",
     "Reinstall patch": "Zainstaluj poprawkę ponownie",
     "On the HUD": "Na HUD",
     "Display": "Wyświetlanie",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Własne ustawienia dla tego kierowcy",
     "Head-up display": "Wyświetlacz Head-Up",
     "Given to another app": "Przekazano innej aplikacji",
-    "Green light alert": "Powiadomienie o zielonym świetle"
+    "Green light alert": "Powiadomienie o zielonym świetle",
+    "Traffic-light camera found": "Znaleziono kamerę świateł",
+    "Traffic-light camera not found": "Nie znaleziono kamery świateł"
   }
 }

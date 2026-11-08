@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "ΛΑΔΙ",
     "COOLANT": "ΨΥΚΤ.",
-    "Hide BMW logo on cluster": "Απόκρυψη λογότυπου BMW στον πίνακα οργάνων",
+    "Hide logo on the cluster": "Απόκρυψη λογότυπου στον πίνακα οργάνων",
     "Reinstall patch": "Επανεγκατάσταση διόρθωσης",
     "On the HUD": "Στο HUD",
     "Display": "Οθόνη",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό",
     "Head-up display": "Head-Up Display",
     "Given to another app": "Σε άλλη εφαρμογή",
-    "Green light alert": "Ειδοποίηση πράσινου φαναριού"
+    "Green light alert": "Ειδοποίηση πράσινου φαναριού",
+    "Traffic-light camera found": "Βρέθηκε κάμερα φαναριών",
+    "Traffic-light camera not found": "Δεν βρέθηκε κάμερα φαναριών"
   }
 }

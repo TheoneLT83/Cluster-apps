@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "ОЛИВА",
     "COOLANT": "ОР",
-    "Hide BMW logo on cluster": "Приховати логотип BMW на панелі приладів",
+    "Hide logo on the cluster": "Приховати логотип на панелі приладів",
     "Reinstall patch": "Перевстановити патч",
     "On the HUD": "На HUD",
     "Display": "Дисплей",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Власні налаштування для цього водія",
     "Head-up display": "Проекційний дисплей",
     "Given to another app": "Передано іншому застосунку",
-    "Green light alert": "Сповіщення про зелене світло"
+    "Green light alert": "Сповіщення про зелене світло",
+    "Traffic-light camera found": "Камеру світлофорів знайдено",
+    "Traffic-light camera not found": "Камеру світлофорів не знайдено"
   }
 }

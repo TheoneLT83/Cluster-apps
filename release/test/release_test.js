@@ -108,6 +108,19 @@ test('a tool catalog entry carries requires, mguHmi and uninstallable; the catal
     assert.deepStrictEqual(parsed.components[0].requires, FIXTURE.requires);
 });
 
+test('a component CHANGELOG.md is its catalog entry changelog (the Store update log); none without one', () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'mgu-rel-test-'));
+    fs.mkdirSync(path.join(root, 'apps'));
+    fixtureTool(root, FIXTURE);
+    const artifact = buildArtifact(path.join(root, 'native', 'fixture-tool'), path.join(root, 'out'));
+    assert.strictEqual(catalogEntry(components(root).find((x) => x.id === 'fixture-tool'), artifact).changelog, undefined);
+    fs.writeFileSync(path.join(root, 'native', 'fixture-tool', 'CHANGELOG.md'), '# Changelog\n\n## 1.0.0\n\n- first\n');
+    const entry = catalogEntry(components(root).find((x) => x.id === 'fixture-tool'), artifact);
+    assert.strictEqual(entry.changelog, 'native/fixture-tool/CHANGELOG.md');
+    assert.strictEqual(catalog.parse(JSON.stringify({ schema: 2, components: [entry] })).components[0].changelog, 'native/fixture-tool/CHANGELOG.md');
+    assert.strictEqual(components(path.join(__dirname, '..', '..')).find((x) => x.id === 'robertn_waze_cluster').changelog.split('/').pop(), 'CHANGELOG.md');
+});
+
 test('a malformed requires, mguHmi or uninstallable is refused', () => {
     [{ requires: { 'cluster-render': '0.1' } }, { requires: ['cluster-render'] }, { mguHmi: ['ID9'] }, { mguHmi: [] }, { uninstallable: 'yes' }]
         .forEach((bad) => {

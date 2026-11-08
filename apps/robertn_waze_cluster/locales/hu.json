@@ -114,7 +114,7 @@
     "EV": "EV",
     "OIL": "OLAJ",
     "COOLANT": "HŰTŐF.",
-    "Hide BMW logo on cluster": "BMW-logó elrejtése a műszerfalon",
+    "Hide logo on the cluster": "Logó elrejtése a műszerfalon",
     "Reinstall patch": "Javítás újratelepítése",
     "On the HUD": "A HUD-on",
     "Display": "Kijelző",
@@ -140,6 +140,8 @@
     "Own settings for this driver": "Saját beállítások ennek a vezetőnek",
     "Head-up display": "Head-up kijelző",
     "Given to another app": "Másik alkalmazásnak átadva",
-    "Green light alert": "Zöld lámpa jelzés"
+    "Green light alert": "Zöld lámpa jelzés",
+    "Traffic-light camera found": "Közlekedésilámpa-kamera megtalálva",
+    "Traffic-light camera not found": "Nem található közlekedésilámpa-kamera"
   }
 }

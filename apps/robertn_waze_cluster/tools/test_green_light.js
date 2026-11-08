@@ -16,7 +16,7 @@ const STAGE = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-green-'));
 fs.cpSync(path.join(REPO, 'kit', 'runtime'), path.join(STAGE, 'kit'), { recursive: true });
 ['green_light.js', 'hud_overlay.js'].forEach((f) => fs.copyFileSync(path.join(HERE, 'app', f), path.join(STAGE, f)));
 fs.copyFileSync(path.join(REPO, 'native', 'cluster-render', 'js', 'cluster_render_client.js'), path.join(STAGE, 'cluster_render_client.js'));
-const { GreenLight, foresightColour, QUIET_MS } = require(path.join(STAGE, 'green_light.js'));
+const { GreenLight, foresightColour, QUIET_MS, LOOK_MS } = require(path.join(STAGE, 'green_light.js'));
 const { HudOverlay } = require(path.join(STAGE, 'hud_overlay.js'));
 
 let checks = 0;
@@ -37,6 +37,10 @@ eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GR
     const gos = [];
     g.on('go', (on) => gos.push(on));
     await g.start();
+    eq(g.found(), null, 'just started: still looking for the camera');
+    t += LOOK_MS + 1;
+    eq(g.found(), false, 'nothing answered: no traffic-light camera');
+    t -= LOOK_MS + 1;
     foresight({ dispForesightEvent: 'AMPEL_GRUEN' });
     eq(gos, [], 'a green without a red: nothing');
     foresight({ dispForesightEvent: 'AMPEL_ROT' }); t += 20000;
@@ -47,6 +51,7 @@ eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GR
     eq(gos, [true], 'driving: nothing');
     kmh = 0;
     camera({ trafficLightID: 4, trafficLightColor: 1 }); camera({ trafficLightID: 5, trafficLightColor: 3 });
+    eq(g.found(), true, 'the camera\'s lights came: found');
     eq(gos, [true], 'another light\'s green: nothing');
     camera({ trafficLightID: 4, trafficLightColor: 3 });
     eq(gos, [true, true], 'the camera\'s light, red then green: GO');
