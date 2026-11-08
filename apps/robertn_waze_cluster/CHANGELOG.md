@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.9
+
+- **Head-up display: Auto / On / Off** in the settings: Auto goes by what the car answers (as in 0.8.8), On and
+  Off say it outright.
+- **Another app on the HUD**: while another app holds the HUD (Redline's Show on HUD, from idrive7-apps with
+  kit/hud_claim.js), the HUD map and the turn signals, gear and data give way; the HUD map reads "Given to another
+  app". Redline gives the HUD back when the car is switched off or the head unit starts again, and all of it shows
+  as before. The choice where the map shows is kept throughout.
+
 ## 0.8.8
 
 - **Full screen by default, once more**: the screen layout goes back to Full screen once on a car that kept

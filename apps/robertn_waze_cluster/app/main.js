@@ -34,6 +34,7 @@ const path = require('path');
 const { HudOverlay, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
 const { HudProbe } = require('./hud_probe.js');
+const { HudClaim } = require('./kit/hud_claim');
 const { Units } = require('./units.js');
 const { TurnSignals } = require('./turn_signals.js');
 const { ProfileSync, sessionReader } = require('./profile_sync.js');
@@ -116,12 +117,15 @@ async function background(bg) {
     try { readProfile = sessionReader(require('oap-sdk').someipBuilders, log); } catch (e) { log.warn('driver profiles unavailable: ' + e.message); }
     const profiles = new ProfileSync({ control: ctl, log, readProfile });
     const hud = new HudOverlay({ log });
-    // a car without a head-up display: nothing of ours on it, and none of its settings or pages (hud_probe.js);
-    // not known (the diagnostic channel did not answer): as with one
+    // a car without a head-up display: nothing of ours on it, and none of its settings or pages. Setting
+    // hudInstalled: Auto (hud_probe.js; not known, the diagnostic channel did not answer: as with one), On, Off
     const hudProbe = new HudProbe({ signals: bg.signals, dataDir: bg.dataDir, log });
-    const hudOk = () => hudProbe.found() !== false;
-    const hudFound = (v) => { if (settings.get('hudFound') !== (v !== false)) settings.set('hudFound', v !== false); };
-    hudFound(hudProbe.found());
+    const hudOk = () => { const v = settings.get('hudInstalled'); return v === 'yes' || (v !== 'no' && hudProbe.found() !== false); };
+    const hudFound = () => { if (settings.get('hudFound') !== hudOk()) settings.set('hudFound', hudOk()); };
+    hudFound();
+    // another app holding the HUD (Redline turned on, until the car is switched off; kit/hud_claim.js): ours gives way
+    let givenTo = [];
+    const given = () => givenTo.length > 0;
     // boost from the sport display (FES), as M Vitals reads it: bar, 0.01 a step, 255 no value
     let boost = null, program = null;
     const programSeen = [];
@@ -179,7 +183,7 @@ async function background(bg) {
     // the car's own speed (a mileage blocker leaves it alone), with the setting realSpeed
     const speedNow = () => { const d = car.data(); return settings.get('realSpeed') && d && !d.demo && G.isNum(d.speed) ? Math.round(d.speed) : null; };
     // Displays on HUD off: nothing of ours on the HUD, which the renderer then gives back to BMW's own layout
-    const toHud = () => (settings.get('hudOn') === false || !hudOk() ? hud.update({ turn: {}, gear: null, map: mapNow(), showTurn: false, showGear: false,
+    const toHud = () => (settings.get('hudOn') === false || !hudOk() || given() ? hud.update({ turn: {}, gear: null, map: mapNow(), showTurn: false, showGear: false,
         data: [], speed: null }) : hud.update({
         turn: turns.state(), gear: gearNow(), map: mapNow(),
         showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'), data: dataNow(false), speed: speedNow(),
@@ -190,10 +194,20 @@ async function background(bg) {
     logs.on('change', changed);
     profiles.on('change', changed);
     turns.on('change', () => { toHud(); changed(); });
-    settings.onChange(() => { hvWanted(); toHud(); changed(); });
+    settings.onChange(() => { hudFound(); hvWanted(); claims(); toHud(); changed(); });
     // boost, torque, the temperatures and the programme come without a sample of their own: the HUD looks again
     // often (only what changed is sent; the layers take up to 25 frames a second)
-    setInterval(() => { if (settings.get('hudOn') !== false && hudOk()) toHud(); }, 80);
+    setInterval(() => { if (settings.get('hudOn') !== false && hudOk() && !given()) toHud(); }, 80);
+    const claims = () => {
+        HudClaim.standing(bg.dataDir, settings.get('hudOn') !== false && hudOk());
+        const now = hudOk() ? HudClaim.others('robertn_waze_cluster') : [];
+        if (now.join() === givenTo.join()) return;
+        log.info(now.length ? 'HUD: given to ' + now.join(', ') + ' while it holds it' : 'HUD: ours again');
+        givenTo = now;
+        ctl.yieldHud(given());
+        toHud(); changed();
+    };
+    setInterval(claims, 1000);
     hvWanted();
 
     // the HMI's display language, at the start and on each change
@@ -240,9 +254,9 @@ async function background(bg) {
     profiles.start();
     toHud();
     hudProbe.run((v) => {
-        hudFound(v);
+        hudFound();
         // a map set to show on a HUD this car does not have goes to the cluster
-        if (v === false && ['hud', 'both'].indexOf(ctl.shownOn()) >= 0 && ctl.canChooseShownOn()) {
+        if (!hudOk() && ['hud', 'both'].indexOf(ctl.shownOn()) >= 0 && ctl.canChooseShownOn()) {
             log.info('no HUD: the map shows on the cluster');
             ctl.showOn('cluster');
         }

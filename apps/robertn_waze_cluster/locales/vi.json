@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "Hiển thị trên HUD",
-    "Own settings for this driver": "Cài đặt riêng cho người lái này"
+    "Own settings for this driver": "Cài đặt riêng cho người lái này",
+    "Head-up display": "Màn hình HUD",
+    "Given to another app": "Đã nhường cho ứng dụng khác"
   }
 }

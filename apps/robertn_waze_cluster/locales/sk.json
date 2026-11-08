@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "Zobrazenia na HUD",
-    "Own settings for this driver": "Vlastné nastavenia pre tohto vodiča"
+    "Own settings for this driver": "Vlastné nastavenia pre tohto vodiča",
+    "Head-up display": "Head-up displej",
+    "Given to another app": "Prenechané inej aplikácii"
   }
 }

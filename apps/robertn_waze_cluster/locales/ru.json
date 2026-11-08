@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "Индикация на HUD",
-    "Own settings for this driver": "Свои настройки для этого водителя"
+    "Own settings for this driver": "Свои настройки для этого водителя",
+    "Head-up display": "Проекционный дисплей",
+    "Given to another app": "Передан другому приложению"
   }
 }

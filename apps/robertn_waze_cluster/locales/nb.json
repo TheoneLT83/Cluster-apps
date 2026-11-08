@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "Visninger på HUD",
-    "Own settings for this driver": "Egne innstillinger for denne føreren"
+    "Own settings for this driver": "Egne innstillinger for denne føreren",
+    "Head-up display": "Head-up-display",
+    "Given to another app": "Overlatt til en annen app"
   }
 }

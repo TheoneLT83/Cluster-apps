@@ -141,7 +141,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "العرض على HUD",
-   "Own settings for this driver": "إعدادات خاصة لهذا السائق"
+   "Own settings for this driver": "إعدادات خاصة لهذا السائق",
+   "Head-up display": "شاشة العرض الأمامية",
+   "Given to another app": "لتطبيق آخر"
   }
  },
  {
@@ -284,7 +286,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Zobrazení na HUD",
-   "Own settings for this driver": "Vlastní nastavení pro tohoto řidiče"
+   "Own settings for this driver": "Vlastní nastavení pro tohoto řidiče",
+   "Head-up display": "Head-up displej",
+   "Given to another app": "Předáno jiné aplikaci"
   }
  },
  {
@@ -427,7 +431,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Visninger på HUD",
-   "Own settings for this driver": "Egne indstillinger for denne fører"
+   "Own settings for this driver": "Egne indstillinger for denne fører",
+   "Head-up display": "Head-up-display",
+   "Given to another app": "Overladt til en anden app"
   }
  },
  {
@@ -570,7 +576,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Anzeigen im HUD",
-   "Own settings for this driver": "Eigene Einstellungen für diesen Fahrer"
+   "Own settings for this driver": "Eigene Einstellungen für diesen Fahrer",
+   "Head-up display": "Head-up-Display",
+   "Given to another app": "An andere App abgegeben"
   }
  },
  {
@@ -713,7 +721,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Ενδείξεις στο HUD",
-   "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό"
+   "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό",
+   "Head-up display": "Head-Up Display",
+   "Given to another app": "Σε άλλη εφαρμογή"
   }
  },
  {
@@ -856,7 +866,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Indicaciones en el HUD",
-   "Own settings for this driver": "Configuración propia para este conductor"
+   "Own settings for this driver": "Configuración propia para este conductor",
+   "Head-up display": "Head-Up Display",
+   "Given to another app": "Cedido a otra app"
   }
  },
  {
@@ -999,7 +1011,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Indicaciones en el HUD",
-   "Own settings for this driver": "Ajustes propios para este conductor"
+   "Own settings for this driver": "Ajustes propios para este conductor",
+   "Head-up display": "Head-Up Display",
+   "Given to another app": "Cedido a otra app"
   }
  },
  {
@@ -1142,7 +1156,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Näytöt HUD:ssa",
-   "Own settings for this driver": "Omat asetukset tälle kuljettajalle"
+   "Own settings for this driver": "Omat asetukset tälle kuljettajalle",
+   "Head-up display": "Tuulilasinäyttö",
+   "Given to another app": "Annettu toiselle sovellukselle"
   }
  },
  {
@@ -1285,7 +1301,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Affichages sur l’affichage tête haute",
-   "Own settings for this driver": "Réglages propres à ce conducteur"
+   "Own settings for this driver": "Réglages propres à ce conducteur",
+   "Head-up display": "Affichage tête haute",
+   "Given to another app": "Cédé à une autre app"
   }
  },
  {
@@ -1428,7 +1446,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Affichages sur le HUD",
-   "Own settings for this driver": "Réglages propres à ce conducteur"
+   "Own settings for this driver": "Réglages propres à ce conducteur",
+   "Head-up display": "Affichage tête haute",
+   "Given to another app": "Cédé à une autre app"
   }
  },
  {
@@ -1571,7 +1591,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "תצוגות ב-HUD",
-   "Own settings for this driver": "הגדרות נפרדות לנהג זה"
+   "Own settings for this driver": "הגדרות נפרדות לנהג זה",
+   "Head-up display": "תצוגה עילית",
+   "Given to another app": "הועבר לאפליקציה אחרת"
   }
  },
  {
@@ -1714,7 +1736,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Kijelzések a HUD-on",
-   "Own settings for this driver": "Saját beállítások ennek a vezetőnek"
+   "Own settings for this driver": "Saját beállítások ennek a vezetőnek",
+   "Head-up display": "Head-up kijelző",
+   "Given to another app": "Másik alkalmazásnak átadva"
   }
  },
  {
@@ -1857,7 +1881,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Tampilan di HUD",
-   "Own settings for this driver": "Pengaturan sendiri untuk pengemudi ini"
+   "Own settings for this driver": "Pengaturan sendiri untuk pengemudi ini",
+   "Head-up display": "Head-up display",
+   "Given to another app": "Diserahkan ke aplikasi lain"
   }
  },
  {
@@ -2000,7 +2026,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Indicazioni nell’HUD",
-   "Own settings for this driver": "Impostazioni proprie per questo conducente"
+   "Own settings for this driver": "Impostazioni proprie per questo conducente",
+   "Head-up display": "Head-up display",
+   "Given to another app": "Ceduto a un'altra app"
   }
  },
  {
@@ -2143,7 +2171,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "HUDに表示",
-   "Own settings for this driver": "このドライバー専用の設定"
+   "Own settings for this driver": "このドライバー専用の設定",
+   "Head-up display": "ヘッドアップ・ディスプレイ",
+   "Given to another app": "他のアプリが使用中"
   }
  },
  {
@@ -2286,7 +2316,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "HUD 표시",
-   "Own settings for this driver": "이 운전자 전용 설정"
+   "Own settings for this driver": "이 운전자 전용 설정",
+   "Head-up display": "헤드업 디스플레이",
+   "Given to another app": "다른 앱이 사용 중"
   }
  },
  {
@@ -2429,7 +2461,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Visninger på HUD",
-   "Own settings for this driver": "Egne innstillinger for denne føreren"
+   "Own settings for this driver": "Egne innstillinger for denne føreren",
+   "Head-up display": "Head-up-display",
+   "Given to another app": "Overlatt til en annen app"
   }
  },
  {
@@ -2574,7 +2608,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Weergaven op het HUD",
-   "Own settings for this driver": "Eigen instellingen voor deze bestuurder"
+   "Own settings for this driver": "Eigen instellingen voor deze bestuurder",
+   "Head-up display": "Head-up display",
+   "Given to another app": "Overgedragen aan andere app"
   }
  },
  {
@@ -2717,7 +2753,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Wskazania na HUD",
-   "Own settings for this driver": "Własne ustawienia dla tego kierowcy"
+   "Own settings for this driver": "Własne ustawienia dla tego kierowcy",
+   "Head-up display": "Wyświetlacz Head-Up",
+   "Given to another app": "Przekazano innej aplikacji"
   }
  },
  {
@@ -2860,7 +2898,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Exibições no HUD",
-   "Own settings for this driver": "Configurações próprias para este motorista"
+   "Own settings for this driver": "Configurações próprias para este motorista",
+   "Head-up display": "Head-up display",
+   "Given to another app": "Cedido a outro app"
   }
  },
  {
@@ -3003,7 +3043,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Indicações no HUD",
-   "Own settings for this driver": "Definições próprias para este condutor"
+   "Own settings for this driver": "Definições próprias para este condutor",
+   "Head-up display": "Head-up display",
+   "Given to another app": "Cedido a outra aplicação"
   }
  },
  {
@@ -3146,7 +3188,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Afișări pe HUD",
-   "Own settings for this driver": "Setări proprii pentru acest șofer"
+   "Own settings for this driver": "Setări proprii pentru acest șofer",
+   "Head-up display": "Afișaj head-up",
+   "Given to another app": "Cedat altei aplicații"
   }
  },
  {
@@ -3289,7 +3333,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Индикация на HUD",
-   "Own settings for this driver": "Свои настройки для этого водителя"
+   "Own settings for this driver": "Свои настройки для этого водителя",
+   "Head-up display": "Проекционный дисплей",
+   "Given to another app": "Передан другому приложению"
   }
  },
  {
@@ -3432,7 +3478,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Zobrazenia na HUD",
-   "Own settings for this driver": "Vlastné nastavenia pre tohto vodiča"
+   "Own settings for this driver": "Vlastné nastavenia pre tohto vodiča",
+   "Head-up display": "Head-up displej",
+   "Given to another app": "Prenechané inej aplikácii"
   }
  },
  {
@@ -3575,7 +3623,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Prikazi na HUD",
-   "Own settings for this driver": "Lastne nastavitve za tega voznika"
+   "Own settings for this driver": "Lastne nastavitve za tega voznika",
+   "Head-up display": "Prikazovalnik head-up",
+   "Given to another app": "Prepuščeno drugi aplikaciji"
   }
  },
  {
@@ -3718,7 +3768,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Visningar på HUD",
-   "Own settings for this driver": "Egna inställningar för den här föraren"
+   "Own settings for this driver": "Egna inställningar för den här föraren",
+   "Head-up display": "Head-up-display",
+   "Given to another app": "Överlämnad till en annan app"
   }
  },
  {
@@ -3861,7 +3913,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "การแสดงบน HUD",
-   "Own settings for this driver": "การตั้งค่าเฉพาะสำหรับผู้ขับขี่คนนี้"
+   "Own settings for this driver": "การตั้งค่าเฉพาะสำหรับผู้ขับขี่คนนี้",
+   "Head-up display": "จอแสดงผลบนกระจกหน้า",
+   "Given to another app": "ให้แอปอื่นใช้อยู่"
   }
  },
  {
@@ -4004,7 +4058,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "HUD’da göstergeler",
-   "Own settings for this driver": "Bu sürücüye özel ayarlar"
+   "Own settings for this driver": "Bu sürücüye özel ayarlar",
+   "Head-up display": "Head-up ekran",
+   "Given to another app": "Başka bir uygulamaya bırakıldı"
   }
  },
  {
@@ -4147,7 +4203,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Індикація на HUD",
-   "Own settings for this driver": "Власні налаштування для цього водія"
+   "Own settings for this driver": "Власні налаштування для цього водія",
+   "Head-up display": "Проекційний дисплей",
+   "Given to another app": "Передано іншому застосунку"
   }
  },
  {
@@ -4290,7 +4348,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "Hiển thị trên HUD",
-   "Own settings for this driver": "Cài đặt riêng cho người lái này"
+   "Own settings for this driver": "Cài đặt riêng cho người lái này",
+   "Head-up display": "Màn hình HUD",
+   "Given to another app": "Đã nhường cho ứng dụng khác"
   }
  },
  {
@@ -4435,7 +4495,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "抬头显示器上的显示",
-   "Own settings for this driver": "此驾驶员的专属设置"
+   "Own settings for this driver": "此驾驶员的专属设置",
+   "Head-up display": "抬头显示",
+   "Given to another app": "已让给其他应用"
   }
  },
  {
@@ -4580,7 +4642,9 @@ module.exports = [
    "bar": "bar",
    "psi": "psi",
    "Displays on HUD": "抬頭顯示器上的顯示",
-   "Own settings for this driver": "此駕駛的專屬設定"
+   "Own settings for this driver": "此駕駛的專屬設定",
+   "Head-up display": "抬頭顯示器",
+   "Given to another app": "已讓給其他應用程式"
   }
  }
 ];

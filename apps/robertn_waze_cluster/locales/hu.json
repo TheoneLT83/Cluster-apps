@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "Kijelzések a HUD-on",
-    "Own settings for this driver": "Saját beállítások ennek a vezetőnek"
+    "Own settings for this driver": "Saját beállítások ennek a vezetőnek",
+    "Head-up display": "Head-up kijelző",
+    "Given to another app": "Másik alkalmazásnak átadva"
   }
 }

@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "العرض على HUD",
-    "Own settings for this driver": "إعدادات خاصة لهذا السائق"
+    "Own settings for this driver": "إعدادات خاصة لهذا السائق",
+    "Head-up display": "شاشة العرض الأمامية",
+    "Given to another app": "لتطبيق آخر"
   }
 }

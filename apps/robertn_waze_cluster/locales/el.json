@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "Ενδείξεις στο HUD",
-    "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό"
+    "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό",
+    "Head-up display": "Head-Up Display",
+    "Given to another app": "Σε άλλη εφαρμογή"
   }
 }

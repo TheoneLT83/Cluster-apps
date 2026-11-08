@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "Prikazi na HUD",
-    "Own settings for this driver": "Lastne nastavitve za tega voznika"
+    "Own settings for this driver": "Lastne nastavitve za tega voznika",
+    "Head-up display": "Prikazovalnik head-up",
+    "Given to another app": "Prepuščeno drugi aplikaciji"
   }
 }

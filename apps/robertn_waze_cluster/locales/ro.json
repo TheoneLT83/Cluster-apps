@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "Afișări pe HUD",
-    "Own settings for this driver": "Setări proprii pentru acest șofer"
+    "Own settings for this driver": "Setări proprii pentru acest șofer",
+    "Head-up display": "Afișaj head-up",
+    "Given to another app": "Cedat altei aplicații"
   }
 }

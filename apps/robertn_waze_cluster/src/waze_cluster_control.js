@@ -281,6 +281,8 @@ class WazeClusterControl extends EventEmitter {
         this._forget();
         this.captureState = { state: 'unavailable' };
         this.renderStatus = null;   /* the render tool's last status while connected */
+        this._yield = false;        /* another app holds the HUD (yieldHud) */
+        this._heldHud = false;      /* the HUD map is off in the render for it, on as chosen */
 
         this.render = new LineSocket({
             path: o.renderPath || RENDER_PATH,
@@ -299,6 +301,7 @@ class WazeClusterControl extends EventEmitter {
         const reset = () => {
             this.renderStatus = null;
             this._askedShownOn = null;
+            this._heldHud = false;
             this._clearAskedHud();
             this.emit('change');
         };
@@ -422,10 +425,32 @@ class WazeClusterControl extends EventEmitter {
         const want = { cluster: choice !== 'hud', hud: choice !== 'cluster' };
         const changes = ['cluster', 'hud'].filter((d) => this._shows(d) !== want[d]).sort((a, b) => want[b] - want[a]);
         this._askedShownOn = choice;
+        if (this._yield) this._heldHud = want.hud;
         changes.forEach((d) => {
-            this.render.send({ cmd: d, on: want[d] ? '1' : '0' });
+            this.render.send({ cmd: d, on: want[d] && !(d === 'hud' && this._yield) ? '1' : '0' });
             this.patch.send({ cmd: d, on: want[d] ? 1 : 0 });
         });
+        this.emit('change');
+    }
+
+    /* Another app holds the HUD (kit/hud_claim.js): the map leaves it, in the render alone, so the choice
+     * patchd keeps stands and comes back when the other app gives the HUD back; the HUD map reads as on. */
+    yieldHud(on) {
+        on = !!on;
+        if (on === this._yield) {
+            return;
+        }
+        this._yield = on;
+        const rs = this.renderStatus;
+        if (on && rs && rs.hud === 1 && this.render.connected()) {
+            this._heldHud = true;
+            this.render.send({ cmd: 'hud', on: '0' });
+        } else if (!on && this._heldHud) {
+            this._heldHud = false;
+            if (this.render.connected()) {
+                this.render.send({ cmd: 'hud', on: '1' });
+            }
+        }
         this.emit('change');
     }
 
@@ -451,6 +476,8 @@ class WazeClusterControl extends EventEmitter {
             return t('Disabled after errors');
         }
         switch (this.renderStatus.hud_state) {
+        case 'yielded':
+            return t('Given to another app');
         case 'showing':
             return t('Showing');
         case 'starting':
@@ -1080,6 +1107,14 @@ class WazeClusterControl extends EventEmitter {
 
     _onRender(msg) {
         if (msg.ev === 'status') {
+            // a render (re)started with the HUD map on while another app holds the HUD: off again
+            if (this._yield && msg.hud === 1) {
+                this._heldHud = true;
+                this.render.send({ cmd: 'hud', on: '0' });
+            }
+            if (this._heldHud && msg.hud === 0) {
+                msg = Object.assign({}, msg, { hud: 1, hud_state: 'yielded' });
+            }
             this.renderStatus = msg;
             if (this._askedShownOn && this._askedShownOn === shownOnOf(msg)) {
                 this._askedShownOn = null;

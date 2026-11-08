@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "תצוגות ב-HUD",
-    "Own settings for this driver": "הגדרות נפרדות לנהג זה"
+    "Own settings for this driver": "הגדרות נפרדות לנהג זה",
+    "Head-up display": "תצוגה עילית",
+    "Given to another app": "הועבר לאפליקציה אחרת"
   }
 }

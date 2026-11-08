@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "Näytöt HUD:ssa",
-    "Own settings for this driver": "Omat asetukset tälle kuljettajalle"
+    "Own settings for this driver": "Omat asetukset tälle kuljettajalle",
+    "Head-up display": "Tuulilasinäyttö",
+    "Given to another app": "Annettu toiselle sovellukselle"
   }
 }

@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "HUD’da göstergeler",
-    "Own settings for this driver": "Bu sürücüye özel ayarlar"
+    "Own settings for this driver": "Bu sürücüye özel ayarlar",
+    "Head-up display": "Head-up ekran",
+    "Given to another app": "Başka bir uygulamaya bırakıldı"
   }
 }

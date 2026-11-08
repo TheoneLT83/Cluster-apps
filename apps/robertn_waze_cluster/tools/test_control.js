@@ -307,6 +307,37 @@ test('the turn card checkbox: the asked card until its change ends; the one on d
     c.close();
 });
 
+test('another app holds the HUD: the map leaves it in the render alone, reads as given, comes back after; patchd keeps the choice', async (render, patch) => {
+    const c = control();
+    c.open();
+    await until('connected', () => c.connectedRender() && c.connectedPatch());
+    patch.res = SIZE;
+    patch.safe = SAFE;
+    patch.announce('patched', 'high', null);
+    render.stream(true);
+    await until('the cluster', () => c.shownOn() === 'cluster');
+    c.showOn('both');
+    await until('both', () => render.hud === 1 && c.shownOn() === 'both' && c.hudText() === 'HUD map: Showing');
+    render.received.length = 0;
+    c.yieldHud(true);
+    await until('given', () => render.hud === 0 && c.shownOn() === 'both' && c.hudText() === 'HUD map: Given to another app');
+    // a choice made meanwhile is saved; the HUD stays given
+    c.showOn('cluster');
+    await until('the cluster', () => c.shownOn() === 'cluster' && c.hudText() === 'HUD map: Off');
+    c.showOn('both');
+    await until('both, given', () => c.shownOn() === 'both' && c.hudText() === 'HUD map: Given to another app');
+    assert.strictEqual(render.hud, 0, 'still off in the render');
+    // a render that starts again with the HUD on: off again
+    render.hud = 1;
+    render.announce(render.state, render.reason);
+    await until('off again', () => render.hud === 0 && c.hudText() === 'HUD map: Given to another app');
+    c.yieldHud(false);
+    await until('back', () => render.hud === 1 && c.hudText() === 'HUD map: Showing');
+    assert(render.received.every((m) => m.cmd !== 'hud' || m.on !== undefined), 'only on and off');
+    assert.deepStrictEqual(patch.received.filter((m) => m.cmd === 'hud').map((m) => m.on), [1, 0, 1], 'patchd saves the choices only');
+    c.close();
+});
+
 test('where the map shows: the cluster by default; the HUD and both through the render, patchd saves each change; never neither', async (render, patch) => {
     const c = control();
     c.open();

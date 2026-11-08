@@ -137,6 +137,8 @@
     "bar": "bar",
     "psi": "psi",
     "Displays on HUD": "Indicaciones en el HUD",
-    "Own settings for this driver": "Configuración propia para este conductor"
+    "Own settings for this driver": "Configuración propia para este conductor",
+    "Head-up display": "Head-Up Display",
+    "Given to another app": "Cedido a otra app"
   }
 }
