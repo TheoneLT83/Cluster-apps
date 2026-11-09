@@ -1,7 +1,7 @@
 {
  "id": "robertn_waze_cluster",
  "title": "Cluster functions",
- "version": "0.9.4",
+ "version": "0.9.5",
  "screens": [
   {
    "name": "MAIN",
@@ -74,6 +74,10 @@
      "Electric range"
     ],
     [
+     "soc",
+     "Battery charge"
+    ],
+    [
      "temps",
      "Oil and coolant"
     ],
@@ -112,6 +116,155 @@
    "type": "bool",
    "default": true,
    "hidden": true
+  },
+  {
+   "key": "hudNight",
+   "label": "Dimmer at night",
+   "type": "bool",
+   "default": true,
+   "hidden": true
+  },
+  {
+   "key": "clusterPanel",
+   "label": "Info bar",
+   "type": "bool",
+   "default": true,
+   "hidden": true
+  },
+  {
+   "key": "clusterSlot1",
+   "label": "Info bar",
+   "type": "choice",
+   "default": "auto",
+   "hidden": true,
+   "options": [
+    [
+     "auto",
+     "Auto"
+    ],
+    [
+     "power",
+     "kW"
+    ],
+    [
+     "soc",
+     "Battery charge"
+    ],
+    [
+     "oil",
+     "OIL"
+    ],
+    [
+     "coolant",
+     "COOLANT"
+    ],
+    [
+     "boost",
+     "Boost"
+    ],
+    [
+     "rpm",
+     "Engine speed"
+    ],
+    [
+     "torque",
+     "TORQUE"
+    ],
+    [
+     "none",
+     "None"
+    ]
+   ]
+  },
+  {
+   "key": "clusterSlot2",
+   "label": "Info bar",
+   "type": "choice",
+   "default": "auto",
+   "hidden": true,
+   "options": [
+    [
+     "auto",
+     "Auto"
+    ],
+    [
+     "power",
+     "kW"
+    ],
+    [
+     "soc",
+     "Battery charge"
+    ],
+    [
+     "oil",
+     "OIL"
+    ],
+    [
+     "coolant",
+     "COOLANT"
+    ],
+    [
+     "boost",
+     "Boost"
+    ],
+    [
+     "rpm",
+     "Engine speed"
+    ],
+    [
+     "torque",
+     "TORQUE"
+    ],
+    [
+     "none",
+     "None"
+    ]
+   ]
+  },
+  {
+   "key": "clusterSlot3",
+   "label": "Info bar",
+   "type": "choice",
+   "default": "auto",
+   "hidden": true,
+   "options": [
+    [
+     "auto",
+     "Auto"
+    ],
+    [
+     "power",
+     "kW"
+    ],
+    [
+     "soc",
+     "Battery charge"
+    ],
+    [
+     "oil",
+     "OIL"
+    ],
+    [
+     "coolant",
+     "COOLANT"
+    ],
+    [
+     "boost",
+     "Boost"
+    ],
+    [
+     "rpm",
+     "Engine speed"
+    ],
+    [
+     "torque",
+     "TORQUE"
+    ],
+    [
+     "none",
+     "None"
+    ]
+   ]
   },
   {
    "key": "powerUnit",

@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "לא נמצאה מצלמת רמזורים",
     "HUD installed": "HUD מותקן",
     "Yes": "כן",
-    "No": "לא"
+    "No": "לא",
+    "Battery charge": "טעינת סוללה",
+    "Dimmer at night": "עמום יותר בלילה",
+    "Info bar": "סרגל מידע"
   }
 }

@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Камера светофоров не найдена",
     "HUD installed": "HUD установлен",
     "Yes": "Да",
-    "No": "Нет"
+    "No": "Нет",
+    "Battery charge": "Заряд батареи",
+    "Dimmer at night": "Тусклее ночью",
+    "Info bar": "Инфопанель"
   }
 }

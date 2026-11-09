@@ -145,6 +145,9 @@
     "Traffic-light camera not found": "找不到紅綠燈攝影機",
     "HUD installed": "已裝 HUD",
     "Yes": "是",
-    "No": "否"
+    "No": "否",
+    "Battery charge": "電池電量",
+    "Dimmer at night": "夜間調暗",
+    "Info bar": "資訊列"
   }
 }

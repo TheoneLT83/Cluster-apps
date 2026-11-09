@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Intet trafiklyskamera fundet",
     "HUD installed": "HUD installeret",
     "Yes": "Ja",
-    "No": "Nej"
+    "No": "Nej",
+    "Battery charge": "Batteriopladning",
+    "Dimmer at night": "Dæmpet om natten",
+    "Info bar": "Infobjælke"
   }
 }

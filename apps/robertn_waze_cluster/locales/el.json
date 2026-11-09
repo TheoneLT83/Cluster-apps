@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Δεν βρέθηκε κάμερα φαναριών",
     "HUD installed": "Εγκατεστημένο HUD",
     "Yes": "Ναι",
-    "No": "Όχι"
+    "No": "Όχι",
+    "Battery charge": "Φόρτιση μπαταρίας",
+    "Dimmer at night": "Πιο αμυδρό τη νύχτα",
+    "Info bar": "Γραμμή πληροφοριών"
   }
 }

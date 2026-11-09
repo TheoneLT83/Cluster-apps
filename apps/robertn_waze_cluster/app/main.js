@@ -33,6 +33,7 @@ const { LogsControl } = require('./logs_control.js');
 const path = require('path');
 const { HudOverlay, drawLight, LIGHT_HUD, anchorRect, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
+const PANEL = require('./cluster_panel.js');
 const { HudClaim } = require('./kit/hud_claim');
 const { GreenLight } = require('./green_light.js');
 const { Units } = require('./units.js');
@@ -45,15 +46,20 @@ const W = 1600, H = 520;
 const PAGES = ['Maps', 'Display', 'Log'];
 /* The Display page's switches, its HUD tab's and its Cluster tab's: the setting, its words. */
 const HUD_ITEMS = [['hudOn', 'Displays on HUD'], ['hudTurn', 'Turn signals'], ['hudGear', 'Gear'], ['realSpeed', 'Real speed on HUD'],
-    ['greenLightHud', 'Green light alert']];
-const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert']];
+    ['greenLightHud', 'Green light alert'], ['hudNight', 'Dimmer at night']];
+const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert'], ['clusterPanel', 'Info bar']];
 /* The picture's "GO" in its loop: shown GO_DEMO_ON of each GO_DEMO_MS while that alert is on. */
 const GO_DEMO_MS = 4000, GO_DEMO_ON = 1500;
+/* The HUD's layers at night (setting hudNight), of their brightness by day; the car's day / night enum. */
+const NIGHT_DIM = 0.6;
+const DAY_NIGHT = { KEINE_AENDERUNG: 0, TAG: 1, NACHT: 2, SIGNAL_UNGUELTIG: 3 };
 /* The part of the HUD's 800 x 480 scene the glass shows, about (a G21's, Redline's hud.js), with BMW's speed row. */
 const HUD_GLASS = { x: 80, y: 100, w: 640, h: 290 };
 /* What shows between the turn signals (the setting hudData), one at a time. */
-const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['temps', 'Oil and coolant'], ['boost', 'Boost'], ['power', 'Power and torque'],
-    ['rpm', 'Engine speed']];
+const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['soc', 'Battery charge'], ['temps', 'Oil and coolant'], ['boost', 'Boost'],
+    ['power', 'Power and torque'], ['rpm', 'Engine speed']];
+/* The cluster's info bar (cluster_panel.js): its items, chosen on the Display page (settings clusterSlot1-3). */
+const PANEL_ITEMS = ['power', 'soc', 'oil', 'coolant', 'boost', 'rpm', 'torque', 'none'];
 const RPM_MAX = 7000;
 const LOG_LINES = 60;
 const HMI_CONTEXT = ['de.bmw.infotainment.hmi.hmicontext.HMIContext', 'HMI_CID'];
@@ -149,8 +155,49 @@ async function background(bg) {
     // the electric range only while eDrive is installed (it has the battery's numbers)
     const hv = new HvData({ log, appRoot: bg.dataDir && path.dirname(bg.dataDir) });
     const dataChoice = () => (settings.get('hudData') === 'ev' && !hv.installed() ? 'off' : settings.get('hudData'));
-    // the battery unit is read only while its power or the range is shown
-    const hvWanted = () => { if (settings.get('hudOn') !== false && hudOk() && ['ev', 'power'].indexOf(dataChoice()) >= 0) hv.start(); else hv.stop(); };
+    /* The cluster's info bar (cluster_panel.js): its items (settings clusterSlot1-3; Auto: with eDrive the battery's
+     * power, its charge and oil, else oil, coolant and engine speed), while the Waze map shows on the cluster and
+     * setting clusterPanel is on. */
+    const panelKinds = () => {
+        const auto = hv.installed() ? ['power', 'soc', 'oil'] : ['oil', 'coolant', 'rpm'];
+        return [1, 2, 3].map((i) => { const v = settings.get('clusterSlot' + i); return PANEL_ITEMS.indexOf(v) < 0 ? auto[i - 1] : v; })
+            .filter((k) => k !== 'none');
+    };
+    const panelOn = () => settings.get('clusterPanel') !== false && ctl.clusterOn() === true && !!ctl.renderStatus && ctl.renderStatus.state === 'showing';
+    const panelItems = (kinds) => {
+        const d = car.data(), real = d && !d.demo ? d : {};
+        const val = (label, v, text, cold) => ({ kind: 'value', label, text: G.isNum(v) ? text : '--', cold: G.isNum(v) && !!cold });
+        return (kinds || panelKinds()).map((k) => {
+            if (k === 'power') { const kw = hv.powerShown(); return { kind: 'power', kw: G.isNum(kw) ? Math.round(kw * 10) / 10 : null }; }
+            if (k === 'soc') { const soc = hv.soc(); return val('SOC', soc, Math.round(soc) + '%'); }
+            if (k === 'oil') return val(t('OIL'), real.oil, Math.round(real.oil) + '°', real.oil < PANEL.COLD_C);
+            if (k === 'coolant') return val(t('COOLANT'), real.coolant, Math.round(real.coolant) + '°', real.coolant < PANEL.COLD_C);
+            if (k === 'rpm') return val('RPM', real.rpm, String(Math.round(real.rpm / 10) * 10));
+            if (k === 'boost') {
+                const b = units.boost(G.isNum(boost) && !(d && d.demo) ? boost : NaN);
+                return val(b.unit.toUpperCase(), b.value, b.unit === 'bar' ? (b.value || 0).toFixed(1) : String(Math.round(b.value)));
+            }
+            const q = units.torque(G.isNum(real.torque) ? real.torque : NaN);
+            return val(q.unit.toUpperCase(), q.value, String(Math.round(q.value)));
+        });
+    };
+    const toPanel = () => hud.panel(panelOn() ? panelItems() : null);
+    // the battery unit is read only while its power, charge or range is shown; eDrive is told which (hv_data.js WANTED)
+    const hvWanted = () => {
+        const hudShows = settings.get('hudOn') !== false && hudOk() ? dataChoice() : 'off', kinds = settings.get('clusterPanel') !== false ? panelKinds() : [];
+        const power = ['ev', 'power'].indexOf(hudShows) >= 0 || kinds.indexOf('power') >= 0, soc = hudShows === 'soc' || kinds.indexOf('soc') >= 0;
+        hv.want({ power, soc });
+        if (power || soc) hv.start(); else hv.stop();
+    };
+    // the HUD dimmer at night (the car's light sensor), with setting hudNight
+    let night = false;
+    const dimNow = () => hud.dim(night && settings.get('hudNight') !== false ? NIGHT_DIM : 1);
+    bg.signals.watch('de.bmw.infotainment.vehicle.Vehicle', '1', {
+        statusDayNightChangeOver: (v) => {
+            const x = v && typeof v === 'object' ? v.dayNightChangeOver : v, c = typeof x === 'string' ? DAY_NIGHT[x] : x;
+            if (c === 1 || c === 2) { if (night !== (c === 2)) log.info('HUD: ' + (c === 2 ? 'night' : 'day')); night = c === 2; dimNow(); }
+        },
+    }, log).catch((e) => log.warn('day / night: ' + e.message));
     const mapNow = () => mapRect(ctl.hudWidth() || 0, ctl.hudOffset() || [0, 0]);
     // the HUD shows the car's gear only, never demo data
     const gearNow = () => { const d = car.data(); return d && !d.demo ? gearText(Object.assign({}, d, { program })) : null; };
@@ -160,11 +207,16 @@ async function background(bg) {
         const d = car.data(), real = d && !d.demo ? d : {}, out = [];
         const value = (label, v, unit) => { if (G.isNum(v) || preview) out.push({ kind: 'value', label, text: G.isNum(v) ? Math.round(v) + unit : '--' }); };
         const c = dataChoice();
-        const slider = (v, min, max, text, green) => { if (G.isNum(v) || preview) out.push({ kind: 'slider', value: G.isNum(v) ? v : null, min, max, text, green }); };
+        const slider = (v, min, max, text, green, color) => { if (G.isNum(v) || preview) out.push({ kind: 'slider', value: G.isNum(v) ? v : null, min, max, text, green, color }); };
         if (c === 'ev') {
-            const kw = hv.power();
-            slider(kw, -60, 60, G.isNum(kw) ? Math.round(Math.abs(kw)) : '', G.isNum(kw) && kw < 0);
+            // eased between eDrive's readings; blue out, green recuperating, amber from 60 kW (as the cluster's bar)
+            const kw = hv.powerShown();
+            slider(kw, -60, 60, G.isNum(kw) ? Math.round(Math.abs(kw)) : '', G.isNum(kw) && kw < 0,
+                !G.isNum(kw) ? null : kw < 0 ? PANEL.GREEN : kw >= PANEL.AMBER_KW ? PANEL.AMBER : PANEL.BLUE);
             value(t('EV'), hv.range(), ' km');
+        } else if (c === 'soc') {
+            const soc = hv.soc();
+            slider(soc, 0, 100, G.isNum(soc) ? Math.round(soc) + '%' : '');
         } else if (c === 'boost') {
             const b = units.boost(G.isNum(boost) && !(d && d.demo) ? boost : NaN);
             slider(b.value, 0, b.max, G.isNum(b.value) ? (b.unit === 'bar' ? b.value.toFixed(1) : Math.round(b.value)) + ' ' + b.unit : '');
@@ -197,10 +249,10 @@ async function background(bg) {
     logs.on('change', changed);
     profiles.on('change', changed);
     turns.on('change', () => { toHud(); changed(); });
-    settings.onChange(() => { hvWanted(); claims(); toHud(); changed(); });
+    settings.onChange(() => { hvWanted(); claims(); toHud(); toPanel(); dimNow(); changed(); });
     // boost, torque, the temperatures and the programme come without a sample of their own: the HUD looks again
     // often (only what changed is sent; the layers take up to 25 frames a second)
-    setInterval(() => { if (settings.get('hudOn') !== false && hudOk() && !given()) toHud(); }, 80);
+    setInterval(() => { if (settings.get('hudOn') !== false && hudOk() && !given()) toHud(); toPanel(); }, 80);
     const claims = () => {
         HudClaim.standing('robertn_waze_cluster', settings.get('hudOn') !== false && hudOk());
         const now = hudOk() ? HudClaim.others('robertn_waze_cluster') : [];
@@ -272,7 +324,7 @@ async function background(bg) {
     ctl.on('change', toCluster);
     settings.onChange((key) => { if (key === 'hudInstalled') toCluster(); });
     log.info('Cluster functions ' + bg.spec.version + ' started (' + (bg.app && bg.app.startReason) + ')');
-    return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, green, onChange: (fn) => listeners.push(fn) };
+    return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, green, panelKinds, panelItems, onChange: (fn) => listeners.push(fn) };
 }
 
 mgu.run({
@@ -281,7 +333,7 @@ mgu.run({
     async start(ctx) {
         const { ui, settings } = ctx;
         const b = ctx.background || await background(ctx);
-        const { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, green } = b;
+        const { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, green, panelKinds, panelItems } = b;
         let page = 0, version = 0, drawn = -1, blink = true, phone = 'carplay';
         // the kit's header and Settings tab in the display language too
         const changed = () => {
@@ -452,6 +504,17 @@ mgu.run({
                 cv.circle(x + w / 2, y + h * 0.1, lr, withAlpha('#ffffff', 0.7));
                 cv.circle(x + w / 2, y + h * 0.1, lr * 0.62, '#1f6fd1');
             }
+            // the info bar, a little low in the middle, at the picture's scale
+            if (settings.get('clusterPanel') !== false) {
+                const items = panelItems(panelKinds()), ps = PANEL.panelSize(items), k = Math.min(mw * 0.96 / ps.w, mh * 0.42 / ps.h);
+                const sc = { roundRect: (a, b, ww, hh, rr, c) => cv.roundRect(a, b, ww, hh, rr, c), fillRect: (a, b, ww, hh, c) => cv.fillRect(a, b, ww, hh, c),
+                    text: (s2, a, b, sz, c, o) => cv.text(s2, a, b, sz, c, o) };
+                const px = x + (w - ps.w * k) / 2, py = my + mh - ps.h * k - 4;
+                const kc = { roundRect: (a, b, ww, hh, rr, c) => sc.roundRect(px + (a - 0) * k, py + b * k, ww * k, hh * k, rr * k, c),
+                    fillRect: (a, b, ww, hh, c) => sc.fillRect(px + a * k, py + b * k, ww * k, hh * k, c),
+                    text: (s2, a, b, sz, c, o) => sc.text(s2, px + a * k, py + b * k, sz * k, c, o) };
+                PANEL.drawPanel(kc, 0, 0, items);
+            }
             if (go) {
                 const lh = mh * 0.92, lw = lh * 0.375;
                 drawLight(scaled(cv, mx + (mw - lw) / 2, my + (mh - lh) / 2, 1), lw, lh);
@@ -464,6 +527,9 @@ mgu.run({
             strokeRoundRect: (a, b, w, h, rr, lw, c) => cv.strokeRoundRect(x + a * k, y + b * k, w * k, h * k, rr * k, lw, c),
             circle: (a, b, rr, c) => cv.circle(x + a * k, y + b * k, rr * k, c),
         });
+        /* An info bar item's words on its button. */
+        const panelWord = (k) => ({ power: 'kW', soc: 'SOC', oil: t('OIL'), coolant: t('COOLANT'), boost: t('Boost'), rpm: 'RPM', torque: t('TORQUE'),
+            none: t('None') })[k];
         function drawDisplay(cv, th) {
             const hasHud = hudOk();
             if (!hasHud) dispTab = 'cluster';
@@ -492,10 +558,10 @@ mgu.run({
                 const hudOnNow = settings.get('hudOn') !== false;
                 HUD_ITEMS.forEach(([key, text], i) => row(i, key, t(text), settings.get(key) !== false && !!settings.get(key), flip(key), key !== 'hudOn' && !hudOnNow));
                 camera(HUD_ITEMS.length);
-                label(cv, th, t('Between the turn signals'), 48, 330);
+                label(cv, th, t('Between the turn signals'), 48, 356);
                 const now = settings.get('hudData');
-                HUD_DATA.filter(([v]) => v !== 'ev' || hv.installed()).forEach(([v, text], i) =>
-                    G.button(cv, th, 48 + (i % 3) * 244, 346 + Math.floor(i / 3) * 56, 232, 46, t(text), () => settings.set('hudData', v),
+                HUD_DATA.filter(([v]) => (v !== 'ev' && v !== 'soc') || hv.installed()).forEach(([v, text], i) =>
+                    G.button(cv, th, 48 + (i % 3) * 244, 366 + Math.floor(i / 3) * 48, 232, 42, t(text), () => settings.set('hudData', v),
                         { primary: now === v, key: 'data-' + v, busy: !hudOnNow }));
             } else {
                 // the map on the cluster: on or off with the HUD's as it is (never on neither)
@@ -506,6 +572,15 @@ mgu.run({
                 row(1, 'guide', t('Hide logo on the cluster'), !!hide, () => ctl.toggleGuidance(), gu || hide === null);
                 CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), settings.get(key) !== false, flip(key)));
                 camera(2 + CLUSTER_ITEMS.length);
+                // the info bar's three items: each button steps to the next
+                const kinds = panelKinds(), barOn = settings.get('clusterPanel') !== false;
+                label(cv, th, t('Info bar'), 48, 382);
+                [1, 2, 3].forEach((n, i) => {
+                    const cur = PANEL_ITEMS.indexOf(settings.get('clusterSlot' + n)) >= 0 ? settings.get('clusterSlot' + n) : (kinds[i] || 'none');
+                    const next = PANEL_ITEMS[(PANEL_ITEMS.indexOf(cur) + 1) % PANEL_ITEMS.length];
+                    G.button(cv, th, 48 + i * 244, 396, 232, 46, panelWord(cur), () => settings.set('clusterSlot' + n, next),
+                        { key: 'slot-' + n, busy: !barOn });
+                });
             }
 
             // the pictures on the right: the cluster on top, the HUD under it, each showing what of ours is on there

@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Nu s-a găsit camera pentru semafoare",
     "HUD installed": "HUD instalat",
     "Yes": "Da",
-    "No": "Nu"
+    "No": "Nu",
+    "Battery charge": "Încărcarea bateriei",
+    "Dimmer at night": "Mai slab noaptea",
+    "Info bar": "Bară de informații"
   }
 }

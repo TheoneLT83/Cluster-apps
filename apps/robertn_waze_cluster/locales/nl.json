@@ -145,6 +145,9 @@
     "Traffic-light camera not found": "Geen verkeerslichtcamera gevonden",
     "HUD installed": "HUD aanwezig",
     "Yes": "Ja",
-    "No": "Nee"
+    "No": "Nee",
+    "Battery charge": "Accuniveau",
+    "Dimmer at night": "'s Nachts gedimd",
+    "Info bar": "Infobalk"
   }
 }

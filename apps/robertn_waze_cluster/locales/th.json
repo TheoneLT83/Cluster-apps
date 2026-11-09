@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "ไม่พบกล้องไฟจราจร",
     "HUD installed": "ติดตั้ง HUD",
     "Yes": "ใช่",
-    "No": "ไม่"
+    "No": "ไม่",
+    "Battery charge": "ระดับแบตเตอรี่",
+    "Dimmer at night": "หรี่ลงตอนกลางคืน",
+    "Info bar": "แถบข้อมูล"
   }
 }

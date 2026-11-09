@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Камеру світлофорів не знайдено",
     "HUD installed": "HUD встановлено",
     "Yes": "Так",
-    "No": "Ні"
+    "No": "Ні",
+    "Battery charge": "Заряд батареї",
+    "Dimmer at night": "Тьмяніше вночі",
+    "Info bar": "Інфопанель"
   }
 }

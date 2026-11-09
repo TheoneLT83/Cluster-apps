@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Kamere za semaforje ni",
     "HUD installed": "HUD vgrajen",
     "Yes": "Da",
-    "No": "Ne"
+    "No": "Ne",
+    "Battery charge": "Napolnjenost baterije",
+    "Dimmer at night": "Ponoči temnejše",
+    "Info bar": "Informacijska vrstica"
   }
 }

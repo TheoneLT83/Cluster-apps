@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Trafik ışığı kamerası bulunamadı",
     "HUD installed": "HUD takılı",
     "Yes": "Evet",
-    "No": "Hayır"
+    "No": "Hayır",
+    "Battery charge": "Batarya şarjı",
+    "Dimmer at night": "Gece daha loş",
+    "Info bar": "Bilgi çubuğu"
   }
 }

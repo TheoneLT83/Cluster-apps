@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "信号カメラが見つかりません",
     "HUD installed": "HUD 装備",
     "Yes": "はい",
-    "No": "いいえ"
+    "No": "いいえ",
+    "Battery charge": "バッテリー残量",
+    "Dimmer at night": "夜間は暗く",
+    "Info bar": "情報バー"
   }
 }

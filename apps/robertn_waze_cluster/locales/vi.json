@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Không tìm thấy camera đèn giao thông",
     "HUD installed": "Có HUD",
     "Yes": "Có",
-    "No": "Không"
+    "No": "Không",
+    "Battery charge": "Mức pin",
+    "Dimmer at night": "Tối hơn vào ban đêm",
+    "Info bar": "Thanh thông tin"
   }
 }

@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Liikennevalokameraa ei löytynyt",
     "HUD installed": "HUD asennettu",
     "Yes": "Kyllä",
-    "No": "Ei"
+    "No": "Ei",
+    "Battery charge": "Akun varaus",
+    "Dimmer at night": "Himmeämpi yöllä",
+    "Info bar": "Tietopalkki"
   }
 }

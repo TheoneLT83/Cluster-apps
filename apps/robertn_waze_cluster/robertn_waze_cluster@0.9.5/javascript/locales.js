@@ -147,7 +147,10 @@ module.exports = [
    "Traffic-light camera not found": "لم يتم العثور على كاميرا إشارات المرور",
    "HUD installed": "شاشة العرض الأمامية مثبتة",
    "Yes": "نعم",
-   "No": "لا"
+   "No": "لا",
+   "Battery charge": "شحن البطارية",
+   "Dimmer at night": "أخفت في الليل",
+   "Info bar": "شريط المعلومات"
   }
  },
  {
@@ -296,7 +299,10 @@ module.exports = [
    "Traffic-light camera not found": "Kamera semaforů nenalezena",
    "HUD installed": "HUD nainstalován",
    "Yes": "Ano",
-   "No": "Ne"
+   "No": "Ne",
+   "Battery charge": "Nabití baterie",
+   "Dimmer at night": "Tmavší v noci",
+   "Info bar": "Informační lišta"
   }
  },
  {
@@ -445,7 +451,10 @@ module.exports = [
    "Traffic-light camera not found": "Intet trafiklyskamera fundet",
    "HUD installed": "HUD installeret",
    "Yes": "Ja",
-   "No": "Nej"
+   "No": "Nej",
+   "Battery charge": "Batteriopladning",
+   "Dimmer at night": "Dæmpet om natten",
+   "Info bar": "Infobjælke"
   }
  },
  {
@@ -594,7 +603,10 @@ module.exports = [
    "Traffic-light camera not found": "Keine Ampelkamera gefunden",
    "HUD installed": "HUD vorhanden",
    "Yes": "Ja",
-   "No": "Nein"
+   "No": "Nein",
+   "Battery charge": "Batterieladung",
+   "Dimmer at night": "Nachts gedimmt",
+   "Info bar": "Infoleiste"
   }
  },
  {
@@ -743,7 +755,10 @@ module.exports = [
    "Traffic-light camera not found": "Δεν βρέθηκε κάμερα φαναριών",
    "HUD installed": "Εγκατεστημένο HUD",
    "Yes": "Ναι",
-   "No": "Όχι"
+   "No": "Όχι",
+   "Battery charge": "Φόρτιση μπαταρίας",
+   "Dimmer at night": "Πιο αμυδρό τη νύχτα",
+   "Info bar": "Γραμμή πληροφοριών"
   }
  },
  {
@@ -892,7 +907,10 @@ module.exports = [
    "Traffic-light camera not found": "No se encontró la cámara de semáforos",
    "HUD installed": "HUD instalado",
    "Yes": "Sí",
-   "No": "No"
+   "No": "No",
+   "Battery charge": "Carga de batería",
+   "Dimmer at night": "Más tenue de noche",
+   "Info bar": "Barra de información"
   }
  },
  {
@@ -1041,7 +1059,10 @@ module.exports = [
    "Traffic-light camera not found": "No se encontró la cámara de semáforos",
    "HUD installed": "HUD instalado",
    "Yes": "Sí",
-   "No": "No"
+   "No": "No",
+   "Battery charge": "Carga de la batería",
+   "Dimmer at night": "Más tenue de noche",
+   "Info bar": "Barra de información"
   }
  },
  {
@@ -1190,7 +1211,10 @@ module.exports = [
    "Traffic-light camera not found": "Liikennevalokameraa ei löytynyt",
    "HUD installed": "HUD asennettu",
    "Yes": "Kyllä",
-   "No": "Ei"
+   "No": "Ei",
+   "Battery charge": "Akun varaus",
+   "Dimmer at night": "Himmeämpi yöllä",
+   "Info bar": "Tietopalkki"
   }
  },
  {
@@ -1339,7 +1363,10 @@ module.exports = [
    "Traffic-light camera not found": "Aucune caméra de feux trouvée",
    "HUD installed": "HUD installé",
    "Yes": "Oui",
-   "No": "Non"
+   "No": "Non",
+   "Battery charge": "Charge de la batterie",
+   "Dimmer at night": "Atténué la nuit",
+   "Info bar": "Barre d'infos"
   }
  },
  {
@@ -1488,7 +1515,10 @@ module.exports = [
    "Traffic-light camera not found": "Aucune caméra de feux trouvée",
    "HUD installed": "HUD installé",
    "Yes": "Oui",
-   "No": "Non"
+   "No": "Non",
+   "Battery charge": "Charge de la batterie",
+   "Dimmer at night": "Atténué la nuit",
+   "Info bar": "Barre d'infos"
   }
  },
  {
@@ -1637,7 +1667,10 @@ module.exports = [
    "Traffic-light camera not found": "לא נמצאה מצלמת רמזורים",
    "HUD installed": "HUD מותקן",
    "Yes": "כן",
-   "No": "לא"
+   "No": "לא",
+   "Battery charge": "טעינת סוללה",
+   "Dimmer at night": "עמום יותר בלילה",
+   "Info bar": "סרגל מידע"
   }
  },
  {
@@ -1786,7 +1819,10 @@ module.exports = [
    "Traffic-light camera not found": "Nem található közlekedésilámpa-kamera",
    "HUD installed": "HUD beépítve",
    "Yes": "Igen",
-   "No": "Nem"
+   "No": "Nem",
+   "Battery charge": "Akkumulátor töltöttsége",
+   "Dimmer at night": "Éjjel halványabb",
+   "Info bar": "Infósáv"
   }
  },
  {
@@ -1935,7 +1971,10 @@ module.exports = [
    "Traffic-light camera not found": "Kamera lampu lalu lintas tidak ditemukan",
    "HUD installed": "HUD terpasang",
    "Yes": "Ya",
-   "No": "Tidak"
+   "No": "Tidak",
+   "Battery charge": "Daya baterai",
+   "Dimmer at night": "Lebih redup di malam hari",
+   "Info bar": "Bilah info"
   }
  },
  {
@@ -2084,7 +2123,10 @@ module.exports = [
    "Traffic-light camera not found": "Nessuna telecamera semafori trovata",
    "HUD installed": "HUD installato",
    "Yes": "Sì",
-   "No": "No"
+   "No": "No",
+   "Battery charge": "Carica batteria",
+   "Dimmer at night": "Più tenue di notte",
+   "Info bar": "Barra informazioni"
   }
  },
  {
@@ -2233,7 +2275,10 @@ module.exports = [
    "Traffic-light camera not found": "信号カメラが見つかりません",
    "HUD installed": "HUD 装備",
    "Yes": "はい",
-   "No": "いいえ"
+   "No": "いいえ",
+   "Battery charge": "バッテリー残量",
+   "Dimmer at night": "夜間は暗く",
+   "Info bar": "情報バー"
   }
  },
  {
@@ -2382,7 +2427,10 @@ module.exports = [
    "Traffic-light camera not found": "신호등 카메라를 찾을 수 없음",
    "HUD installed": "HUD 장착",
    "Yes": "예",
-   "No": "아니요"
+   "No": "아니요",
+   "Battery charge": "배터리 충전량",
+   "Dimmer at night": "야간에 어둡게",
+   "Info bar": "정보 바"
   }
  },
  {
@@ -2531,7 +2579,10 @@ module.exports = [
    "Traffic-light camera not found": "Fant ikke trafikklyskamera",
    "HUD installed": "HUD installert",
    "Yes": "Ja",
-   "No": "Nei"
+   "No": "Nei",
+   "Battery charge": "Batterilading",
+   "Dimmer at night": "Dempet om natten",
+   "Info bar": "Infolinje"
   }
  },
  {
@@ -2682,7 +2733,10 @@ module.exports = [
    "Traffic-light camera not found": "Geen verkeerslichtcamera gevonden",
    "HUD installed": "HUD aanwezig",
    "Yes": "Ja",
-   "No": "Nee"
+   "No": "Nee",
+   "Battery charge": "Accuniveau",
+   "Dimmer at night": "'s Nachts gedimd",
+   "Info bar": "Infobalk"
   }
  },
  {
@@ -2831,7 +2885,10 @@ module.exports = [
    "Traffic-light camera not found": "Nie znaleziono kamery świateł",
    "HUD installed": "HUD zainstalowany",
    "Yes": "Tak",
-   "No": "Nie"
+   "No": "Nie",
+   "Battery charge": "Naładowanie akumulatora",
+   "Dimmer at night": "Ciemniej w nocy",
+   "Info bar": "Pasek informacji"
   }
  },
  {
@@ -2980,7 +3037,10 @@ module.exports = [
    "Traffic-light camera not found": "Câmera de semáforos não encontrada",
    "HUD installed": "HUD instalado",
    "Yes": "Sim",
-   "No": "Não"
+   "No": "Não",
+   "Battery charge": "Carga da bateria",
+   "Dimmer at night": "Mais escuro à noite",
+   "Info bar": "Barra de informações"
   }
  },
  {
@@ -3129,7 +3189,10 @@ module.exports = [
    "Traffic-light camera not found": "Câmara de semáforos não encontrada",
    "HUD installed": "HUD instalado",
    "Yes": "Sim",
-   "No": "Não"
+   "No": "Não",
+   "Battery charge": "Carga da bateria",
+   "Dimmer at night": "Mais escuro à noite",
+   "Info bar": "Barra de informações"
   }
  },
  {
@@ -3278,7 +3341,10 @@ module.exports = [
    "Traffic-light camera not found": "Nu s-a găsit camera pentru semafoare",
    "HUD installed": "HUD instalat",
    "Yes": "Da",
-   "No": "Nu"
+   "No": "Nu",
+   "Battery charge": "Încărcarea bateriei",
+   "Dimmer at night": "Mai slab noaptea",
+   "Info bar": "Bară de informații"
   }
  },
  {
@@ -3427,7 +3493,10 @@ module.exports = [
    "Traffic-light camera not found": "Камера светофоров не найдена",
    "HUD installed": "HUD установлен",
    "Yes": "Да",
-   "No": "Нет"
+   "No": "Нет",
+   "Battery charge": "Заряд батареи",
+   "Dimmer at night": "Тусклее ночью",
+   "Info bar": "Инфопанель"
   }
  },
  {
@@ -3576,7 +3645,10 @@ module.exports = [
    "Traffic-light camera not found": "Kamera semaforov nenájdená",
    "HUD installed": "HUD nainštalovaný",
    "Yes": "Áno",
-   "No": "Nie"
+   "No": "Nie",
+   "Battery charge": "Nabitie batérie",
+   "Dimmer at night": "Tmavšie v noci",
+   "Info bar": "Informačný pruh"
   }
  },
  {
@@ -3725,7 +3797,10 @@ module.exports = [
    "Traffic-light camera not found": "Kamere za semaforje ni",
    "HUD installed": "HUD vgrajen",
    "Yes": "Da",
-   "No": "Ne"
+   "No": "Ne",
+   "Battery charge": "Napolnjenost baterije",
+   "Dimmer at night": "Ponoči temnejše",
+   "Info bar": "Informacijska vrstica"
   }
  },
  {
@@ -3874,7 +3949,10 @@ module.exports = [
    "Traffic-light camera not found": "Ingen trafikljuskamera hittades",
    "HUD installed": "HUD installerad",
    "Yes": "Ja",
-   "No": "Nej"
+   "No": "Nej",
+   "Battery charge": "Batteriladdning",
+   "Dimmer at night": "Dämpad på natten",
+   "Info bar": "Infofält"
   }
  },
  {
@@ -4023,7 +4101,10 @@ module.exports = [
    "Traffic-light camera not found": "ไม่พบกล้องไฟจราจร",
    "HUD installed": "ติดตั้ง HUD",
    "Yes": "ใช่",
-   "No": "ไม่"
+   "No": "ไม่",
+   "Battery charge": "ระดับแบตเตอรี่",
+   "Dimmer at night": "หรี่ลงตอนกลางคืน",
+   "Info bar": "แถบข้อมูล"
   }
  },
  {
@@ -4172,7 +4253,10 @@ module.exports = [
    "Traffic-light camera not found": "Trafik ışığı kamerası bulunamadı",
    "HUD installed": "HUD takılı",
    "Yes": "Evet",
-   "No": "Hayır"
+   "No": "Hayır",
+   "Battery charge": "Batarya şarjı",
+   "Dimmer at night": "Gece daha loş",
+   "Info bar": "Bilgi çubuğu"
   }
  },
  {
@@ -4321,7 +4405,10 @@ module.exports = [
    "Traffic-light camera not found": "Камеру світлофорів не знайдено",
    "HUD installed": "HUD встановлено",
    "Yes": "Так",
-   "No": "Ні"
+   "No": "Ні",
+   "Battery charge": "Заряд батареї",
+   "Dimmer at night": "Тьмяніше вночі",
+   "Info bar": "Інфопанель"
   }
  },
  {
@@ -4470,7 +4557,10 @@ module.exports = [
    "Traffic-light camera not found": "Không tìm thấy camera đèn giao thông",
    "HUD installed": "Có HUD",
    "Yes": "Có",
-   "No": "Không"
+   "No": "Không",
+   "Battery charge": "Mức pin",
+   "Dimmer at night": "Tối hơn vào ban đêm",
+   "Info bar": "Thanh thông tin"
   }
  },
  {
@@ -4621,7 +4711,10 @@ module.exports = [
    "Traffic-light camera not found": "未找到红绿灯摄像头",
    "HUD installed": "已装 HUD",
    "Yes": "是",
-   "No": "否"
+   "No": "否",
+   "Battery charge": "电池电量",
+   "Dimmer at night": "夜间调暗",
+   "Info bar": "信息栏"
   }
  },
  {
@@ -4772,7 +4865,10 @@ module.exports = [
    "Traffic-light camera not found": "找不到紅綠燈攝影機",
    "HUD installed": "已裝 HUD",
    "Yes": "是",
-   "No": "否"
+   "No": "否",
+   "Battery charge": "電池電量",
+   "Dimmer at night": "夜間調暗",
+   "Info bar": "資訊列"
   }
  }
 ];

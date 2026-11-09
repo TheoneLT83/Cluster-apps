@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Kamera lampu lalu lintas tidak ditemukan",
     "HUD installed": "HUD terpasang",
     "Yes": "Ya",
-    "No": "Tidak"
+    "No": "Tidak",
+    "Battery charge": "Daya baterai",
+    "Dimmer at night": "Lebih redup di malam hari",
+    "Info bar": "Bilah info"
   }
 }

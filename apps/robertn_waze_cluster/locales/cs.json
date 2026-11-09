@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Kamera semaforů nenalezena",
     "HUD installed": "HUD nainstalován",
     "Yes": "Ano",
-    "No": "Ne"
+    "No": "Ne",
+    "Battery charge": "Nabití baterie",
+    "Dimmer at night": "Tmavší v noci",
+    "Info bar": "Informační lišta"
   }
 }

@@ -14,7 +14,7 @@ const HERE = path.join(__dirname, '..');
 const REPO = path.join(HERE, '..', '..');
 const STAGE = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-green-'));
 fs.cpSync(path.join(REPO, 'kit', 'runtime'), path.join(STAGE, 'kit'), { recursive: true });
-['green_light.js', 'hud_overlay.js'].forEach((f) => fs.copyFileSync(path.join(HERE, 'app', f), path.join(STAGE, f)));
+['green_light.js', 'hud_overlay.js', 'cluster_panel.js'].forEach((f) => fs.copyFileSync(path.join(HERE, 'app', f), path.join(STAGE, f)));
 fs.copyFileSync(path.join(REPO, 'native', 'cluster-render', 'js', 'cluster_render_client.js'), path.join(STAGE, 'cluster_render_client.js'));
 const { GreenLight, foresightColour, QUIET_MS, LOOK_MS } = require(path.join(STAGE, 'green_light.js'));
 const { HudOverlay } = require(path.join(STAGE, 'hud_overlay.js'));

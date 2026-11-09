@@ -24,10 +24,13 @@
  *                data: [{ kind: 'slider', value, min, max, text }, { kind: 'value', label: 'OIL', text: '92°' }, ...], speed: 87 });
  *   hud.go(onHud, onCluster)   a traffic light with its green lit (green_light.js) at the top of the map's place on the HUD and in the middle of the
  *                    cluster (target `map`, 1088 x 480), as alerts over the rest, until go(false, false)
+ *   hud.panel(items)  the cluster's info bar (cluster_panel.js) in the middle of the cluster, low (target `map`); null: none
+ *   hud.dim(f)       the HUD's layers at f of their brightness (night: less), 1 by day
  *   hud.state()      -> 'off' | 'waiting' | 'shown' | 'disabled' | 'unavailable' (the HUD target, as the renderer says)
  *   hud.close();
  */
 const { ClusterRender } = require('./cluster_render_client.js');
+const PANEL = require('./cluster_panel.js');
 const { Canvas, withAlpha } = require('./kit/canvas');
 
 const HUD_W = 800, HUD_H = 480;
@@ -118,11 +121,16 @@ function drawData(cv, x, y, w, items, k) {
         const tw = w - sum - GAP * vals.length, cy = y + ROW_H * k / 2, v = typeof slider.value === 'number' ? slider.value : null;
         const span = slider.max - slider.min, at0 = (val) => x + (Math.max(slider.min, Math.min(slider.max, val)) - slider.min) / span * tw;
         cv.fillRect(x, cy - 2 * k, tw, 4 * k, DIM);
+        // a coloured slider (the battery's power): the track lit from zero to the value in its colour
+        if (slider.color && v !== null) {
+            const a = at0(Math.max(slider.min, Math.min(0, slider.max))), b = at0(v);
+            cv.fillRect(Math.min(a, b), cy - 2 * k, Math.abs(b - a), 4 * k, slider.color);
+        }
         if (slider.min < 0 && slider.max > 0) cv.fillRect(at0(0) - 1 * k, cy - 8 * k, 2 * k, 16 * k, DIM);
         const text = v === null ? '-' : String(slider.text);
         const kw = Math.max(36 * k, cv.textWidth(text, 19 * k, { font: 'bold' }) + 14 * k);
         const kx = Math.max(x, Math.min(x + tw - kw, (v === null ? at0(Math.max(slider.min, Math.min(0, slider.max))) : at0(v)) - kw / 2));
-        cv.roundRect(kx, cy - 12 * k, kw, 24 * k, 12 * k, slider.green ? GREEN : WHITE);
+        cv.roundRect(kx, cy - 12 * k, kw, 24 * k, 12 * k, slider.color || (slider.green ? GREEN : WHITE));
         cv.text(text, kx + kw / 2, cy + 7 * k, 19 * k, '#000000', { font: 'bold', align: 'center' });
         let at = x + tw + GAP;
         vals.forEach((it) => { value(it, at); at += it.w + GAP; });
@@ -181,6 +189,8 @@ class HudOverlay {
         this.cr.on('error', (op, ref, reason) => this.log.warn('hud overlay: ' + op + ' refused: ' + reason));
         this.connected = false;
         this.goWant = { hud: false, cluster: false };
+        this.panelItems = null;
+        this.opacity = 1;
         this.timer = null;
         this._blink();
     }
@@ -206,6 +216,18 @@ class HudOverlay {
         this._draw();
     }
 
+    panel(items) {
+        this.panelItems = items && items.length ? items : null;
+        if (this.panelItems && !this.connected) { this.connected = true; this.cr.connect(); }
+        this._draw();
+    }
+
+    dim(f) {
+        if (f === this.opacity) return;
+        this.opacity = f;
+        Object.keys(this.layers).forEach((n) => { if (this.layers[n].target === 'hud') this.cr.set(this.layers[n].ref, { opacity: f }); });
+    }
+
     go(onHud, onCluster) {
         this.goWant = { hud: !!onHud, cluster: !!onCluster };
         if ((onHud || onCluster) && !this.connected) { this.connected = true; this.cr.connect(); }
@@ -224,8 +246,8 @@ class HudOverlay {
         if (!l) {
             const at = where || { target: 'hud', klass: 'overlay', z: 10 };
             const ref = this.cr.image({ target: at.target, klass: at.klass, z: at.z, x: rect.x, y: rect.y, w: rect.w, h: rect.h,
-                iw: rect.w, ih: rect.h, fps: 25 });
-            l = this.layers[name] = { ref, w: rect.w, h: rect.h, x: rect.x, y: rect.y, key: null };
+                iw: rect.w, ih: rect.h, fps: 25, opacity: at.target === 'hud' ? this.opacity : 1 });
+            l = this.layers[name] = { ref, w: rect.w, h: rect.h, x: rect.x, y: rect.y, key: null, target: at.target };
         } else if (l.x !== rect.x || l.y !== rect.y) {
             this.cr.set(l.ref, { x: rect.x, y: rect.y });
             l.x = rect.x; l.y = rect.y;
@@ -243,6 +265,10 @@ class HudOverlay {
 
     _draw() {
         if (!this.connected) return;
+        if (this.panelItems) {
+            const pr = PANEL.panelRect(this.panelItems);
+            this._layer('panel', pr, (cv) => PANEL.drawPanel(cv, 0, 0, this.panelItems), JSON.stringify(this.panelItems), { target: 'map', klass: 'overlay', z: 12 });
+        } else this._drop('panel');
         const g = this.goWant;
         if (g.cluster) this._layer('go-cluster', LIGHT_CLUSTER, (cv) => drawLight(cv, LIGHT_CLUSTER.w, LIGHT_CLUSTER.h), 'go', { target: 'map', klass: 'alert', z: 20 });
         else this._drop('go-cluster');

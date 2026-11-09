@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Keine Ampelkamera gefunden",
     "HUD installed": "HUD vorhanden",
     "Yes": "Ja",
-    "No": "Nein"
+    "No": "Nein",
+    "Battery charge": "Batterieladung",
+    "Dimmer at night": "Nachts gedimmt",
+    "Info bar": "Infoleiste"
   }
 }

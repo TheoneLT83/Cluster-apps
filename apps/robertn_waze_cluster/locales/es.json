@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "No se encontró la cámara de semáforos",
     "HUD installed": "HUD instalado",
     "Yes": "Sí",
-    "No": "No"
+    "No": "No",
+    "Battery charge": "Carga de la batería",
+    "Dimmer at night": "Más tenue de noche",
+    "Info bar": "Barra de información"
   }
 }

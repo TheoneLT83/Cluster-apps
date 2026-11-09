@@ -143,6 +143,9 @@
     "Traffic-light camera not found": "Nem található közlekedésilámpa-kamera",
     "HUD installed": "HUD beépítve",
     "Yes": "Igen",
-    "No": "Nem"
+    "No": "Nem",
+    "Battery charge": "Akkumulátor töltöttsége",
+    "Dimmer at night": "Éjjel halványabb",
+    "Info bar": "Infósáv"
   }
 }

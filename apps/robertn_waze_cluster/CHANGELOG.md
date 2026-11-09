@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.5
+
+- **Info bar on the cluster** (Display > Cluster, on by default): up to three values in the middle of the cluster, a
+  little low, on a grey tab, while the Waze map shows there: the battery's kW with its bar (blue, green while
+  recuperating, amber from 60 kW), its charge, oil, coolant (blue while cold), boost, engine speed or torque. Auto:
+  kW, charge and oil with eDrive, else oil, coolant and engine speed.
+- **Battery charge** between the HUD's turn signals (with eDrive).
+- **Dimmer at night** (Display > HUD, on by default): the HUD's parts at 60 % after dark (the car's light sensor).
+- **The kW is quicker**: with eDrive 2.8.4 the battery's power is read as fast as with eDrive's own screen open,
+  each reading reaches the HUD and the cluster at once, and the bar eases between readings. The HUD's kW bar is
+  coloured as the cluster's.
+
 ## 0.9.4
 
 - **HUD installed: Yes / No** (Yes by default) in place of finding the HUD by itself, which did not work on every car.
