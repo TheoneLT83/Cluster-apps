@@ -587,7 +587,7 @@ mgu.run({
                 // the info bar's items, as the HUD's reading: a button each, lit while on (up to PANEL_MAX)
                 const barOn = settings.get('clusterPanel') !== false;
                 const count = PANEL_ITEMS.filter(([, key]) => settings.get(key)).length;
-                label(cv, th, t('Info bar'), 48, 356);
+                label(cv, th, t('Info bar') + '  ' + count + '/' + PANEL_MAX, 48, 356);      // how many are on, of the most
                 PANEL_ITEMS.filter(([k]) => (k !== 'power' && k !== 'soc') || hv.installed()).forEach(([k, key, text], i) => {
                     const lit = !!settings.get(key);
                     G.button(cv, th, 48 + (i % 3) * 244, 366 + Math.floor(i / 3) * 48, 232, 42, t(text), () => settings.set(key, !lit),

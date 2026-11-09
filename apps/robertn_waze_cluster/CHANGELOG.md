@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.8
+
+- **Info bar** on the Display page shows how many items are on, of the four (e.g. 2/4).
+
 ## 0.9.7
 
 - **Info bar** a little lower on the cluster.
