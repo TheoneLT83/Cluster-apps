@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.7
+
+- **Info bar** a little lower on the cluster.
+- **Dimmer at night** works: the car's day / night signal is now asked for; the HUD's parts at 40 % after dark.
+- **Display page**: the HUD's picture stays inside its frame with a big map.
+
 ## 0.9.6
 
 - **Info bar**: a dark see-through bar (no tab); its items picked as the HUD's reading, a button each on the Display

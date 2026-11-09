@@ -51,7 +51,7 @@ const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert'], ['clusterPane
 /* The picture's "GO" in its loop: shown GO_DEMO_ON of each GO_DEMO_MS while that alert is on. */
 const GO_DEMO_MS = 4000, GO_DEMO_ON = 1500;
 /* The HUD's layers at night (setting hudNight), of their brightness by day; the car's day / night enum. */
-const NIGHT_DIM = 0.6;
+const NIGHT_DIM = 0.4;
 const DAY_NIGHT = { KEINE_AENDERUNG: 0, TAG: 1, NACHT: 2, SIGNAL_UNGUELTIG: 3 };
 /* The part of the HUD's 800 x 480 scene the glass shows, about (a G21's, Redline's hud.js), with BMW's speed row. */
 const HUD_GLASS = { x: 80, y: 100, w: 640, h: 290 };
@@ -368,7 +368,19 @@ mgu.run({
         /* A picture of the HUD (HUD_W x HUD_H scaled into w): the map where waze-on-cluster puts it, the arrows
          * and the gear where the overlay draws them; lit as they are now. */
         /* crop: the part of the HUD's scene to show (the Display page: the part the glass shows), else all of it */
+        // the HUD's picture; with crop (the glass, the Display page): drawn on a canvas of its own, so a big map and our
+        // parts are cut at the glass's edge instead of running out of the picture
         const hudPicture = (cv, th, x0, y0, w, crop) => {
+            if (!crop || cv.glass) return drawHudPicture(cv, th, x0, y0, w, crop);
+            const ww = Math.round(w), hh = Math.round(crop.h * w / crop.w);
+            const off = ctx.canvas(ww, hh).clear('#05070a');
+            off.glass = true; off.own = cv.own;
+            drawHudPicture(off, th, 0, 0, ww, crop);
+            cv.blit(off, Math.round(x0), Math.round(y0));
+            cv.strokeRoundRect(Math.round(x0), Math.round(y0), ww, hh, 10, 1.5, withAlpha('#ffffff', 0.25));
+            return hh;
+        };
+        const drawHudPicture = (cv, th, x0, y0, w, crop) => {
             const c = crop || { x: 0, y: 0, w: HUD_W, h: HUD_H }, k = w / c.w, h = c.h * k;
             cv.roundRect(x0, y0, w, h, 10, '#05070a');
             cv.strokeRoundRect(x0, y0, w, h, 10, 1.5, withAlpha('#ffffff', 0.25));

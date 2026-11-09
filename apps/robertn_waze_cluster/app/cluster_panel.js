@@ -20,7 +20,7 @@ const BLUE = '#2f86ff', PURPLE = '#b35cff', GREEN = '#2fd27a', AMBER = '#ffb020'
 const AMBER_KW = 60, MAX_OUT = 100, MAX_IN = 60;
 const COLD_C = 50;
 /* Where it sits: centred, its bottom this far over the map's bottom edge. */
-const BOTTOM_GAP = 56;
+const BOTTOM_GAP = 32;          // clear of the cluster's dimmed edge under the map
 
 const isNum = (v) => typeof v === 'number' && isFinite(v);
 

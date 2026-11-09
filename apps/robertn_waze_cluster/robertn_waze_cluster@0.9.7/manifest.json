@@ -99,10 +99,10 @@
       ]
     },
     "de.bmw.infotainment.vehicle.Vehicle": {
+      "instances": "1",
       "attributes": {
-        "statusNewCurrentUnitsStatusExt": "rs"
-      },
-      "instances": "1"
+        "statusDayNightChangeOver": "rs"
+      }
     },
     "de.bmw.infrastructure.EnvironmentalInformation": {
       "attributes": {
