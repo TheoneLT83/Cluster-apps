@@ -162,7 +162,7 @@ function drawLight(cv, w, h) {
     cv.circle(cx, y(2), r, GREEN);
 }
 const LIGHT_HUD = { w: 44, h: 112 };
-const LIGHT_CLUSTER = { x: 499, y: 120, w: 90, h: 240 };
+const LIGHT_CLUSTER = { x: 516, y: 24, w: 56, h: 150 };     // small, at the top of the cluster's middle
 
 function drawGear(cv, gear) {
     const g = String(gear || '');

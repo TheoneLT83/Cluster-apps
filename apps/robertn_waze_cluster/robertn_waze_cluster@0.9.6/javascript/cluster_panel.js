@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 'use strict';
 /**
- * cluster_panel - the info bar in the middle of the cluster, a little low: up to three live values in a dark pill on
- * a grey tab, drawn as an image layer of the cluster renderer (target `map`, 1088 x 480, over the Waze map).
+ * cluster_panel - the info bar in the middle of the cluster, a little low: up to four live values in a dark
+ * see-through pill, drawn as an image layer of the cluster renderer (target `map`, 1088 x 480, over the Waze map).
  *
  *   items: [{ kind: 'power', kw }, { kind: 'value', label: 'OIL', text: '92°', cold: true }, ...]
  *   panelSize(items) -> { w, h }        drawPanel(cv, x, y, items)       panelRect(items) -> where on the target
@@ -15,7 +15,7 @@ const { withAlpha } = require('./kit/canvas');
 
 const TARGET = { w: 1088, h: 480 };
 const H = 96, PAD = 12, POWER_W = 200, VALUE_W = 92;
-const TAB = '#283150', PILL = '#0c1018', WHITE = '#f2f5f8', LABEL = '#a9b1c2';
+const PILL = [8, 10, 16, 165], WHITE = '#f2f5f8', LABEL = '#a9b1c2';
 const BLUE = '#2f86ff', PURPLE = '#b35cff', GREEN = '#2fd27a', AMBER = '#ffb020', COLD = '#5ab8ff', TRACK = '#22262e';
 const AMBER_KW = 60, MAX_OUT = 100, MAX_IN = 60;
 const COLD_C = 50;
@@ -26,7 +26,7 @@ const isNum = (v) => typeof v === 'number' && isFinite(v);
 
 function panelSize(items) {
     const w = items.reduce((a, it) => a + (it.kind === 'power' ? POWER_W : VALUE_W), 0);
-    return { w: w + 2 * PAD + 24, h: H };
+    return { w: w + 24, h: H - 2 * PAD };
 }
 
 function panelRect(items) {
@@ -52,9 +52,8 @@ function drawBar(cv, x, y, w, h, kw) {
 
 function drawPanel(cv, x, y, items) {
     const s = panelSize(items);
-    cv.roundRect(x, y, s.w, s.h, 12, TAB);
-    cv.roundRect(x + PAD, y + PAD, s.w - 2 * PAD, s.h - 2 * PAD, (s.h - 2 * PAD) / 2, PILL);
-    let cx = x + PAD + 12;
+    cv.roundRect(x, y, s.w, s.h, s.h / 2, PILL);
+    let cx = x + 12;
     const mid = y + s.h / 2;
     items.forEach((it) => {
         if (it.kind === 'power') {

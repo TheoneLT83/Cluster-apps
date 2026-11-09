@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.6
+
+- **Info bar**: a dark see-through bar (no tab); its items picked as the HUD's reading, a button each on the Display
+  page: kW, battery charge, oil, coolant, boost, engine speed, torque (up to four; kW and charge with eDrive).
+- **Green light alert** on the cluster: a smaller traffic light at the top of the cluster's middle.
+
 ## 0.9.5
 
 - **Info bar on the cluster** (Display > Cluster, on by default): up to three values in the middle of the cluster, a

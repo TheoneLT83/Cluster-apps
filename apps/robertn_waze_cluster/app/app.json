@@ -2,7 +2,7 @@
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
   "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range, oil and coolant, boost, power and torque, or engine speed",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
   "memoryKB": 153600,
@@ -181,139 +181,53 @@
       "hidden": true
     },
     {
-      "key": "clusterSlot1",
-      "label": "Info bar",
-      "type": "choice",
-      "default": "auto",
-      "hidden": true,
-      "options": [
-        [
-          "auto",
-          "Auto"
-        ],
-        [
-          "power",
-          "kW"
-        ],
-        [
-          "soc",
-          "Battery charge"
-        ],
-        [
-          "oil",
-          "OIL"
-        ],
-        [
-          "coolant",
-          "COOLANT"
-        ],
-        [
-          "boost",
-          "Boost"
-        ],
-        [
-          "rpm",
-          "Engine speed"
-        ],
-        [
-          "torque",
-          "TORQUE"
-        ],
-        [
-          "none",
-          "None"
-        ]
-      ]
+      "key": "clusterKw",
+      "label": "kW",
+      "type": "bool",
+      "default": true,
+      "hidden": true
     },
     {
-      "key": "clusterSlot2",
-      "label": "Info bar",
-      "type": "choice",
-      "default": "auto",
-      "hidden": true,
-      "options": [
-        [
-          "auto",
-          "Auto"
-        ],
-        [
-          "power",
-          "kW"
-        ],
-        [
-          "soc",
-          "Battery charge"
-        ],
-        [
-          "oil",
-          "OIL"
-        ],
-        [
-          "coolant",
-          "COOLANT"
-        ],
-        [
-          "boost",
-          "Boost"
-        ],
-        [
-          "rpm",
-          "Engine speed"
-        ],
-        [
-          "torque",
-          "TORQUE"
-        ],
-        [
-          "none",
-          "None"
-        ]
-      ]
+      "key": "clusterSoc",
+      "label": "Battery charge",
+      "type": "bool",
+      "default": true,
+      "hidden": true
     },
     {
-      "key": "clusterSlot3",
-      "label": "Info bar",
-      "type": "choice",
-      "default": "auto",
-      "hidden": true,
-      "options": [
-        [
-          "auto",
-          "Auto"
-        ],
-        [
-          "power",
-          "kW"
-        ],
-        [
-          "soc",
-          "Battery charge"
-        ],
-        [
-          "oil",
-          "OIL"
-        ],
-        [
-          "coolant",
-          "COOLANT"
-        ],
-        [
-          "boost",
-          "Boost"
-        ],
-        [
-          "rpm",
-          "Engine speed"
-        ],
-        [
-          "torque",
-          "TORQUE"
-        ],
-        [
-          "none",
-          "None"
-        ]
-      ]
+      "key": "clusterOil",
+      "label": "OIL",
+      "type": "bool",
+      "default": true,
+      "hidden": true
+    },
+    {
+      "key": "clusterCoolant",
+      "label": "COOLANT",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "clusterBoost",
+      "label": "Boost",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "clusterRpm",
+      "label": "Engine speed",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "clusterTorque",
+      "label": "TORQUE",
+      "type": "bool",
+      "default": false,
+      "hidden": true
     },
     {
       "key": "powerUnit",
