@@ -4,7 +4,8 @@
 
 - **HUD installed: Yes / No** (Yes by default) in place of finding the HUD by itself, which did not work on every car.
 - The HUD's and the cluster's settings are on the Display page only (no longer in Settings).
-- **Display page**: the cluster on top, the HUD under it; each shows only what is switched on (the turn signals
+- **Display page**: the cluster on top, the HUD under it as wide as it (the part of the HUD the glass shows); each
+  shows only what is switched on (the turn signals
   blink, the needles move, the traffic light comes now and then, the logo shows while not hidden).
 - With idrive7-apps' Redline 1.15.2: the shared HUD folder can be written by every app, so Redline's HUD takes
   the HUD over and the map gives way.

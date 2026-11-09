@@ -49,6 +49,8 @@ const HUD_ITEMS = [['hudOn', 'Displays on HUD'], ['hudTurn', 'Turn signals'], ['
 const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert']];
 /* The picture's "GO" in its loop: shown GO_DEMO_ON of each GO_DEMO_MS while that alert is on. */
 const GO_DEMO_MS = 4000, GO_DEMO_ON = 1500;
+/* The part of the HUD's 800 x 480 scene the glass shows, about (a G21's, Redline's hud.js), with BMW's speed row. */
+const HUD_GLASS = { x: 80, y: 100, w: 640, h: 290 };
 /* What shows between the turn signals (the setting hudData), one at a time. */
 const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['temps', 'Oil and coolant'], ['boost', 'Boost'], ['power', 'Power and torque'],
     ['rpm', 'Engine speed']];
@@ -311,10 +313,12 @@ mgu.run({
 
         /* A picture of the HUD (HUD_W x HUD_H scaled into w): the map where waze-on-cluster puts it, the arrows
          * and the gear where the overlay draws them; lit as they are now. */
-        const hudPicture = (cv, th, x, y, w) => {
-            const k = w / HUD_W, h = HUD_H * k;
-            cv.roundRect(x, y, w, h, 10, '#05070a');
-            cv.strokeRoundRect(x, y, w, h, 10, 1.5, withAlpha('#ffffff', 0.25));
+        /* crop: the part of the HUD's scene to show (the Display page: the part the glass shows), else all of it */
+        const hudPicture = (cv, th, x0, y0, w, crop) => {
+            const c = crop || { x: 0, y: 0, w: HUD_W, h: HUD_H }, k = w / c.w, h = c.h * k;
+            cv.roundRect(x0, y0, w, h, 10, '#05070a');
+            cv.strokeRoundRect(x0, y0, w, h, 10, 1.5, withAlpha('#ffffff', 0.25));
+            const x = x0 - c.x * k, y = y0 - c.y * k;
             const m = mapNow(), mx = x + m.x * k, my = y + m.y * k, mw = m.w * k, mh = m.h * k;
             const on = ctl.hudOn() === true, br = (ctl.hudBrightness() || 100) / 100;
             const a = (v) => (on ? v * (0.25 + 0.75 * br) : v * 0.25);
@@ -506,16 +510,17 @@ mgu.run({
 
             // the pictures on the right: the cluster on top, the HUD under it, each showing what of ours is on there
             G.panel(cv, th, 804, 44, 772, 468, t('Display'));
-            const cw = hasHud ? 520 : 700, cx = 804 + (772 - cw) / 2;
+            const cw = hasHud ? 480 : 700, cx = 804 + (772 - cw) / 2;
             const ch = clusterPicture(cv, th, cx, hasHud ? 96 : 150, cw, goNow && settings.get('greenLightCluster') !== false);
             if (hasHud) {
-                const hw = 330, hx = 804 + (772 - hw) / 2, hy = 96 + ch + 14, hudOnNow = settings.get('hudOn') !== false;
+                // as wide as the cluster: the part of the HUD's scene the glass shows (HUD_GLASS)
+                const hw = cw, hx = cx, hy = 96 + ch + 12, hudOnNow = settings.get('hudOn') !== false;
                 demoTurns = true;
-                hudPicture(cv, th, hx, hy, hw);
+                hudPicture(cv, th, hx, hy, hw, HUD_GLASS);
                 demoTurns = false;
                 if (hudOnNow && goNow && settings.get('greenLightHud') !== false) {
-                    const k = hw / HUD_W, a = anchorRect(mapNow());
-                    drawLight(scaled(cv, hx + (a.x + (a.w - LIGHT_HUD.w) / 2) * k, hy + (a.y + 4) * k, k), LIGHT_HUD.w, LIGHT_HUD.h);
+                    const k = hw / HUD_GLASS.w, a = anchorRect(mapNow());
+                    drawLight(scaled(cv, hx + (a.x - HUD_GLASS.x + (a.w - LIGHT_HUD.w) / 2) * k, hy + (a.y - HUD_GLASS.y + 4) * k, k), LIGHT_HUD.w, LIGHT_HUD.h);
                 }
             }
         }
