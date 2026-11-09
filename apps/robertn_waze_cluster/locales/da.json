@@ -116,7 +116,6 @@
     "COOLANT": "KØLEV.",
     "Hide logo on the cluster": "Skjul logo i instrumentbrættet",
     "Reinstall patch": "Geninstaller patch",
-    "On the HUD": "På HUD",
     "Display": "Visning",
     "Electric range": "Elektrisk rækkevidde",
     "Oil and coolant": "Olie og kølevæske",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Visninger på HUD",
     "Own settings for this driver": "Egne indstillinger for denne fører",
-    "Head-up display": "Head-up-display",
     "Given to another app": "Overladt til en anden app",
     "Green light alert": "Grønt lys-advarsel",
     "Traffic-light camera found": "Trafiklyskamera fundet",
-    "Traffic-light camera not found": "Intet trafiklyskamera fundet"
+    "Traffic-light camera not found": "Intet trafiklyskamera fundet",
+    "HUD installed": "HUD installeret",
+    "Yes": "Ja",
+    "No": "Nej"
   }
 }

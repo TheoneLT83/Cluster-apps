@@ -116,7 +116,6 @@
     "COOLANT": "KÜHLM.",
     "Hide logo on the cluster": "Logo im Kombi ausblenden",
     "Reinstall patch": "Patch neu installieren",
-    "On the HUD": "Im HUD",
     "Display": "Anzeige",
     "Electric range": "Elektrische Reichweite",
     "Oil and coolant": "Öl und Kühlmittel",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Anzeigen im HUD",
     "Own settings for this driver": "Eigene Einstellungen für diesen Fahrer",
-    "Head-up display": "Head-up-Display",
     "Given to another app": "An andere App abgegeben",
     "Green light alert": "Grün-Hinweis an der Ampel",
     "Traffic-light camera found": "Ampelkamera gefunden",
-    "Traffic-light camera not found": "Keine Ampelkamera gefunden"
+    "Traffic-light camera not found": "Keine Ampelkamera gefunden",
+    "HUD installed": "HUD vorhanden",
+    "Yes": "Ja",
+    "No": "Nein"
   }
 }

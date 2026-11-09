@@ -116,7 +116,6 @@
     "COOLANT": "קירור",
     "Hide logo on the cluster": "הסתרת הלוגו בלוח המחוונים",
     "Reinstall patch": "התקנה מחדש של התיקון",
-    "On the HUD": "ב-HUD",
     "Display": "תצוגה",
     "Electric range": "טווח חשמלי",
     "Oil and coolant": "שמן ונוזל קירור",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "תצוגות ב-HUD",
     "Own settings for this driver": "הגדרות נפרדות לנהג זה",
-    "Head-up display": "תצוגה עילית",
     "Given to another app": "הועבר לאפליקציה אחרת",
     "Green light alert": "התראת אור ירוק",
     "Traffic-light camera found": "נמצאה מצלמת רמזורים",
-    "Traffic-light camera not found": "לא נמצאה מצלמת רמזורים"
+    "Traffic-light camera not found": "לא נמצאה מצלמת רמזורים",
+    "HUD installed": "HUD מותקן",
+    "Yes": "כן",
+    "No": "לא"
   }
 }

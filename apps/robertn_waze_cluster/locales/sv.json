@@ -116,7 +116,6 @@
     "COOLANT": "KYLV.",
     "Hide logo on the cluster": "Dölj logotypen i instrumentpanelen",
     "Reinstall patch": "Installera om patch",
-    "On the HUD": "På HUD",
     "Display": "Visning",
     "Electric range": "Elektrisk räckvidd",
     "Oil and coolant": "Olja och kylvätska",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Visningar på HUD",
     "Own settings for this driver": "Egna inställningar för den här föraren",
-    "Head-up display": "Head-up-display",
     "Given to another app": "Överlämnad till en annan app",
     "Green light alert": "Varning för grönt ljus",
     "Traffic-light camera found": "Trafikljuskamera hittad",
-    "Traffic-light camera not found": "Ingen trafikljuskamera hittades"
+    "Traffic-light camera not found": "Ingen trafikljuskamera hittades",
+    "HUD installed": "HUD installerad",
+    "Yes": "Ja",
+    "No": "Nej"
   }
 }

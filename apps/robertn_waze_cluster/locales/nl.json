@@ -118,7 +118,6 @@
     "COOLANT": "KOELV.",
     "Hide logo on the cluster": "Logo in het instrumentenpaneel verbergen",
     "Reinstall patch": "Patch opnieuw installeren",
-    "On the HUD": "Op het HUD",
     "Display": "Weergave",
     "Electric range": "Elektrisch bereik",
     "Oil and coolant": "Olie en koelvloeistof",
@@ -140,10 +139,12 @@
     "psi": "psi",
     "Displays on HUD": "Weergaven op het HUD",
     "Own settings for this driver": "Eigen instellingen voor deze bestuurder",
-    "Head-up display": "Head-up display",
     "Given to another app": "Overgedragen aan andere app",
     "Green light alert": "Groen-licht-melding",
     "Traffic-light camera found": "Verkeerslichtcamera gevonden",
-    "Traffic-light camera not found": "Geen verkeerslichtcamera gevonden"
+    "Traffic-light camera not found": "Geen verkeerslichtcamera gevonden",
+    "HUD installed": "HUD aanwezig",
+    "Yes": "Ja",
+    "No": "Nee"
   }
 }

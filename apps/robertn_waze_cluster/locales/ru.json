@@ -116,7 +116,6 @@
     "COOLANT": "ОЖ",
     "Hide logo on the cluster": "Скрыть логотип на приборной панели",
     "Reinstall patch": "Переустановить патч",
-    "On the HUD": "На HUD",
     "Display": "Дисплей",
     "Electric range": "Запас хода на электричестве",
     "Oil and coolant": "Масло и охлаждающая жидкость",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Индикация на HUD",
     "Own settings for this driver": "Свои настройки для этого водителя",
-    "Head-up display": "Проекционный дисплей",
     "Given to another app": "Передан другому приложению",
     "Green light alert": "Сигнал о зелёном свете",
     "Traffic-light camera found": "Камера светофоров найдена",
-    "Traffic-light camera not found": "Камера светофоров не найдена"
+    "Traffic-light camera not found": "Камера светофоров не найдена",
+    "HUD installed": "HUD установлен",
+    "Yes": "Да",
+    "No": "Нет"
   }
 }

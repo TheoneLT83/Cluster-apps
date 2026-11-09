@@ -116,7 +116,6 @@
     "COOLANT": "ARREF.",
     "Hide logo on the cluster": "Ocultar o logo no painel",
     "Reinstall patch": "Reinstalar patch",
-    "On the HUD": "No HUD",
     "Display": "Exibição",
     "Electric range": "Autonomia elétrica",
     "Oil and coolant": "Óleo e arrefecimento",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Exibições no HUD",
     "Own settings for this driver": "Configurações próprias para este motorista",
-    "Head-up display": "Head-up display",
     "Given to another app": "Cedido a outro app",
     "Green light alert": "Alerta de sinal verde",
     "Traffic-light camera found": "Câmera de semáforos encontrada",
-    "Traffic-light camera not found": "Câmera de semáforos não encontrada"
+    "Traffic-light camera not found": "Câmera de semáforos não encontrada",
+    "HUD installed": "HUD instalado",
+    "Yes": "Sim",
+    "No": "Não"
   }
 }

@@ -116,7 +116,6 @@
     "COOLANT": "RĂCIRE",
     "Hide logo on the cluster": "Ascunde logoul pe bord",
     "Reinstall patch": "Reinstalare patch",
-    "On the HUD": "Pe HUD",
     "Display": "Afișaj",
     "Electric range": "Autonomie electrică",
     "Oil and coolant": "Ulei și lichid de răcire",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Afișări pe HUD",
     "Own settings for this driver": "Setări proprii pentru acest șofer",
-    "Head-up display": "Afișaj head-up",
     "Given to another app": "Cedat altei aplicații",
     "Green light alert": "Alertă semafor verde",
     "Traffic-light camera found": "Cameră pentru semafoare găsită",
-    "Traffic-light camera not found": "Nu s-a găsit camera pentru semafoare"
+    "Traffic-light camera not found": "Nu s-a găsit camera pentru semafoare",
+    "HUD installed": "HUD instalat",
+    "Yes": "Da",
+    "No": "Nu"
   }
 }

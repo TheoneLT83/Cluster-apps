@@ -152,7 +152,6 @@ jobs:
       - run: node apps/robertn_waze_cluster/tools/test_profiles.js
       - run: node apps/robertn_waze_cluster/tools/test_i18n.js
       - run: node apps/robertn_waze_cluster/tools/test_gear.js
-      - run: node apps/robertn_waze_cluster/tools/test_hud_probe.js
       - run: node apps/robertn_waze_cluster/tools/test_green_light.js
 
   waze-on-cluster-x86:

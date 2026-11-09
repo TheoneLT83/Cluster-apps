@@ -15,7 +15,7 @@
  *             turn signals none, the electric range with the eDrive power, oil and coolant, boost, power and torque
  *             (torque x rpm, in M Vitals' units where it has them), or engine speed; with a picture of it
  *   Log       the app's log, and the saved logs for a phone on the car's hotspot
- *   (A car without a head-up display, hud_probe.js: no Display page, no HUD map panel or HUD choices.)
+ *   (A car without a head-up display, setting HUD installed No: no HUD map panel, HUD tab or HUD choices.)
  *   Settings  the kit's settings sheet: Displays on HUD (off: nothing of this app on the HUD), Real speed on HUD (left of BMW's own speed), the colours, the
  *             layout
  * Every word is in the HMI's display language (i18n.js), English where a language has none, with the glyphs of
@@ -33,7 +33,6 @@ const { LogsControl } = require('./logs_control.js');
 const path = require('path');
 const { HudOverlay, drawLight, LIGHT_HUD, anchorRect, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
-const { HudProbe } = require('./hud_probe.js');
 const { HudClaim } = require('./kit/hud_claim');
 const { GreenLight } = require('./green_light.js');
 const { Units } = require('./units.js');
@@ -123,12 +122,8 @@ async function background(bg) {
     try { readProfile = sessionReader(require('oap-sdk').someipBuilders, log); } catch (e) { log.warn('driver profiles unavailable: ' + e.message); }
     const profiles = new ProfileSync({ control: ctl, log, readProfile });
     const hud = new HudOverlay({ log });
-    // a car without a head-up display: nothing of ours on it, and none of its settings or pages. Setting
-    // hudInstalled: Auto (hud_probe.js; not known, the diagnostic channel did not answer: as with one), On, Off
-    const hudProbe = new HudProbe({ signals: bg.signals, dataDir: bg.dataDir, log });
-    const hudOk = () => { const v = settings.get('hudInstalled'); return v === 'yes' || (v !== 'no' && hudProbe.found() !== false); };
-    const hudFound = () => { if (settings.get('hudFound') !== hudOk()) settings.set('hudFound', hudOk()); };
-    hudFound();
+    // a car without a head-up display (setting hudInstalled No): nothing of ours on it, and none of its settings or pages
+    const hudOk = () => settings.get('hudInstalled') !== 'no';
     // another app holding the HUD (Redline turned on, until the car is switched off; kit/hud_claim.js): ours gives way
     let givenTo = [];
     const given = () => givenTo.length > 0;
@@ -200,7 +195,7 @@ async function background(bg) {
     logs.on('change', changed);
     profiles.on('change', changed);
     turns.on('change', () => { toHud(); changed(); });
-    settings.onChange(() => { hudFound(); hvWanted(); claims(); toHud(); changed(); });
+    settings.onChange(() => { hvWanted(); claims(); toHud(); changed(); });
     // boost, torque, the temperatures and the programme come without a sample of their own: the HUD looks again
     // often (only what changed is sent; the layers take up to 25 frames a second)
     setInterval(() => { if (settings.get('hudOn') !== false && hudOk() && !given()) toHud(); }, 80);
@@ -266,15 +261,14 @@ async function background(bg) {
     ctl.open();
     profiles.start();
     toHud();
-    hudProbe.run((v) => {
-        hudFound();
-        // a map set to show on a HUD this car does not have goes to the cluster
-        if (!hudOk() && ['hud', 'both'].indexOf(ctl.shownOn()) >= 0 && ctl.canChooseShownOn()) {
-            log.info('no HUD: the map shows on the cluster');
-            ctl.showOn('cluster');
-        }
-        hvWanted(); toHud(); changed();
-    });
+    // a map set to show on a HUD this car does not have goes to the cluster (once the render and patchd answer)
+    const toCluster = () => {
+        if (hudOk() || ['hud', 'both'].indexOf(ctl.shownOn()) < 0 || !ctl.canChooseShownOn()) return;
+        log.info('no HUD: the map shows on the cluster');
+        ctl.showOn('cluster');
+    };
+    ctl.on('change', toCluster);
+    settings.onChange((key) => { if (key === 'hudInstalled') toCluster(); });
     log.info('Cluster functions ' + bg.spec.version + ' started (' + (bg.app && bg.app.startReason) + ')');
     return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, green, onChange: (fn) => listeners.push(fn) };
 }
@@ -334,7 +328,8 @@ mgu.run({
             // on the Display page, the arrows blink one side then the other while the car's are off
             const real = turns.state(), cyc = Date.now() % 3000;
             const st = demoTurns && !real.left && !real.right ? { left: cyc < 1500, right: cyc >= 1500 } : real;
-            if (settings.get('hudTurn')) {
+            const ours = settings.get('hudOn') !== false;      // Displays on HUD: our parts at all
+            if (ours && settings.get('hudTurn')) {
                 const [aw, ah] = ARROW.medium;
                 ['left', 'right'].forEach((side) => {
                     const r = arrowRect(m, side, aw, ah);
@@ -342,16 +337,16 @@ mgu.run({
                         st[side] && blink ? GREEN : withAlpha(GREEN, 0.18));
                 });
             }
-            if (settings.get('hudGear')) {
+            if (ours && settings.get('hudGear')) {
                 const g = gearRect(m), gt = gearText(car.data()) || 'D';
                 cv.text(gt, x + (g.x + 2) * k, y + (g.y + (g.h + 0.7 * 40) / 2) * k, 40 * k, gearNow() ? '#f2f5f8' : withAlpha('#f2f5f8', 0.35), { font: 'gear' });
             }
-            if (settings.get('realSpeed')) {
+            if (ours && settings.get('realSpeed')) {
                 const sp = car.data() && !car.data().demo && G.isNum(car.data().speed) ? Math.round(car.data().speed) : null;
                 cv.text(sp === null ? '--' : String(sp), x + (SPEED_RECT.x + SPEED_RECT.w) * k, y + (SPEED_RECT.y + SPEED_RECT.h - 8) * k, 40 * k,
                     sp === null ? withAlpha('#f2f5f8', 0.35) : '#f2f5f8', { font: 'bold', align: 'right' });
             }
-            const dr = dataRect(m);
+            const dr = ours && settings.get('hudData') !== 'off' ? dataRect(m) : null;
             if (dr) drawData(cv, x + dr.x * k, y + dr.y * k, dr.w * k, dataNow(true), k);
             return h;
         };
@@ -447,6 +442,12 @@ mgu.run({
                 cv.roundRect(mx, my, mw, mh, 8, '#1c3a2c');
                 cv.polyline([[mx + mw * 0.5, my + mh * 0.92], [mx + mw * 0.5, my + mh * 0.5], [mx + mw * 0.38, my + mh * 0.42], [mx + mw * 0.35, my + mh * 0.08]], 4, '#7ee05a');
             } else cv.strokeRoundRect(mx, my, mw, mh, 8, 1, withAlpha('#ffffff', 0.15));
+            // the maker's logo at the top of the middle while it is not hidden
+            if (!ctl.hideGuidance()) {
+                const lr = h * 0.06;
+                cv.circle(x + w / 2, y + h * 0.1, lr, withAlpha('#ffffff', 0.7));
+                cv.circle(x + w / 2, y + h * 0.1, lr * 0.62, '#1f6fd1');
+            }
             if (go) {
                 const lh = mh * 0.92, lw = lh * 0.375;
                 drawLight(scaled(cv, mx + (mw - lw) / 2, my + (mh - lh) / 2, 1), lw, lh);
@@ -459,20 +460,6 @@ mgu.run({
             strokeRoundRect: (a, b, w, h, rr, lw, c) => cv.strokeRoundRect(x + a * k, y + b * k, w * k, h * k, rr * k, lw, c),
             circle: (a, b, rr, c) => cv.circle(x + a * k, y + b * k, rr * k, c),
         });
-        /* The functions under a picture: lit when on. */
-        const chips = (cv, th, x, y, w, items) => {
-            let cx = x, cy = y;
-            items.forEach(([text, on]) => {
-                const tw = Math.min(w, cv.textWidth(text, 18, { font: 'label' }) + 24);
-                if (cx + tw > x + w) { cx = x; cy += 36; }
-                cv.roundRect(cx, cy, tw, 28, 14, on ? withAlpha(GREEN, 0.25) : withAlpha('#ffffff', 0.06));
-                cv.text(fit(cv, text, 18, tw - 20, 'label'), cx + 12, cy + 20, 18, on ? '#f2f5f8' : th.dim, { font: 'label' });
-                cx += tw + 8;
-            });
-        };
-
-        /* The words of the reading between the turn signals now (HUD_DATA). */
-        const dataWord = () => (HUD_DATA.find(([v]) => v === settings.get('hudData')) || HUD_DATA[0])[1];
         function drawDisplay(cv, th) {
             const hasHud = hudOk();
             if (!hasHud) dispTab = 'cluster';
@@ -517,25 +504,19 @@ mgu.run({
                 camera(2 + CLUSTER_ITEMS.length);
             }
 
-            // the pictures on the right: the cluster, and the HUD beside it, each with what of ours is on there
+            // the pictures on the right: the cluster on top, the HUD under it, each showing what of ours is on there
             G.panel(cv, th, 804, 44, 772, 468, t('Display'));
-            const cw = hasHud ? 420 : 724;
-            const ch = clusterPicture(cv, th, 828, 100, cw, goNow && settings.get('greenLightCluster') !== false);
-            label(cv, th, t('Cluster'), 828, 100 + ch + 34);
-            chips(cv, th, 828, 100 + ch + 48, cw, [[t('Map'), ctl.clusterOn() === true], [t('Hide logo on the cluster'), !!ctl.hideGuidance()],
-                [t('Green light alert'), settings.get('greenLightCluster') !== false]]);
+            const cw = hasHud ? 520 : 700, cx = 804 + (772 - cw) / 2;
+            const ch = clusterPicture(cv, th, cx, hasHud ? 96 : 150, cw, goNow && settings.get('greenLightCluster') !== false);
             if (hasHud) {
-                const hx = 1268, hw = 284, hudOnNow = settings.get('hudOn') !== false;
+                const hw = 330, hx = 804 + (772 - hw) / 2, hy = 96 + ch + 14, hudOnNow = settings.get('hudOn') !== false;
                 demoTurns = true;
-                const hh = hudPicture(cv, th, hx, 100, hw);
+                hudPicture(cv, th, hx, hy, hw);
                 demoTurns = false;
                 if (hudOnNow && goNow && settings.get('greenLightHud') !== false) {
                     const k = hw / HUD_W, a = anchorRect(mapNow());
-                    drawLight(scaled(cv, hx + (a.x + (a.w - LIGHT_HUD.w) / 2) * k, 100 + (a.y + 4) * k, k), LIGHT_HUD.w, LIGHT_HUD.h);
+                    drawLight(scaled(cv, hx + (a.x + (a.w - LIGHT_HUD.w) / 2) * k, hy + (a.y + 4) * k, k), LIGHT_HUD.w, LIGHT_HUD.h);
                 }
-                label(cv, th, t('HUD'), hx, 100 + hh + 34);
-                chips(cv, th, hx, 100 + hh + 48, hw, HUD_ITEMS.map(([key, text]) => [t(text), key === 'hudOn' ? hudOnNow : hudOnNow && !!settings.get(key) && settings.get(key) !== false])
-                    .concat([[t(dataWord()), hudOnNow && settings.get('hudData') !== 'off']]));
             }
         }
 

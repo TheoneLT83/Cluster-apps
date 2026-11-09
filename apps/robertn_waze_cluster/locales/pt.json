@@ -116,7 +116,6 @@
     "COOLANT": "REFRIG.",
     "Hide logo on the cluster": "Ocultar o logótipo no quadrante",
     "Reinstall patch": "Reinstalar correção",
-    "On the HUD": "No HUD",
     "Display": "Visualização",
     "Electric range": "Autonomia elétrica",
     "Oil and coolant": "Óleo e líquido de refrigeração",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Indicações no HUD",
     "Own settings for this driver": "Definições próprias para este condutor",
-    "Head-up display": "Head-up display",
     "Given to another app": "Cedido a outra aplicação",
     "Green light alert": "Alerta de semáforo verde",
     "Traffic-light camera found": "Câmara de semáforos encontrada",
-    "Traffic-light camera not found": "Câmara de semáforos não encontrada"
+    "Traffic-light camera not found": "Câmara de semáforos não encontrada",
+    "HUD installed": "HUD instalado",
+    "Yes": "Sim",
+    "No": "Não"
   }
 }

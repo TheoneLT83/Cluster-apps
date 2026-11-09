@@ -116,7 +116,6 @@
     "COOLANT": "تبريد",
     "Hide logo on the cluster": "إخفاء الشعار على العدادات",
     "Reinstall patch": "إعادة تثبيت التصحيح",
-    "On the HUD": "على HUD",
     "Display": "العرض",
     "Electric range": "المدى الكهربائي",
     "Oil and coolant": "الزيت والتبريد",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "العرض على HUD",
     "Own settings for this driver": "إعدادات خاصة لهذا السائق",
-    "Head-up display": "شاشة العرض الأمامية",
     "Given to another app": "لتطبيق آخر",
     "Green light alert": "تنبيه الإشارة الخضراء",
     "Traffic-light camera found": "تم العثور على كاميرا إشارات المرور",
-    "Traffic-light camera not found": "لم يتم العثور على كاميرا إشارات المرور"
+    "Traffic-light camera not found": "لم يتم العثور على كاميرا إشارات المرور",
+    "HUD installed": "شاشة العرض الأمامية مثبتة",
+    "Yes": "نعم",
+    "No": "لا"
   }
 }

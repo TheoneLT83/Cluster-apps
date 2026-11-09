@@ -116,7 +116,6 @@
     "COOLANT": "SOĞUTMA",
     "Hide logo on the cluster": "Göstergedeki logoyu gizle",
     "Reinstall patch": "Yamayı yeniden yükle",
-    "On the HUD": "HUD’da",
     "Display": "Ekran",
     "Electric range": "Elektrikli menzil",
     "Oil and coolant": "Yağ ve soğutma sıvısı",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "HUD’da göstergeler",
     "Own settings for this driver": "Bu sürücüye özel ayarlar",
-    "Head-up display": "Head-up ekran",
     "Given to another app": "Başka bir uygulamaya bırakıldı",
     "Green light alert": "Yeşil ışık uyarısı",
     "Traffic-light camera found": "Trafik ışığı kamerası bulundu",
-    "Traffic-light camera not found": "Trafik ışığı kamerası bulunamadı"
+    "Traffic-light camera not found": "Trafik ışığı kamerası bulunamadı",
+    "HUD installed": "HUD takılı",
+    "Yes": "Evet",
+    "No": "Hayır"
   }
 }

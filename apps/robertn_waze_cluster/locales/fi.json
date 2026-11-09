@@ -116,7 +116,6 @@
     "COOLANT": "JÄÄHD.",
     "Hide logo on the cluster": "Piilota logo mittaristosta",
     "Reinstall patch": "Asenna korjaus uudelleen",
-    "On the HUD": "HUD:ssa",
     "Display": "Näyttö",
     "Electric range": "Sähköinen toimintamatka",
     "Oil and coolant": "Öljy ja jäähdytysneste",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Näytöt HUD:ssa",
     "Own settings for this driver": "Omat asetukset tälle kuljettajalle",
-    "Head-up display": "Tuulilasinäyttö",
     "Given to another app": "Annettu toiselle sovellukselle",
     "Green light alert": "Vihreän valon ilmoitus",
     "Traffic-light camera found": "Liikennevalokamera löytyi",
-    "Traffic-light camera not found": "Liikennevalokameraa ei löytynyt"
+    "Traffic-light camera not found": "Liikennevalokameraa ei löytynyt",
+    "HUD installed": "HUD asennettu",
+    "Yes": "Kyllä",
+    "No": "Ei"
   }
 }

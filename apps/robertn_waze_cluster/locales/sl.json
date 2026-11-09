@@ -116,7 +116,6 @@
     "COOLANT": "HLAD.",
     "Hide logo on the cluster": "Skrij logotip na merilniku",
     "Reinstall patch": "Znova uveljavi popravek",
-    "On the HUD": "Na HUD",
     "Display": "Prikaz",
     "Electric range": "Električni doseg",
     "Oil and coolant": "Olje in hladilna tekočina",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Prikazi na HUD",
     "Own settings for this driver": "Lastne nastavitve za tega voznika",
-    "Head-up display": "Prikazovalnik head-up",
     "Given to another app": "Prepuščeno drugi aplikaciji",
     "Green light alert": "Opozorilo na zeleno luč",
     "Traffic-light camera found": "Kamera za semaforje najdena",
-    "Traffic-light camera not found": "Kamere za semaforje ni"
+    "Traffic-light camera not found": "Kamere za semaforje ni",
+    "HUD installed": "HUD vgrajen",
+    "Yes": "Da",
+    "No": "Ne"
   }
 }

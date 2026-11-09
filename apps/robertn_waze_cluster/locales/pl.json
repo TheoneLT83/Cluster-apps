@@ -116,7 +116,6 @@
     "COOLANT": "PŁYN",
     "Hide logo on the cluster": "Ukryj logo na zegarach",
     "Reinstall patch": "Zainstaluj poprawkę ponownie",
-    "On the HUD": "Na HUD",
     "Display": "Wyświetlanie",
     "Electric range": "Zasięg elektryczny",
     "Oil and coolant": "Olej i płyn chłodzący",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Wskazania na HUD",
     "Own settings for this driver": "Własne ustawienia dla tego kierowcy",
-    "Head-up display": "Wyświetlacz Head-Up",
     "Given to another app": "Przekazano innej aplikacji",
     "Green light alert": "Powiadomienie o zielonym świetle",
     "Traffic-light camera found": "Znaleziono kamerę świateł",
-    "Traffic-light camera not found": "Nie znaleziono kamery świateł"
+    "Traffic-light camera not found": "Nie znaleziono kamery świateł",
+    "HUD installed": "HUD zainstalowany",
+    "Yes": "Tak",
+    "No": "Nie"
   }
 }

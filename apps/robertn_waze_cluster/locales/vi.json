@@ -116,7 +116,6 @@
     "COOLANT": "LÀM MÁT",
     "Hide logo on the cluster": "Ẩn logo trên đồng hồ",
     "Reinstall patch": "Cài lại bản vá",
-    "On the HUD": "Trên HUD",
     "Display": "Hiển thị",
     "Electric range": "Quãng đường điện",
     "Oil and coolant": "Dầu và nước làm mát",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Hiển thị trên HUD",
     "Own settings for this driver": "Cài đặt riêng cho người lái này",
-    "Head-up display": "Màn hình HUD",
     "Given to another app": "Đã nhường cho ứng dụng khác",
     "Green light alert": "Báo đèn xanh",
     "Traffic-light camera found": "Đã tìm thấy camera đèn giao thông",
-    "Traffic-light camera not found": "Không tìm thấy camera đèn giao thông"
+    "Traffic-light camera not found": "Không tìm thấy camera đèn giao thông",
+    "HUD installed": "Có HUD",
+    "Yes": "Có",
+    "No": "Không"
   }
 }

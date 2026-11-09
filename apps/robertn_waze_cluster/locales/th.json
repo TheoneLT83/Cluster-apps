@@ -116,7 +116,6 @@
     "COOLANT": "น้ำหล่อเย็น",
     "Hide logo on the cluster": "ซ่อนโลโก้บนหน้าปัด",
     "Reinstall patch": "ติดตั้งแพตช์ใหม่",
-    "On the HUD": "บน HUD",
     "Display": "การแสดงผล",
     "Electric range": "ระยะทางไฟฟ้า",
     "Oil and coolant": "น้ำมันและน้ำหล่อเย็น",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "การแสดงบน HUD",
     "Own settings for this driver": "การตั้งค่าเฉพาะสำหรับผู้ขับขี่คนนี้",
-    "Head-up display": "จอแสดงผลบนกระจกหน้า",
     "Given to another app": "ให้แอปอื่นใช้อยู่",
     "Green light alert": "แจ้งเตือนไฟเขียว",
     "Traffic-light camera found": "พบกล้องไฟจราจร",
-    "Traffic-light camera not found": "ไม่พบกล้องไฟจราจร"
+    "Traffic-light camera not found": "ไม่พบกล้องไฟจราจร",
+    "HUD installed": "ติดตั้ง HUD",
+    "Yes": "ใช่",
+    "No": "ไม่"
   }
 }

@@ -116,7 +116,6 @@
     "COOLANT": "냉각수",
     "Hide logo on the cluster": "클러스터의 로고 숨기기",
     "Reinstall patch": "패치 다시 적용",
-    "On the HUD": "HUD에 표시",
     "Display": "표시",
     "Electric range": "전기 주행 가능 거리",
     "Oil and coolant": "오일과 냉각수",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "HUD 표시",
     "Own settings for this driver": "이 운전자 전용 설정",
-    "Head-up display": "헤드업 디스플레이",
     "Given to another app": "다른 앱이 사용 중",
     "Green light alert": "녹색 신호 알림",
     "Traffic-light camera found": "신호등 카메라 있음",
-    "Traffic-light camera not found": "신호등 카메라를 찾을 수 없음"
+    "Traffic-light camera not found": "신호등 카메라를 찾을 수 없음",
+    "HUD installed": "HUD 장착",
+    "Yes": "예",
+    "No": "아니요"
   }
 }

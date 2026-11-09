@@ -34,7 +34,7 @@ const DYNAMIC = {
     'waze_cluster_control.js': ['t(RESTART_FAILED[r.code] || RESTART_FAILED.error)'],
     'logs_control.js': ['t(ERRORS[s.error] || ERRORS.failed)'],
     // (the match ends at the first ')': HUD_STATES[hud.state()] reads as its start)
-    'main.js': ['t(s._en.label)', 't(s._en.group)', 't(s._en.options[i])', 't(text)', 't(text)', 't(text)', 't(text)', 't(text)', 't(text)', 't(dataWord()', 't(p)']
+    'main.js': ['t(s._en.label)', 't(s._en.group)', 't(s._en.options[i])', 't(text)', 't(text)', 't(text)', 't(text)', 't(text)', 't(p)']
 };
 const MODULES = ['src/waze_cluster_control.js', 'src/logs_control.js', 'app/main.js'];
 MODULES.forEach((m) => {
@@ -63,7 +63,7 @@ list('PAGES').forEach((w) => used.add(w));
 ['Cluster', 'HUD', 'Cluster + HUD'].forEach((w) => { ok(MAIN.indexOf(`'${w}']`) >= 0, `app/main.js: ${w}`); used.add(w); });
 // the settings' labels and choices (translated at a language change), and the HMI's strings the kit writes
 const APP = JSON.parse(fs.readFileSync(path.join(HERE, 'app', 'app.json'), 'utf8'));
-APP.settings.filter((s) => s.key !== 'hudFound').forEach((s) => { used.add(s.label); if (s.group) used.add(s.group); (s.options || []).forEach((o) => used.add(o[1])); });
+APP.settings.forEach((s) => { used.add(s.label); if (s.group) used.add(s.group); (s.options || []).forEach((o) => used.add(o[1])); });
 APP.screens.forEach((sc) => (sc.buttons || []).forEach((b) => used.add(b[1])));
 used.add(APP.title);
 ok(used.size > 40, `the app's words (${used.size})`);

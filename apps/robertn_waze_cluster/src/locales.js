@@ -120,7 +120,6 @@ module.exports = [
    "COOLANT": "تبريد",
    "Hide logo on the cluster": "إخفاء الشعار على العدادات",
    "Reinstall patch": "إعادة تثبيت التصحيح",
-   "On the HUD": "على HUD",
    "Display": "العرض",
    "Electric range": "المدى الكهربائي",
    "Oil and coolant": "الزيت والتبريد",
@@ -142,11 +141,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "العرض على HUD",
    "Own settings for this driver": "إعدادات خاصة لهذا السائق",
-   "Head-up display": "شاشة العرض الأمامية",
    "Given to another app": "لتطبيق آخر",
    "Green light alert": "تنبيه الإشارة الخضراء",
    "Traffic-light camera found": "تم العثور على كاميرا إشارات المرور",
-   "Traffic-light camera not found": "لم يتم العثور على كاميرا إشارات المرور"
+   "Traffic-light camera not found": "لم يتم العثور على كاميرا إشارات المرور",
+   "HUD installed": "شاشة العرض الأمامية مثبتة",
+   "Yes": "نعم",
+   "No": "لا"
   }
  },
  {
@@ -268,7 +269,6 @@ module.exports = [
    "COOLANT": "CHLAZ.",
    "Hide logo on the cluster": "Skrýt logo na přístrojovce",
    "Reinstall patch": "Znovu použít opravu",
-   "On the HUD": "Na HUD",
    "Display": "Zobrazení",
    "Electric range": "Elektrický dojezd",
    "Oil and coolant": "Olej a chladicí kapalina",
@@ -290,11 +290,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Zobrazení na HUD",
    "Own settings for this driver": "Vlastní nastavení pro tohoto řidiče",
-   "Head-up display": "Head-up displej",
    "Given to another app": "Předáno jiné aplikaci",
    "Green light alert": "Upozornění na zelenou",
    "Traffic-light camera found": "Kamera semaforů nalezena",
-   "Traffic-light camera not found": "Kamera semaforů nenalezena"
+   "Traffic-light camera not found": "Kamera semaforů nenalezena",
+   "HUD installed": "HUD nainstalován",
+   "Yes": "Ano",
+   "No": "Ne"
   }
  },
  {
@@ -416,7 +418,6 @@ module.exports = [
    "COOLANT": "KØLEV.",
    "Hide logo on the cluster": "Skjul logo i instrumentbrættet",
    "Reinstall patch": "Geninstaller patch",
-   "On the HUD": "På HUD",
    "Display": "Visning",
    "Electric range": "Elektrisk rækkevidde",
    "Oil and coolant": "Olie og kølevæske",
@@ -438,11 +439,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Visninger på HUD",
    "Own settings for this driver": "Egne indstillinger for denne fører",
-   "Head-up display": "Head-up-display",
    "Given to another app": "Overladt til en anden app",
    "Green light alert": "Grønt lys-advarsel",
    "Traffic-light camera found": "Trafiklyskamera fundet",
-   "Traffic-light camera not found": "Intet trafiklyskamera fundet"
+   "Traffic-light camera not found": "Intet trafiklyskamera fundet",
+   "HUD installed": "HUD installeret",
+   "Yes": "Ja",
+   "No": "Nej"
   }
  },
  {
@@ -564,7 +567,6 @@ module.exports = [
    "COOLANT": "KÜHLM.",
    "Hide logo on the cluster": "Logo im Kombi ausblenden",
    "Reinstall patch": "Patch neu installieren",
-   "On the HUD": "Im HUD",
    "Display": "Anzeige",
    "Electric range": "Elektrische Reichweite",
    "Oil and coolant": "Öl und Kühlmittel",
@@ -586,11 +588,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Anzeigen im HUD",
    "Own settings for this driver": "Eigene Einstellungen für diesen Fahrer",
-   "Head-up display": "Head-up-Display",
    "Given to another app": "An andere App abgegeben",
    "Green light alert": "Grün-Hinweis an der Ampel",
    "Traffic-light camera found": "Ampelkamera gefunden",
-   "Traffic-light camera not found": "Keine Ampelkamera gefunden"
+   "Traffic-light camera not found": "Keine Ampelkamera gefunden",
+   "HUD installed": "HUD vorhanden",
+   "Yes": "Ja",
+   "No": "Nein"
   }
  },
  {
@@ -712,7 +716,6 @@ module.exports = [
    "COOLANT": "ΨΥΚΤ.",
    "Hide logo on the cluster": "Απόκρυψη λογότυπου στον πίνακα οργάνων",
    "Reinstall patch": "Επανεγκατάσταση διόρθωσης",
-   "On the HUD": "Στο HUD",
    "Display": "Οθόνη",
    "Electric range": "Ηλεκτρική αυτονομία",
    "Oil and coolant": "Λάδι και ψυκτικό",
@@ -734,11 +737,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Ενδείξεις στο HUD",
    "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό",
-   "Head-up display": "Head-Up Display",
    "Given to another app": "Σε άλλη εφαρμογή",
    "Green light alert": "Ειδοποίηση πράσινου φαναριού",
    "Traffic-light camera found": "Βρέθηκε κάμερα φαναριών",
-   "Traffic-light camera not found": "Δεν βρέθηκε κάμερα φαναριών"
+   "Traffic-light camera not found": "Δεν βρέθηκε κάμερα φαναριών",
+   "HUD installed": "Εγκατεστημένο HUD",
+   "Yes": "Ναι",
+   "No": "Όχι"
   }
  },
  {
@@ -860,7 +865,6 @@ module.exports = [
    "COOLANT": "REFRIG.",
    "Hide logo on the cluster": "Ocultar el logo en el tablero",
    "Reinstall patch": "Reinstalar parche",
-   "On the HUD": "En el HUD",
    "Display": "Pantalla",
    "Electric range": "Autonomía eléctrica",
    "Oil and coolant": "Aceite y refrigerante",
@@ -882,11 +886,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Indicaciones en el HUD",
    "Own settings for this driver": "Configuración propia para este conductor",
-   "Head-up display": "Head-Up Display",
    "Given to another app": "Cedido a otra app",
    "Green light alert": "Aviso de luz verde",
    "Traffic-light camera found": "Cámara de semáforos encontrada",
-   "Traffic-light camera not found": "No se encontró la cámara de semáforos"
+   "Traffic-light camera not found": "No se encontró la cámara de semáforos",
+   "HUD installed": "HUD instalado",
+   "Yes": "Sí",
+   "No": "No"
   }
  },
  {
@@ -1008,7 +1014,6 @@ module.exports = [
    "COOLANT": "REFRIG.",
    "Hide logo on the cluster": "Ocultar el logo en el cuadro",
    "Reinstall patch": "Reinstalar parche",
-   "On the HUD": "En el HUD",
    "Display": "Pantalla",
    "Electric range": "Autonomía eléctrica",
    "Oil and coolant": "Aceite y refrigerante",
@@ -1030,11 +1035,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Indicaciones en el HUD",
    "Own settings for this driver": "Ajustes propios para este conductor",
-   "Head-up display": "Head-Up Display",
    "Given to another app": "Cedido a otra app",
    "Green light alert": "Aviso de semáforo en verde",
    "Traffic-light camera found": "Cámara de semáforos encontrada",
-   "Traffic-light camera not found": "No se encontró la cámara de semáforos"
+   "Traffic-light camera not found": "No se encontró la cámara de semáforos",
+   "HUD installed": "HUD instalado",
+   "Yes": "Sí",
+   "No": "No"
   }
  },
  {
@@ -1156,7 +1163,6 @@ module.exports = [
    "COOLANT": "JÄÄHD.",
    "Hide logo on the cluster": "Piilota logo mittaristosta",
    "Reinstall patch": "Asenna korjaus uudelleen",
-   "On the HUD": "HUD:ssa",
    "Display": "Näyttö",
    "Electric range": "Sähköinen toimintamatka",
    "Oil and coolant": "Öljy ja jäähdytysneste",
@@ -1178,11 +1184,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Näytöt HUD:ssa",
    "Own settings for this driver": "Omat asetukset tälle kuljettajalle",
-   "Head-up display": "Tuulilasinäyttö",
    "Given to another app": "Annettu toiselle sovellukselle",
    "Green light alert": "Vihreän valon ilmoitus",
    "Traffic-light camera found": "Liikennevalokamera löytyi",
-   "Traffic-light camera not found": "Liikennevalokameraa ei löytynyt"
+   "Traffic-light camera not found": "Liikennevalokameraa ei löytynyt",
+   "HUD installed": "HUD asennettu",
+   "Yes": "Kyllä",
+   "No": "Ei"
   }
  },
  {
@@ -1304,7 +1312,6 @@ module.exports = [
    "COOLANT": "REFROID.",
    "Hide logo on the cluster": "Masquer le logo au tableau de bord",
    "Reinstall patch": "Réinstaller le correctif",
-   "On the HUD": "Sur l’affichage tête haute",
    "Display": "Affichage",
    "Electric range": "Autonomie électrique",
    "Oil and coolant": "Huile et liquide de refroidissement",
@@ -1326,11 +1333,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Affichages sur l’affichage tête haute",
    "Own settings for this driver": "Réglages propres à ce conducteur",
-   "Head-up display": "Affichage tête haute",
    "Given to another app": "Cédé à une autre app",
    "Green light alert": "Alerte feu vert",
    "Traffic-light camera found": "Caméra de feux trouvée",
-   "Traffic-light camera not found": "Aucune caméra de feux trouvée"
+   "Traffic-light camera not found": "Aucune caméra de feux trouvée",
+   "HUD installed": "HUD installé",
+   "Yes": "Oui",
+   "No": "Non"
   }
  },
  {
@@ -1452,7 +1461,6 @@ module.exports = [
    "COOLANT": "REFROID.",
    "Hide logo on the cluster": "Masquer le logo au combiné",
    "Reinstall patch": "Réinstaller le correctif",
-   "On the HUD": "Sur le HUD",
    "Display": "Affichage",
    "Electric range": "Autonomie électrique",
    "Oil and coolant": "Huile et liquide de refroidissement",
@@ -1474,11 +1482,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Affichages sur le HUD",
    "Own settings for this driver": "Réglages propres à ce conducteur",
-   "Head-up display": "Affichage tête haute",
    "Given to another app": "Cédé à une autre app",
    "Green light alert": "Alerte feu vert",
    "Traffic-light camera found": "Caméra de feux trouvée",
-   "Traffic-light camera not found": "Aucune caméra de feux trouvée"
+   "Traffic-light camera not found": "Aucune caméra de feux trouvée",
+   "HUD installed": "HUD installé",
+   "Yes": "Oui",
+   "No": "Non"
   }
  },
  {
@@ -1600,7 +1610,6 @@ module.exports = [
    "COOLANT": "קירור",
    "Hide logo on the cluster": "הסתרת הלוגו בלוח המחוונים",
    "Reinstall patch": "התקנה מחדש של התיקון",
-   "On the HUD": "ב-HUD",
    "Display": "תצוגה",
    "Electric range": "טווח חשמלי",
    "Oil and coolant": "שמן ונוזל קירור",
@@ -1622,11 +1631,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "תצוגות ב-HUD",
    "Own settings for this driver": "הגדרות נפרדות לנהג זה",
-   "Head-up display": "תצוגה עילית",
    "Given to another app": "הועבר לאפליקציה אחרת",
    "Green light alert": "התראת אור ירוק",
    "Traffic-light camera found": "נמצאה מצלמת רמזורים",
-   "Traffic-light camera not found": "לא נמצאה מצלמת רמזורים"
+   "Traffic-light camera not found": "לא נמצאה מצלמת רמזורים",
+   "HUD installed": "HUD מותקן",
+   "Yes": "כן",
+   "No": "לא"
   }
  },
  {
@@ -1748,7 +1759,6 @@ module.exports = [
    "COOLANT": "HŰTŐF.",
    "Hide logo on the cluster": "Logó elrejtése a műszerfalon",
    "Reinstall patch": "Javítás újratelepítése",
-   "On the HUD": "A HUD-on",
    "Display": "Kijelző",
    "Electric range": "Elektromos hatótáv",
    "Oil and coolant": "Olaj és hűtőfolyadék",
@@ -1770,11 +1780,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Kijelzések a HUD-on",
    "Own settings for this driver": "Saját beállítások ennek a vezetőnek",
-   "Head-up display": "Head-up kijelző",
    "Given to another app": "Másik alkalmazásnak átadva",
    "Green light alert": "Zöld lámpa jelzés",
    "Traffic-light camera found": "Közlekedésilámpa-kamera megtalálva",
-   "Traffic-light camera not found": "Nem található közlekedésilámpa-kamera"
+   "Traffic-light camera not found": "Nem található közlekedésilámpa-kamera",
+   "HUD installed": "HUD beépítve",
+   "Yes": "Igen",
+   "No": "Nem"
   }
  },
  {
@@ -1896,7 +1908,6 @@ module.exports = [
    "COOLANT": "PENDINGIN",
    "Hide logo on the cluster": "Sembunyikan logo di klaster",
    "Reinstall patch": "Pasang ulang patch",
-   "On the HUD": "Di HUD",
    "Display": "Tampilan",
    "Electric range": "Jarak tempuh listrik",
    "Oil and coolant": "Oli dan pendingin",
@@ -1918,11 +1929,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Tampilan di HUD",
    "Own settings for this driver": "Pengaturan sendiri untuk pengemudi ini",
-   "Head-up display": "Head-up display",
    "Given to another app": "Diserahkan ke aplikasi lain",
    "Green light alert": "Peringatan lampu hijau",
    "Traffic-light camera found": "Kamera lampu lalu lintas ditemukan",
-   "Traffic-light camera not found": "Kamera lampu lalu lintas tidak ditemukan"
+   "Traffic-light camera not found": "Kamera lampu lalu lintas tidak ditemukan",
+   "HUD installed": "HUD terpasang",
+   "Yes": "Ya",
+   "No": "Tidak"
   }
  },
  {
@@ -2044,7 +2057,6 @@ module.exports = [
    "COOLANT": "REFRIG.",
    "Hide logo on the cluster": "Nascondi il logo nel quadro",
    "Reinstall patch": "Reinstalla la patch",
-   "On the HUD": "Nell’HUD",
    "Display": "Display",
    "Electric range": "Autonomia elettrica",
    "Oil and coolant": "Olio e refrigerante",
@@ -2066,11 +2078,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Indicazioni nell’HUD",
    "Own settings for this driver": "Impostazioni proprie per questo conducente",
-   "Head-up display": "Head-up display",
    "Given to another app": "Ceduto a un'altra app",
    "Green light alert": "Avviso semaforo verde",
    "Traffic-light camera found": "Telecamera semafori trovata",
-   "Traffic-light camera not found": "Nessuna telecamera semafori trovata"
+   "Traffic-light camera not found": "Nessuna telecamera semafori trovata",
+   "HUD installed": "HUD installato",
+   "Yes": "Sì",
+   "No": "No"
   }
  },
  {
@@ -2192,7 +2206,6 @@ module.exports = [
    "COOLANT": "水温",
    "Hide logo on the cluster": "メーターのロゴを隠す",
    "Reinstall patch": "パッチを再適用",
-   "On the HUD": "HUDに表示",
    "Display": "表示",
    "Electric range": "電気航続距離",
    "Oil and coolant": "油温と水温",
@@ -2214,11 +2227,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "HUDに表示",
    "Own settings for this driver": "このドライバー専用の設定",
-   "Head-up display": "ヘッドアップ・ディスプレイ",
    "Given to another app": "他のアプリが使用中",
    "Green light alert": "青信号の通知",
    "Traffic-light camera found": "信号カメラあり",
-   "Traffic-light camera not found": "信号カメラが見つかりません"
+   "Traffic-light camera not found": "信号カメラが見つかりません",
+   "HUD installed": "HUD 装備",
+   "Yes": "はい",
+   "No": "いいえ"
   }
  },
  {
@@ -2340,7 +2355,6 @@ module.exports = [
    "COOLANT": "냉각수",
    "Hide logo on the cluster": "클러스터의 로고 숨기기",
    "Reinstall patch": "패치 다시 적용",
-   "On the HUD": "HUD에 표시",
    "Display": "표시",
    "Electric range": "전기 주행 가능 거리",
    "Oil and coolant": "오일과 냉각수",
@@ -2362,11 +2376,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "HUD 표시",
    "Own settings for this driver": "이 운전자 전용 설정",
-   "Head-up display": "헤드업 디스플레이",
    "Given to another app": "다른 앱이 사용 중",
    "Green light alert": "녹색 신호 알림",
    "Traffic-light camera found": "신호등 카메라 있음",
-   "Traffic-light camera not found": "신호등 카메라를 찾을 수 없음"
+   "Traffic-light camera not found": "신호등 카메라를 찾을 수 없음",
+   "HUD installed": "HUD 장착",
+   "Yes": "예",
+   "No": "아니요"
   }
  },
  {
@@ -2488,7 +2504,6 @@ module.exports = [
    "COOLANT": "KJØLEV.",
    "Hide logo on the cluster": "Skjul logo i instrumentpanelet",
    "Reinstall patch": "Installer patch på nytt",
-   "On the HUD": "På HUD",
    "Display": "Visning",
    "Electric range": "Elektrisk rekkevidde",
    "Oil and coolant": "Olje og kjølevæske",
@@ -2510,11 +2525,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Visninger på HUD",
    "Own settings for this driver": "Egne innstillinger for denne føreren",
-   "Head-up display": "Head-up-display",
    "Given to another app": "Overlatt til en annen app",
    "Green light alert": "Varsel om grønt lys",
    "Traffic-light camera found": "Trafikklyskamera funnet",
-   "Traffic-light camera not found": "Fant ikke trafikklyskamera"
+   "Traffic-light camera not found": "Fant ikke trafikklyskamera",
+   "HUD installed": "HUD installert",
+   "Yes": "Ja",
+   "No": "Nei"
   }
  },
  {
@@ -2638,7 +2655,6 @@ module.exports = [
    "COOLANT": "KOELV.",
    "Hide logo on the cluster": "Logo in het instrumentenpaneel verbergen",
    "Reinstall patch": "Patch opnieuw installeren",
-   "On the HUD": "Op het HUD",
    "Display": "Weergave",
    "Electric range": "Elektrisch bereik",
    "Oil and coolant": "Olie en koelvloeistof",
@@ -2660,11 +2676,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Weergaven op het HUD",
    "Own settings for this driver": "Eigen instellingen voor deze bestuurder",
-   "Head-up display": "Head-up display",
    "Given to another app": "Overgedragen aan andere app",
    "Green light alert": "Groen-licht-melding",
    "Traffic-light camera found": "Verkeerslichtcamera gevonden",
-   "Traffic-light camera not found": "Geen verkeerslichtcamera gevonden"
+   "Traffic-light camera not found": "Geen verkeerslichtcamera gevonden",
+   "HUD installed": "HUD aanwezig",
+   "Yes": "Ja",
+   "No": "Nee"
   }
  },
  {
@@ -2786,7 +2804,6 @@ module.exports = [
    "COOLANT": "PŁYN",
    "Hide logo on the cluster": "Ukryj logo na zegarach",
    "Reinstall patch": "Zainstaluj poprawkę ponownie",
-   "On the HUD": "Na HUD",
    "Display": "Wyświetlanie",
    "Electric range": "Zasięg elektryczny",
    "Oil and coolant": "Olej i płyn chłodzący",
@@ -2808,11 +2825,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Wskazania na HUD",
    "Own settings for this driver": "Własne ustawienia dla tego kierowcy",
-   "Head-up display": "Wyświetlacz Head-Up",
    "Given to another app": "Przekazano innej aplikacji",
    "Green light alert": "Powiadomienie o zielonym świetle",
    "Traffic-light camera found": "Znaleziono kamerę świateł",
-   "Traffic-light camera not found": "Nie znaleziono kamery świateł"
+   "Traffic-light camera not found": "Nie znaleziono kamery świateł",
+   "HUD installed": "HUD zainstalowany",
+   "Yes": "Tak",
+   "No": "Nie"
   }
  },
  {
@@ -2934,7 +2953,6 @@ module.exports = [
    "COOLANT": "ARREF.",
    "Hide logo on the cluster": "Ocultar o logo no painel",
    "Reinstall patch": "Reinstalar patch",
-   "On the HUD": "No HUD",
    "Display": "Exibição",
    "Electric range": "Autonomia elétrica",
    "Oil and coolant": "Óleo e arrefecimento",
@@ -2956,11 +2974,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Exibições no HUD",
    "Own settings for this driver": "Configurações próprias para este motorista",
-   "Head-up display": "Head-up display",
    "Given to another app": "Cedido a outro app",
    "Green light alert": "Alerta de sinal verde",
    "Traffic-light camera found": "Câmera de semáforos encontrada",
-   "Traffic-light camera not found": "Câmera de semáforos não encontrada"
+   "Traffic-light camera not found": "Câmera de semáforos não encontrada",
+   "HUD installed": "HUD instalado",
+   "Yes": "Sim",
+   "No": "Não"
   }
  },
  {
@@ -3082,7 +3102,6 @@ module.exports = [
    "COOLANT": "REFRIG.",
    "Hide logo on the cluster": "Ocultar o logótipo no quadrante",
    "Reinstall patch": "Reinstalar correção",
-   "On the HUD": "No HUD",
    "Display": "Visualização",
    "Electric range": "Autonomia elétrica",
    "Oil and coolant": "Óleo e líquido de refrigeração",
@@ -3104,11 +3123,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Indicações no HUD",
    "Own settings for this driver": "Definições próprias para este condutor",
-   "Head-up display": "Head-up display",
    "Given to another app": "Cedido a outra aplicação",
    "Green light alert": "Alerta de semáforo verde",
    "Traffic-light camera found": "Câmara de semáforos encontrada",
-   "Traffic-light camera not found": "Câmara de semáforos não encontrada"
+   "Traffic-light camera not found": "Câmara de semáforos não encontrada",
+   "HUD installed": "HUD instalado",
+   "Yes": "Sim",
+   "No": "Não"
   }
  },
  {
@@ -3230,7 +3251,6 @@ module.exports = [
    "COOLANT": "RĂCIRE",
    "Hide logo on the cluster": "Ascunde logoul pe bord",
    "Reinstall patch": "Reinstalare patch",
-   "On the HUD": "Pe HUD",
    "Display": "Afișaj",
    "Electric range": "Autonomie electrică",
    "Oil and coolant": "Ulei și lichid de răcire",
@@ -3252,11 +3272,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Afișări pe HUD",
    "Own settings for this driver": "Setări proprii pentru acest șofer",
-   "Head-up display": "Afișaj head-up",
    "Given to another app": "Cedat altei aplicații",
    "Green light alert": "Alertă semafor verde",
    "Traffic-light camera found": "Cameră pentru semafoare găsită",
-   "Traffic-light camera not found": "Nu s-a găsit camera pentru semafoare"
+   "Traffic-light camera not found": "Nu s-a găsit camera pentru semafoare",
+   "HUD installed": "HUD instalat",
+   "Yes": "Da",
+   "No": "Nu"
   }
  },
  {
@@ -3378,7 +3400,6 @@ module.exports = [
    "COOLANT": "ОЖ",
    "Hide logo on the cluster": "Скрыть логотип на приборной панели",
    "Reinstall patch": "Переустановить патч",
-   "On the HUD": "На HUD",
    "Display": "Дисплей",
    "Electric range": "Запас хода на электричестве",
    "Oil and coolant": "Масло и охлаждающая жидкость",
@@ -3400,11 +3421,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Индикация на HUD",
    "Own settings for this driver": "Свои настройки для этого водителя",
-   "Head-up display": "Проекционный дисплей",
    "Given to another app": "Передан другому приложению",
    "Green light alert": "Сигнал о зелёном свете",
    "Traffic-light camera found": "Камера светофоров найдена",
-   "Traffic-light camera not found": "Камера светофоров не найдена"
+   "Traffic-light camera not found": "Камера светофоров не найдена",
+   "HUD installed": "HUD установлен",
+   "Yes": "Да",
+   "No": "Нет"
   }
  },
  {
@@ -3526,7 +3549,6 @@ module.exports = [
    "COOLANT": "CHLAD.",
    "Hide logo on the cluster": "Skryť logo na prístrojovke",
    "Reinstall patch": "Znova použiť opravu",
-   "On the HUD": "Na HUD",
    "Display": "Zobrazenie",
    "Electric range": "Elektrický dojazd",
    "Oil and coolant": "Olej a chladiaca kvapalina",
@@ -3548,11 +3570,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Zobrazenia na HUD",
    "Own settings for this driver": "Vlastné nastavenia pre tohto vodiča",
-   "Head-up display": "Head-up displej",
    "Given to another app": "Prenechané inej aplikácii",
    "Green light alert": "Upozornenie na zelenú",
    "Traffic-light camera found": "Kamera semaforov nájdená",
-   "Traffic-light camera not found": "Kamera semaforov nenájdená"
+   "Traffic-light camera not found": "Kamera semaforov nenájdená",
+   "HUD installed": "HUD nainštalovaný",
+   "Yes": "Áno",
+   "No": "Nie"
   }
  },
  {
@@ -3674,7 +3698,6 @@ module.exports = [
    "COOLANT": "HLAD.",
    "Hide logo on the cluster": "Skrij logotip na merilniku",
    "Reinstall patch": "Znova uveljavi popravek",
-   "On the HUD": "Na HUD",
    "Display": "Prikaz",
    "Electric range": "Električni doseg",
    "Oil and coolant": "Olje in hladilna tekočina",
@@ -3696,11 +3719,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Prikazi na HUD",
    "Own settings for this driver": "Lastne nastavitve za tega voznika",
-   "Head-up display": "Prikazovalnik head-up",
    "Given to another app": "Prepuščeno drugi aplikaciji",
    "Green light alert": "Opozorilo na zeleno luč",
    "Traffic-light camera found": "Kamera za semaforje najdena",
-   "Traffic-light camera not found": "Kamere za semaforje ni"
+   "Traffic-light camera not found": "Kamere za semaforje ni",
+   "HUD installed": "HUD vgrajen",
+   "Yes": "Da",
+   "No": "Ne"
   }
  },
  {
@@ -3822,7 +3847,6 @@ module.exports = [
    "COOLANT": "KYLV.",
    "Hide logo on the cluster": "Dölj logotypen i instrumentpanelen",
    "Reinstall patch": "Installera om patch",
-   "On the HUD": "På HUD",
    "Display": "Visning",
    "Electric range": "Elektrisk räckvidd",
    "Oil and coolant": "Olja och kylvätska",
@@ -3844,11 +3868,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Visningar på HUD",
    "Own settings for this driver": "Egna inställningar för den här föraren",
-   "Head-up display": "Head-up-display",
    "Given to another app": "Överlämnad till en annan app",
    "Green light alert": "Varning för grönt ljus",
    "Traffic-light camera found": "Trafikljuskamera hittad",
-   "Traffic-light camera not found": "Ingen trafikljuskamera hittades"
+   "Traffic-light camera not found": "Ingen trafikljuskamera hittades",
+   "HUD installed": "HUD installerad",
+   "Yes": "Ja",
+   "No": "Nej"
   }
  },
  {
@@ -3970,7 +3996,6 @@ module.exports = [
    "COOLANT": "น้ำหล่อเย็น",
    "Hide logo on the cluster": "ซ่อนโลโก้บนหน้าปัด",
    "Reinstall patch": "ติดตั้งแพตช์ใหม่",
-   "On the HUD": "บน HUD",
    "Display": "การแสดงผล",
    "Electric range": "ระยะทางไฟฟ้า",
    "Oil and coolant": "น้ำมันและน้ำหล่อเย็น",
@@ -3992,11 +4017,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "การแสดงบน HUD",
    "Own settings for this driver": "การตั้งค่าเฉพาะสำหรับผู้ขับขี่คนนี้",
-   "Head-up display": "จอแสดงผลบนกระจกหน้า",
    "Given to another app": "ให้แอปอื่นใช้อยู่",
    "Green light alert": "แจ้งเตือนไฟเขียว",
    "Traffic-light camera found": "พบกล้องไฟจราจร",
-   "Traffic-light camera not found": "ไม่พบกล้องไฟจราจร"
+   "Traffic-light camera not found": "ไม่พบกล้องไฟจราจร",
+   "HUD installed": "ติดตั้ง HUD",
+   "Yes": "ใช่",
+   "No": "ไม่"
   }
  },
  {
@@ -4118,7 +4145,6 @@ module.exports = [
    "COOLANT": "SOĞUTMA",
    "Hide logo on the cluster": "Göstergedeki logoyu gizle",
    "Reinstall patch": "Yamayı yeniden yükle",
-   "On the HUD": "HUD’da",
    "Display": "Ekran",
    "Electric range": "Elektrikli menzil",
    "Oil and coolant": "Yağ ve soğutma sıvısı",
@@ -4140,11 +4166,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "HUD’da göstergeler",
    "Own settings for this driver": "Bu sürücüye özel ayarlar",
-   "Head-up display": "Head-up ekran",
    "Given to another app": "Başka bir uygulamaya bırakıldı",
    "Green light alert": "Yeşil ışık uyarısı",
    "Traffic-light camera found": "Trafik ışığı kamerası bulundu",
-   "Traffic-light camera not found": "Trafik ışığı kamerası bulunamadı"
+   "Traffic-light camera not found": "Trafik ışığı kamerası bulunamadı",
+   "HUD installed": "HUD takılı",
+   "Yes": "Evet",
+   "No": "Hayır"
   }
  },
  {
@@ -4266,7 +4294,6 @@ module.exports = [
    "COOLANT": "ОР",
    "Hide logo on the cluster": "Приховати логотип на панелі приладів",
    "Reinstall patch": "Перевстановити патч",
-   "On the HUD": "На HUD",
    "Display": "Дисплей",
    "Electric range": "Запас ходу на електриці",
    "Oil and coolant": "Олива та охолоджувальна рідина",
@@ -4288,11 +4315,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Індикація на HUD",
    "Own settings for this driver": "Власні налаштування для цього водія",
-   "Head-up display": "Проекційний дисплей",
    "Given to another app": "Передано іншому застосунку",
    "Green light alert": "Сповіщення про зелене світло",
    "Traffic-light camera found": "Камеру світлофорів знайдено",
-   "Traffic-light camera not found": "Камеру світлофорів не знайдено"
+   "Traffic-light camera not found": "Камеру світлофорів не знайдено",
+   "HUD installed": "HUD встановлено",
+   "Yes": "Так",
+   "No": "Ні"
   }
  },
  {
@@ -4414,7 +4443,6 @@ module.exports = [
    "COOLANT": "LÀM MÁT",
    "Hide logo on the cluster": "Ẩn logo trên đồng hồ",
    "Reinstall patch": "Cài lại bản vá",
-   "On the HUD": "Trên HUD",
    "Display": "Hiển thị",
    "Electric range": "Quãng đường điện",
    "Oil and coolant": "Dầu và nước làm mát",
@@ -4436,11 +4464,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "Hiển thị trên HUD",
    "Own settings for this driver": "Cài đặt riêng cho người lái này",
-   "Head-up display": "Màn hình HUD",
    "Given to another app": "Đã nhường cho ứng dụng khác",
    "Green light alert": "Báo đèn xanh",
    "Traffic-light camera found": "Đã tìm thấy camera đèn giao thông",
-   "Traffic-light camera not found": "Không tìm thấy camera đèn giao thông"
+   "Traffic-light camera not found": "Không tìm thấy camera đèn giao thông",
+   "HUD installed": "Có HUD",
+   "Yes": "Có",
+   "No": "Không"
   }
  },
  {
@@ -4564,7 +4594,6 @@ module.exports = [
    "COOLANT": "冷却液",
    "Hide logo on the cluster": "隐藏仪表上的标志",
    "Reinstall patch": "重新应用补丁",
-   "On the HUD": "抬头显示器上",
    "Display": "显示",
    "Electric range": "纯电续航",
    "Oil and coolant": "机油和冷却液",
@@ -4586,11 +4615,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "抬头显示器上的显示",
    "Own settings for this driver": "此驾驶员的专属设置",
-   "Head-up display": "抬头显示",
    "Given to another app": "已让给其他应用",
    "Green light alert": "绿灯提醒",
    "Traffic-light camera found": "已找到红绿灯摄像头",
-   "Traffic-light camera not found": "未找到红绿灯摄像头"
+   "Traffic-light camera not found": "未找到红绿灯摄像头",
+   "HUD installed": "已装 HUD",
+   "Yes": "是",
+   "No": "否"
   }
  },
  {
@@ -4714,7 +4745,6 @@ module.exports = [
    "COOLANT": "冷卻液",
    "Hide logo on the cluster": "隱藏儀表上的標誌",
    "Reinstall patch": "重新套用修補",
-   "On the HUD": "抬頭顯示器上",
    "Display": "顯示",
    "Electric range": "純電續航",
    "Oil and coolant": "機油與冷卻液",
@@ -4736,11 +4766,13 @@ module.exports = [
    "psi": "psi",
    "Displays on HUD": "抬頭顯示器上的顯示",
    "Own settings for this driver": "此駕駛的專屬設定",
-   "Head-up display": "抬頭顯示器",
    "Given to another app": "已讓給其他應用程式",
    "Green light alert": "綠燈提醒",
    "Traffic-light camera found": "已找到紅綠燈攝影機",
-   "Traffic-light camera not found": "找不到紅綠燈攝影機"
+   "Traffic-light camera not found": "找不到紅綠燈攝影機",
+   "HUD installed": "已裝 HUD",
+   "Yes": "是",
+   "No": "否"
   }
  }
 ];

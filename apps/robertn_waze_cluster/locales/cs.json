@@ -116,7 +116,6 @@
     "COOLANT": "CHLAZ.",
     "Hide logo on the cluster": "Skrýt logo na přístrojovce",
     "Reinstall patch": "Znovu použít opravu",
-    "On the HUD": "Na HUD",
     "Display": "Zobrazení",
     "Electric range": "Elektrický dojezd",
     "Oil and coolant": "Olej a chladicí kapalina",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Zobrazení na HUD",
     "Own settings for this driver": "Vlastní nastavení pro tohoto řidiče",
-    "Head-up display": "Head-up displej",
     "Given to another app": "Předáno jiné aplikaci",
     "Green light alert": "Upozornění na zelenou",
     "Traffic-light camera found": "Kamera semaforů nalezena",
-    "Traffic-light camera not found": "Kamera semaforů nenalezena"
+    "Traffic-light camera not found": "Kamera semaforů nenalezena",
+    "HUD installed": "HUD nainstalován",
+    "Yes": "Ano",
+    "No": "Ne"
   }
 }

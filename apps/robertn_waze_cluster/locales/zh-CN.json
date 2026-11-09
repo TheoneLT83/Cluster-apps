@@ -118,7 +118,6 @@
     "COOLANT": "冷却液",
     "Hide logo on the cluster": "隐藏仪表上的标志",
     "Reinstall patch": "重新应用补丁",
-    "On the HUD": "抬头显示器上",
     "Display": "显示",
     "Electric range": "纯电续航",
     "Oil and coolant": "机油和冷却液",
@@ -140,10 +139,12 @@
     "psi": "psi",
     "Displays on HUD": "抬头显示器上的显示",
     "Own settings for this driver": "此驾驶员的专属设置",
-    "Head-up display": "抬头显示",
     "Given to another app": "已让给其他应用",
     "Green light alert": "绿灯提醒",
     "Traffic-light camera found": "已找到红绿灯摄像头",
-    "Traffic-light camera not found": "未找到红绿灯摄像头"
+    "Traffic-light camera not found": "未找到红绿灯摄像头",
+    "HUD installed": "已装 HUD",
+    "Yes": "是",
+    "No": "否"
   }
 }

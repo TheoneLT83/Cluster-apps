@@ -116,7 +116,6 @@
     "COOLANT": "ΨΥΚΤ.",
     "Hide logo on the cluster": "Απόκρυψη λογότυπου στον πίνακα οργάνων",
     "Reinstall patch": "Επανεγκατάσταση διόρθωσης",
-    "On the HUD": "Στο HUD",
     "Display": "Οθόνη",
     "Electric range": "Ηλεκτρική αυτονομία",
     "Oil and coolant": "Λάδι και ψυκτικό",
@@ -138,10 +137,12 @@
     "psi": "psi",
     "Displays on HUD": "Ενδείξεις στο HUD",
     "Own settings for this driver": "Δικές ρυθμίσεις για αυτόν τον οδηγό",
-    "Head-up display": "Head-Up Display",
     "Given to another app": "Σε άλλη εφαρμογή",
     "Green light alert": "Ειδοποίηση πράσινου φαναριού",
     "Traffic-light camera found": "Βρέθηκε κάμερα φαναριών",
-    "Traffic-light camera not found": "Δεν βρέθηκε κάμερα φαναριών"
+    "Traffic-light camera not found": "Δεν βρέθηκε κάμερα φαναριών",
+    "HUD installed": "Εγκατεστημένο HUD",
+    "Yes": "Ναι",
+    "No": "Όχι"
   }
 }

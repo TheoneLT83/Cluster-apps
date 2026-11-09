@@ -2,7 +2,7 @@
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
   "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range, oil and coolant, boost, power and torque, or engine speed",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
   "memoryKB": 153600,
@@ -40,15 +40,6 @@
       "StatusFunctionsIndicators": "s",
       "_optional": "the turn signals on the HUD"
     },
-    "com.harman.infotainment.systemfunctions.tasu.tasu.InternalTasu": {
-      "_instances": "SystemFunctionsInternalTasuInst1",
-      "_methods": [
-        "sendTasuRequest"
-      ],
-      "_broadcasts": [
-        "sendTasuResponse"
-      ]
-    },
     "de.bmw.dass.driverassistanceapplications.TrafficSignDisplayControl": {
       "_optional": "the green light alert (BMW's own traffic-light display)",
       "displayForesight": "s"
@@ -79,31 +70,21 @@
   ],
   "settings": [
     {
-      "key": "hudFound",
-      "label": "Head-up display found",
-      "type": "bool",
-      "default": true,
-      "hidden": true
-    },
-    {
       "key": "hudInstalled",
-      "label": "Head-up display",
+      "label": "HUD installed",
       "type": "choice",
-      "default": "auto",
+      "default": "yes",
       "options": [
         [
-          "auto",
-          "Auto"
-        ],
-        [
           "yes",
-          "On"
+          "Yes"
         ],
         [
           "no",
-          "Off"
+          "No"
         ]
-      ]
+      ],
+      "reset": 1
     },
     {
       "key": "hudOn",
@@ -111,25 +92,21 @@
       "type": "bool",
       "default": true,
       "reset": 1,
-      "when": {
-        "hudFound": true
-      }
+      "hidden": true
     },
     {
       "key": "hudTurn",
       "label": "Turn signals on the HUD",
       "type": "bool",
       "default": true,
-      "hidden": true,
-      "group": "On the HUD"
+      "hidden": true
     },
     {
       "key": "hudGear",
       "label": "Gear on the HUD",
       "type": "bool",
       "default": true,
-      "hidden": true,
-      "group": "On the HUD"
+      "hidden": true
     },
     {
       "key": "hudData",
@@ -162,37 +139,28 @@
           "Engine speed"
         ]
       ],
-      "hidden": true,
-      "group": "On the HUD"
+      "hidden": true
     },
     {
       "key": "realSpeed",
       "label": "Real speed on HUD",
       "type": "bool",
       "default": false,
-      "when": {
-        "hudOn": true,
-        "hudFound": true
-      },
-      "group": "On the HUD"
+      "hidden": true
     },
     {
       "key": "greenLightHud",
       "label": "Green light alert",
       "type": "bool",
       "default": true,
-      "when": {
-        "hudOn": true,
-        "hudFound": true
-      },
-      "group": "On the HUD"
+      "hidden": true
     },
     {
       "key": "greenLightCluster",
       "label": "Green light alert",
       "type": "bool",
       "default": true,
-      "group": "Cluster"
+      "hidden": true
     },
     {
       "key": "powerUnit",
