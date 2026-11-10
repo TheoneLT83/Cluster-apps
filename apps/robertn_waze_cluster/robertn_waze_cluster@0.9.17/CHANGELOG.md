@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.17
+
+- **The HUD's info bar** starts a little further from km/h, and the right turn signal moved back inside the HUD's
+  edge (from photos in the car).
+
 ## 0.9.16
 
 - **The HUD's info bar level with the turn signals**, both arrows in BMW's speed row, the right one further right; the

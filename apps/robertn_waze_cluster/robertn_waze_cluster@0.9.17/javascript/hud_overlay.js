@@ -41,9 +41,9 @@ const ARROW = { medium: [34, 26] };
 const ROW_H = 46;
 /* The edges of what the HUD's glass shows in that row (from a photo of a G21's, its corner marks): the left arrow
  * left of BMW's speed-limit sign, the right arrow's end. */
-const LEFT_ARROW_X = 120, RIGHT_END = 690;
-/* Where the data starts: right after BMW's km/h (a photo of a G21's HUD: it ends at x 345). */
-const DATA_X = 346;
+const LEFT_ARROW_X = 120, RIGHT_END = 676;
+/* Where the data starts: a little after BMW's km/h (a photo of a G21's HUD: it ends at x 345). */
+const DATA_X = 358;
 /* The gear under BMW's km/h, down to the glass's bottom edge. */
 const GEAR_RECT = { x: 304, y: 352, w: 56, h: 26 };
 const GEAR_W = GEAR_RECT.w, GEAR_H = GEAR_RECT.h;
