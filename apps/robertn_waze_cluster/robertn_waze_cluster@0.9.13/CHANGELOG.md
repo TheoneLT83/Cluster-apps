@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.13
+
+- Robert's latest Waze on cluster (0.9.14 here) and cluster renderer 0.5.2.
+
 ## 0.9.12
 
 - **Info bar**: only with the map on the cluster; its switch and items are off while the map is not there.

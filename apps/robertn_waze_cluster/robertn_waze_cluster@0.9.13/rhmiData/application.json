@@ -5,7 +5,7 @@
     "type": "OnlineApp",
     "name": "robertn_waze_cluster",
     "vendor": "Robert Nisipeanu",
-    "version": "0.9.12",
+    "version": "0.9.13",
     "defaultLanguage": "en_GB",
     "stringBundleUuid": "d3fcf609-1eca-546c-bfe7-8ebf9b36c5da",
     "resourceBundleUuid": "13470eae-ede0-5634-ada9-b18d13eb7011",
