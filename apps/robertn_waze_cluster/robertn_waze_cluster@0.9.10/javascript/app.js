@@ -170,7 +170,7 @@ async function background(bg) {
         const d = car.data(), real = d && !d.demo ? d : {};
         const val = (label, v, text, cold) => ({ kind: 'value', label, text: G.isNum(v) ? text : '--', cold: G.isNum(v) && !!cold });
         return (kinds || panelKinds()).map((k) => {
-            if (k === 'power') { const kw = hv.powerShown(); return { kind: 'power', kw: G.isNum(kw) ? Math.round(kw * 10) / 10 : null }; }
+            if (k === 'power') { const kw = hv.powerShown(); return { kind: 'power', kw: G.isNum(kw) ? Math.round(kw * 10) / 10 : null, limits: hv.limits() }; }
             if (k === 'soc') { const soc = hv.soc(); return val('SOC', soc, Math.round(soc) + '%'); }
             if (k === 'oil') return val(t('OIL'), real.oil, Math.round(real.oil) + '°', real.oil < PANEL.COLD_C);
             if (k === 'coolant') return val(t('COOLANT'), real.coolant, Math.round(real.coolant) + '°', real.coolant < PANEL.COLD_C);
@@ -211,9 +211,10 @@ async function background(bg) {
         const c = dataChoice();
         const slider = (v, min, max, text, green, color) => { if (G.isNum(v) || preview) out.push({ kind: 'slider', value: G.isNum(v) ? v : null, min, max, text, green, color }); };
         if (c === 'ev') {
-            // eased between eDrive's readings; blue out, green recuperating, amber from 60 kW (as the cluster's bar)
-            const kw = hv.powerShown();
-            slider(kw, -60, 60, G.isNum(kw) ? Math.round(Math.abs(kw)) : '', G.isNum(kw) && kw < 0,
+            // eased between eDrive's readings; blue out, green recuperating, amber from 60 kW (as the cluster's bar): zero a
+            // quarter along, each side up to the battery's limit
+            const kw = hv.powerShown(), lim = hv.limits() || {}, out = lim.out || PANEL.MAX_OUT, inn = lim.in || PANEL.MAX_IN;
+            slider(G.isNum(kw) ? (kw >= 0 ? 3 * Math.min(1, kw / out) : -Math.min(1, -kw / inn)) : null, -1, 3, G.isNum(kw) ? Math.round(Math.abs(kw)) : '', G.isNum(kw) && kw < 0,
                 !G.isNum(kw) ? null : kw < 0 ? PANEL.GREEN : kw >= PANEL.AMBER_KW ? PANEL.AMBER : PANEL.BLUE);
             value(t('EV'), hv.range(), ' km');
         } else if (c === 'soc') {

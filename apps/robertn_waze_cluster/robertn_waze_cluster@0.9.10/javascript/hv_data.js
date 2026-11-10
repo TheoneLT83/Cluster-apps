@@ -5,8 +5,9 @@
  * now and its real electric range (the range eDrive's Range page has, learned from this car's driving).
  *
  * eDrive reads the battery unit over the head unit's diagnostic link; two apps doing that at once disturb each other,
- * so this app does not: eDrive writes what it has to SHARED, a file anyone may read ({ t, kw, soc, rangeKm }), at each
- * new power reading, and this reads it every READ_MS. While the HUD or the cluster shows the power or the charge, this
+ * so this app does not: eDrive writes what it has to SHARED, a file anyone may read ({ t, kw, soc, rangeKm, limitOut,
+ * limitIn }), at each new power (eDrive 2.9: as fast as the car's eDRIVE needle), and this reads it as soon as it is
+ * written (its folder watched), and every READ_MS besides. While the HUD or the cluster shows the power or the charge, this
  * says so in WANTED ({ t, power, soc }, each second): eDrive 2.8.4 then reads the power as fast as with its own
  * screen open, and the charge too. Only while eDrive is installed (installed(): an app folder beside this one whose
  * staged id is "edrive", or its file seen) is the electric range offered.
@@ -18,6 +19,7 @@
  *                              or not read lately)
  *   hv.soc()                   the battery's charge, %, or null
  *   hv.powerShown()            the power eased toward the last reading (for a bar that moves smoothly)
+ *   hv.limits()                { out, in }: the kW the battery allows now (eDrive 2.9: its limits), or null
  *   hv.want({ power, soc })    what is shown now (WANTED for eDrive)
  *   hv.on('change', fn)
  */
@@ -26,7 +28,7 @@ const path = require('path');
 const EventEmitter = require('events');
 
 const SHARED = '/tmp/mgu-edrive.json', WANTED = '/tmp/mgu-edrive-wanted.json';
-const WANT_MS = 1000, EASE_MS = 120;
+const WANT_MS = 1000, EASE_MS = 80;
 const READ_MS = 100, POWER_FRESH_MS = 5000, RANGE_FRESH_MS = 120000, LOOK_MS = 60000;
 const EDRIVE = 'edrive';
 
@@ -59,11 +61,18 @@ class HvData extends EventEmitter {
         };
         read();
         this.timer = setInterval(() => { read(); this._tellWanted(); }, READ_MS);
+        // a new file is renamed over SHARED: the folder's watch sees it at once
+        try {
+            const name = path.basename(this.file);
+            this.watcher = fs.watch(path.dirname(this.file), (ev, f) => { if (!f || f === name) read(); });
+            this.watcher.on('error', () => { this.watcher = null; });
+        } catch (e) { this.watcher = null; }
     }
 
     stop() {
         clearInterval(this.timer);
         this.timer = null;
+        if (this.watcher) { try { this.watcher.close(); } catch (e) { /* gone */ } this.watcher = null; }
     }
 
     /* eDrive is on the unit: an app folder beside this one holding it (looked at once a minute), or its file seen. */
@@ -122,6 +131,11 @@ class HvData extends EventEmitter {
     power() {
         const l = this._fresh(POWER_FRESH_MS);
         return l && num(l.kw) ? l.kw : null;
+    }
+
+    limits() {
+        const l = this._fresh(RANGE_FRESH_MS);
+        return l && num(l.limitOut) && l.limitOut > 0 ? { out: l.limitOut, in: num(l.limitIn) && l.limitIn > 0 ? l.limitIn : null } : null;
     }
 
     range() {

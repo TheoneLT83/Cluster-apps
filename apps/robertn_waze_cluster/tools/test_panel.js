@@ -45,8 +45,17 @@ setTimeout(() => {
     setTimeout(() => {
         const w = JSON.parse(fs.readFileSync('/tmp/mgu-edrive-wanted.json', 'utf8'));
         ok(w.power === true && w.soc === false && Date.now() - w.t < 2000, 'WANTED says the power is shown');
-        hv.stop();
-        console.log('panel: ' + checks + ' checks pass');
-        process.exit(0);
+        // eDrive 2.9: the battery's limits; a new file is seen at once (the folder watched), not at the next look
+        fs.writeFileSync(file + '.tmp', JSON.stringify({ t: Date.now(), kw: 55, soc: 64, limitOut: 110, limitIn: 45 }));
+        fs.renameSync(file + '.tmp', file);
+        const seenAt = Date.now();
+        hv.once('change', () => {
+            ok(Date.now() - seenAt < 60 && hv.power() === 55, 'a new file seen at once (' + (Date.now() - seenAt) + ' ms)');
+            ok(hv.limits().out === 110 && hv.limits().in === 45, 'the battery\'s limits from eDrive');
+
+            hv.stop();
+            console.log('panel: ' + checks + ' checks pass');
+            process.exit(0);
+        });
     }, 300);
 }, 150);

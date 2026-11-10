@@ -4,11 +4,12 @@
  * cluster_panel - the info bar in the middle of the cluster, a little low: up to four live values in a dark
  * see-through pill, drawn as an image layer of the cluster renderer (target `map`, 1088 x 480, over the Waze map).
  *
- *   items: [{ kind: 'power', kw }, { kind: 'value', label: 'OIL', text: '92°', cold: true }, ...]
+ *   items: [{ kind: 'power', kw, limits }, { kind: 'value', label: 'OIL', text: '92°', cold: true }, ...]
  *   panelSize(items) -> { w, h }        drawPanel(cv, x, y, items)       panelRect(items) -> where on the target
  *
- * The power: its kW (amber from AMBER_KW, green while recuperating) and a bar from zero (a third along: using
- * fills to the right, blue to purple up to MAX_OUT; recuperating to the left in green up to MAX_IN). A value
+ * The power: its kW (amber from AMBER_KW, green while recuperating) and a bar from zero (a quarter along: using
+ * fills to the right, blue to purple up to the battery's limit (it.limits.out, else MAX_OUT); recuperating to the left
+ * in green up to its limit (it.limits.in, else MAX_IN)). A value
  * shown cold (oil or coolant under COLD_C) is blue.
  */
 const { withAlpha } = require('./kit/canvas');
@@ -17,7 +18,7 @@ const TARGET = { w: 1088, h: 480 };
 const H = 96, PAD = 12, POWER_W = 200, VALUE_W = 92;
 const PILL = [8, 10, 16, 165], WHITE = '#f2f5f8', LABEL = '#a9b1c2';
 const BLUE = '#2f86ff', PURPLE = '#b35cff', GREEN = '#2fd27a', AMBER = '#ffb020', COLD = '#5ab8ff', TRACK = '#22262e';
-const AMBER_KW = 60, MAX_OUT = 100, MAX_IN = 60;
+const AMBER_KW = 60, MAX_OUT_DEFAULT = 100, MAX_IN_DEFAULT = 60;
 const COLD_C = 50;
 /* Where it sits: centred, its bottom this far over the map's bottom edge. */
 const BOTTOM_GAP = 32;          // clear of the cluster's dimmed edge under the map
@@ -34,10 +35,12 @@ function panelRect(items) {
     return { x: Math.round((TARGET.w - s.w) / 2), y: TARGET.h - s.h - BOTTOM_GAP, w: s.w, h: s.h };
 }
 
-/* The power's bar, from zero a third along: out to the right (blue to purple), in to the left (green). */
-function drawBar(cv, x, y, w, h, kw) {
+/* The power's bar, from zero a quarter along: out to the right (blue to purple), in to the left (green), each up to
+ * the battery's limit (lim: { out, in } kW, else MAX_OUT / MAX_IN). */
+function drawBar(cv, x, y, w, h, kw, lim) {
     cv.roundRect(x, y, w, h, h / 2, TRACK);
-    const zero = x + Math.round(w / 3);
+    const zero = x + Math.round(w / 4);
+    const MAX_OUT = (lim && lim.out) || MAX_OUT_DEFAULT, MAX_IN = (lim && lim.in) || MAX_IN_DEFAULT;
     if (isNum(kw) && kw > 0) {
         const len = Math.max(h, (w - (zero - x)) * Math.min(1, kw / MAX_OUT));
         const f = Math.min(1, kw / MAX_OUT);
@@ -62,7 +65,7 @@ function drawPanel(cv, x, y, items) {
             const col = !has ? LABEL : kw < 0 ? GREEN : kw >= AMBER_KW ? AMBER : WHITE;
             cv.text(text, cx + 92, mid + 15, 40, col, { font: 'bold', align: 'right' });
             cv.text('kW', cx + 96, mid + 15, 18, LABEL, { font: 'bold' });
-            drawBar(cv, cx + 128, mid - 6, 64, 12, kw);
+            drawBar(cv, cx + 128, mid - 6, 64, 12, kw, it.limits);
             cx += POWER_W;
         } else {
             cv.text(it.label, cx + VALUE_W / 2, mid - 12, 14, LABEL, { font: 'bold', align: 'center', spacing: 1 });
@@ -73,4 +76,4 @@ function drawPanel(cv, x, y, items) {
     return s;
 }
 
-module.exports = { drawPanel, panelSize, panelRect, drawBar, TARGET, COLD_C, AMBER_KW, MAX_OUT, MAX_IN, BLUE, GREEN, AMBER, PURPLE, withAlpha };
+module.exports = { drawPanel, panelSize, panelRect, drawBar, TARGET, COLD_C, AMBER_KW, MAX_OUT: MAX_OUT_DEFAULT, MAX_IN: MAX_IN_DEFAULT, BLUE, GREEN, AMBER, PURPLE, withAlpha };

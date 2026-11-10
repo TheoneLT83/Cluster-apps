@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.10
+
+- **kW as fast as the car's eDRIVE needle** with eDrive 2.9: eDrive works the battery's power out from the needle, the AC compressor and its readings, and the cluster's bar and the HUD take each new value at once (eDrive's file watched, the bar easing over 80 ms).
+- **The kW bars to the battery's limits**: full at the power the battery allows now, each way (from eDrive 2.9), and zero a quarter along: recuperating to the left, driving to the right.
+
 ## 0.9.9
 
 - **Display page**: the HUD's picture is cut at its glass with the GPU renderer too (0.9.7's picture stopped the page drawing there), and both pictures are a little smaller, clear of the panel's bottom.
