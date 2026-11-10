@@ -317,13 +317,17 @@ class ProfileSync extends EventEmitter {
     }
 
     /* The render to the settings in effect: a display turned on first, so
-     * the map is never on neither, then the HUD's size and place, then its
-     * brightness. */
+     * the map is never on neither, then the HUD's size and place, its
+     * brightness and whether it stays shown over BMW's pop-ups (from a patchd
+     * that has them). */
     _toRender(s) {
         const on = (v) => (v ? '1' : '0');
         const shows = ['cluster', 'hud'].sort((a, b) => s[b] - s[a]);
-        const cmds = shows.map((d) => ({ cmd: d, on: on(s[d]) }))
-            .concat([{ cmd: 'hud', hud_width_pct: String(s.hud_width_pct), hud_x: String(s.hud_offset_x), hud_y: String(s.hud_offset_y) }])
+        const hud = { cmd: 'hud', hud_width_pct: String(s.hud_width_pct), hud_x: String(s.hud_offset_x), hud_y: String(s.hud_offset_y) };
+        if (s.hud_keep_shown === 0 || s.hud_keep_shown === 1) {
+            hud.hud_keep_shown = on(s.hud_keep_shown);
+        }
+        const cmds = shows.map((d) => ({ cmd: d, on: on(s[d]) })).concat([hud])
             .concat(typeof s.hud_brightness_pct === 'number' ? [{ cmd: 'hud', hud_brightness_pct: String(s.hud_brightness_pct) }] : []);
         const c = this._control;
         if (c && c.render && c.render.connected()) {

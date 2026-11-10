@@ -129,6 +129,7 @@ void MapFeed::make_layer()
     lo_.klass = "content";
     lo_.contend = true;   /* the map takes the slot back from the stock map */
     lo_.guide_hold = cfg_.guide_hold;
+    lo_.yield = cfg_.target != "hud" || !cfg_.hud_keep_shown;
     lo_.x = (int)q.x;
     lo_.y = (int)q.y;
     lo_.w = q.w;
@@ -206,6 +207,17 @@ void MapFeed::set_hud_brightness(unsigned pct)
     lo_.opacity = (float)pct / 100.0f;
     client_.set(layer_, lo_);
     log_info("render: HUD map at %u%% brightness", pct);
+}
+
+void MapFeed::set_hud_keep_shown(bool keep)
+{
+    cfg_.hud_keep_shown = keep;
+    const bool yield = cfg_.target != "hud" || !keep;
+    if (layer_ && lo_.yield != yield) {
+        lo_.yield = yield;
+        client_.set(layer_, lo_);
+        log_info("render: HUD map %s", keep ? "kept shown over BMW's pop-ups" : "gives way to BMW's pop-ups");
+    }
 }
 
 void MapFeed::set_hud_width(unsigned pct)
@@ -466,6 +478,7 @@ FeedStatus MapFeed::status(const std::string &decode, const std::string &stream)
     s.hud_width_pct = cfg_.hud_width_pct;
     s.hud_brightness_pct = cfg_.hud_brightness_pct;
     s.hud_offset_x = placed_x_;
+    s.hud_keep_shown = cfg_.hud_keep_shown;
     s.hud_offset_y = placed_y_;
     s.upload_cap_kb = cap_kb_;
     s.upload_reason = budget_reason_;

@@ -123,6 +123,13 @@ void MapFeeds::set_hud_brightness(unsigned pct)
         hud_->set_hud_brightness(pct);
 }
 
+void MapFeeds::set_hud_keep_shown(bool keep)
+{
+    base_.hud_keep_shown = keep;
+    if (hud_)
+        hud_->set_hud_keep_shown(keep);
+}
+
 void MapFeeds::set_guide_hold(bool hold)
 {
     base_.guide_hold = hold;
@@ -223,6 +230,7 @@ FeedStatus MapFeeds::status(const std::string &decode, const std::string &stream
     }
     s.hud_width_pct = base_.hud_width_pct;
     s.hud_brightness_pct = base_.hud_brightness_pct;
+    s.hud_keep_shown = base_.hud_keep_shown;
     s.hud_offset_x = hud_ ? hud_->hud_offset_x() : base_.hud_offset_x;
     s.hud_offset_y = hud_ ? hud_->hud_offset_y() : base_.hud_offset_y;
     return s;

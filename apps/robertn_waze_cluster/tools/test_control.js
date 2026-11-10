@@ -448,6 +448,33 @@ test('the HUD map size as a slider: 5 % steps from 30 to 85 %, Standard at the s
     assert.deepStrictEqual([c.hudSizeText(), c.hudSizeStep()], ['Size: —', null], 'nothing known while closed');
 });
 
+test('the HUD map over BMW\'s pop-ups: gives way by default; a flip goes to the render and patchd, the render\'s status shows it; ' +
+    'greyed while the HUD is off and for a render without it', async (render, patch) => {
+    const c = control();
+    c.open();
+    await until('connected', () => c.connectedRender() && c.connectedPatch());
+    render.stream(true);
+    await until('the HUD off', () => c.renderStatus && c.hudOn() === false);
+    assert.deepStrictEqual([c.hudKeepShown(), c.canKeepHud()], [false, false], 'giving way, greyed while the HUD is off');
+    c.toggleHudKeep();
+    render.hud = 1;
+    render.announce(render.state, render.reason);
+    await until('on', () => c.canKeepHud());
+    assert.strictEqual(render.received.filter((m) => m.hud_keep_shown !== undefined).length, 0, 'nothing sent while greyed');
+    c.toggleHudKeep();
+    await until('kept shown', () => c.hudKeepShown() === true && render.hudKeep === 1);
+    await until('saved', () => patch.map.hud_keep_shown === 1);
+    c.toggleHudKeep();
+    await until('gives way again', () => c.hudKeepShown() === false && patch.map.hud_keep_shown === 0);
+    assert.deepStrictEqual(render.received.filter((m) => m.hud_keep_shown !== undefined), [{ cmd: 'hud', hud_keep_shown: '1' }, { cmd: 'hud', hud_keep_shown: '0' }]);
+    assert.deepStrictEqual(patch.received.filter((m) => m.cmd === 'hud-keep-shown'), [{ cmd: 'hud-keep-shown', on: 1 }, { cmd: 'hud-keep-shown', on: 0 }]);
+    render.hudKeep = null;
+    render.announce(render.state, render.reason);
+    await until('a render without it', () => c.hudKeepShown() === null && !c.canKeepHud());
+    c.close();
+});
+
+
 test('the HUD map brightness: 10 % a step from 10 to 100 %, the render at once, patchd saves it; none from a tool before it', async (render, patch) => {
     render.hud = 1;
     const c = control();

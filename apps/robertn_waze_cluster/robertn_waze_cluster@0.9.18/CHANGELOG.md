@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.18
+
+- Robert's latest: the HUD map gives way to BMW's HUD pop-ups (calls, media, lists), never to route guidance
+  (waze-on-cluster 0.9.15, cluster-render 0.5.3).
+
 ## 0.9.17
 
 - **The HUD's info bar** starts a little further from km/h, and the right turn signal moved back inside the HUD's

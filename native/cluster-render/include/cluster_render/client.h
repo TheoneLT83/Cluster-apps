@@ -54,6 +54,7 @@ struct LayerOptions {
     bool prewarm = false;            /* asks for the slot before the first content */
     bool contend = false;            /* retries a slot the stock HMI takes */
     bool guide_hold = true;          /* false: the stock HMI's guidance box shows while this layer wants the map */
+    bool yield = true;               /* false: the target stays shown over the stock HMI's pop-ups while this layer wants it */
     float opacity = 1.0f;
     float feather = 0;               /* video: the edges faded out over this many pixels (0: none) */
     float feather_bottom = -1;       /* video: the bottom edge's, when not feather's (-1: as feather) */

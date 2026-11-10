@@ -324,7 +324,8 @@ std::vector<std::pair<std::string, std::string>> Client::fields(const char *op, 
         {"x", num(lo.x)},                {"y", num(lo.y)},
         {"visible", flag(lo.visible)},   {"exclusive", flag(lo.exclusive)},
         {"prewarm", flag(lo.prewarm)},   {"contend", flag(lo.contend)},
-        {"guide_hold", flag(lo.guide_hold)}, {"opacity", num(lo.opacity)}};
+        {"guide_hold", flag(lo.guide_hold)}, {"yield", flag(lo.yield)},
+        {"opacity", num(lo.opacity)}};
     if (lo.feather > 0)
         kv.push_back({"feather", num(lo.feather)});
     if (lo.feather_bottom >= 0)
