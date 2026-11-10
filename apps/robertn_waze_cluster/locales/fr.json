@@ -149,6 +149,7 @@
     "Info bar": "Barre d'infos",
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
-    "Real speed on cluster": "Real speed on cluster"
+    "Real speed on cluster": "Real speed on cluster",
+    "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les pop-up BMW"
   }
 }

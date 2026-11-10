@@ -151,6 +151,7 @@
     "Info bar": "資訊列",
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
-    "Real speed on cluster": "Real speed on cluster"
+    "Real speed on cluster": "Real speed on cluster",
+    "Keep HUD map over BMW's pop-ups": "HUD 地圖保持在 BMW 彈出視窗之上"
   }
 }

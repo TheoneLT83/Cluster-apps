@@ -149,6 +149,7 @@
     "Info bar": "Informační lišta",
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
-    "Real speed on cluster": "Real speed on cluster"
+    "Real speed on cluster": "Real speed on cluster",
+    "Keep HUD map over BMW's pop-ups": "Ponechat mapu na HUD přes vyskakovací okna BMW"
   }
 }

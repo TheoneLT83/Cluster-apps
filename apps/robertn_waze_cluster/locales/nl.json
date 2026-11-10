@@ -151,6 +151,7 @@
     "Info bar": "Infobalk",
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
-    "Real speed on cluster": "Real speed on cluster"
+    "Real speed on cluster": "Real speed on cluster",
+    "Keep HUD map over BMW's pop-ups": "Kaart in HUD boven BMW-pop-ups houden"
   }
 }

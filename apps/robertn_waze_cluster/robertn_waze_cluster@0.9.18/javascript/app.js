@@ -587,7 +587,13 @@ mgu.run({
             if (dispTab === 'hud') {
                 const hudOnNow = settings.get('hudOn') !== false;
                 HUD_ITEMS.forEach(([key, text], i) => row(i, key, t(text), settings.get(key) !== false && !!settings.get(key), flip(key), key !== 'hudOn' && !hudOnNow));
-                camera(HUD_ITEMS.length);
+                // BMW's HUD pop-ups (calls, media, lists): the map gives way to them, or stays over them
+                {   // its own line, across both columns (a long label)
+                    const y = 128 + Math.ceil(HUD_ITEMS.length / 2) * 58, off = !hudOnNow || !ctl.canKeepHud();
+                    line(cv, th, t("Keep HUD map over BMW's pop-ups"), 48, y + 28, 620, off ? th.dim : null);
+                    toggle(cv, th, 48 + 372 + 268, y + 2, ctl.hudKeepShown() === true, () => ctl.toggleHudKeep(), 'disp-hudKeep', off);
+                }
+                camera(HUD_ITEMS.length + 1);
                 // the readings, as the info bar's: a button each, lit while on (up to HUD_DATA_MAX)
                 const offered = HUD_DATA.filter(([v]) => (v !== 'ev' && v !== 'soc') || hv.installed());
                 const count = offered.filter(([, key]) => settings.get(key)).length;

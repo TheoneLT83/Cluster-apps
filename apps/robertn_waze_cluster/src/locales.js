@@ -153,7 +153,8 @@ module.exports = [
    "Info bar": "شريط المعلومات",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "إبقاء خريطة HUD فوق النوافذ المنبثقة من BMW"
   }
  },
  {
@@ -308,7 +309,8 @@ module.exports = [
    "Info bar": "Informační lišta",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Ponechat mapu na HUD přes vyskakovací okna BMW"
   }
  },
  {
@@ -463,7 +465,8 @@ module.exports = [
    "Info bar": "Infobjælke",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Behold kort i HUD over BMW's pop-ups"
   }
  },
  {
@@ -618,7 +621,8 @@ module.exports = [
    "Info bar": "Infoleiste",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Karte im HUD vor BMW-Pop-ups behalten"
   }
  },
  {
@@ -773,7 +777,8 @@ module.exports = [
    "Info bar": "Γραμμή πληροφοριών",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Διατήρηση χάρτη στο HUD πάνω από τα αναδυόμενα της BMW"
   }
  },
  {
@@ -928,7 +933,8 @@ module.exports = [
    "Info bar": "Barra de información",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Mantener mapa en el HUD sobre ventanas emergentes de BMW"
   }
  },
  {
@@ -1083,7 +1089,8 @@ module.exports = [
    "Info bar": "Barra de información",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Mantener mapa en el HUD sobre ventanas emergentes de BMW"
   }
  },
  {
@@ -1238,7 +1245,8 @@ module.exports = [
    "Info bar": "Tietopalkki",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Pidä HUD-kartta BMW:n ponnahdusikkunoiden päällä"
   }
  },
  {
@@ -1393,7 +1401,8 @@ module.exports = [
    "Info bar": "Barre d'infos",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les fenêtres contextuelles BMW"
   }
  },
  {
@@ -1548,7 +1557,8 @@ module.exports = [
    "Info bar": "Barre d'infos",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les pop-up BMW"
   }
  },
  {
@@ -1703,7 +1713,8 @@ module.exports = [
    "Info bar": "סרגל מידע",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "השארת המפה ב-HUD מעל החלונות הקופצים של BMW"
   }
  },
  {
@@ -1858,7 +1869,8 @@ module.exports = [
    "Info bar": "Infósáv",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Térkép megtartása a HUD-on a BMW felugró ablakai felett"
   }
  },
  {
@@ -2013,7 +2025,8 @@ module.exports = [
    "Info bar": "Bilah info",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Pertahankan peta di HUD di atas pop-up BMW"
   }
  },
  {
@@ -2168,7 +2181,8 @@ module.exports = [
    "Info bar": "Barra informazioni",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Mantieni la mappa sull'HUD sopra i pop-up BMW"
   }
  },
  {
@@ -2323,7 +2337,8 @@ module.exports = [
    "Info bar": "情報バー",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "HUDの地図をBMWのポップアップより優先"
   }
  },
  {
@@ -2478,7 +2493,8 @@ module.exports = [
    "Info bar": "정보 바",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "BMW 팝업 위에 HUD 지도 유지"
   }
  },
  {
@@ -2633,7 +2649,8 @@ module.exports = [
    "Info bar": "Infolinje",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Behold kart i HUD over BMWs popup-vinduer"
   }
  },
  {
@@ -2790,7 +2807,8 @@ module.exports = [
    "Info bar": "Infobalk",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Kaart in HUD boven BMW-pop-ups houden"
   }
  },
  {
@@ -2945,7 +2963,8 @@ module.exports = [
    "Info bar": "Pasek informacji",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Zachowaj mapę na HUD nad wyskakującymi oknami BMW"
   }
  },
  {
@@ -3100,7 +3119,8 @@ module.exports = [
    "Info bar": "Barra de informações",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups da BMW"
   }
  },
  {
@@ -3255,7 +3275,8 @@ module.exports = [
    "Info bar": "Barra de informações",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups BMW"
   }
  },
  {
@@ -3410,7 +3431,8 @@ module.exports = [
    "Info bar": "Bară de informații",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Păstrare hartă pe HUD peste ferestrele pop-up BMW"
   }
  },
  {
@@ -3565,7 +3587,8 @@ module.exports = [
    "Info bar": "Инфопанель",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Оставлять карту на HUD поверх всплывающих окон BMW"
   }
  },
  {
@@ -3720,7 +3743,8 @@ module.exports = [
    "Info bar": "Informačný pruh",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Ponechať mapu na HUD nad kontextovými oknami BMW"
   }
  },
  {
@@ -3875,7 +3899,8 @@ module.exports = [
    "Info bar": "Informacijska vrstica",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Ohrani zemljevid na HUD nad pojavnimi okni BMW"
   }
  },
  {
@@ -4030,7 +4055,8 @@ module.exports = [
    "Info bar": "Infofält",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Behåll karta i HUD över BMW:s popup-fönster"
   }
  },
  {
@@ -4185,7 +4211,8 @@ module.exports = [
    "Info bar": "แถบข้อมูล",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "คงแผนที่บน HUD ไว้เหนือป๊อปอัปของ BMW"
   }
  },
  {
@@ -4340,7 +4367,8 @@ module.exports = [
    "Info bar": "Bilgi çubuğu",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "HUD haritasını BMW açılır pencerelerinin üstünde tut"
   }
  },
  {
@@ -4495,7 +4523,8 @@ module.exports = [
    "Info bar": "Інфопанель",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Залишати карту на HUD поверх спливних вікон BMW"
   }
  },
  {
@@ -4650,7 +4679,8 @@ module.exports = [
    "Info bar": "Thanh thông tin",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "Giữ bản đồ trên HUD phía trên cửa sổ bật lên của BMW"
   }
  },
  {
@@ -4807,7 +4837,8 @@ module.exports = [
    "Info bar": "信息栏",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "HUD 地图保持在 BMW 弹窗之上"
   }
  },
  {
@@ -4964,7 +4995,8 @@ module.exports = [
    "Info bar": "資訊列",
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
-   "Real speed on cluster": "Real speed on cluster"
+   "Real speed on cluster": "Real speed on cluster",
+   "Keep HUD map over BMW's pop-ups": "HUD 地圖保持在 BMW 彈出視窗之上"
   }
  }
 ];

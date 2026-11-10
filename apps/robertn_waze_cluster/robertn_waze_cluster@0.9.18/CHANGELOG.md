@@ -3,7 +3,7 @@
 ## 0.9.18
 
 - Robert's latest: the HUD map gives way to BMW's HUD pop-ups (calls, media, lists), never to route guidance
-  (waze-on-cluster 0.9.15, cluster-render 0.5.3).
+  (waze-on-cluster 0.9.15, cluster-render 0.5.3). Display > HUD: Keep HUD map over BMW's pop-ups (off by default).
 
 ## 0.9.17
 
