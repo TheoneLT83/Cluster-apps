@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.12
+
+- **Info bar**: only with the map on the cluster; its switch and items are off while the map is not there.
+
 ## 0.9.11
 
 - **Info bar**: the kW item is called Battery kW usage on the Display page.
