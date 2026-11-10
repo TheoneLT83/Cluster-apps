@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.16
+
+- **The HUD's readings level with the turn signals**, both arrows in BMW's speed row; the readings start right after
+  km/h and are a little smaller, so three fit with power and torque.
+- **Battery charge on the HUD** as its number (SOC 49%), no slider.
+
 ## 0.9.15
 
 - **The HUD's row, wider**: the left turn signal at the HUD's left edge, left of BMW's speed-limit sign; the gear under

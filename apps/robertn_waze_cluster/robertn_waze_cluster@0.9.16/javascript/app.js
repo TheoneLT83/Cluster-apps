@@ -227,8 +227,7 @@ async function background(bg) {
                     !G.isNum(kw) ? null : kw < 0 ? PANEL.GREEN : kw >= PANEL.AMBER_KW ? PANEL.AMBER : PANEL.BLUE);
                 value(t('EV'), hv.range(), ' km');
             } else if (c === 'soc') {
-                const soc = hv.soc();
-                slider(soc, 0, 100, G.isNum(soc) ? Math.round(soc) + '%' : '');
+                value('SOC', hv.soc(), '%');
             } else if (c === 'boost') {
                 const b = units.boost(G.isNum(boost) && !(d && d.demo) ? boost : NaN);
                 slider(b.value, 0, b.max, G.isNum(b.value) ? (b.unit === 'bar' ? b.value.toFixed(1) : Math.round(b.value)) + ' ' + b.unit : '');

@@ -25,7 +25,7 @@ const STAGE = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-hud-'));
 fs.cpSync(path.join(REPO, 'kit', 'runtime'), path.join(STAGE, 'kit'), { recursive: true });
 ['hud_overlay.js', 'turn_signals.js', 'cluster_panel.js'].forEach((f) => fs.copyFileSync(path.join(HERE, 'app', f), path.join(STAGE, f)));
 fs.copyFileSync(path.join(REPO, 'native', 'cluster-render', 'js', 'cluster_render_client.js'), path.join(STAGE, 'cluster_render_client.js'));
-const { HudOverlay, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, ARROW, GEAR_W, GEAR_H, ROW_H, SPEED_END, SPEED_RECT, GEAR_RECT, LEFT_ARROW_X, RIGHT_END } = require(path.join(STAGE, 'hud_overlay.js'));
+const { HudOverlay, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, ARROW, GEAR_W, GEAR_H, ROW_H, SPEED_RECT, GEAR_RECT, LEFT_ARROW_X, RIGHT_END, DATA_X } = require(path.join(STAGE, 'hud_overlay.js'));
 const { ClusterRender } = require(path.join(STAGE, 'cluster_render_client.js'));
 const { sideOf, TurnSignals } = require(path.join(STAGE, 'turn_signals.js'));
 
@@ -61,12 +61,12 @@ async function main() {
     eq(rowRect(moved).y - rowRect(m).y, -30, 'the map moved up: the row with it');
     eq(arrowRect(moved, 'left', aw, ah), { x: LEFT_ARROW_X, y: SPEED_RECT.y + (SPEED_RECT.h - ah) / 2, w: aw, h: ah },
         'the left arrow at the HUD\'s left edge, in BMW\'s speed row, wherever the map is');
-    eq(arrowRect(m, 'right', aw, ah), { x: RIGHT_END - aw, y: rowRect(m).y + (ROW_H - ah) / 2, w: aw, h: ah },
-        'the right one at the HUD\'s right edge, in the row');
+    eq(arrowRect(m, 'right', aw, ah), { x: RIGHT_END - aw, y: arrowRect(m, 'left', aw, ah).y, w: aw, h: ah },
+        'the right one at the HUD\'s right edge, level with the left one');
     const g = gearRect(), l = arrowRect(m, 'left', aw, ah), d = dataRect(m, 'medium'), r = arrowRect(m, 'right', aw, ah);
     ok(g.x === GEAR_RECT.x && g.y === GEAR_RECT.y && g.w === GEAR_W && g.h === GEAR_H && g.y + g.h <= 380, 'the gear under BMW\'s km/h');
     ok(l.x + l.w < SPEED_RECT.x, 'the left arrow left of the real speed');
-    ok(d && d.x === SPEED_END + 8 && d.x + d.w < r.x && d.w >= 240, 'the data from after BMW\'s speed to the right arrow, wide');
+    ok(d && d.x === DATA_X && d.x + d.w < r.x && d.w >= 270 && d.y + d.h / 2 === l.y + l.h / 2, 'the data from after BMW\'s km/h to the right arrow, level with the turn signals');
     const low = mapRect(60, [0, 400]), a = anchorRect(low);
     eq(rowRect(low).y, a.y + a.h - ROW_H - 4, 'no room under the box at the HUD\'s bottom: inside its bottom edge');
 

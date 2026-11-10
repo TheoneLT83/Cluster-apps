@@ -9,11 +9,11 @@
  *   real speed           left of BMW's own speed reading, in its row (SPEED_RECT, where the HUD has room for its
  *                        digits): the car's own speed, for a car whose mileage blocker stops BMW's
  *   gear                 under BMW's km/h (GEAR_RECT), as small as it: P, R, N, D or D1 ... D9
- *   data                 in the row under the map, from after BMW's speed reading (SPEED_END) to the right arrow: up
+ *   data                 level with the turn signals, from after BMW's km/h (DATA_X) to the right arrow: up
  *                        to three readings chosen, in their order: the electric range with the eDrive power, battery
  *                        charge, oil and coolant, boost, power and torque, engine speed (sliders carry their value in
  *                        the knob)
- *   right arrow          at the HUD's right edge (RIGHT_END), in that row
+ *   right arrow          at the HUD's right edge (RIGHT_END), level with the left one
  *
  * The HUD shows black as nothing: each layer is drawn on transparent pixels and only what is lit shows.
  * A layer stays visible once made and an arrow that is off is sent as blank pixels, so the HUD's slot is not
@@ -39,11 +39,11 @@ const BLINK_MS = 330;
 /* The arrow, one size, its tail short: the space it leaves goes to the data */
 const ARROW = { medium: [34, 26] };
 const ROW_H = 46;
-/* Where BMW's own speed reading (its km/h) ends on the HUD, from a photo of a G-series HUD: the data comes after it. */
-const SPEED_END = 356;
 /* The edges of what the HUD's glass shows in that row (from a photo of a G21's, its corner marks): the left arrow
  * left of BMW's speed-limit sign, the right arrow's end. */
 const LEFT_ARROW_X = 120, RIGHT_END = 670;
+/* Where the data starts: after BMW's km/h (a photo of a G21's HUD: it ends at x 342). */
+const DATA_X = 350;
 /* The gear under BMW's km/h, down to the glass's bottom edge. */
 const GEAR_RECT = { x: 304, y: 352, w: 56, h: 26 };
 const GEAR_W = GEAR_RECT.w, GEAR_H = GEAR_RECT.h;
@@ -79,13 +79,13 @@ function rowRect(map) {
     return { x: a.x, y: below + ROW_H <= HUD_H ? below : Math.max(0, a.y + a.h - ROW_H - 4), w: a.w, h: ROW_H };
 }
 
-/* Where an arrow of aw x ah goes: the left one at the HUD's left edge in BMW's speed row (beside its speed-limit
- * sign), the right one at the HUD's right edge in the row under the map. */
+/* Where an arrow of aw x ah goes, both in BMW's speed row: the left one at the HUD's left edge (beside its
+ * speed-limit sign), the right one at the HUD's right edge. */
 function arrowRect(map, side, aw, ah) {
-    const row = rowRect(map), k = Math.min(1, (ROW_H - 8) / ah);
+    const k = Math.min(1, (ROW_H - 8) / ah);
     const w = Math.round(aw * k), h = Math.round(ah * k);
-    if (side === 'right') return { x: RIGHT_END - w, y: row.y + Math.round((ROW_H - h) / 2), w, h };
-    return { x: LEFT_ARROW_X, y: SPEED_RECT.y + Math.round((SPEED_RECT.h - h) / 2), w, h };
+    const y = SPEED_RECT.y + Math.round((SPEED_RECT.h - h) / 2);
+    return { x: side === 'right' ? RIGHT_END - w : LEFT_ARROW_X, y, w, h };
 }
 
 /* The gear, under BMW's km/h. */
@@ -93,23 +93,23 @@ function gearRect() {
     return Object.assign({}, GEAR_RECT);
 }
 
-/* The data, from after BMW's speed reading to the right arrow, in the row under the map; null when there is no room. */
+/* The data, from after BMW's km/h to the right arrow, level with the turn signals; null when there is no room. */
 function dataRect(map, arrowSize) {
     const [aw, ah] = ARROW[arrowSize] || ARROW.medium, r = arrowRect(map, 'right', aw, ah);
-    const x = SPEED_END + 8, w = r.x - 10 - x;
-    return w >= 40 ? { x, y: rowRect(map).y, w, h: ROW_H } : null;
+    const x = DATA_X, w = r.x - 6 - x;
+    return w >= 40 ? { x, y: SPEED_RECT.y + Math.round((SPEED_RECT.h - ROW_H) / 2), w, h: ROW_H } : null;
 }
 
 /* The data items across x, y (the row's top) to x + w, k the scale, filling it, in their order: the sliders share
- * the width the values leave (each at least 44 px); values alone are spread, the first at the left edge, the last
+ * the width the values leave (each at least 40 px); values alone are spread, the first at the left edge, the last
  * ending at the right one. What does not fit is left out from the end. An item:
  * { kind: 'slider', value, min, max, text, green, color } a track from min to max (a mark at 0 when it is inside) and
  * a knob at the value with text in it, green when green is set, the track lit in color from zero; or
  * { kind: 'value', label, text } a small label over its value. */
 function drawData(cv, x, y, w, items, k) {
     k = k || 1;
-    const GAP = 8 * k, MIN_TW = 44 * k;
-    const width = (it) => (it.kind === 'slider' ? 0 : Math.max(cv.textWidth(it.text, 22 * k, { font: 'bold' }), cv.textWidth(it.label, 12 * k, { font: 'bold' })));
+    const GAP = 6 * k, MIN_TW = 40 * k;
+    const width = (it) => (it.kind === 'slider' ? 0 : Math.max(cv.textWidth(it.text, 20 * k, { font: 'bold' }), cv.textWidth(it.label, 12 * k, { font: 'bold' })));
     let all = (items || []).map((it) => ({ it, w: width(it) }));
     const need = () => all.reduce((a, v) => a + (v.it.kind === 'slider' ? MIN_TW : v.w), 0) + GAP * Math.max(0, all.length - 1);
     while (all.length && need() > w) all.pop();
@@ -131,7 +131,7 @@ function drawData(cv, x, y, w, items, k) {
 
 function drawValue(cv, at, y, it, k) {
     cv.text(it.label, at, y + 14 * k, 12 * k, DIM, { font: 'bold' });
-    cv.text(it.text, at, y + 39 * k, 22 * k, WHITE, { font: 'bold' });
+    cv.text(it.text, at, y + 38 * k, 20 * k, WHITE, { font: 'bold' });
 }
 
 function drawSlider(cv, x, cy, tw, slider, k) {
@@ -332,4 +332,4 @@ class HudOverlay {
 }
 
 module.exports = { HudOverlay, drawLight, LIGHT_HUD, LIGHT_CLUSTER, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
-    GEAR_RECT, LEFT_ARROW_X, RIGHT_END, ROW_H, SPEED_END, SPEED_RECT, MAX_KW, GREEN, WHITE, AMBER, DIM };
+    GEAR_RECT, LEFT_ARROW_X, RIGHT_END, DATA_X, ROW_H, SPEED_RECT, MAX_KW, GREEN, WHITE, AMBER, DIM };
