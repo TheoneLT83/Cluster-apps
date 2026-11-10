@@ -591,7 +591,7 @@ mgu.run({
                 // the readings, as the info bar's: a button each, lit while on (up to HUD_DATA_MAX)
                 const offered = HUD_DATA.filter(([v]) => (v !== 'ev' && v !== 'soc') || hv.installed());
                 const count = offered.filter(([, key]) => settings.get(key)).length;
-                label(cv, th, t('Between the turn signals') + '  ' + count + '/' + HUD_DATA_MAX, 48, 356);
+                label(cv, th, t('Info bar') + '  ' + count + '/' + HUD_DATA_MAX, 48, 356);
                 offered.forEach(([v, key, text], i) => {
                     const lit = !!settings.get(key);
                     G.button(cv, th, 48 + (i % 3) * 244, 366 + Math.floor(i / 3) * 48, 232, 42, t(text), () => settings.set(key, !lit),

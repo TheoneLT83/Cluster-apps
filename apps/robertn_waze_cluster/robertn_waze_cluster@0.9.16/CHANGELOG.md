@@ -2,8 +2,9 @@
 
 ## 0.9.16
 
-- **The HUD's readings level with the turn signals**, both arrows in BMW's speed row; the readings start right after
-  km/h and are a little smaller, so three fit with power and torque.
+- **The HUD's info bar level with the turn signals**, both arrows in BMW's speed row, the right one further right; the
+  readings start right after km/h and fill the space: as large as fits (one reading big), three fit with power and
+  torque. Display > HUD calls it Info bar.
 - **Battery charge on the HUD** as its number (SOC 49%), no slider.
 
 ## 0.9.15

@@ -41,9 +41,9 @@ const ARROW = { medium: [34, 26] };
 const ROW_H = 46;
 /* The edges of what the HUD's glass shows in that row (from a photo of a G21's, its corner marks): the left arrow
  * left of BMW's speed-limit sign, the right arrow's end. */
-const LEFT_ARROW_X = 120, RIGHT_END = 670;
-/* Where the data starts: after BMW's km/h (a photo of a G21's HUD: it ends at x 342). */
-const DATA_X = 350;
+const LEFT_ARROW_X = 120, RIGHT_END = 690;
+/* Where the data starts: right after BMW's km/h (a photo of a G21's HUD: it ends at x 345). */
+const DATA_X = 346;
 /* The gear under BMW's km/h, down to the glass's bottom edge. */
 const GEAR_RECT = { x: 304, y: 352, w: 56, h: 26 };
 const GEAR_W = GEAR_RECT.w, GEAR_H = GEAR_RECT.h;
@@ -100,18 +100,25 @@ function dataRect(map, arrowSize) {
     return w >= 40 ? { x, y: SPEED_RECT.y + Math.round((SPEED_RECT.h - ROW_H) / 2), w, h: ROW_H } : null;
 }
 
-/* The data items across x, y (the row's top) to x + w, k the scale, filling it, in their order: the sliders share
- * the width the values leave (each at least 40 px); values alone are spread, the first at the left edge, the last
+/* The data items across x, y (the row's top) to x + w, k the scale, filling it, in their order, their text as large
+ * as fits (20 to 28 px): the sliders share the width the values leave (each at least 40 px); values alone are spread, the first at the left edge, the last
  * ending at the right one. What does not fit is left out from the end. An item:
  * { kind: 'slider', value, min, max, text, green, color } a track from min to max (a mark at 0 when it is inside) and
  * a knob at the value with text in it, green when green is set, the track lit in color from zero; or
  * { kind: 'value', label, text } a small label over its value. */
 function drawData(cv, x, y, w, items, k) {
     k = k || 1;
+    // the largest text all of them fit at (one reading alone: big), else the smallest with what does not fit left out
+    const SIZES = [[28, 14], [26, 14], [24, 13], [22, 12], [20, 12]];
     const GAP = 6 * k, MIN_TW = 40 * k;
-    const width = (it) => (it.kind === 'slider' ? 0 : Math.max(cv.textWidth(it.text, 20 * k, { font: 'bold' }), cv.textWidth(it.label, 12 * k, { font: 'bold' })));
-    let all = (items || []).map((it) => ({ it, w: width(it) }));
-    const need = () => all.reduce((a, v) => a + (v.it.kind === 'slider' ? MIN_TW : v.w), 0) + GAP * Math.max(0, all.length - 1);
+    const fit = (size) => {
+        const width = (it) => (it.kind === 'slider' ? 0 : Math.max(cv.textWidth(it.text, size[0] * k, { font: 'bold' }), cv.textWidth(it.label, size[1] * k, { font: 'bold' })));
+        const all = (items || []).map((it) => ({ it, w: width(it) }));
+        const need = () => all.reduce((a, v) => a + (v.it.kind === 'slider' ? MIN_TW : v.w), 0) + GAP * Math.max(0, all.length - 1);
+        return { all, need };
+    };
+    let size = SIZES.find((sz) => fit(sz).need() <= w) || SIZES[SIZES.length - 1];
+    const { all, need } = fit(size);
     while (all.length && need() > w) all.pop();
     if (!all.length) return;
     const sliders = all.filter((v) => v.it.kind === 'slider').length;
@@ -120,18 +127,18 @@ function drawData(cv, x, y, w, items, k) {
         const tw = (w - sum - GAP * (all.length - 1)) / sliders;
         let at = x;
         all.forEach((v) => {
-            if (v.it.kind === 'slider') { drawSlider(cv, at, y + ROW_H * k / 2, tw, v.it, k); at += tw + GAP; } else { drawValue(cv, at, y, v.it, k); at += v.w + GAP; }
+            if (v.it.kind === 'slider') { drawSlider(cv, at, y + ROW_H * k / 2, tw, v.it, k); at += tw + GAP; } else { drawValue(cv, at, y, v.it, k, size); at += v.w + GAP; }
         });
         return;
     }
     const free = all.length > 1 ? (w - sum) / (all.length - 1) : 0;
     let at = x;
-    all.forEach((v) => { drawValue(cv, at, y, v.it, k); at += v.w + free; });
+    all.forEach((v) => { drawValue(cv, at, y, v.it, k, size); at += v.w + free; });
 }
 
-function drawValue(cv, at, y, it, k) {
-    cv.text(it.label, at, y + 14 * k, 12 * k, DIM, { font: 'bold' });
-    cv.text(it.text, at, y + 38 * k, 20 * k, WHITE, { font: 'bold' });
+function drawValue(cv, at, y, it, k, size) {
+    cv.text(it.label, at, y + size[1] * k, size[1] * k, DIM, { font: 'bold' });
+    cv.text(it.text, at, y + (ROW_H - 6) * k, size[0] * k, WHITE, { font: 'bold' });
 }
 
 function drawSlider(cv, x, cy, tw, slider, k) {
