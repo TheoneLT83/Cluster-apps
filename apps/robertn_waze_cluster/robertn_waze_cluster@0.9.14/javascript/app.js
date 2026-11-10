@@ -62,7 +62,7 @@ const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['soc', 'Battery ch
  * its setting, its words. */
 const PANEL_ITEMS = [['power', 'clusterKw', 'Battery kW usage'], ['soc', 'clusterSoc', 'Battery charge'], ['oil', 'clusterOil', 'OIL'],
     ['coolant', 'clusterCoolant', 'COOLANT'], ['boost', 'clusterBoost', 'Boost'], ['rpm', 'clusterRpm', 'Engine speed'],
-    ['torque', 'clusterTorque', 'TORQUE']];
+    ['torque', 'clusterTorque', 'TORQUE'], ['speed', 'clusterSpeed', 'Real speed']];
 const PANEL_MAX = 4;
 const RPM_MAX = 7000;
 const LOG_LINES = 60;
@@ -175,6 +175,7 @@ async function background(bg) {
             if (k === 'oil') return val(t('OIL'), real.oil, Math.round(real.oil) + '°', real.oil < PANEL.COLD_C);
             if (k === 'coolant') return val(t('COOLANT'), real.coolant, Math.round(real.coolant) + '°', real.coolant < PANEL.COLD_C);
             if (k === 'rpm') return val('RPM', real.rpm, String(Math.round(real.rpm / 10) * 10));
+            if (k === 'speed') return val('KM/H', real.speed, String(Math.round(real.speed)));
             if (k === 'boost') {
                 const b = units.boost(G.isNum(boost) && !(d && d.demo) ? boost : NaN);
                 return val(b.unit.toUpperCase(), b.value, b.unit === 'bar' ? (b.value || 0).toFixed(1) : String(Math.round(b.value)));

@@ -151,7 +151,8 @@ module.exports = [
    "Battery charge": "شحن البطارية",
    "Dimmer at night": "أخفت في الليل",
    "Info bar": "شريط المعلومات",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -304,7 +305,8 @@ module.exports = [
    "Battery charge": "Nabití baterie",
    "Dimmer at night": "Tmavší v noci",
    "Info bar": "Informační lišta",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -457,7 +459,8 @@ module.exports = [
    "Battery charge": "Batteriopladning",
    "Dimmer at night": "Dæmpet om natten",
    "Info bar": "Infobjælke",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -610,7 +613,8 @@ module.exports = [
    "Battery charge": "Batterieladung",
    "Dimmer at night": "Nachts gedimmt",
    "Info bar": "Infoleiste",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -763,7 +767,8 @@ module.exports = [
    "Battery charge": "Φόρτιση μπαταρίας",
    "Dimmer at night": "Πιο αμυδρό τη νύχτα",
    "Info bar": "Γραμμή πληροφοριών",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -916,7 +921,8 @@ module.exports = [
    "Battery charge": "Carga de batería",
    "Dimmer at night": "Más tenue de noche",
    "Info bar": "Barra de información",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -1069,7 +1075,8 @@ module.exports = [
    "Battery charge": "Carga de la batería",
    "Dimmer at night": "Más tenue de noche",
    "Info bar": "Barra de información",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -1222,7 +1229,8 @@ module.exports = [
    "Battery charge": "Akun varaus",
    "Dimmer at night": "Himmeämpi yöllä",
    "Info bar": "Tietopalkki",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -1375,7 +1383,8 @@ module.exports = [
    "Battery charge": "Charge de la batterie",
    "Dimmer at night": "Atténué la nuit",
    "Info bar": "Barre d'infos",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -1528,7 +1537,8 @@ module.exports = [
    "Battery charge": "Charge de la batterie",
    "Dimmer at night": "Atténué la nuit",
    "Info bar": "Barre d'infos",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -1681,7 +1691,8 @@ module.exports = [
    "Battery charge": "טעינת סוללה",
    "Dimmer at night": "עמום יותר בלילה",
    "Info bar": "סרגל מידע",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -1834,7 +1845,8 @@ module.exports = [
    "Battery charge": "Akkumulátor töltöttsége",
    "Dimmer at night": "Éjjel halványabb",
    "Info bar": "Infósáv",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -1987,7 +1999,8 @@ module.exports = [
    "Battery charge": "Daya baterai",
    "Dimmer at night": "Lebih redup di malam hari",
    "Info bar": "Bilah info",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -2140,7 +2153,8 @@ module.exports = [
    "Battery charge": "Carica batteria",
    "Dimmer at night": "Più tenue di notte",
    "Info bar": "Barra informazioni",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -2293,7 +2307,8 @@ module.exports = [
    "Battery charge": "バッテリー残量",
    "Dimmer at night": "夜間は暗く",
    "Info bar": "情報バー",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -2446,7 +2461,8 @@ module.exports = [
    "Battery charge": "배터리 충전량",
    "Dimmer at night": "야간에 어둡게",
    "Info bar": "정보 바",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -2599,7 +2615,8 @@ module.exports = [
    "Battery charge": "Batterilading",
    "Dimmer at night": "Dempet om natten",
    "Info bar": "Infolinje",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -2754,7 +2771,8 @@ module.exports = [
    "Battery charge": "Accuniveau",
    "Dimmer at night": "'s Nachts gedimd",
    "Info bar": "Infobalk",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -2907,7 +2925,8 @@ module.exports = [
    "Battery charge": "Naładowanie akumulatora",
    "Dimmer at night": "Ciemniej w nocy",
    "Info bar": "Pasek informacji",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -3060,7 +3079,8 @@ module.exports = [
    "Battery charge": "Carga da bateria",
    "Dimmer at night": "Mais escuro à noite",
    "Info bar": "Barra de informações",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -3213,7 +3233,8 @@ module.exports = [
    "Battery charge": "Carga da bateria",
    "Dimmer at night": "Mais escuro à noite",
    "Info bar": "Barra de informações",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -3366,7 +3387,8 @@ module.exports = [
    "Battery charge": "Încărcarea bateriei",
    "Dimmer at night": "Mai slab noaptea",
    "Info bar": "Bară de informații",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -3519,7 +3541,8 @@ module.exports = [
    "Battery charge": "Заряд батареи",
    "Dimmer at night": "Тусклее ночью",
    "Info bar": "Инфопанель",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -3672,7 +3695,8 @@ module.exports = [
    "Battery charge": "Nabitie batérie",
    "Dimmer at night": "Tmavšie v noci",
    "Info bar": "Informačný pruh",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -3825,7 +3849,8 @@ module.exports = [
    "Battery charge": "Napolnjenost baterije",
    "Dimmer at night": "Ponoči temnejše",
    "Info bar": "Informacijska vrstica",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -3978,7 +4003,8 @@ module.exports = [
    "Battery charge": "Batteriladdning",
    "Dimmer at night": "Dämpad på natten",
    "Info bar": "Infofält",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -4131,7 +4157,8 @@ module.exports = [
    "Battery charge": "ระดับแบตเตอรี่",
    "Dimmer at night": "หรี่ลงตอนกลางคืน",
    "Info bar": "แถบข้อมูล",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -4284,7 +4311,8 @@ module.exports = [
    "Battery charge": "Batarya şarjı",
    "Dimmer at night": "Gece daha loş",
    "Info bar": "Bilgi çubuğu",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -4437,7 +4465,8 @@ module.exports = [
    "Battery charge": "Заряд батареї",
    "Dimmer at night": "Тьмяніше вночі",
    "Info bar": "Інфопанель",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -4590,7 +4619,8 @@ module.exports = [
    "Battery charge": "Mức pin",
    "Dimmer at night": "Tối hơn vào ban đêm",
    "Info bar": "Thanh thông tin",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -4745,7 +4775,8 @@ module.exports = [
    "Battery charge": "电池电量",
    "Dimmer at night": "夜间调暗",
    "Info bar": "信息栏",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  },
  {
@@ -4900,7 +4931,8 @@ module.exports = [
    "Battery charge": "電池電量",
    "Dimmer at night": "夜間調暗",
    "Info bar": "資訊列",
-   "Battery kW usage": "Battery kW usage"
+   "Battery kW usage": "Battery kW usage",
+   "Real speed": "Real speed"
   }
  }
 ];

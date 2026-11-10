@@ -1,7 +1,7 @@
 {
  "id": "robertn_waze_cluster",
  "title": "Cluster functions",
- "version": "0.9.13",
+ "version": "0.9.14",
  "screens": [
   {
    "name": "MAIN",
@@ -169,6 +169,13 @@
   {
    "key": "clusterRpm",
    "label": "Engine speed",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "clusterSpeed",
+   "label": "Real speed",
    "type": "bool",
    "default": false,
    "hidden": true

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.14
+
+- **Info bar**: Real speed (the car's own speed, km/h), switched on like its other items.
+
 ## 0.9.13
 
 - Robert's latest Waze on cluster (0.9.14 here) and cluster renderer 0.5.2.
