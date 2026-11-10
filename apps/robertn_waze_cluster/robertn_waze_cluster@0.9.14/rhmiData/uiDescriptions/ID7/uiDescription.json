@@ -110,6 +110,28 @@
      }
     },
     "11": {
+     "type": "checkBox",
+     "name": "SET_REALSPEEDCLUSTER",
+     "properties": {
+      "Visible": {
+       "value": 1,
+       "type": "UInt"
+      },
+      "Focusable": {
+       "value": 2,
+       "type": "UInt"
+      }
+     },
+     "rows": [
+      {
+       "Text": {
+        "value": "SID_ROBERTN_WAZE_CLUSTER_SET_REALSPEEDCLUSTER",
+        "type": "StringId"
+       }
+      }
+     ]
+    },
+    "12": {
      "type": "dropDownMenu",
      "name": "SET_POWERUNIT",
      "rows": [
@@ -143,7 +165,7 @@
       }
      }
     },
-    "12": {
+    "13": {
      "type": "dropDownMenu",
      "name": "SET_TORQUEUNIT",
      "rows": [
@@ -177,7 +199,7 @@
       }
      }
     },
-    "13": {
+    "14": {
      "type": "dropDownMenu",
      "name": "SET_PRESSUNIT",
      "rows": [
@@ -211,7 +233,7 @@
       }
      }
     },
-    "14": {
+    "15": {
      "type": "dropDownMenu",
      "name": "SET_THEME",
      "rows": [
@@ -251,7 +273,7 @@
       }
      }
     },
-    "15": {
+    "16": {
      "type": "dropDownMenu",
      "name": "SET_LAYOUT",
      "rows": [
@@ -279,7 +301,7 @@
       }
      }
     },
-    "16": {
+    "17": {
      "type": "dropDownMenu",
      "name": "SET_DEMO",
      "rows": [
@@ -313,7 +335,7 @@
       }
      }
     },
-    "17": {
+    "18": {
      "type": "button",
      "name": "REPO_CREDITS",
      "properties": {
@@ -339,7 +361,7 @@
       }
      ]
     },
-    "18": {
+    "19": {
      "type": "title",
      "name": "SETTINGS_TITLE",
      "rows": [

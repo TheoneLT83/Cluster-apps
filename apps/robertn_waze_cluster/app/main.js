@@ -64,6 +64,8 @@ const PANEL_ITEMS = [['power', 'clusterKw', 'Battery kW usage'], ['soc', 'cluste
     ['coolant', 'clusterCoolant', 'COOLANT'], ['boost', 'clusterBoost', 'Boost'], ['rpm', 'clusterRpm', 'Engine speed'],
     ['torque', 'clusterTorque', 'TORQUE'], ['speed', 'clusterSpeed', 'Real speed']];
 const PANEL_MAX = 4;
+/* An info bar item the car and the settings offer: the battery's only with eDrive, Real speed only with its setting. */
+const offers = (k, hv, settings) => (k !== 'power' && k !== 'soc' || hv.installed()) && (k !== 'speed' || !!settings.get('realSpeedCluster'));
 const RPM_MAX = 7000;
 const LOG_LINES = 60;
 const HMI_CONTEXT = ['de.bmw.infotainment.hmi.hmicontext.HMIContext', 'HMI_CID'];
@@ -162,7 +164,7 @@ async function background(bg) {
     /* The cluster's info bar (cluster_panel.js): the items switched on (the battery's only with eDrive; none of them:
      * oil, coolant and engine speed), while the Waze map shows on the cluster and setting clusterPanel is on. */
     const panelKinds = () => {
-        const on = PANEL_ITEMS.filter(([k, key]) => settings.get(key) && ((k !== 'power' && k !== 'soc') || hv.installed())).map(([k]) => k);
+        const on = PANEL_ITEMS.filter(([k, key]) => settings.get(key) && offers(k, hv, settings)).map(([k]) => k);
         return (on.length ? on : ['oil', 'coolant', 'rpm']).slice(0, PANEL_MAX);
     };
     const panelOn = () => settings.get('clusterPanel') !== false && ctl.clusterOn() === true && !!ctl.renderStatus && ctl.renderStatus.state === 'showing';
@@ -598,7 +600,7 @@ mgu.run({
                 camera(2 + CLUSTER_ITEMS.length);
                 // the info bar's items, as the HUD's reading: a button each, lit while on (up to PANEL_MAX)
                 const barOn = settings.get('clusterPanel') !== false && clusterNow;
-                const offered = PANEL_ITEMS.filter(([k]) => (k !== 'power' && k !== 'soc') || hv.installed());
+                const offered = PANEL_ITEMS.filter(([k]) => offers(k, hv, settings));
                 const count = offered.filter(([, key]) => settings.get(key)).length;
                 label(cv, th, t('Info bar') + '  ' + count + '/' + PANEL_MAX, 48, 356);      // how many are on, of the most
                 offered.forEach(([k, key, text], i) => {

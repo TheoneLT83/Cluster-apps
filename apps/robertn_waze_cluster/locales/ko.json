@@ -148,6 +148,7 @@
     "Dimmer at night": "야간에 어둡게",
     "Info bar": "정보 바",
     "Battery kW usage": "Battery kW usage",
-    "Real speed": "Real speed"
+    "Real speed": "Real speed",
+    "Real speed on cluster": "Real speed on cluster"
   }
 }

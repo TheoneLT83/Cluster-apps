@@ -148,6 +148,7 @@
     "Dimmer at night": "Himmeämpi yöllä",
     "Info bar": "Tietopalkki",
     "Battery kW usage": "Battery kW usage",
-    "Real speed": "Real speed"
+    "Real speed": "Real speed",
+    "Real speed on cluster": "Real speed on cluster"
   }
 }

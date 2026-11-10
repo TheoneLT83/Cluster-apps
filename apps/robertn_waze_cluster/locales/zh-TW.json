@@ -150,6 +150,7 @@
     "Dimmer at night": "夜間調暗",
     "Info bar": "資訊列",
     "Battery kW usage": "Battery kW usage",
-    "Real speed": "Real speed"
+    "Real speed": "Real speed",
+    "Real speed on cluster": "Real speed on cluster"
   }
 }

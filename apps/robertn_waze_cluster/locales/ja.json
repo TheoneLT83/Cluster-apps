@@ -148,6 +148,7 @@
     "Dimmer at night": "夜間は暗く",
     "Info bar": "情報バー",
     "Battery kW usage": "Battery kW usage",
-    "Real speed": "Real speed"
+    "Real speed": "Real speed",
+    "Real speed on cluster": "Real speed on cluster"
   }
 }

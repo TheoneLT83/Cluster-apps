@@ -152,7 +152,8 @@ module.exports = [
    "Dimmer at night": "أخفت في الليل",
    "Info bar": "شريط المعلومات",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -306,7 +307,8 @@ module.exports = [
    "Dimmer at night": "Tmavší v noci",
    "Info bar": "Informační lišta",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -460,7 +462,8 @@ module.exports = [
    "Dimmer at night": "Dæmpet om natten",
    "Info bar": "Infobjælke",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -614,7 +617,8 @@ module.exports = [
    "Dimmer at night": "Nachts gedimmt",
    "Info bar": "Infoleiste",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -768,7 +772,8 @@ module.exports = [
    "Dimmer at night": "Πιο αμυδρό τη νύχτα",
    "Info bar": "Γραμμή πληροφοριών",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -922,7 +927,8 @@ module.exports = [
    "Dimmer at night": "Más tenue de noche",
    "Info bar": "Barra de información",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -1076,7 +1082,8 @@ module.exports = [
    "Dimmer at night": "Más tenue de noche",
    "Info bar": "Barra de información",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -1230,7 +1237,8 @@ module.exports = [
    "Dimmer at night": "Himmeämpi yöllä",
    "Info bar": "Tietopalkki",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -1384,7 +1392,8 @@ module.exports = [
    "Dimmer at night": "Atténué la nuit",
    "Info bar": "Barre d'infos",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -1538,7 +1547,8 @@ module.exports = [
    "Dimmer at night": "Atténué la nuit",
    "Info bar": "Barre d'infos",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -1692,7 +1702,8 @@ module.exports = [
    "Dimmer at night": "עמום יותר בלילה",
    "Info bar": "סרגל מידע",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -1846,7 +1857,8 @@ module.exports = [
    "Dimmer at night": "Éjjel halványabb",
    "Info bar": "Infósáv",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -2000,7 +2012,8 @@ module.exports = [
    "Dimmer at night": "Lebih redup di malam hari",
    "Info bar": "Bilah info",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -2154,7 +2167,8 @@ module.exports = [
    "Dimmer at night": "Più tenue di notte",
    "Info bar": "Barra informazioni",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -2308,7 +2322,8 @@ module.exports = [
    "Dimmer at night": "夜間は暗く",
    "Info bar": "情報バー",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -2462,7 +2477,8 @@ module.exports = [
    "Dimmer at night": "야간에 어둡게",
    "Info bar": "정보 바",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -2616,7 +2632,8 @@ module.exports = [
    "Dimmer at night": "Dempet om natten",
    "Info bar": "Infolinje",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -2772,7 +2789,8 @@ module.exports = [
    "Dimmer at night": "'s Nachts gedimd",
    "Info bar": "Infobalk",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -2926,7 +2944,8 @@ module.exports = [
    "Dimmer at night": "Ciemniej w nocy",
    "Info bar": "Pasek informacji",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -3080,7 +3099,8 @@ module.exports = [
    "Dimmer at night": "Mais escuro à noite",
    "Info bar": "Barra de informações",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -3234,7 +3254,8 @@ module.exports = [
    "Dimmer at night": "Mais escuro à noite",
    "Info bar": "Barra de informações",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -3388,7 +3409,8 @@ module.exports = [
    "Dimmer at night": "Mai slab noaptea",
    "Info bar": "Bară de informații",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -3542,7 +3564,8 @@ module.exports = [
    "Dimmer at night": "Тусклее ночью",
    "Info bar": "Инфопанель",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -3696,7 +3719,8 @@ module.exports = [
    "Dimmer at night": "Tmavšie v noci",
    "Info bar": "Informačný pruh",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -3850,7 +3874,8 @@ module.exports = [
    "Dimmer at night": "Ponoči temnejše",
    "Info bar": "Informacijska vrstica",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -4004,7 +4029,8 @@ module.exports = [
    "Dimmer at night": "Dämpad på natten",
    "Info bar": "Infofält",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -4158,7 +4184,8 @@ module.exports = [
    "Dimmer at night": "หรี่ลงตอนกลางคืน",
    "Info bar": "แถบข้อมูล",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -4312,7 +4339,8 @@ module.exports = [
    "Dimmer at night": "Gece daha loş",
    "Info bar": "Bilgi çubuğu",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -4466,7 +4494,8 @@ module.exports = [
    "Dimmer at night": "Тьмяніше вночі",
    "Info bar": "Інфопанель",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -4620,7 +4649,8 @@ module.exports = [
    "Dimmer at night": "Tối hơn vào ban đêm",
    "Info bar": "Thanh thông tin",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -4776,7 +4806,8 @@ module.exports = [
    "Dimmer at night": "夜间调暗",
    "Info bar": "信息栏",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  },
  {
@@ -4932,7 +4963,8 @@ module.exports = [
    "Dimmer at night": "夜間調暗",
    "Info bar": "資訊列",
    "Battery kW usage": "Battery kW usage",
-   "Real speed": "Real speed"
+   "Real speed": "Real speed",
+   "Real speed on cluster": "Real speed on cluster"
   }
  }
 ];

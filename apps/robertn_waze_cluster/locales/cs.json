@@ -148,6 +148,7 @@
     "Dimmer at night": "Tmavší v noci",
     "Info bar": "Informační lišta",
     "Battery kW usage": "Battery kW usage",
-    "Real speed": "Real speed"
+    "Real speed": "Real speed",
+    "Real speed on cluster": "Real speed on cluster"
   }
 }

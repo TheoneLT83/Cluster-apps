@@ -23,22 +23,26 @@
     </container>
     <container id="9" type="state" widget="LT_State_Wide">
         <property id="9" value="1"/>
-        <layoutGroup id="19" name="List">
+        <layoutGroup id="20" name="List">
             <property id="3" value="1"/>
             <component id="10" type="dropDownMenu"/>
-            <component id="11" type="dropDownMenu"/>
+            <component id="11" type="checkBox" widget="LT_CheckBox_1Row">
+                <property id="2" value="1"/>
+                <property id="3" value="2"/>
+            </component>
             <component id="12" type="dropDownMenu"/>
             <component id="13" type="dropDownMenu"/>
             <component id="14" type="dropDownMenu"/>
             <component id="15" type="dropDownMenu"/>
             <component id="16" type="dropDownMenu"/>
-            <component id="17" type="button" widget="LT_Button_2Row_2Text">
+            <component id="17" type="dropDownMenu"/>
+            <component id="18" type="button" widget="LT_Button_2Row_2Text">
                 <property id="2" value="1"/>
                 <property id="3" value="2"/>
             </component>
         </layoutGroup>
-        <layoutGroup id="20" name="Titlebar">
-            <component id="18" type="title"/>
+        <layoutGroup id="21" name="Titlebar">
+            <component id="19" type="title"/>
         </layoutGroup>
     </container>
 </application>

@@ -91,6 +91,12 @@
       "reset": 1
     },
     {
+      "key": "realSpeedCluster",
+      "label": "Real speed on cluster",
+      "type": "bool",
+      "default": false
+    },
+    {
       "key": "hudOn",
       "label": "Displays on HUD",
       "type": "bool",

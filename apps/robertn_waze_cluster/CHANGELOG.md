@@ -2,7 +2,7 @@
 
 ## 0.9.14
 
-- **Info bar**: Real speed (the car's own speed, km/h), switched on like its other items.
+- **Info bar**: Real speed (the car's own speed, km/h), offered on the Display page once Settings has **Real speed on cluster** on.
 
 ## 0.9.13
 

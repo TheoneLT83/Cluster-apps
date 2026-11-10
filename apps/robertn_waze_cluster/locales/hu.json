@@ -148,6 +148,7 @@
     "Dimmer at night": "Éjjel halványabb",
     "Info bar": "Infósáv",
     "Battery kW usage": "Battery kW usage",
-    "Real speed": "Real speed"
+    "Real speed": "Real speed",
+    "Real speed on cluster": "Real speed on cluster"
   }
 }
