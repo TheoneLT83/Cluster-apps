@@ -2,7 +2,7 @@
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
   "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range, oil and coolant, boost, power and torque, or engine speed",
-  "version": "0.9.14",
+  "version": "0.9.15",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
   "memoryKB": 153600,
@@ -156,6 +156,48 @@
       "hidden": true
     },
     {
+      "key": "hudEv",
+      "label": "Electric range",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "hudSoc",
+      "label": "Battery charge",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "hudTemps",
+      "label": "Oil and coolant",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "hudBoost",
+      "label": "Boost",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "hudPower",
+      "label": "Power and torque",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "hudRpm",
+      "label": "Engine speed",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
       "key": "realSpeed",
       "label": "Real speed on HUD",
       "type": "bool",
@@ -266,8 +308,8 @@
         ]
       ],
       "when": {
-        "hudData": [
-          "power"
+        "hudPower": [
+          true
         ]
       }
     },
@@ -291,8 +333,8 @@
         ]
       ],
       "when": {
-        "hudData": [
-          "power"
+        "hudPower": [
+          true
         ]
       }
     },
@@ -316,8 +358,8 @@
         ]
       ],
       "when": {
-        "hudData": [
-          "boost"
+        "hudBoost": [
+          true
         ]
       }
     },

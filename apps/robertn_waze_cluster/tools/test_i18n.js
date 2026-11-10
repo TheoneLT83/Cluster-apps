@@ -61,7 +61,7 @@ list('PAGES').forEach((w) => used.add(w));
 // the Display page's switches and readings: [setting or value, words]
 // the info bar's items: [item, setting, words]
 Function(`return ${/const PANEL_ITEMS = (\[[\s\S]*?\]\]);/.exec(MAIN)[1]};`)().forEach((it) => used.add(it[2]));
-['HUD_ITEMS', 'HUD_DATA'].forEach((n) => Function(`return ${new RegExp(`const ${n} = (\\[[\\s\\S]*?\\]\\]);`).exec(MAIN)[1]};`)().forEach((it) => used.add(it[1])));
+['HUD_ITEMS', 'HUD_DATA'].forEach((n) => Function(`return ${new RegExp(`const ${n} = (\\[[\\s\\S]*?\\]\\]);`).exec(MAIN)[1]};`)().forEach((it) => used.add(it[it.length - 1])));
 ['Cluster', 'HUD', 'Cluster + HUD'].forEach((w) => { ok(MAIN.indexOf(`'${w}']`) >= 0, `app/main.js: ${w}`); used.add(w); });
 // the settings' labels and choices (translated at a language change), and the HMI's strings the kit writes
 const APP = JSON.parse(fs.readFileSync(path.join(HERE, 'app', 'app.json'), 'utf8'));

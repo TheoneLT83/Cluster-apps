@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.15
+
+- **The HUD's row, wider**: the left turn signal at the HUD's left edge, left of BMW's speed-limit sign; the gear under
+  BMW's km/h, as small as it; the right turn signal at the HUD's right edge. The readings get the space from after
+  BMW's speed to the right turn signal.
+- **Up to 3 readings on the HUD** (Display > HUD, n/3), as the cluster's info bar: the one chosen before stays on.
+
 ## 0.9.14
 
 - **Info bar**: Real speed (the car's own speed, km/h), offered on the Display page once Settings has **Real speed on cluster** on.

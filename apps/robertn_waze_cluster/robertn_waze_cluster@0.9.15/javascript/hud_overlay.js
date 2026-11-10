@@ -4,16 +4,16 @@
  * hud_overlay - the turn signals and the gear on the HUD, as image layers of the cluster renderer
  * (cluster_render_client.js, target `hud`, 800 x 480), over BMW's own HUD content and the map:
  *
- *   one row under the map (inside its bottom edge when the HUD has no room under it), within its sides:
- *   left arrow           after BMW's own speed reading (SPEED_END), blinking (BLINK_MS on, BLINK_MS off, lit first) while
- *                        that turn signal is on
- *   gear                 beside the left arrow: P, R, N, D or D1 ... D9
- *   data                 between the gear and the right arrow, the one reading chosen: the electric range with the
- *                        eDrive power, oil and coolant, boost, power and torque, or engine speed (sliders carry their
- *                        value in the knob)
- *   right arrow          at the map's right edge
+ *   left arrow           left of BMW's speed-limit sign, at the HUD's left edge (LEFT_ARROW), blinking (BLINK_MS on,
+ *                        BLINK_MS off, lit first) while that turn signal is on
  *   real speed           left of BMW's own speed reading, in its row (SPEED_RECT, where the HUD has room for its
  *                        digits): the car's own speed, for a car whose mileage blocker stops BMW's
+ *   gear                 under BMW's km/h (GEAR_RECT), as small as it: P, R, N, D or D1 ... D9
+ *   data                 in the row under the map, from after BMW's speed reading (SPEED_END) to the right arrow: up
+ *                        to three readings chosen, in their order: the electric range with the eDrive power, battery
+ *                        charge, oil and coolant, boost, power and torque, engine speed (sliders carry their value in
+ *                        the knob)
+ *   right arrow          at the HUD's right edge (RIGHT_END), in that row
  *
  * The HUD shows black as nothing: each layer is drawn on transparent pixels and only what is lit shows.
  * A layer stays visible once made and an arrow that is off is sent as blank pixels, so the HUD's slot is not
@@ -39,10 +39,14 @@ const BLINK_MS = 330;
 /* The arrow, one size, its tail short: the space it leaves goes to the data */
 const ARROW = { medium: [34, 26] };
 const ROW_H = 46;
-const GEAR_W = 38, GEAR_H = ROW_H;          // D1 ... D9 at 36 px are 36 wide
-/* Where BMW's own speed reading (its km/h) ends on the HUD, from a photo of a G-series HUD: the left arrow
- * comes after it. */
+/* Where BMW's own speed reading (its km/h) ends on the HUD, from a photo of a G-series HUD: the data comes after it. */
 const SPEED_END = 356;
+/* The edges of what the HUD's glass shows in that row (from a photo of a G21's, its corner marks): the left arrow
+ * left of BMW's speed-limit sign, the right arrow's end. */
+const LEFT_ARROW_X = 120, RIGHT_END = 670;
+/* The gear under BMW's km/h, down to the glass's bottom edge. */
+const GEAR_RECT = { x: 304, y: 352, w: 56, h: 26 };
+const GEAR_W = GEAR_RECT.w, GEAR_H = GEAR_RECT.h;
 /* The real speed, left of BMW's own speed and right of its speed-limit sign (the same photo), right-aligned. */
 const SPEED_RECT = { x: 200, y: 328, w: 70, h: 52 };
 const MAX_KW = 60;
@@ -75,70 +79,76 @@ function rowRect(map) {
     return { x: a.x, y: below + ROW_H <= HUD_H ? below : Math.max(0, a.y + a.h - ROW_H - 4), w: a.w, h: ROW_H };
 }
 
-/* Where an arrow of aw x ah goes in the row: the left one after BMW's speed reading (short of the box's middle), the
- * right one at the box's right edge. */
+/* Where an arrow of aw x ah goes: the left one at the HUD's left edge in BMW's speed row (beside its speed-limit
+ * sign), the right one at the HUD's right edge in the row under the map. */
 function arrowRect(map, side, aw, ah) {
-    const a = anchorRect(map), row = rowRect(map), k = Math.min(1, (ROW_H - 8) / ah);
-    const w = Math.round(aw * k), h = Math.round(ah * k), y = row.y + Math.round((ROW_H - h) / 2);
-    if (side === 'right') return { x: a.x + a.w - w - 4, y, w, h };
-    return { x: Math.round(Math.max(a.x + 4, Math.min(SPEED_END, a.x + a.w * 0.55 - w))), y, w, h };
+    const row = rowRect(map), k = Math.min(1, (ROW_H - 8) / ah);
+    const w = Math.round(aw * k), h = Math.round(ah * k);
+    if (side === 'right') return { x: RIGHT_END - w, y: row.y + Math.round((ROW_H - h) / 2), w, h };
+    return { x: LEFT_ARROW_X, y: SPEED_RECT.y + Math.round((SPEED_RECT.h - h) / 2), w, h };
 }
 
-/* The gear, beside the left arrow. */
-function gearRect(map, arrowSize) {
-    const [aw, ah] = ARROW[arrowSize] || ARROW.medium, a = arrowRect(map, 'left', aw, ah);
-    return { x: a.x + a.w + 2, y: rowRect(map).y, w: GEAR_W, h: GEAR_H };
+/* The gear, under BMW's km/h. */
+function gearRect() {
+    return Object.assign({}, GEAR_RECT);
 }
 
-/* The data, between the gear and the right arrow; null when there is no room. */
+/* The data, from after BMW's speed reading to the right arrow, in the row under the map; null when there is no room. */
 function dataRect(map, arrowSize) {
-    const [aw, ah] = ARROW[arrowSize] || ARROW.medium, g = gearRect(map, arrowSize), r = arrowRect(map, 'right', aw, ah);
-    const x = g.x + g.w + 12, w = r.x - 8 - x;
-    return w >= 40 ? { x, y: g.y, w, h: ROW_H } : null;
+    const [aw, ah] = ARROW[arrowSize] || ARROW.medium, r = arrowRect(map, 'right', aw, ah);
+    const x = SPEED_END + 8, w = r.x - 10 - x;
+    return w >= 40 ? { x, y: rowRect(map).y, w, h: ROW_H } : null;
 }
 
-/* The data items across x, y (the row's top) to x + w, k the scale, filling it: a slider takes the width the values
- * leave (at least 64 px), the values end at the right edge; values alone are spread, the first at the left edge, the
- * last ending at the right one. What does not fit is left out from the end. An item:
- * { kind: 'slider', value, min, max, text, green } a track from min to max (a mark at 0 when it is inside) and a knob
- * at the value with text in it, green when green is set; or { kind: 'value', label, text } a small label over its
- * value. */
+/* The data items across x, y (the row's top) to x + w, k the scale, filling it, in their order: the sliders share
+ * the width the values leave (each at least 44 px); values alone are spread, the first at the left edge, the last
+ * ending at the right one. What does not fit is left out from the end. An item:
+ * { kind: 'slider', value, min, max, text, green, color } a track from min to max (a mark at 0 when it is inside) and
+ * a knob at the value with text in it, green when green is set, the track lit in color from zero; or
+ * { kind: 'value', label, text } a small label over its value. */
 function drawData(cv, x, y, w, items, k) {
     k = k || 1;
-    const GAP = 10 * k, MIN_TW = 64 * k;
-    const width = (it) => Math.max(cv.textWidth(it.text, 24 * k, { font: 'bold' }), cv.textWidth(it.label, 13 * k, { font: 'bold' }));
-    const slider = (items || []).filter((it) => it.kind === 'slider')[0];
-    let vals = (items || []).filter((it) => it.kind !== 'slider').map((it) => ({ it, w: width(it) }));
-    const need = () => vals.reduce((a, v) => a + v.w, 0) + GAP * (slider ? vals.length : Math.max(0, vals.length - 1)) + (slider ? MIN_TW : 0);
-    while (vals.length && need() > w) vals.pop();
-    const value = (v, at) => {
-        cv.text(v.it.label, at, y + 14 * k, 13 * k, DIM, { font: 'bold' });
-        cv.text(v.it.text, at, y + 40 * k, 24 * k, WHITE, { font: 'bold' });
-    };
-    const sum = vals.reduce((a, v) => a + v.w, 0);
-    if (slider) {
-        if (MIN_TW > w) return;
-        const tw = w - sum - GAP * vals.length, cy = y + ROW_H * k / 2, v = typeof slider.value === 'number' ? slider.value : null;
-        const span = slider.max - slider.min, at0 = (val) => x + (Math.max(slider.min, Math.min(slider.max, val)) - slider.min) / span * tw;
-        cv.fillRect(x, cy - 2 * k, tw, 4 * k, DIM);
-        // a coloured slider (the battery's power): the track lit from zero to the value in its colour
-        if (slider.color && v !== null) {
-            const a = at0(Math.max(slider.min, Math.min(0, slider.max))), b = at0(v);
-            cv.fillRect(Math.min(a, b), cy - 2 * k, Math.abs(b - a), 4 * k, slider.color);
-        }
-        if (slider.min < 0 && slider.max > 0) cv.fillRect(at0(0) - 1 * k, cy - 8 * k, 2 * k, 16 * k, DIM);
-        const text = v === null ? '-' : String(slider.text);
-        const kw = Math.max(36 * k, cv.textWidth(text, 19 * k, { font: 'bold' }) + 14 * k);
-        const kx = Math.max(x, Math.min(x + tw - kw, (v === null ? at0(Math.max(slider.min, Math.min(0, slider.max))) : at0(v)) - kw / 2));
-        cv.roundRect(kx, cy - 12 * k, kw, 24 * k, 12 * k, slider.color || (slider.green ? GREEN : WHITE));
-        cv.text(text, kx + kw / 2, cy + 7 * k, 19 * k, '#000000', { font: 'bold', align: 'center' });
-        let at = x + tw + GAP;
-        vals.forEach((it) => { value(it, at); at += it.w + GAP; });
+    const GAP = 8 * k, MIN_TW = 44 * k;
+    const width = (it) => (it.kind === 'slider' ? 0 : Math.max(cv.textWidth(it.text, 22 * k, { font: 'bold' }), cv.textWidth(it.label, 12 * k, { font: 'bold' })));
+    let all = (items || []).map((it) => ({ it, w: width(it) }));
+    const need = () => all.reduce((a, v) => a + (v.it.kind === 'slider' ? MIN_TW : v.w), 0) + GAP * Math.max(0, all.length - 1);
+    while (all.length && need() > w) all.pop();
+    if (!all.length) return;
+    const sliders = all.filter((v) => v.it.kind === 'slider').length;
+    const sum = all.reduce((a, v) => a + v.w, 0);
+    if (sliders) {
+        const tw = (w - sum - GAP * (all.length - 1)) / sliders;
+        let at = x;
+        all.forEach((v) => {
+            if (v.it.kind === 'slider') { drawSlider(cv, at, y + ROW_H * k / 2, tw, v.it, k); at += tw + GAP; } else { drawValue(cv, at, y, v.it, k); at += v.w + GAP; }
+        });
         return;
     }
-    const free = vals.length > 1 ? (w - sum) / (vals.length - 1) : 0;
+    const free = all.length > 1 ? (w - sum) / (all.length - 1) : 0;
     let at = x;
-    vals.forEach((it) => { value(it, at); at += it.w + free; });
+    all.forEach((v) => { drawValue(cv, at, y, v.it, k); at += v.w + free; });
+}
+
+function drawValue(cv, at, y, it, k) {
+    cv.text(it.label, at, y + 14 * k, 12 * k, DIM, { font: 'bold' });
+    cv.text(it.text, at, y + 39 * k, 22 * k, WHITE, { font: 'bold' });
+}
+
+function drawSlider(cv, x, cy, tw, slider, k) {
+    const v = typeof slider.value === 'number' ? slider.value : null;
+    const span = slider.max - slider.min, at0 = (val) => x + (Math.max(slider.min, Math.min(slider.max, val)) - slider.min) / span * tw;
+    cv.fillRect(x, cy - 2 * k, tw, 4 * k, DIM);
+    // a coloured slider (the battery's power): the track lit from zero to the value in its colour
+    if (slider.color && v !== null) {
+        const a = at0(Math.max(slider.min, Math.min(0, slider.max))), b = at0(v);
+        cv.fillRect(Math.min(a, b), cy - 2 * k, Math.abs(b - a), 4 * k, slider.color);
+    }
+    if (slider.min < 0 && slider.max > 0) cv.fillRect(at0(0) - 1 * k, cy - 8 * k, 2 * k, 16 * k, DIM);
+    const text = v === null ? '-' : String(slider.text);
+    const kw = Math.max(36 * k, cv.textWidth(text, 19 * k, { font: 'bold' }) + 14 * k);
+    const kx = Math.max(x, Math.min(x + tw - kw, (v === null ? at0(Math.max(slider.min, Math.min(0, slider.max))) : at0(v)) - kw / 2));
+    cv.roundRect(kx, cy - 12 * k, kw, 24 * k, 12 * k, slider.color || (slider.green ? GREEN : WHITE));
+    cv.text(text, kx + kw / 2, cy + 7 * k, 19 * k, '#000000', { font: 'bold', align: 'center' });
 }
 
 /* An arrow pointing left (dir -1) or right (dir 1), filling w x h. */
@@ -164,12 +174,17 @@ function drawLight(cv, w, h) {
 const LIGHT_HUD = { w: 44, h: 112 };
 const LIGHT_CLUSTER = { x: 516, y: 24, w: 56, h: 150 };     // small, at the top of the cluster's middle
 
-function drawGear(cv, gear) {
-    const g = String(gear || '');
-    // one word, as BMW's own gear reading: P, R, N, D, D3; a longer one smaller to fit
-    const size = cv.textWidth(g, 36, { font: 'gear' }) <= GEAR_W - 2 ? 36 : 28;
-    // the capitals (0.7 of the size) centred in the row, as the arrows are
-    cv.text(g, 2, Math.round((GEAR_H + 0.7 * size) / 2), size, g.charAt(0) === 'R' ? AMBER : WHITE, { font: 'gear' });
+/* The gear on cv from x, y (0, 0: its layer), k the scale, alpha its brightness (a preview's faint one). */
+function drawGear(cv, gear, o) {
+    const p = o || {}, k = p.k || 1, x = p.x || 0, y = p.y || 0;
+    const col = (c) => (p.alpha === undefined ? c : withAlpha(c, p.alpha));
+    const g = String(gear || ''), size = 24 * k, gap = 3 * k;
+    // as small as BMW's km/h over it, the letters spread wider; R in amber
+    let at = x + 1 * k;
+    for (const ch of g) {
+        cv.text(ch, at, y + Math.round((GEAR_H * k + 0.7 * size) / 2), size, col(g.charAt(0) === 'R' ? AMBER : WHITE), { font: 'gear' });
+        at += cv.textWidth(ch, size, { font: 'gear' }) + gap;
+    }
 }
 
 class HudOverlay {
@@ -317,4 +332,4 @@ class HudOverlay {
 }
 
 module.exports = { HudOverlay, drawLight, LIGHT_HUD, LIGHT_CLUSTER, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
-    ROW_H, SPEED_END, SPEED_RECT, MAX_KW, GREEN, WHITE, AMBER, DIM };
+    GEAR_RECT, LEFT_ARROW_X, RIGHT_END, ROW_H, SPEED_END, SPEED_RECT, MAX_KW, GREEN, WHITE, AMBER, DIM };

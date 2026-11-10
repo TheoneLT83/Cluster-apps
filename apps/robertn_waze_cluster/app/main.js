@@ -31,7 +31,7 @@ const i18n = require('./i18n.js');
 const { WazeClusterControl, HUD_SIZE_STEPS, ZOOM_STEP } = require('./waze_cluster_control.js');
 const { LogsControl } = require('./logs_control.js');
 const path = require('path');
-const { HudOverlay, drawLight, LIGHT_HUD, anchorRect, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
+const { HudOverlay, drawLight, LIGHT_HUD, anchorRect, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, drawGear, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
 const PANEL = require('./cluster_panel.js');
 const { HudClaim } = require('./kit/hud_claim');
@@ -55,9 +55,11 @@ const NIGHT_DIM = 0.4;
 const DAY_NIGHT = { KEINE_AENDERUNG: 0, TAG: 1, NACHT: 2, SIGNAL_UNGUELTIG: 3 };
 /* The part of the HUD's 800 x 480 scene the glass shows, about (a G21's, Redline's hud.js), with BMW's speed row. */
 const HUD_GLASS = { x: 80, y: 100, w: 640, h: 290 };
-/* What shows between the turn signals (the setting hudData), one at a time. */
-const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['soc', 'Battery charge'], ['temps', 'Oil and coolant'], ['boost', 'Boost'],
-    ['power', 'Power and torque'], ['rpm', 'Engine speed']];
+/* The HUD's readings in the row under the map, up to HUD_DATA_MAX at once, in this order: the reading, its setting,
+ * its words (hudData: the one reading an earlier version chose, taken over once). */
+const HUD_DATA_MAX = 3;
+const HUD_DATA = [['ev', 'hudEv', 'Electric range'], ['soc', 'hudSoc', 'Battery charge'], ['temps', 'hudTemps', 'Oil and coolant'],
+    ['boost', 'hudBoost', 'Boost'], ['power', 'hudPower', 'Power and torque'], ['rpm', 'hudRpm', 'Engine speed']];
 /* The cluster's info bar (cluster_panel.js): its items, each switched on the Display page (up to PANEL_MAX): the item,
  * its setting, its words. */
 const PANEL_ITEMS = [['power', 'clusterKw', 'Battery kW usage'], ['soc', 'clusterSoc', 'Battery charge'], ['oil', 'clusterOil', 'OIL'],
@@ -160,7 +162,11 @@ async function background(bg) {
     const units = new Units({ settings, appRoot: bg.dataDir && path.dirname(bg.dataDir), log });
     // the electric range only while eDrive is installed (it has the battery's numbers)
     const hv = new HvData({ log, appRoot: bg.dataDir && path.dirname(bg.dataDir) });
-    const dataChoice = () => (settings.get('hudData') === 'ev' && !hv.installed() ? 'off' : settings.get('hudData'));
+    // an earlier version's one reading (hudData) becomes its switch, once
+    { const was = settings.get('hudData'), it = HUD_DATA.find(([v]) => v === was); if (it) { settings.set(it[1], true); settings.set('hudData', 'off'); } }
+    /* The HUD's readings switched on that this car has (the battery's with eDrive), up to HUD_DATA_MAX. */
+    const dataChoices = () => HUD_DATA.filter(([v, key]) => settings.get(key) && ((v !== 'ev' && v !== 'soc') || hv.installed())).map(([v]) => v)
+        .slice(0, HUD_DATA_MAX);
     /* The cluster's info bar (cluster_panel.js): the items switched on (the battery's only with eDrive; none of them:
      * oil, coolant and engine speed), while the Waze map shows on the cluster and setting clusterPanel is on. */
     const panelKinds = () => {
@@ -189,8 +195,8 @@ async function background(bg) {
     const toPanel = () => hud.panel(panelOn() ? panelItems() : null);
     // the battery unit is read only while its power, charge or range is shown; eDrive is told which (hv_data.js WANTED)
     const hvWanted = () => {
-        const hudShows = settings.get('hudOn') !== false && hudOk() ? dataChoice() : 'off', kinds = settings.get('clusterPanel') !== false ? panelKinds() : [];
-        const power = ['ev', 'power'].indexOf(hudShows) >= 0 || kinds.indexOf('power') >= 0, soc = hudShows === 'soc' || kinds.indexOf('soc') >= 0;
+        const hudShows = settings.get('hudOn') !== false && hudOk() ? dataChoices() : [], kinds = settings.get('clusterPanel') !== false ? panelKinds() : [];
+        const power = hudShows.some((c) => c === 'ev' || c === 'power') || kinds.indexOf('power') >= 0, soc = hudShows.indexOf('soc') >= 0 || kinds.indexOf('soc') >= 0;
         hv.want({ power, soc });
         if (power || soc) hv.start(); else hv.stop();
     };
@@ -211,34 +217,35 @@ async function background(bg) {
     const dataNow = (preview) => {
         const d = car.data(), real = d && !d.demo ? d : {}, out = [];
         const value = (label, v, unit) => { if (G.isNum(v) || preview) out.push({ kind: 'value', label, text: G.isNum(v) ? Math.round(v) + unit : '--' }); };
-        const c = dataChoice();
         const slider = (v, min, max, text, green, color) => { if (G.isNum(v) || preview) out.push({ kind: 'slider', value: G.isNum(v) ? v : null, min, max, text, green, color }); };
-        if (c === 'ev') {
-            // eased between eDrive's readings; blue out, green recuperating, amber from 60 kW (as the cluster's bar): zero a
-            // quarter along, each side up to the battery's limit
-            const kw = hv.powerShown(), lim = hv.limits() || {}, out = lim.out || PANEL.MAX_OUT, inn = lim.in || PANEL.MAX_IN;
-            slider(G.isNum(kw) ? (kw >= 0 ? 3 * Math.min(1, kw / out) : -Math.min(1, -kw / inn)) : null, -1, 3, G.isNum(kw) ? Math.round(Math.abs(kw)) : '', G.isNum(kw) && kw < 0,
-                !G.isNum(kw) ? null : kw < 0 ? PANEL.GREEN : kw >= PANEL.AMBER_KW ? PANEL.AMBER : PANEL.BLUE);
-            value(t('EV'), hv.range(), ' km');
-        } else if (c === 'soc') {
-            const soc = hv.soc();
-            slider(soc, 0, 100, G.isNum(soc) ? Math.round(soc) + '%' : '');
-        } else if (c === 'boost') {
-            const b = units.boost(G.isNum(boost) && !(d && d.demo) ? boost : NaN);
-            slider(b.value, 0, b.max, G.isNum(b.value) ? (b.unit === 'bar' ? b.value.toFixed(1) : Math.round(b.value)) + ' ' + b.unit : '');
-        } else if (c === 'power') {
-            // the engine's (torque x rpm), and on a hybrid what the battery gives the motor (eDrive's), so electric driving shows
-            const nm = real.torque, rpm = real.rpm, engine = G.isNum(nm) && G.isNum(rpm) ? Math.max(0, nm * rpm / 9549) : null, kw = hv.power();
-            const p = units.power(engine === null && !G.isNum(kw) ? NaN : (engine || 0) + (G.isNum(kw) ? Math.max(0, kw) : 0));
-            const q = units.torque(G.isNum(nm) ? nm : NaN);
-            value(t('POWER'), p.value, ' ' + p.unit);
-            value(t('TORQUE'), q.value, ' ' + q.unit);
-        } else if (c === 'rpm') {
-            slider(real.rpm, 0, RPM_MAX, G.isNum(real.rpm) ? Math.round(real.rpm / 10) * 10 : '');
-        } else if (c === 'temps') {
-            value(t('OIL'), real.oil, '°');
-            value(t('COOLANT'), real.coolant, '°');
-        }
+        dataChoices().forEach((c) => {
+            if (c === 'ev') {
+                // eased between eDrive's readings; blue out, green recuperating, amber from 60 kW (as the cluster's bar): zero a
+                // quarter along, each side up to the battery's limit
+                const kw = hv.powerShown(), lim = hv.limits() || {}, out = lim.out || PANEL.MAX_OUT, inn = lim.in || PANEL.MAX_IN;
+                slider(G.isNum(kw) ? (kw >= 0 ? 3 * Math.min(1, kw / out) : -Math.min(1, -kw / inn)) : null, -1, 3, G.isNum(kw) ? Math.round(Math.abs(kw)) : '', G.isNum(kw) && kw < 0,
+                    !G.isNum(kw) ? null : kw < 0 ? PANEL.GREEN : kw >= PANEL.AMBER_KW ? PANEL.AMBER : PANEL.BLUE);
+                value(t('EV'), hv.range(), ' km');
+            } else if (c === 'soc') {
+                const soc = hv.soc();
+                slider(soc, 0, 100, G.isNum(soc) ? Math.round(soc) + '%' : '');
+            } else if (c === 'boost') {
+                const b = units.boost(G.isNum(boost) && !(d && d.demo) ? boost : NaN);
+                slider(b.value, 0, b.max, G.isNum(b.value) ? (b.unit === 'bar' ? b.value.toFixed(1) : Math.round(b.value)) + ' ' + b.unit : '');
+            } else if (c === 'power') {
+                // the engine's (torque x rpm), and on a hybrid what the battery gives the motor (eDrive's), so electric driving shows
+                const nm = real.torque, rpm = real.rpm, engine = G.isNum(nm) && G.isNum(rpm) ? Math.max(0, nm * rpm / 9549) : null, kw = hv.power();
+                const p = units.power(engine === null && !G.isNum(kw) ? NaN : (engine || 0) + (G.isNum(kw) ? Math.max(0, kw) : 0));
+                const q = units.torque(G.isNum(nm) ? nm : NaN);
+                value(t('POWER'), p.value, ' ' + p.unit);
+                value(t('TORQUE'), q.value, ' ' + q.unit);
+            } else if (c === 'rpm') {
+                slider(real.rpm, 0, RPM_MAX, G.isNum(real.rpm) ? Math.round(real.rpm / 10) * 10 : '');
+            } else if (c === 'temps') {
+                value(t('OIL'), real.oil, '°');
+                value(t('COOLANT'), real.coolant, '°');
+            }
+        });
         return out;
     };
     // the car's own speed (a mileage blocker leaves it alone), with the setting realSpeed
@@ -330,7 +337,7 @@ async function background(bg) {
     ctl.on('change', toCluster);
     settings.onChange((key) => { if (key === 'hudInstalled') toCluster(); });
     log.info('Cluster functions ' + bg.spec.version + ' started (' + (bg.app && bg.app.startReason) + ')');
-    return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, green, panelKinds, panelItems, onChange: (fn) => listeners.push(fn) };
+    return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, dataChoices, hudOk, green, panelKinds, panelItems, onChange: (fn) => listeners.push(fn) };
 }
 
 mgu.run({
@@ -339,7 +346,7 @@ mgu.run({
     async start(ctx) {
         const { ui, settings } = ctx;
         const b = ctx.background || await background(ctx);
-        const { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, hudOk, green, panelKinds, panelItems } = b;
+        const { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, dataChoices, hudOk, green, panelKinds, panelItems } = b;
         let page = 0, version = 0, drawn = -1, blink = true, phone = 'carplay';
         // the kit's header and Settings tab in the display language too
         const changed = () => {
@@ -420,15 +427,15 @@ mgu.run({
                 });
             }
             if (ours && settings.get('hudGear')) {
-                const g = gearRect(m), gt = gearText(car.data()) || 'D';
-                cv.text(gt, x + (g.x + 2) * k, y + (g.y + (g.h + 0.7 * 40) / 2) * k, 40 * k, gearNow() ? '#f2f5f8' : withAlpha('#f2f5f8', 0.35), { font: 'gear' });
+                const g = gearRect();
+                drawGear(cv, gearText(car.data()) || 'D', { k, x: x + g.x * k, y: y + g.y * k, alpha: gearNow() ? undefined : 0.35 });
             }
             if (ours && settings.get('realSpeed')) {
                 const sp = car.data() && !car.data().demo && G.isNum(car.data().speed) ? Math.round(car.data().speed) : null;
                 cv.text(sp === null ? '--' : String(sp), x + (SPEED_RECT.x + SPEED_RECT.w) * k, y + (SPEED_RECT.y + SPEED_RECT.h - 8) * k, 40 * k,
                     sp === null ? withAlpha('#f2f5f8', 0.35) : '#f2f5f8', { font: 'bold', align: 'right' });
             }
-            const dr = ours && settings.get('hudData') !== 'off' ? dataRect(m) : null;
+            const dr = ours && dataChoices().length ? dataRect(m) : null;
             if (dr) drawData(cv, x + dr.x * k, y + dr.y * k, dr.w * k, dataNow(true), k);
             return h;
         };
@@ -582,11 +589,15 @@ mgu.run({
                 const hudOnNow = settings.get('hudOn') !== false;
                 HUD_ITEMS.forEach(([key, text], i) => row(i, key, t(text), settings.get(key) !== false && !!settings.get(key), flip(key), key !== 'hudOn' && !hudOnNow));
                 camera(HUD_ITEMS.length);
-                label(cv, th, t('Between the turn signals'), 48, 356);
-                const now = settings.get('hudData');
-                HUD_DATA.filter(([v]) => (v !== 'ev' && v !== 'soc') || hv.installed()).forEach(([v, text], i) =>
-                    G.button(cv, th, 48 + (i % 3) * 244, 366 + Math.floor(i / 3) * 48, 232, 42, t(text), () => settings.set('hudData', v),
-                        { primary: now === v, key: 'data-' + v, busy: !hudOnNow }));
+                // the readings, as the info bar's: a button each, lit while on (up to HUD_DATA_MAX)
+                const offered = HUD_DATA.filter(([v]) => (v !== 'ev' && v !== 'soc') || hv.installed());
+                const count = offered.filter(([, key]) => settings.get(key)).length;
+                label(cv, th, t('Between the turn signals') + '  ' + count + '/' + HUD_DATA_MAX, 48, 356);
+                offered.forEach(([v, key, text], i) => {
+                    const lit = !!settings.get(key);
+                    G.button(cv, th, 48 + (i % 3) * 244, 366 + Math.floor(i / 3) * 48, 232, 42, t(text), () => settings.set(key, !lit),
+                        { primary: lit, key: 'data-' + v, busy: !hudOnNow || (!lit && count >= HUD_DATA_MAX) });
+                });
             } else {
                 // the map on the cluster: on or off with the HUD's as it is (never on neither)
                 const shown = ctl.shownOn(), clusterNow = ctl.clusterOn() === true, hudMap = ctl.hudOn() === true;

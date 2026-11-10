@@ -25,7 +25,7 @@ const STAGE = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-hud-'));
 fs.cpSync(path.join(REPO, 'kit', 'runtime'), path.join(STAGE, 'kit'), { recursive: true });
 ['hud_overlay.js', 'turn_signals.js', 'cluster_panel.js'].forEach((f) => fs.copyFileSync(path.join(HERE, 'app', f), path.join(STAGE, f)));
 fs.copyFileSync(path.join(REPO, 'native', 'cluster-render', 'js', 'cluster_render_client.js'), path.join(STAGE, 'cluster_render_client.js'));
-const { HudOverlay, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, ARROW, GEAR_W, GEAR_H, ROW_H, SPEED_END, SPEED_RECT } = require(path.join(STAGE, 'hud_overlay.js'));
+const { HudOverlay, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, ARROW, GEAR_W, GEAR_H, ROW_H, SPEED_END, SPEED_RECT, GEAR_RECT, LEFT_ARROW_X, RIGHT_END } = require(path.join(STAGE, 'hud_overlay.js'));
 const { ClusterRender } = require(path.join(STAGE, 'cluster_render_client.js'));
 const { sideOf, TurnSignals } = require(path.join(STAGE, 'turn_signals.js'));
 
@@ -59,12 +59,14 @@ async function main() {
     });
     const moved = mapRect(60, [20, -30]);
     eq(rowRect(moved).y - rowRect(m).y, -30, 'the map moved up: the row with it');
-    eq(arrowRect(moved, 'left', aw, ah).x, SPEED_END, 'the left arrow right after BMW\'s speed');
-    eq(arrowRect(m, 'right', aw, ah), { x: std.x + std.w - aw - 4, y: rowRect(m).y + (ROW_H - ah) / 2, w: aw, h: ah },
-        'the right one at the box\'s right edge');
-    const g = gearRect(m, 'medium'), l = arrowRect(m, 'left', aw, ah), d = dataRect(m, 'medium'), r = arrowRect(m, 'right', aw, ah);
-    ok(g.x === l.x + l.w + 2 && g.y === rowRect(m).y && g.w === GEAR_W && g.h === GEAR_H, 'the gear beside the left arrow');
-    ok(d && d.x > g.x + g.w && d.x + d.w < r.x, 'the data between the gear and the right arrow');
+    eq(arrowRect(moved, 'left', aw, ah), { x: LEFT_ARROW_X, y: SPEED_RECT.y + (SPEED_RECT.h - ah) / 2, w: aw, h: ah },
+        'the left arrow at the HUD\'s left edge, in BMW\'s speed row, wherever the map is');
+    eq(arrowRect(m, 'right', aw, ah), { x: RIGHT_END - aw, y: rowRect(m).y + (ROW_H - ah) / 2, w: aw, h: ah },
+        'the right one at the HUD\'s right edge, in the row');
+    const g = gearRect(), l = arrowRect(m, 'left', aw, ah), d = dataRect(m, 'medium'), r = arrowRect(m, 'right', aw, ah);
+    ok(g.x === GEAR_RECT.x && g.y === GEAR_RECT.y && g.w === GEAR_W && g.h === GEAR_H && g.y + g.h <= 380, 'the gear under BMW\'s km/h');
+    ok(l.x + l.w < SPEED_RECT.x, 'the left arrow left of the real speed');
+    ok(d && d.x === SPEED_END + 8 && d.x + d.w < r.x && d.w >= 240, 'the data from after BMW\'s speed to the right arrow, wide');
     const low = mapRect(60, [0, 400]), a = anchorRect(low);
     eq(rowRect(low).y, a.y + a.h - ROW_H - 4, 'no room under the box at the HUD\'s bottom: inside its bottom edge');
 
@@ -86,11 +88,11 @@ async function main() {
 
         hud.update(Object.assign({}, base, { gear: 'D3' }));
         ok(await until(() => hud.layers.gear && layer[hud.layers.gear.ref] === 'shown', 2000), 'the gear: shown on the HUD');
-        eq([hud.layers.gear.x, hud.layers.gear.y], [gearRect(m, 'medium').x, gearRect(m, 'medium').y], 'beside the left arrow\'s place');
+        eq([hud.layers.gear.x, hud.layers.gear.y], [gearRect(m, 'medium').x, gearRect(m, 'medium').y], 'under BMW\'s km/h');
         eq(Object.keys(hud.layers), ['gear'], 'no arrows while no turn signal is on');
         const up = mapRect(60, [0, -40]);
         hud.update(Object.assign({}, base, { gear: 'D3', map: up }));
-        eq([hud.layers.gear.x, hud.layers.gear.y], [gearRect(up, 'medium').x, gearRect(up, 'medium').y], 'it follows the map\'s place');
+        eq([hud.layers.gear.x, hud.layers.gear.y], [gearRect(up, 'medium').x, gearRect(up, 'medium').y], 'where it is, wherever the map is');
         const n = sent.length;
         hud.update(Object.assign({}, base, { gear: 'D3', map: up }));
         eq(sent.length, n, 'the same gear: nothing sent again');

@@ -1,7 +1,7 @@
 {
  "id": "robertn_waze_cluster",
  "title": "Cluster functions",
- "version": "0.9.14",
+ "version": "0.9.15",
  "screens": [
   {
    "name": "MAIN",
@@ -100,6 +100,48 @@
      "Engine speed"
     ]
    ],
+   "hidden": true
+  },
+  {
+   "key": "hudEv",
+   "label": "Electric range",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "hudSoc",
+   "label": "Battery charge",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "hudTemps",
+   "label": "Oil and coolant",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "hudBoost",
+   "label": "Boost",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "hudPower",
+   "label": "Power and torque",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "hudRpm",
+   "label": "Engine speed",
+   "type": "bool",
+   "default": false,
    "hidden": true
   },
   {
@@ -213,8 +255,8 @@
     ]
    ],
    "when": {
-    "hudData": [
-     "power"
+    "hudPower": [
+     true
     ]
    }
   },
@@ -238,8 +280,8 @@
     ]
    ],
    "when": {
-    "hudData": [
-     "power"
+    "hudPower": [
+     true
     ]
    }
   },
@@ -263,8 +305,8 @@
     ]
    ],
    "when": {
-    "hudData": [
-     "boost"
+    "hudBoost": [
+     true
     ]
    }
   },
