@@ -442,7 +442,7 @@ mgu.run({
 
         /* ---- the pages ---- */
         const pagesNow = () => PAGES;
-        let dispTab = 'hud';
+        let dispTab = 'cluster';
         let demoTurns = false;         // hudPicture's arrows blink by themselves (the Display page)           // the Display page's tab: 'hud' or 'cluster' (the HUD's only with one)
         function drawMaps(cv, th) {
             const ex = G.pageBottom(cv) - G.BOTTOM;
@@ -569,7 +569,7 @@ mgu.run({
             // the switches on the left: a tab for the HUD, one for the cluster
             G.panel(cv, th, 24, 44, 760, 468, null);
             let tx = 48;
-            (hasHud ? [['hud', 'HUD'], ['cluster', 'Cluster']] : [['cluster', 'Cluster']]).forEach(([id, text]) => {
+            (hasHud ? [['cluster', 'Cluster'], ['hud', 'HUD']] : [['cluster', 'Cluster']]).forEach(([id, text]) => {
                 tx += G.button(cv, th, tx, 60, 200, 46, t(text), () => { dispTab = id; changed(); }, { primary: dispTab === id, key: 'tab-' + id }) + 12;
             });
             const row = (i, key, text, on, run, off) => {
