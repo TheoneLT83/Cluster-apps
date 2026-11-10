@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.9
+
+- **Display page**: the HUD's picture is cut at its glass with the GPU renderer too (0.9.7's picture stopped the page drawing there), and both pictures are a little smaller, clear of the panel's bottom.
+
 ## 0.9.8
 
 - **Info bar** on the Display page shows how many items are on, of the four (e.g. 2/4).

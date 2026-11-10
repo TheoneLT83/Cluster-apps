@@ -368,11 +368,19 @@ mgu.run({
         /* A picture of the HUD (HUD_W x HUD_H scaled into w): the map where waze-on-cluster puts it, the arrows
          * and the gear where the overlay draws them; lit as they are now. */
         /* crop: the part of the HUD's scene to show (the Display page: the part the glass shows), else all of it */
-        // the HUD's picture; with crop (the glass, the Display page): drawn on a canvas of its own, so a big map and our
-        // parts are cut at the glass's edge instead of running out of the picture
+        // the HUD's picture; with crop (the glass, the Display page): cut at the glass's edge, so a big map and our parts
+        // never run out of the picture
         const hudPicture = (cv, th, x0, y0, w, crop) => {
             if (!crop || cv.glass) return drawHudPicture(cv, th, x0, y0, w, crop);
             const ww = Math.round(w), hh = Math.round(crop.h * w / crop.w);
+            // the GPU renderer's canvas clips; the software one draws it on a canvas of its own
+            if (cv.clip) {
+                cv.clip(Math.round(x0), Math.round(y0), ww, hh);
+                cv.glass = true;
+                try { drawHudPicture(cv, th, x0, y0, ww, crop); } finally { cv.glass = false; cv.noclip(); }
+                cv.strokeRoundRect(Math.round(x0), Math.round(y0), ww, hh, 10, 1.5, withAlpha('#ffffff', 0.25));
+                return hh;
+            }
             const off = ctx.canvas(ww, hh).clear('#05070a');
             off.glass = true; off.own = cv.own;
             drawHudPicture(off, th, 0, 0, ww, crop);
@@ -597,7 +605,7 @@ mgu.run({
 
             // the pictures on the right: the cluster on top, the HUD under it, each showing what of ours is on there
             G.panel(cv, th, 804, 44, 772, 468, t('Display'));
-            const cw = hasHud ? 480 : 700, cx = 804 + (772 - cw) / 2;
+            const cw = hasHud ? 456 : 700, cx = 804 + (772 - cw) / 2;
             const ch = clusterPicture(cv, th, cx, hasHud ? 96 : 150, cw, goNow && settings.get('greenLightCluster') !== false);
             if (hasHud) {
                 // as wide as the cluster: the part of the HUD's scene the glass shows (HUD_GLASS)
