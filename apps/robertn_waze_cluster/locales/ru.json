@@ -146,6 +146,7 @@
     "No": "Нет",
     "Battery charge": "Заряд батареи",
     "Dimmer at night": "Тусклее ночью",
-    "Info bar": "Инфопанель"
+    "Info bar": "Инфопанель",
+    "Battery kW usage": "Battery kW usage"
   }
 }

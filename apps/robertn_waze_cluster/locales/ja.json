@@ -146,6 +146,7 @@
     "No": "いいえ",
     "Battery charge": "バッテリー残量",
     "Dimmer at night": "夜間は暗く",
-    "Info bar": "情報バー"
+    "Info bar": "情報バー",
+    "Battery kW usage": "Battery kW usage"
   }
 }

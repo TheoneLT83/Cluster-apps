@@ -148,6 +148,7 @@
     "No": "否",
     "Battery charge": "電池電量",
     "Dimmer at night": "夜間調暗",
-    "Info bar": "資訊列"
+    "Info bar": "資訊列",
+    "Battery kW usage": "Battery kW usage"
   }
 }

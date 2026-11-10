@@ -146,6 +146,7 @@
     "No": "Ні",
     "Battery charge": "Заряд батареї",
     "Dimmer at night": "Тьмяніше вночі",
-    "Info bar": "Інфопанель"
+    "Info bar": "Інфопанель",
+    "Battery kW usage": "Battery kW usage"
   }
 }

@@ -148,6 +148,7 @@
     "No": "Nee",
     "Battery charge": "Accuniveau",
     "Dimmer at night": "'s Nachts gedimd",
-    "Info bar": "Infobalk"
+    "Info bar": "Infobalk",
+    "Battery kW usage": "Battery kW usage"
   }
 }

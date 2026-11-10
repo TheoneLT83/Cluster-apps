@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.11
+
+- **Info bar**: the kW item is called Battery kW usage on the Display page.
+
 ## 0.9.10
 
 - **kW as fast as the car's eDRIVE needle** with eDrive 2.9: eDrive works the battery's power out from the needle, the AC compressor and its readings, and the cluster's bar and the HUD take each new value at once (eDrive's file watched, the bar easing over 80 ms).

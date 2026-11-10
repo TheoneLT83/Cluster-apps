@@ -146,6 +146,7 @@
     "No": "Ne",
     "Battery charge": "Napolnjenost baterije",
     "Dimmer at night": "Ponoči temnejše",
-    "Info bar": "Informacijska vrstica"
+    "Info bar": "Informacijska vrstica",
+    "Battery kW usage": "Battery kW usage"
   }
 }

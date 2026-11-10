@@ -60,7 +60,7 @@ const HUD_DATA = [['off', 'None'], ['ev', 'Electric range'], ['soc', 'Battery ch
     ['power', 'Power and torque'], ['rpm', 'Engine speed']];
 /* The cluster's info bar (cluster_panel.js): its items, each switched on the Display page (up to PANEL_MAX): the item,
  * its setting, its words. */
-const PANEL_ITEMS = [['power', 'clusterKw', 'kW'], ['soc', 'clusterSoc', 'Battery charge'], ['oil', 'clusterOil', 'OIL'],
+const PANEL_ITEMS = [['power', 'clusterKw', 'Battery kW usage'], ['soc', 'clusterSoc', 'Battery charge'], ['oil', 'clusterOil', 'OIL'],
     ['coolant', 'clusterCoolant', 'COOLANT'], ['boost', 'clusterBoost', 'Boost'], ['rpm', 'clusterRpm', 'Engine speed'],
     ['torque', 'clusterTorque', 'TORQUE']];
 const PANEL_MAX = 4;
@@ -595,9 +595,10 @@ mgu.run({
                 camera(2 + CLUSTER_ITEMS.length);
                 // the info bar's items, as the HUD's reading: a button each, lit while on (up to PANEL_MAX)
                 const barOn = settings.get('clusterPanel') !== false;
-                const count = PANEL_ITEMS.filter(([, key]) => settings.get(key)).length;
+                const offered = PANEL_ITEMS.filter(([k]) => (k !== 'power' && k !== 'soc') || hv.installed());
+                const count = offered.filter(([, key]) => settings.get(key)).length;
                 label(cv, th, t('Info bar') + '  ' + count + '/' + PANEL_MAX, 48, 356);      // how many are on, of the most
-                PANEL_ITEMS.filter(([k]) => (k !== 'power' && k !== 'soc') || hv.installed()).forEach(([k, key, text], i) => {
+                offered.forEach(([k, key, text], i) => {
                     const lit = !!settings.get(key);
                     G.button(cv, th, 48 + (i % 3) * 244, 366 + Math.floor(i / 3) * 48, 232, 42, t(text), () => settings.set(key, !lit),
                         { primary: lit, key: 'item-' + k, busy: !barOn || (!lit && count >= PANEL_MAX) });

@@ -146,6 +146,7 @@
     "No": "Nein",
     "Battery charge": "Batterieladung",
     "Dimmer at night": "Nachts gedimmt",
-    "Info bar": "Infoleiste"
+    "Info bar": "Infoleiste",
+    "Battery kW usage": "Battery kW usage"
   }
 }

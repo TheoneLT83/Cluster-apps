@@ -146,6 +146,7 @@
     "No": "لا",
     "Battery charge": "شحن البطارية",
     "Dimmer at night": "أخفت في الليل",
-    "Info bar": "شريط المعلومات"
+    "Info bar": "شريط المعلومات",
+    "Battery kW usage": "Battery kW usage"
   }
 }

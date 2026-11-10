@@ -150,7 +150,8 @@ module.exports = [
    "No": "لا",
    "Battery charge": "شحن البطارية",
    "Dimmer at night": "أخفت في الليل",
-   "Info bar": "شريط المعلومات"
+   "Info bar": "شريط المعلومات",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -302,7 +303,8 @@ module.exports = [
    "No": "Ne",
    "Battery charge": "Nabití baterie",
    "Dimmer at night": "Tmavší v noci",
-   "Info bar": "Informační lišta"
+   "Info bar": "Informační lišta",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -454,7 +456,8 @@ module.exports = [
    "No": "Nej",
    "Battery charge": "Batteriopladning",
    "Dimmer at night": "Dæmpet om natten",
-   "Info bar": "Infobjælke"
+   "Info bar": "Infobjælke",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -606,7 +609,8 @@ module.exports = [
    "No": "Nein",
    "Battery charge": "Batterieladung",
    "Dimmer at night": "Nachts gedimmt",
-   "Info bar": "Infoleiste"
+   "Info bar": "Infoleiste",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -758,7 +762,8 @@ module.exports = [
    "No": "Όχι",
    "Battery charge": "Φόρτιση μπαταρίας",
    "Dimmer at night": "Πιο αμυδρό τη νύχτα",
-   "Info bar": "Γραμμή πληροφοριών"
+   "Info bar": "Γραμμή πληροφοριών",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -910,7 +915,8 @@ module.exports = [
    "No": "No",
    "Battery charge": "Carga de batería",
    "Dimmer at night": "Más tenue de noche",
-   "Info bar": "Barra de información"
+   "Info bar": "Barra de información",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -1062,7 +1068,8 @@ module.exports = [
    "No": "No",
    "Battery charge": "Carga de la batería",
    "Dimmer at night": "Más tenue de noche",
-   "Info bar": "Barra de información"
+   "Info bar": "Barra de información",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -1214,7 +1221,8 @@ module.exports = [
    "No": "Ei",
    "Battery charge": "Akun varaus",
    "Dimmer at night": "Himmeämpi yöllä",
-   "Info bar": "Tietopalkki"
+   "Info bar": "Tietopalkki",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -1366,7 +1374,8 @@ module.exports = [
    "No": "Non",
    "Battery charge": "Charge de la batterie",
    "Dimmer at night": "Atténué la nuit",
-   "Info bar": "Barre d'infos"
+   "Info bar": "Barre d'infos",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -1518,7 +1527,8 @@ module.exports = [
    "No": "Non",
    "Battery charge": "Charge de la batterie",
    "Dimmer at night": "Atténué la nuit",
-   "Info bar": "Barre d'infos"
+   "Info bar": "Barre d'infos",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -1670,7 +1680,8 @@ module.exports = [
    "No": "לא",
    "Battery charge": "טעינת סוללה",
    "Dimmer at night": "עמום יותר בלילה",
-   "Info bar": "סרגל מידע"
+   "Info bar": "סרגל מידע",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -1822,7 +1833,8 @@ module.exports = [
    "No": "Nem",
    "Battery charge": "Akkumulátor töltöttsége",
    "Dimmer at night": "Éjjel halványabb",
-   "Info bar": "Infósáv"
+   "Info bar": "Infósáv",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -1974,7 +1986,8 @@ module.exports = [
    "No": "Tidak",
    "Battery charge": "Daya baterai",
    "Dimmer at night": "Lebih redup di malam hari",
-   "Info bar": "Bilah info"
+   "Info bar": "Bilah info",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -2126,7 +2139,8 @@ module.exports = [
    "No": "No",
    "Battery charge": "Carica batteria",
    "Dimmer at night": "Più tenue di notte",
-   "Info bar": "Barra informazioni"
+   "Info bar": "Barra informazioni",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -2278,7 +2292,8 @@ module.exports = [
    "No": "いいえ",
    "Battery charge": "バッテリー残量",
    "Dimmer at night": "夜間は暗く",
-   "Info bar": "情報バー"
+   "Info bar": "情報バー",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -2430,7 +2445,8 @@ module.exports = [
    "No": "아니요",
    "Battery charge": "배터리 충전량",
    "Dimmer at night": "야간에 어둡게",
-   "Info bar": "정보 바"
+   "Info bar": "정보 바",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -2582,7 +2598,8 @@ module.exports = [
    "No": "Nei",
    "Battery charge": "Batterilading",
    "Dimmer at night": "Dempet om natten",
-   "Info bar": "Infolinje"
+   "Info bar": "Infolinje",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -2736,7 +2753,8 @@ module.exports = [
    "No": "Nee",
    "Battery charge": "Accuniveau",
    "Dimmer at night": "'s Nachts gedimd",
-   "Info bar": "Infobalk"
+   "Info bar": "Infobalk",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -2888,7 +2906,8 @@ module.exports = [
    "No": "Nie",
    "Battery charge": "Naładowanie akumulatora",
    "Dimmer at night": "Ciemniej w nocy",
-   "Info bar": "Pasek informacji"
+   "Info bar": "Pasek informacji",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -3040,7 +3059,8 @@ module.exports = [
    "No": "Não",
    "Battery charge": "Carga da bateria",
    "Dimmer at night": "Mais escuro à noite",
-   "Info bar": "Barra de informações"
+   "Info bar": "Barra de informações",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -3192,7 +3212,8 @@ module.exports = [
    "No": "Não",
    "Battery charge": "Carga da bateria",
    "Dimmer at night": "Mais escuro à noite",
-   "Info bar": "Barra de informações"
+   "Info bar": "Barra de informações",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -3344,7 +3365,8 @@ module.exports = [
    "No": "Nu",
    "Battery charge": "Încărcarea bateriei",
    "Dimmer at night": "Mai slab noaptea",
-   "Info bar": "Bară de informații"
+   "Info bar": "Bară de informații",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -3496,7 +3518,8 @@ module.exports = [
    "No": "Нет",
    "Battery charge": "Заряд батареи",
    "Dimmer at night": "Тусклее ночью",
-   "Info bar": "Инфопанель"
+   "Info bar": "Инфопанель",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -3648,7 +3671,8 @@ module.exports = [
    "No": "Nie",
    "Battery charge": "Nabitie batérie",
    "Dimmer at night": "Tmavšie v noci",
-   "Info bar": "Informačný pruh"
+   "Info bar": "Informačný pruh",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -3800,7 +3824,8 @@ module.exports = [
    "No": "Ne",
    "Battery charge": "Napolnjenost baterije",
    "Dimmer at night": "Ponoči temnejše",
-   "Info bar": "Informacijska vrstica"
+   "Info bar": "Informacijska vrstica",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -3952,7 +3977,8 @@ module.exports = [
    "No": "Nej",
    "Battery charge": "Batteriladdning",
    "Dimmer at night": "Dämpad på natten",
-   "Info bar": "Infofält"
+   "Info bar": "Infofält",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -4104,7 +4130,8 @@ module.exports = [
    "No": "ไม่",
    "Battery charge": "ระดับแบตเตอรี่",
    "Dimmer at night": "หรี่ลงตอนกลางคืน",
-   "Info bar": "แถบข้อมูล"
+   "Info bar": "แถบข้อมูล",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -4256,7 +4283,8 @@ module.exports = [
    "No": "Hayır",
    "Battery charge": "Batarya şarjı",
    "Dimmer at night": "Gece daha loş",
-   "Info bar": "Bilgi çubuğu"
+   "Info bar": "Bilgi çubuğu",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -4408,7 +4436,8 @@ module.exports = [
    "No": "Ні",
    "Battery charge": "Заряд батареї",
    "Dimmer at night": "Тьмяніше вночі",
-   "Info bar": "Інфопанель"
+   "Info bar": "Інфопанель",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -4560,7 +4589,8 @@ module.exports = [
    "No": "Không",
    "Battery charge": "Mức pin",
    "Dimmer at night": "Tối hơn vào ban đêm",
-   "Info bar": "Thanh thông tin"
+   "Info bar": "Thanh thông tin",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -4714,7 +4744,8 @@ module.exports = [
    "No": "否",
    "Battery charge": "电池电量",
    "Dimmer at night": "夜间调暗",
-   "Info bar": "信息栏"
+   "Info bar": "信息栏",
+   "Battery kW usage": "Battery kW usage"
   }
  },
  {
@@ -4868,7 +4899,8 @@ module.exports = [
    "No": "否",
    "Battery charge": "電池電量",
    "Dimmer at night": "夜間調暗",
-   "Info bar": "資訊列"
+   "Info bar": "資訊列",
+   "Battery kW usage": "Battery kW usage"
   }
  }
 ];

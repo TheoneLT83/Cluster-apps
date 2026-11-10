@@ -146,6 +146,7 @@
     "No": "Ei",
     "Battery charge": "Akun varaus",
     "Dimmer at night": "Himmeämpi yöllä",
-    "Info bar": "Tietopalkki"
+    "Info bar": "Tietopalkki",
+    "Battery kW usage": "Battery kW usage"
   }
 }

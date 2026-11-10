@@ -146,6 +146,7 @@
     "No": "ไม่",
     "Battery charge": "ระดับแบตเตอรี่",
     "Dimmer at night": "หรี่ลงตอนกลางคืน",
-    "Info bar": "แถบข้อมูล"
+    "Info bar": "แถบข้อมูล",
+    "Battery kW usage": "Battery kW usage"
   }
 }

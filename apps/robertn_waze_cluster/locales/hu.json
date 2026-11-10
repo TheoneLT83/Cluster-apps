@@ -146,6 +146,7 @@
     "No": "Nem",
     "Battery charge": "Akkumulátor töltöttsége",
     "Dimmer at night": "Éjjel halványabb",
-    "Info bar": "Infósáv"
+    "Info bar": "Infósáv",
+    "Battery kW usage": "Battery kW usage"
   }
 }
