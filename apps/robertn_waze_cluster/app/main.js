@@ -591,10 +591,12 @@ mgu.run({
                 row(0, 'map', t('Map'), clusterNow, () => ctl.showOn(clusterNow ? 'hud' : hudMap ? 'both' : 'cluster'), !canMap || shown === null && !ctl.canChooseShownOn());
                 const gu = ctl.guidanceUnavailable(), hide = ctl.hideGuidance();
                 row(1, 'guide', t('Hide logo on the cluster'), !!hide, () => ctl.toggleGuidance(), gu || hide === null);
-                CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), settings.get(key) !== false, flip(key)));
+                // the info bar shows under the map: off while the map is not on the cluster
+                const noBar = (key) => key === 'clusterPanel' && !clusterNow;
+                CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), settings.get(key) !== false && !noBar(key), flip(key), noBar(key)));
                 camera(2 + CLUSTER_ITEMS.length);
                 // the info bar's items, as the HUD's reading: a button each, lit while on (up to PANEL_MAX)
-                const barOn = settings.get('clusterPanel') !== false;
+                const barOn = settings.get('clusterPanel') !== false && clusterNow;
                 const offered = PANEL_ITEMS.filter(([k]) => (k !== 'power' && k !== 'soc') || hv.installed());
                 const count = offered.filter(([, key]) => settings.get(key)).length;
                 label(cv, th, t('Info bar') + '  ' + count + '/' + PANEL_MAX, 48, 356);      // how many are on, of the most
