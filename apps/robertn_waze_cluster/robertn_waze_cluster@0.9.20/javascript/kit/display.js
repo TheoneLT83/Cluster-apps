@@ -74,6 +74,10 @@ const FULL = {
     src: { x: 12, y: 38, w: 1576, h: 482 },
 };
 const LAYOUTS = ['full', 'standard'];
+/* A screen of the HMI's shape with fewer (or more) pixels (an MGU behind a retrofitted NBT Evo display, 1440 x 540):
+ * the layout is the 1920 x 720 one, and the renderer is given it scaled by the screen's width over 1920 (_device). */
+const sameShape = (scr) => !!scr && scr.w > 0 && Math.abs(scr.w * HMI.screen.h - scr.h * HMI.screen.w) <= scr.w;
+const kOf = (scr) => (sameShape(scr) ? scr.w / HMI.screen.w : 1);
 
 // the HMI's page animation when a screen opens (the picture shows after it)
 const SHOW_DELAY_MS = 350;
@@ -211,7 +215,7 @@ class Display {
     /** own() but for the placement, which depends on it (the bar's height): the renderer and layout allow it. */
     ownable() {
         const g = this.gpu;
-        return !!(g && g.ready && g.native && g.touch && this.layout() === 'full' && g.screen.w === HMI.screen.w && g.screen.h === HMI.screen.h);
+        return !!(g && g.ready && g.native && g.touch && this.layout() === 'full' && sameShape(g.screen));
     }
     /** Settings is the header's last tab where the kit runs the screen (the app has a Settings button). */
     hasSettings() { return !!(this.screen && (this.screen.buttons || []).some((b) => b[0] === 'BTN_SETTINGS')); }
@@ -523,7 +527,10 @@ class Display {
     /** Renderer placement for the current layout. */
     _place() {
         if (!this.gpu || !this.gpu.ready) return;
-        const scr = this.gpu.screen, v = this.layout();
+        const scr0 = this.gpu.screen, v = this.layout();
+        // laid out on the 1920 x 720 screen; the renderer gets it at the screen's scale (k)
+        this.k = kOf(scr0);
+        const scr = sameShape(scr0) ? HMI.screen : scr0;
         let pl;
         if (v === 'standard' || scr.w !== HMI.screen.w || scr.h !== HMI.screen.h) {
             pl = { x: HMI.img.x, y: HMI.img.y, w: HMI.img.w, h: HMI.img.h, scale: 1, ox: 0, oy: 0, full: false };
@@ -558,7 +565,7 @@ class Display {
             }
         }
         this.place = pl;
-        this.gpu.place(pl);
+        this.gpu.place(this._device(pl));
         this._grab();
         this._hmiBar();
         this.recorders.clear();             // text sizes depend on the scale
@@ -568,6 +575,13 @@ class Display {
         // (only a real change: hideButton places again for every button it hides)
         const key = JSON.stringify([pl, this.own(), this.screen ? this.buttons().map((b) => b.id) : []]);
         if (key !== this.layoutKey) { this.layoutKey = key; this._layoutChanged(); }
+    }
+    /** pl (laid out on 1920 x 720) on the screen the renderer has: scaled by k (1: as it is). */
+    _device(pl) {
+        const k = this.k || 1;
+        if (k === 1) return pl;
+        return Object.assign({}, pl, { x: Math.round(pl.x * k), y: Math.round(pl.y * k), w: Math.round(pl.w * k), h: Math.round(pl.h * k),
+            scale: pl.scale * k, ox: pl.ox * k, oy: pl.oy * k });
     }
     /** Apps that draw only on changes draw again: the last frame has the old layout (bar, header, place). */
     _layoutChanged() { this.layoutHandlers.forEach((fn) => { try { fn(); } catch (e) { this.log.error('layout', e); } }); }
@@ -579,7 +593,7 @@ class Display {
         const oy = reaches ? pl.oyTop : pl.oyMid;
         if (pl.oy === oy) return;
         pl.oy = oy;
-        this.gpu.place(pl);                 // (the same scale: the renderer keeps our resources)
+        this.gpu.place(this._device(pl));   // (the same scale: the renderer keeps our resources)
         this.lastWords = null;              // the renderer draws the page at the new oy with the next frame
     }
 
@@ -822,7 +836,7 @@ class Display {
         c.clip(sx, 0, W - sx, HMI.status.h).clear(0).noclip();
         if (hx > 0) c.clip(0, 0, hx, HMI.colEnd - pl.y).clear(0).noclip();
         drawCredit(c, W - 18, FULL.headH + 17);
-        r.xf(1, 0, 0).append(c).xf();
+        r.xf(this.k || 1, 0, 0).append(c).xf();
     }
 
     /** A bar button's text changed (ui.text): its width, and so the bar's layout, follow. */

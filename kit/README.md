@@ -20,4 +20,6 @@ Differences from that commit:
   text, and `useScripts({ script: family })` names an app's own atlas for a script.
 - `runtime/display.js`, `runtime/mgu.js`: `ctx.display.settingsLabel` names the Settings tab and sheet (an app that
   follows the HMI's display language).
+- `runtime/display.js`: a screen of the HMI's 1920 x 720 shape with fewer pixels (an NBT Evo display, 1440 x 540) is laid
+  out as 1920 x 720 and given to the renderer scaled to it.
 - `tools/build.py`: `--no-sdk`, and the app and output folders from `MGU_KIT_APPS` and `MGU_KIT_DIST`.

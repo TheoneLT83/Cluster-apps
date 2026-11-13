@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.20
+
+- **Fits a smaller screen of the same shape** (an MGU retrofitted to an NBT Evo display, 1440x540): the pages as on
+  1920x720, scaled to the screen, with every button; they were cut off on the right, their buttons missing.
+
 ## 0.9.19
 
 - **Dimmer at night dims the HUD map only**, 30 points under the brightness chosen (80 % -> 50 %, 70 % -> 40 %, never
