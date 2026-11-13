@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.19
+
+- Carries cluster-render 0.5.9's client (Robert's latest): it can send compressed (ETC2) pictures. The info bar and the
+  HUD's turn signals, gear and readings look and work as before.
+
 ## 0.9.18
 
 - Robert's latest: the HUD map gives way to BMW's HUD pop-ups (calls, media, lists), never to route guidance
