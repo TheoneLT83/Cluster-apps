@@ -229,7 +229,8 @@ async function background(bg) {
      * a value not known. */
     const dataNow = (preview) => {
         const d = car.data(), real = d && !d.demo ? d : {}, out = [];
-        const value = (label, v, unit) => { if (G.isNum(v) || preview) out.push({ kind: 'value', label, text: G.isNum(v) ? Math.round(v) + unit : '--' }); };
+        // cold: blue under PANEL.COLD_C, as the cluster's info bar (oil, coolant, gearbox oil)
+        const value = (label, v, unit, cold) => { if (G.isNum(v) || preview) out.push({ kind: 'value', label, text: G.isNum(v) ? Math.round(v) + unit : '--', cold: !!cold && G.isNum(v) && v < PANEL.COLD_C }); };
         const slider = (v, min, max, text, green, color) => { if (G.isNum(v) || preview) out.push({ kind: 'slider', value: G.isNum(v) ? v : null, min, max, text, green, color }); };
         dataChoices().forEach((c) => {
             if (c === 'ev') {
@@ -254,14 +255,14 @@ async function background(bg) {
             } else if (c === 'rpm') {
                 slider(real.rpm, 0, RPM_MAX, G.isNum(real.rpm) ? Math.round(real.rpm / 10) * 10 : '');
             } else if (c === 'temps') {
-                value(t('OIL'), real.oil, '°');
-                value(t('COOLANT'), real.coolant, '°');
+                value(t('OIL'), real.oil, '°', true);
+                value(t('COOLANT'), real.coolant, '°', true);
             } else if (c === 'tyres') {
                 // the lowest tyre, red while one is low
                 const p = more.tyres(), lows = p ? Object.keys(p).map((w) => p[w]).filter(G.isNum) : [];
                 if (lows.length || preview) out.push({ kind: 'value', label: t('TYRES'), text: lows.length ? Math.min.apply(null, lows).toFixed(1) + ' bar' : '--', warn: more.lowTyre().length > 0 });
             } else if (c === 'gearbox') {
-                value(t('GEARBOX'), more.gearbox(), '°');
+                value(t('GEARBOX'), more.gearbox(), '°', true);
             } else if (c === 'fuel') {
                 value(t('RANGE'), more.range(), ' km');
             } else if (c === 'clock') {

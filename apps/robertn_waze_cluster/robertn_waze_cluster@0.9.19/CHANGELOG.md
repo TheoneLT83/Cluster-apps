@@ -8,6 +8,7 @@
 - **More readings for both info bars:** tyre pressures (the cluster: all four, a low one red; the HUD: the lowest),
   gearbox oil, fuel range, the clock and the drive time (since the car was switched on). Read from what the car sends
   by itself, nothing asked of its units. Their words are English in every language.
+- **On the HUD too, oil, coolant and gearbox oil are blue while cold** (under 50 °C), as on the cluster.
 - **Display page:** the switches and the info bar's choices take most of the page (three a row, bigger), the pictures
   less; "Traffic-light camera found" is a small line under Green light alert.
 - Carries cluster-render 0.5.9's client (Robert's latest).
