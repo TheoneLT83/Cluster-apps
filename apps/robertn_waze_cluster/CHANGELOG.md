@@ -2,8 +2,12 @@
 
 ## 0.9.19
 
-- Carries cluster-render 0.5.9's client (Robert's latest): it can send compressed (ETC2) pictures. The info bar and the
-  HUD's turn signals, gear and readings look and work as before.
+- **Dimmer at night dims the HUD map only**, 30 points under the brightness chosen (80 % -> 50 %, 70 % -> 40 %, never
+  under 10 %); the info bar, turn signals and gear stay as bright as BMW's own speed. The chosen brightness is still
+  what the Maps page shows and what is saved.
+- **Display page:** the switches and the info bar's choices take most of the page (three a row, bigger), the pictures
+  less; "Traffic-light camera found" is a small line under Green light alert.
+- Carries cluster-render 0.5.9's client (Robert's latest).
 
 ## 0.9.18
 

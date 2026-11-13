@@ -507,6 +507,44 @@ test('the HUD map brightness: 10 % a step from 10 to 100 %, the render at once, 
     d.close();
 });
 
+test('at night the HUD map is 30 points darker in the render only: the chosen brightness shown, saved and stepped', async (render, patch) => {
+    render.hud = 1;
+    render.hudBrightness = 80;
+    let kept = null;
+    const c = new WazeClusterControl({ renderPath: RSOCK, patchPath: PSOCK, pendingPath: PENDING, retryMs: 100,
+        dayBright: { get: () => kept, set: (v) => { kept = v; } } });
+    c.open();
+    render.stream(true);
+    await until('80 %', () => c.renderStatus && c.canChangeHudSize() && c.hudBrightness() === 80 && kept === 80);
+    const saves = () => patch.received.filter((m) => m.cmd === 'hud-brightness').length;
+    const saved = saves();
+    c.nightDim(true);
+    await until('night: 50 % in the render', () => render.hudBrightness === 50 && c.renderStatus.hud_brightness_pct === 50);
+    assert.deepStrictEqual([c.hudBrightnessText(), saves()], ['Brightness: 80 %', saved], 'the chosen one shown, nothing saved');
+    c.stepHudBrightness(-1);
+    await until('70 % chosen: 40 % at night', () => render.hudBrightness === 40);
+    assert.deepStrictEqual([c.hudBrightnessText(), kept, patch.received.filter((m) => m.cmd === 'hud-brightness').slice(-1)[0].hud_brightness_pct],
+        ['Brightness: 70 %', 70, 70], 'the chosen 70 % kept and saved');
+    for (let i = 0; i < 5; i++) c.stepHudBrightness(-1);
+    await until('20 % chosen: never under 10 % at night', () => kept === 20 && render.hudBrightness === 10);
+    c.stepHudBrightness(1); c.stepHudBrightness(1); c.stepHudBrightness(1); c.stepHudBrightness(1); c.stepHudBrightness(1);
+    await until('70 % again', () => kept === 70 && render.hudBrightness === 40);
+    // a render started again shows the saved 70 %: dimmed again
+    render.hudBrightness = 70;
+    render.announce(render.state, render.reason);
+    await until('the saved one dimmed again', () => render.hudBrightness === 40);
+    c.nightDim(false);
+    await until('day: 70 %', () => render.hudBrightness === 70 && c.hudBrightnessText() === 'Brightness: 70 %');
+    c.close();
+    // the app started again by day with the render left dimmed by its last run: the chosen one back
+    render.hudBrightness = 40;
+    const d = new WazeClusterControl({ renderPath: RSOCK, patchPath: PSOCK, pendingPath: PENDING, retryMs: 100,
+        dayBright: { get: () => kept, set: (v) => { kept = v; } } });
+    d.open();
+    await until('70 % again', () => render.hudBrightness === 70 && d.hudBrightness() === 70);
+    d.close();
+});
+
 test('an asked HUD size the render does not show: the render\'s own after a moment, at once on a render reconnect; ' +
     'the same step taken again', async (render, patch) => {
     render.hud = 1;

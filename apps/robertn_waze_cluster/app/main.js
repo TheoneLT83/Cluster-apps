@@ -50,8 +50,7 @@ const HUD_ITEMS = [['hudOn', 'Displays on HUD'], ['hudTurn', 'Turn signals'], ['
 const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert'], ['clusterPanel', 'Info bar']];
 /* The picture's "GO" in its loop: shown GO_DEMO_ON of each GO_DEMO_MS while that alert is on. */
 const GO_DEMO_MS = 4000, GO_DEMO_ON = 1500;
-/* The HUD's layers at night (setting hudNight), of their brightness by day; the car's day / night enum. */
-const NIGHT_DIM = 0.4;
+/* The car's day / night enum (setting hudNight: the HUD map darker at night, waze_cluster_control nightDim). */
 const DAY_NIGHT = { KEINE_AENDERUNG: 0, TAG: 1, NACHT: 2, SIGNAL_UNGUELTIG: 3 };
 /* The part of the HUD's 800 x 480 scene the glass shows, about (a G21's, Redline's hud.js), with BMW's speed row. */
 const HUD_GLASS = { x: 80, y: 100, w: 640, h: 290 };
@@ -130,7 +129,8 @@ async function background(bg) {
     const listeners = [];
     const changed = () => listeners.forEach((fn) => fn());
 
-    const ctl = new WazeClusterControl({ log });
+    // the HUD map's brightness as chosen, kept here: at night the render shows it darker (hudNight)
+    const ctl = new WazeClusterControl({ log, dayBright: { get: () => settings.get('hudDayBright'), set: (v) => settings.set('hudDayBright', v) } });
     const logs = new LogsControl({ log });
     const turns = new TurnSignals({ signals: bg.signals, log });
     // the map settings per driver profile (the head unit's user account), page shown or not
@@ -200,9 +200,10 @@ async function background(bg) {
         hv.want({ power, soc });
         if (power || soc) hv.start(); else hv.stop();
     };
-    // the HUD dimmer at night (the car's light sensor), with setting hudNight
+    // the HUD map darker at night (the car's light sensor), with setting hudNight; the info bar, the turn signals and the
+    // gear stay as bright as BMW's own speed
     let night = false;
-    const dimNow = () => hud.dim(night && settings.get('hudNight') !== false ? NIGHT_DIM : 1);
+    const dimNow = () => ctl.nightDim(night && settings.get('hudNight') !== false);
     bg.signals.watch('de.bmw.infotainment.vehicle.Vehicle', '1', {
         statusDayNightChangeOver: (v) => {
             const x = v && typeof v === 'object' ? v.dayNightChangeOver : v, c = typeof x === 'string' ? DAY_NIGHT[x] : x;
@@ -560,47 +561,48 @@ mgu.run({
             strokeRoundRect: (a, b, w, h, rr, lw, c) => cv.strokeRoundRect(x + a * k, y + b * k, w * k, h * k, rr * k, lw, c),
             circle: (a, b, rr, c) => cv.circle(x + a * k, y + b * k, rr * k, c),
         });
+        /* The Display page: the switches and the info bar's choices on the left (DL wide), the pictures on the right. */
+        const DL = 1056, DCOL = 504, DBTN = 328;
         function drawDisplay(cv, th) {
             const hasHud = hudOk();
             if (!hasHud) dispTab = 'cluster';
             const goNow = Date.now() % GO_DEMO_MS < GO_DEMO_ON;
 
             // the switches on the left: a tab for the HUD, one for the cluster
-            G.panel(cv, th, 24, 44, 760, 468, null);
+            G.panel(cv, th, 24, 44, DL, 468, null);
             let tx = 48;
             (hasHud ? [['cluster', 'Cluster'], ['hud', 'HUD']] : [['cluster', 'Cluster']]).forEach(([id, text]) => {
                 tx += G.button(cv, th, tx, 60, 200, 46, t(text), () => { dispTab = id; changed(); }, { primary: dispTab === id, key: 'tab-' + id }) + 12;
             });
-            const row = (i, key, text, on, run, off) => {
-                const x = 48 + (i % 2) * 372, y = 128 + Math.floor(i / 2) * 58;
-                line(cv, th, text, x, y + 28, 260, off ? th.dim : null);
-                toggle(cv, th, x + 268, y + 2, on, run, 'disp-' + key, off);
+            // note: a smaller second line under the label (the green light alert's camera)
+            const row = (i, key, text, on, run, off, note) => {
+                const x = 48 + (i % 2) * DCOL, y = 118 + Math.floor(i / 2) * 54;
+                line(cv, th, text, x, y + (note ? 18 : 28), DCOL - 112, off ? th.dim : null);
+                if (note) cv.text(fit(cv, note.text, 16, DCOL - 112, 'label'), x, y + 40, 16, note.color, { font: 'label' });
+                toggle(cv, th, x + DCOL - 100, y + 2, on, run, 'disp-' + key, off);
             };
             const flip = (key) => () => settings.set(key, settings.get(key) === false ? true : !settings.get(key));
-            // beside the green light alert's switch (slot i): whether the car's traffic-light camera answers
-            const camera = (i) => {
-                const f = green.found();
-                if (f === null) return;
-                const x = 48 + (i % 2) * 372, y = 128 + Math.floor(i / 2) * 58;
-                small(cv, th, f ? t('Traffic-light camera found') : t('Traffic-light camera not found'), x, y + 28, 340, f ? th.dim : th.warn);
+            // under the green light alert's label: whether the car's traffic-light camera answers
+            const camera = (key) => {
+                const f = /^greenLight/.test(key) ? green.found() : null;
+                return f === null ? null : { text: f ? t('Traffic-light camera found') : t('Traffic-light camera not found'), color: f ? th.dim : th.warn };
             };
             if (dispTab === 'hud') {
                 const hudOnNow = settings.get('hudOn') !== false;
-                HUD_ITEMS.forEach(([key, text], i) => row(i, key, t(text), settings.get(key) !== false && !!settings.get(key), flip(key), key !== 'hudOn' && !hudOnNow));
+                HUD_ITEMS.forEach(([key, text], i) => row(i, key, t(text), settings.get(key) !== false && !!settings.get(key), flip(key), key !== 'hudOn' && !hudOnNow, camera(key)));
                 // BMW's HUD pop-ups (calls, media, lists): the map gives way to them, or stays over them
                 {   // its own line, across both columns (a long label)
-                    const y = 128 + Math.ceil(HUD_ITEMS.length / 2) * 58, off = !hudOnNow || !ctl.canKeepHud();
-                    line(cv, th, t("Keep HUD map over BMW's pop-ups"), 48, y + 28, 620, off ? th.dim : null);
-                    toggle(cv, th, 48 + 372 + 268, y + 2, ctl.hudKeepShown() === true, () => ctl.toggleHudKeep(), 'disp-hudKeep', off);
+                    const y = 118 + Math.ceil(HUD_ITEMS.length / 2) * 54, off = !hudOnNow || !ctl.canKeepHud();
+                    line(cv, th, t("Keep HUD map over BMW's pop-ups"), 48, y + 28, DCOL - 112, off ? th.dim : null);
+                    toggle(cv, th, 48 + DCOL - 100, y + 2, ctl.hudKeepShown() === true, () => ctl.toggleHudKeep(), 'disp-hudKeep', off);
                 }
-                camera(HUD_ITEMS.length + 1);
                 // the readings, as the info bar's: a button each, lit while on (up to HUD_DATA_MAX)
                 const offered = HUD_DATA.filter(([v]) => (v !== 'ev' && v !== 'soc') || hv.installed());
                 const count = offered.filter(([, key]) => settings.get(key)).length;
                 label(cv, th, t('Info bar') + '  ' + count + '/' + HUD_DATA_MAX, 48, 356);
                 offered.forEach(([v, key, text], i) => {
                     const lit = !!settings.get(key);
-                    G.button(cv, th, 48 + (i % 3) * 244, 366 + Math.floor(i / 3) * 48, 232, 42, t(text), () => settings.set(key, !lit),
+                    G.button(cv, th, 48 + (i % 3) * (DBTN + 12), 366 + Math.floor(i / 3) * 46, DBTN, 40, t(text), () => settings.set(key, !lit),
                         { primary: lit, key: 'data-' + v, busy: !hudOnNow || (!lit && count >= HUD_DATA_MAX) });
                 });
             } else {
@@ -612,8 +614,7 @@ mgu.run({
                 row(1, 'guide', t('Hide logo on the cluster'), !!hide, () => ctl.toggleGuidance(), gu || hide === null);
                 // the info bar shows under the map: off while the map is not on the cluster
                 const noBar = (key) => key === 'clusterPanel' && !clusterNow;
-                CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), settings.get(key) !== false && !noBar(key), flip(key), noBar(key)));
-                camera(2 + CLUSTER_ITEMS.length);
+                CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), settings.get(key) !== false && !noBar(key), flip(key), noBar(key), camera(key)));
                 // the info bar's items, as the HUD's reading: a button each, lit while on (up to PANEL_MAX)
                 const barOn = settings.get('clusterPanel') !== false && clusterNow;
                 const offered = PANEL_ITEMS.filter(([k]) => offers(k, hv, settings));
@@ -621,14 +622,15 @@ mgu.run({
                 label(cv, th, t('Info bar') + '  ' + count + '/' + PANEL_MAX, 48, 356);      // how many are on, of the most
                 offered.forEach(([k, key, text], i) => {
                     const lit = !!settings.get(key);
-                    G.button(cv, th, 48 + (i % 3) * 244, 366 + Math.floor(i / 3) * 48, 232, 42, t(text), () => settings.set(key, !lit),
+                    G.button(cv, th, 48 + (i % 3) * (DBTN + 12), 366 + Math.floor(i / 3) * 46, DBTN, 40, t(text), () => settings.set(key, !lit),
                         { primary: lit, key: 'item-' + k, busy: !barOn || (!lit && count >= PANEL_MAX) });
                 });
             }
 
             // the pictures on the right: the cluster on top, the HUD under it, each showing what of ours is on there
-            G.panel(cv, th, 804, 44, 772, 468, t('Display'));
-            const cw = hasHud ? 456 : 700, cx = 804 + (772 - cw) / 2;
+            const px = 24 + DL + 20, pw = 1576 - px;
+            G.panel(cv, th, px, 44, pw, 468, t('Display'));
+            const cw = pw - 40, cx = px + 20;
             const ch = clusterPicture(cv, th, cx, hasHud ? 96 : 150, cw, goNow && settings.get('greenLightCluster') !== false);
             if (hasHud) {
                 // as wide as the cluster: the part of the HUD's scene the glass shows (HUD_GLASS)

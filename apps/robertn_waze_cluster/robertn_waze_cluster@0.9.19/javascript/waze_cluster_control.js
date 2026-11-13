@@ -115,6 +115,9 @@ const HUD_MOVE_PX = 10, HUD_MOVE_MAX = 400, HUD_ASKED_MS = 300;
 /* The HUD map's brightness, % (the map alone; BMW's HUD content keeps its own): HUD_BRIGHT_STEP a press,
  * HUD_BRIGHT_MIN to 100. A waze-on-cluster before it reports none. */
 const HUD_BRIGHT_MIN = 10, HUD_BRIGHT_STEP = 10;
+/* At night (nightDim(true)) the map shows HUD_NIGHT_DROP points darker than the brightness chosen (80 % -> 50 %), in
+ * the render only: the chosen one stays what patchd saves and what the page shows. */
+const HUD_NIGHT_DROP = 30;
 const MOVES = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] };
 
 /* One newline-delimited-JSON stream socket, reconnecting while open.
@@ -291,6 +294,9 @@ class WazeClusterControl extends EventEmitter {
         this.captureState = { state: 'unavailable' };
         this.renderStatus = null;   /* the render tool's last status while connected */
         this._yield = false;        /* another app holds the HUD (yieldHud) */
+        this._night = false;        /* the map darker at night (nightDim) */
+        /* the brightness chosen, kept by the app ({ get, set }): the render's own may be the night's */
+        this._dayStore = o.dayBright || null;
         this._heldHud = false;      /* the HUD map is off in the render for it, on as chosen */
 
         this.render = new LineSocket({
@@ -562,8 +568,41 @@ class WazeClusterControl extends EventEmitter {
         if (this._askedBright != null) {
             return this._askedBright;
         }
+        const day = this._day();
+        if (this._night && day != null) {
+            return day;
+        }
         const v = this.renderStatus && this.renderStatus.hud_brightness_pct;
         return typeof v === 'number' ? v : null;
+    }
+
+    _day() {
+        const v = this._dayStore ? this._dayStore.get() : this._dayPct;
+        return typeof v === 'number' ? v : null;
+    }
+    _setDay(pct) {
+        this._dayPct = pct;
+        if (this._dayStore && this._dayStore.get() !== pct) {
+            this._dayStore.set(pct);
+        }
+    }
+    /* What the render shows for a chosen brightness: HUD_NIGHT_DROP less at night. */
+    _shown(pct) {
+        return this._night ? Math.max(HUD_BRIGHT_MIN, pct - HUD_NIGHT_DROP) : pct;
+    }
+
+    /* The map darker at night (on) or as chosen again (off); the render at once, nothing saved. */
+    nightDim(on) {
+        on = !!on;
+        if (on === this._night) {
+            return;
+        }
+        this._night = on;
+        const day = this._day();
+        if (day != null) {
+            this.render.send({ cmd: 'hud', hud_brightness_pct: String(this._shown(day)) });
+        }
+        this.emit('change');
     }
 
     canChangeHudBrightness(step) {
@@ -579,12 +618,13 @@ class WazeClusterControl extends EventEmitter {
         }
         const pct = Math.max(HUD_BRIGHT_MIN, Math.min(100, this.hudBrightness() + step * HUD_BRIGHT_STEP));
         this._askedBright = pct;
+        this._setDay(pct);
         clearTimeout(this._askedBrightTimer);
         this._askedBrightTimer = setTimeout(() => {
             this._askedBright = null;
             this.emit('change');
         }, HUD_ASKED_MS);
-        this.render.send({ cmd: 'hud', hud_brightness_pct: String(pct) });
+        this.render.send({ cmd: 'hud', hud_brightness_pct: String(this._shown(pct)) });
         this.patch.send({ cmd: 'hud-brightness', hud_brightness_pct: pct });
         this.emit('change');
     }
@@ -1152,9 +1192,22 @@ class WazeClusterControl extends EventEmitter {
                 clearTimeout(this._askedHudTimer);
                 this._askedHud = null;
             }
-            if (this._askedBright != null && msg.hud_brightness_pct === this._askedBright) {
+            if (this._askedBright != null && msg.hud_brightness_pct === this._shown(this._askedBright)) {
                 clearTimeout(this._askedBrightTimer);
                 this._askedBright = null;
+            }
+            // the render shows the brightness chosen (kept by the app; the render's first one when none is), at night
+            // that less HUD_NIGHT_DROP: a render started again (the saved one) or left dimmed by the app's last run is
+            // set right
+            const bp = msg.hud_brightness_pct;
+            if (typeof bp === 'number' && this._askedBright == null) {
+                if (this._day() == null) {
+                    this._setDay(bp);
+                }
+                const want = this._shown(this._day());
+                if (bp !== want) {
+                    this.render.send({ cmd: 'hud', hud_brightness_pct: String(want) });
+                }
             }
             if (this._askedPos && msg.hud_x === this._askedPos[0] && msg.hud_y === this._askedPos[1]) {
                 this._askedPos = null;
@@ -1205,7 +1258,7 @@ class WazeClusterControl extends EventEmitter {
     }
 }
 
-module.exports = {
+module.exports = { HUD_NIGHT_DROP,
     WazeClusterControl, LineSocket,
     RENDER_PATH, PATCH_PATH, PENDING_PATH, AA_PENDING_PATH, BOOT_ID_PATH,
     SIZE, SAFE, ZOOM_STEP, RESTART_FAILED, SHOWN_ON, HUD_SIZE_STEPS, HUD_BRIGHT_MIN, HUD_BRIGHT_STEP
