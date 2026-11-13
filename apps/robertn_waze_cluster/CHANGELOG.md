@@ -5,6 +5,9 @@
 - **Dimmer at night dims the HUD map only**, 30 points under the brightness chosen (80 % -> 50 %, 70 % -> 40 %, never
   under 10 %); the info bar, turn signals and gear stay as bright as BMW's own speed. The chosen brightness is still
   what the Maps page shows and what is saved.
+- **More readings for both info bars:** tyre pressures (the cluster: all four, a low one red; the HUD: the lowest),
+  gearbox oil, fuel range, the clock and the drive time (since the car was switched on). Read from what the car sends
+  by itself, nothing asked of its units. Their words are English in every language.
 - **Display page:** the switches and the info bar's choices take most of the page (three a row, bigger), the pictures
   less; "Traffic-light camera found" is a small line under Green light alert.
 - Carries cluster-render 0.5.9's client (Robert's latest).

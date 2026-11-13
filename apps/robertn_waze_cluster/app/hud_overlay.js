@@ -138,7 +138,7 @@ function drawData(cv, x, y, w, items, k) {
 
 function drawValue(cv, at, y, it, k, size) {
     cv.text(it.label, at, y + size[1] * k, size[1] * k, DIM, { font: 'bold' });
-    cv.text(it.text, at, y + (ROW_H - 6) * k, size[0] * k, WHITE, { font: 'bold' });
+    cv.text(it.text, at, y + (ROW_H - 6) * k, size[0] * k, it.warn ? '#ff4d4d' : WHITE, { font: 'bold' });
 }
 
 function drawSlider(cv, x, cy, tw, slider, k) {

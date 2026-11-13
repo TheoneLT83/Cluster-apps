@@ -178,6 +178,25 @@
       "broadcasts": [
         "RecognitionTrafficLightCamera"
       ]
+    },
+    "de.bmw.infotainment.vehicle.TPMS": {
+      "instances": "1",
+      "attributes": {
+        "statusTyrePressure": "rs",
+        "statusTargetTyrePressure": "rs"
+      }
+    },
+    "de.bmw.infrastructure.analytics.BasicDataSet": {
+      "instances": "1",
+      "attributes": {
+        "basicDataSet": "s"
+      }
+    },
+    "de.bmw.infotainment.KombiIF": {
+      "instances": "1",
+      "attributes": {
+        "statusRangeTankStatus": "rs"
+      }
     }
   },
   "services": {

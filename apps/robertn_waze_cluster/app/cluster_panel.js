@@ -4,20 +4,22 @@
  * cluster_panel - the info bar in the middle of the cluster, a little low: up to four live values in a dark
  * see-through pill, drawn as an image layer of the cluster renderer (target `map`, 1088 x 480, over the Waze map).
  *
- *   items: [{ kind: 'power', kw, limits }, { kind: 'value', label: 'OIL', text: '92°', cold: true }, ...]
+ *   items: [{ kind: 'power', kw, limits }, { kind: 'value', label: 'OIL', text: '92°', cold: true },
+ *           { kind: 'tyres', bar: { FL, FR, RL, RR }, low: ['RL'] }, ...]
  *   panelSize(items) -> { w, h }        drawPanel(cv, x, y, items)       panelRect(items) -> where on the target
  *
  * The power: its kW (amber from AMBER_KW, green while recuperating) and a bar from zero (a quarter along: using
  * fills to the right, blue to purple up to the battery's limit (it.limits.out, else MAX_OUT); recuperating to the left
  * in green up to its limit (it.limits.in, else MAX_IN)). A value
- * shown cold (oil or coolant under COLD_C) is blue.
+ * shown cold (oil or coolant under COLD_C) is blue, a warning one (warn) red. The tyres: four pressures in bar as the
+ * car has them (front over rear), a low one red.
  */
 const { withAlpha } = require('./kit/canvas');
 
 const TARGET = { w: 1088, h: 480 };
-const H = 96, PAD = 12, POWER_W = 200, VALUE_W = 92;
+const H = 96, PAD = 12, POWER_W = 200, VALUE_W = 92, TYRES_W = 124;
 const PILL = [8, 10, 16, 165], WHITE = '#f2f5f8', LABEL = '#a9b1c2';
-const BLUE = '#2f86ff', PURPLE = '#b35cff', GREEN = '#2fd27a', AMBER = '#ffb020', COLD = '#5ab8ff', TRACK = '#22262e';
+const RED = '#ff4d4d', BLUE = '#2f86ff', PURPLE = '#b35cff', GREEN = '#2fd27a', AMBER = '#ffb020', COLD = '#5ab8ff', TRACK = '#22262e';
 const AMBER_KW = 60, MAX_OUT_DEFAULT = 100, MAX_IN_DEFAULT = 60;
 const COLD_C = 50;
 /* Where it sits: centred, its bottom this far over the map's bottom edge. */
@@ -26,7 +28,7 @@ const BOTTOM_GAP = 32;          // clear of the cluster's dimmed edge under the 
 const isNum = (v) => typeof v === 'number' && isFinite(v);
 
 function panelSize(items) {
-    const w = items.reduce((a, it) => a + (it.kind === 'power' ? POWER_W : VALUE_W), 0);
+    const w = items.reduce((a, it) => a + (it.kind === 'power' ? POWER_W : it.kind === 'tyres' ? TYRES_W : VALUE_W), 0);
     return { w: w + 24, h: H - 2 * PAD };
 }
 
@@ -67,13 +69,20 @@ function drawPanel(cv, x, y, items) {
             cv.text('kW', cx + 96, mid + 15, 18, LABEL, { font: 'bold' });
             drawBar(cv, cx + 128, mid - 6, 64, 12, kw, it.limits);
             cx += POWER_W;
+        } else if (it.kind === 'tyres') {
+            const b = it.bar || {}, low = it.low || [];
+            [['FL', 0, 0], ['FR', 1, 0], ['RL', 0, 1], ['RR', 1, 1]].forEach(([w, c, r]) => {
+                const v = b[w], has = isNum(v);
+                cv.text(has ? v.toFixed(1) : '--', cx + 32 + c * 60, mid - 6 + r * 30, 24, !has ? LABEL : low.indexOf(w) >= 0 ? RED : WHITE, { font: 'bold', align: 'center' });
+            });
+            cx += TYRES_W;
         } else {
             cv.text(it.label, cx + VALUE_W / 2, mid - 12, 14, LABEL, { font: 'bold', align: 'center', spacing: 1 });
-            cv.text(it.text, cx + VALUE_W / 2, mid + 24, 32, it.cold ? COLD : it.text === '--' ? LABEL : WHITE, { font: 'bold', align: 'center' });
+            cv.text(it.text, cx + VALUE_W / 2, mid + 24, 32, it.warn ? RED : it.cold ? COLD : it.text === '--' ? LABEL : WHITE, { font: 'bold', align: 'center' });
             cx += VALUE_W;
         }
     });
     return s;
 }
 
-module.exports = { drawPanel, panelSize, panelRect, drawBar, TARGET, COLD_C, AMBER_KW, MAX_OUT: MAX_OUT_DEFAULT, MAX_IN: MAX_IN_DEFAULT, BLUE, GREEN, AMBER, PURPLE, withAlpha };
+module.exports = { RED, drawPanel, panelSize, panelRect, drawBar, TARGET, COLD_C, AMBER_KW, MAX_OUT: MAX_OUT_DEFAULT, MAX_IN: MAX_IN_DEFAULT, BLUE, GREEN, AMBER, PURPLE, withAlpha };

@@ -26,6 +26,10 @@ let checks = 0;
 const ok = (cond, msg) => { checks += 1; assert(cond, msg); };
 const eq = (got, want, msg) => { checks += 1; assert.deepStrictEqual(got, want, msg); };
 
+/* Words shown in English in every language (the owner's choice: no translations for them). */
+const ENGLISH_ONLY = ['Tyre pressures', 'Gearbox oil', 'Fuel range', 'Clock and drive time', 'Clock', 'Drive time',
+    'GEARBOX', 'RANGE', 'TIME', 'DRIVE', 'TYRES'];
+
 /* ---- the words the app shows ---- */
 const used = new Set();
 const literal = /\bt\(\s*(['"])((?:\\.|(?!\1)[^\\])*)\1\s*[,)]/g;
@@ -112,7 +116,7 @@ all.forEach((l) => {
         eq(l.words[k], l.words[k].normalize('NFC'), `${n}: "${k}" is NFC`);
     });
     eq(Object.keys(l.words).filter((k) => !used.has(k)), [], `${n}: translations of words the app does not show`);
-    const missing = Array.from(used).filter((k) => !Object.prototype.hasOwnProperty.call(l.words, k));
+    const missing = Array.from(used).filter((k) => !Object.prototype.hasOwnProperty.call(l.words, k) && ENGLISH_ONLY.indexOf(k) < 0);
     if (missing.length) {
         untranslated.push(`${n}: ${missing.length} of ${used.size} words without a translation`);
     }

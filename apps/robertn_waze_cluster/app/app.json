@@ -1,7 +1,7 @@
 {
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
-  "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and one more reading on the HUD: electric range, oil and coolant, boost, power and torque, or engine speed",
+  "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and readings on the HUD and the cluster: electric range, oil and coolant, boost, power and torque, engine speed, tyre pressures, gearbox oil, fuel range, the clock and the drive time",
   "version": "0.9.19",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
@@ -53,6 +53,19 @@
     "de.bmw.infotainment.vehicle.Vehicle": {
       "statusDayNightChangeOver": "rs",
       "_optional": "the HUD dimmer at night"
+    },
+    "de.bmw.infotainment.vehicle.TPMS": {
+      "_optional": "tyre pressures in the info bars",
+      "statusTyrePressure": "rs",
+      "statusTargetTyrePressure": "rs"
+    },
+    "de.bmw.infrastructure.analytics.BasicDataSet": {
+      "_optional": "gearbox oil temperature in the info bars",
+      "basicDataSet": "s"
+    },
+    "de.bmw.infotainment.KombiIF": {
+      "_optional": "the fuel range in the info bars",
+      "statusRangeTankStatus": "rs"
     }
   },
   "screens": [
@@ -198,6 +211,34 @@
       "hidden": true
     },
     {
+      "key": "hudTyres",
+      "label": "Tyre pressures",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "hudGearbox",
+      "label": "Gearbox oil",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "hudFuel",
+      "label": "Fuel range",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "hudClock",
+      "label": "Clock and drive time",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
       "key": "realSpeed",
       "label": "Real speed on HUD",
       "type": "bool",
@@ -277,6 +318,41 @@
     {
       "key": "clusterSpeed",
       "label": "Real speed",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "clusterTyres",
+      "label": "Tyre pressures",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "clusterGearbox",
+      "label": "Gearbox oil",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "clusterFuel",
+      "label": "Fuel range",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "clusterClock",
+      "label": "Clock",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
+      "key": "clusterDrive",
+      "label": "Drive time",
       "type": "bool",
       "default": false,
       "hidden": true

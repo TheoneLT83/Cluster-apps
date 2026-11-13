@@ -145,6 +145,34 @@
    "hidden": true
   },
   {
+   "key": "hudTyres",
+   "label": "Tyre pressures",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "hudGearbox",
+   "label": "Gearbox oil",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "hudFuel",
+   "label": "Fuel range",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "hudClock",
+   "label": "Clock and drive time",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
    "key": "realSpeed",
    "label": "Real speed on HUD",
    "type": "bool",
@@ -224,6 +252,41 @@
   {
    "key": "clusterSpeed",
    "label": "Real speed",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "clusterTyres",
+   "label": "Tyre pressures",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "clusterGearbox",
+   "label": "Gearbox oil",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "clusterFuel",
+   "label": "Fuel range",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "clusterClock",
+   "label": "Clock",
+   "type": "bool",
+   "default": false,
+   "hidden": true
+  },
+  {
+   "key": "clusterDrive",
+   "label": "Drive time",
    "type": "bool",
    "default": false,
    "hidden": true

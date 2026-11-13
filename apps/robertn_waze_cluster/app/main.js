@@ -33,6 +33,7 @@ const { LogsControl } = require('./logs_control.js');
 const path = require('path');
 const { HudOverlay, drawLight, LIGHT_HUD, anchorRect, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, drawGear, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
+const { MoreData } = require('./more_data.js');
 const PANEL = require('./cluster_panel.js');
 const { HudClaim } = require('./kit/hud_claim');
 const { GreenLight } = require('./green_light.js');
@@ -58,12 +59,16 @@ const HUD_GLASS = { x: 80, y: 100, w: 640, h: 290 };
  * its words (hudData: the one reading an earlier version chose, taken over once). */
 const HUD_DATA_MAX = 3;
 const HUD_DATA = [['ev', 'hudEv', 'Electric range'], ['soc', 'hudSoc', 'Battery charge'], ['temps', 'hudTemps', 'Oil and coolant'],
-    ['boost', 'hudBoost', 'Boost'], ['power', 'hudPower', 'Power and torque'], ['rpm', 'hudRpm', 'Engine speed']];
+    ['boost', 'hudBoost', 'Boost'], ['power', 'hudPower', 'Power and torque'], ['rpm', 'hudRpm', 'Engine speed'],
+    ['tyres', 'hudTyres', 'Tyre pressures'], ['gearbox', 'hudGearbox', 'Gearbox oil'], ['fuel', 'hudFuel', 'Fuel range'],
+    ['clock', 'hudClock', 'Clock and drive time']];
 /* The cluster's info bar (cluster_panel.js): its items, each switched on the Display page (up to PANEL_MAX): the item,
  * its setting, its words. */
 const PANEL_ITEMS = [['power', 'clusterKw', 'Battery kW usage'], ['soc', 'clusterSoc', 'Battery charge'], ['oil', 'clusterOil', 'OIL'],
     ['coolant', 'clusterCoolant', 'COOLANT'], ['boost', 'clusterBoost', 'Boost'], ['rpm', 'clusterRpm', 'Engine speed'],
-    ['torque', 'clusterTorque', 'TORQUE'], ['speed', 'clusterSpeed', 'Real speed']];
+    ['torque', 'clusterTorque', 'TORQUE'], ['speed', 'clusterSpeed', 'Real speed'], ['tyres', 'clusterTyres', 'Tyre pressures'],
+    ['gearbox', 'clusterGearbox', 'Gearbox oil'], ['fuel', 'clusterFuel', 'Fuel range'], ['clock', 'clusterClock', 'Clock'],
+    ['drive', 'clusterDrive', 'Drive time']];
 const PANEL_MAX = 4;
 /* An info bar item the car and the settings offer: the battery's only with eDrive, Real speed only with its setting. */
 const offers = (k, hv, settings) => (k !== 'power' && k !== 'soc' || hv.installed()) && (k !== 'speed' || !!settings.get('realSpeedCluster'));
@@ -162,6 +167,8 @@ async function background(bg) {
     const units = new Units({ settings, appRoot: bg.dataDir && path.dirname(bg.dataDir), log });
     // the electric range only while eDrive is installed (it has the battery's numbers)
     const hv = new HvData({ log, appRoot: bg.dataDir && path.dirname(bg.dataDir) });
+    // tyre pressures, gearbox oil, the fuel range, the clock and the drive time (more_data.js)
+    const more = new MoreData({ signals: bg.signals, log }).start();
     // an earlier version's one reading (hudData) becomes its switch, once
     { const was = settings.get('hudData'), it = HUD_DATA.find(([v]) => v === was); if (it) { settings.set(it[1], true); settings.set('hudData', 'off'); } }
     /* The HUD's readings switched on that this car has (the battery's with eDrive), up to HUD_DATA_MAX. */
@@ -184,6 +191,11 @@ async function background(bg) {
             if (k === 'coolant') return val(t('COOLANT'), real.coolant, Math.round(real.coolant) + '°', real.coolant < PANEL.COLD_C);
             if (k === 'rpm') return val('RPM', real.rpm, String(Math.round(real.rpm / 10) * 10));
             if (k === 'speed') return val('KM/H', real.speed, String(Math.round(real.speed)));
+            if (k === 'tyres') return { kind: 'tyres', bar: more.tyres() || {}, low: more.lowTyre() };
+            if (k === 'gearbox') { const g = more.gearbox(); return val(t('GEARBOX'), g, Math.round(g) + '°', g < PANEL.COLD_C); }
+            if (k === 'fuel') { const r = more.range(); return val(t('RANGE'), r, String(Math.round(r))); }
+            if (k === 'clock') return { kind: 'value', label: t('TIME'), text: more.clock() };
+            if (k === 'drive') return { kind: 'value', label: t('DRIVE'), text: more.driveTime() };
             if (k === 'boost') {
                 const b = units.boost(G.isNum(boost) && !(d && d.demo) ? boost : NaN);
                 return val(b.unit.toUpperCase(), b.value, b.unit === 'bar' ? (b.value || 0).toFixed(1) : String(Math.round(b.value)));
@@ -244,6 +256,17 @@ async function background(bg) {
             } else if (c === 'temps') {
                 value(t('OIL'), real.oil, '°');
                 value(t('COOLANT'), real.coolant, '°');
+            } else if (c === 'tyres') {
+                // the lowest tyre, red while one is low
+                const p = more.tyres(), lows = p ? Object.keys(p).map((w) => p[w]).filter(G.isNum) : [];
+                if (lows.length || preview) out.push({ kind: 'value', label: t('TYRES'), text: lows.length ? Math.min.apply(null, lows).toFixed(1) + ' bar' : '--', warn: more.lowTyre().length > 0 });
+            } else if (c === 'gearbox') {
+                value(t('GEARBOX'), more.gearbox(), '°');
+            } else if (c === 'fuel') {
+                value(t('RANGE'), more.range(), ' km');
+            } else if (c === 'clock') {
+                out.push({ kind: 'value', label: t('TIME'), text: more.clock() });
+                out.push({ kind: 'value', label: t('DRIVE'), text: more.driveTime() });
             }
         });
         return out;
@@ -258,6 +281,7 @@ async function background(bg) {
     }));
     car.onSample(() => { toHud(); changed(); });
     hv.on('change', () => { toHud(); changed(); });
+    more.on('change', () => { toHud(); toPanel(); changed(); });
     ctl.on('change', () => { toHud(); changed(); });
     logs.on('change', changed);
     profiles.on('change', changed);
@@ -562,7 +586,7 @@ mgu.run({
             circle: (a, b, rr, c) => cv.circle(x + a * k, y + b * k, rr * k, c),
         });
         /* The Display page: the switches and the info bar's choices on the left (DL wide), the pictures on the right. */
-        const DL = 1056, DCOL = 504, DBTN = 328;
+        const DL = 1056, DCOL = 504, DCOLS = 4, DBTN = 243;
         function drawDisplay(cv, th) {
             const hasHud = hudOk();
             if (!hasHud) dispTab = 'cluster';
@@ -600,9 +624,10 @@ mgu.run({
                 const offered = HUD_DATA.filter(([v]) => (v !== 'ev' && v !== 'soc') || hv.installed());
                 const count = offered.filter(([, key]) => settings.get(key)).length;
                 label(cv, th, t('Info bar') + '  ' + count + '/' + HUD_DATA_MAX, 48, 356);
+                const at = (i) => [48 + (i % DCOLS) * (DBTN + 12), 366 + Math.floor(i / DCOLS) * 46];
                 offered.forEach(([v, key, text], i) => {
                     const lit = !!settings.get(key);
-                    G.button(cv, th, 48 + (i % 3) * (DBTN + 12), 366 + Math.floor(i / 3) * 46, DBTN, 40, t(text), () => settings.set(key, !lit),
+                    G.button(cv, th, at(i)[0], at(i)[1], DBTN, 40, t(text), () => settings.set(key, !lit),
                         { primary: lit, key: 'data-' + v, busy: !hudOnNow || (!lit && count >= HUD_DATA_MAX) });
                 });
             } else {
@@ -619,10 +644,13 @@ mgu.run({
                 const barOn = settings.get('clusterPanel') !== false && clusterNow;
                 const offered = PANEL_ITEMS.filter(([k]) => offers(k, hv, settings));
                 const count = offered.filter(([, key]) => settings.get(key)).length;
-                label(cv, th, t('Info bar') + '  ' + count + '/' + PANEL_MAX, 48, 356);      // how many are on, of the most
+                // how many are on, of the most; right under the switches (two rows here)
+                const ly = 118 + Math.ceil((2 + CLUSTER_ITEMS.length) / 2) * 54 + 34;
+                label(cv, th, t('Info bar') + '  ' + count + '/' + PANEL_MAX, 48, ly);
+                const at = (i) => [48 + (i % DCOLS) * (DBTN + 12), ly + 10 + Math.floor(i / DCOLS) * 46];
                 offered.forEach(([k, key, text], i) => {
                     const lit = !!settings.get(key);
-                    G.button(cv, th, 48 + (i % 3) * (DBTN + 12), 366 + Math.floor(i / 3) * 46, DBTN, 40, t(text), () => settings.set(key, !lit),
+                    G.button(cv, th, at(i)[0], at(i)[1], DBTN, 40, t(text), () => settings.set(key, !lit),
                         { primary: lit, key: 'item-' + k, busy: !barOn || (!lit && count >= PANEL_MAX) });
                 });
             }
