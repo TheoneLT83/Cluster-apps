@@ -34,6 +34,7 @@ const path = require('path');
 const { HudOverlay, drawLight, LIGHT_HUD, anchorRect, mapRect, gearRect, arrowRect, dataRect, drawArrow, drawData, drawGear, HUD_W, HUD_H, ARROW, GREEN, SPEED_RECT } = require('./hud_overlay.js');
 const { HvData } = require('./hv_data.js');
 const { MoreData } = require('./more_data.js');
+const { Diag } = require('./kit/diag');
 const PANEL = require('./cluster_panel.js');
 const { HudClaim } = require('./kit/hud_claim');
 const { GreenLight } = require('./green_light.js');
@@ -168,7 +169,12 @@ async function background(bg) {
     // the electric range only while eDrive is installed (it has the battery's numbers)
     const hv = new HvData({ log, appRoot: bg.dataDir && path.dirname(bg.dataDir) });
     // tyre pressures, gearbox oil, the fuel range, the clock and the drive time (more_data.js)
-    const more = new MoreData({ signals: bg.signals, log }).start();
+    // the gearbox unit is asked over the diagnostic link (as M Vitals) only while the gearbox oil is shown and the car's
+    // broadcast has none
+    const diag = new Diag(bg.signals, log);
+    diag.quiet = true; diag.busyLog = false;
+    diag.init().catch((e) => log.warn('diagnostic link: ' + (e && e.message || e)));
+    const more = new MoreData({ signals: bg.signals, log, diag }).start();
     // an earlier version's one reading (hudData) becomes its switch, once
     { const was = settings.get('hudData'), it = HUD_DATA.find(([v]) => v === was); if (it) { settings.set(it[1], true); settings.set('hudData', 'off'); } }
     /* The HUD's readings switched on that this car has (the battery's with eDrive), up to HUD_DATA_MAX. */
@@ -283,6 +289,10 @@ async function background(bg) {
     car.onSample(() => { toHud(); changed(); });
     hv.on('change', () => { toHud(); changed(); });
     more.on('change', () => { toHud(); toPanel(); changed(); });
+    const gearWanted = () => more.wantGearbox((settings.get('hudOn') !== false && hudOk() && dataChoices().indexOf('gearbox') >= 0) ||
+        (settings.get('clusterPanel') !== false && panelKinds().indexOf('gearbox') >= 0));
+    gearWanted();
+    settings.onChange(gearWanted);
     ctl.on('change', () => { toHud(); changed(); });
     logs.on('change', changed);
     profiles.on('change', changed);

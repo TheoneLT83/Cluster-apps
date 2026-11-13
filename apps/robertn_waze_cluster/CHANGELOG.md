@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.21
+
+- **The clock shows the car's time:** UTC from the cluster with the time zone set in BMW's menu (summer time
+  included); it showed the head unit's UTC clock, hours off. The zone the car sends goes to the log once.
+- **Gearbox oil on cars that do not broadcast it:** read from the gearbox unit, as M Vitals does (ZF 8HP first),
+  only while the gearbox oil is chosen in an info bar.
+
 ## 0.9.20
 
 - **Fits a smaller screen of the same shape** (an MGU retrofitted to an NBT Evo display, 1440x540): the pages as on
