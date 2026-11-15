@@ -86,6 +86,23 @@ const quiet = { info() {}, warn() {} };
     ok(m.where === 'cluster' && st.v.tvMapWas === null, 'a start with the map kept from before: back at once');
     await until('connected', () => tv.state);
 
+    // left on: the tool starts off at the next start of the car, and is switched on again
+    tv.close();
+    t.settings.enabled = false;
+    m = map('cluster'); st = store(); st.set('tvOn', true);
+    tv = new TurnView({ log: quiet, ctl: m, hudOk: () => true, store: st, path: SOCK }).start();
+    await until('on again', () => tv.enabled());
+    ok(m.where === 'hud', 'left on: on again at the next start, the map to the HUD again');
+    tv.enable(false);
+    await until('off', () => !tv.enabled());
+    ok(st.v.tvOn === false && m.where === 'cluster', 'switched off: remembered off, the map back');
+    tv.close();
+    m = map('cluster'); st.set('tvMapWas', null);
+    tv = new TurnView({ log: quiet, ctl: m, hudOk: () => true, store: st, path: SOCK }).start();
+    await until('connected', () => tv.state);
+    await sleep(200);
+    ok(!tv.enabled() && m.where === 'cluster', 'left off: stays off at the next start');
+
     // calibration: a value a step at a time, within its range, previewed; Save keeps it; Reset the defaults
     tv.calib(true);
     ok(tv.calibrating && tv.draft && tv.draft.h === 0.6, 'calibrate: the saved values to start from');

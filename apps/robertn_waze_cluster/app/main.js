@@ -722,7 +722,7 @@ mgu.run({
                     small(cv, th, k, 48, 196 + i * 40 + 12, 240, th.dim);
                     small(cv, th, v[0], 300, 196 + i * 40 + 12, 600, col(v[1]));
                 });
-                small(cv, th, 'Off at every start of the car. Instrument cluster > Central display area: Map view.', 48, 420, 850, th.dim);
+                small(cv, th, 'Stays as you left it at the next start. Instrument cluster > Central display area: Map view.', 48, 420, 850, th.dim);
                 small(cv, th, on ? (hudOk() ? 'While it is on, the Waze map is on the HUD only.' : 'While it is on, the Waze map is off.')
                     : (hudOk() ? 'Switched on, it moves the Waze map to the HUD; off, the map comes back.' : 'Switched on, it turns the Waze map off; off, the map comes back.'), 48, 452, 850, th.dim);
             }

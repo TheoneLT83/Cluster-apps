@@ -9,7 +9,8 @@
  *        | { op: 'camreq', state }
  *     <- { state: { settings: { enabled, cal: { h, pitch, fov, yaw, x } }, status: { camera, rect, route, provider,
  *          maneuver, cr, nav, state, camreq, widget, backend } } }
- *   The tool is off at every start of the car; it draws the camera into the cluster's central map area (Map view).
+ *   The tool starts off at every start of the car; the driver's last choice is kept here ('tvOn') and asked of it again
+ *   once it answers, so Turn View left on comes back on. It draws the camera into the cluster's central map area (Map view).
  *
  *   Waze: while Turn View is on, the map leaves the cluster - to the HUD on a car with one (shown on HUD only), off
  *   without (shown nowhere); the place it had is kept (store) and given back when Turn View goes off, the tool goes
@@ -103,8 +104,12 @@ class TurnView extends EventEmitter {
     _camreq() { if (this.cam) this._send({ op: 'camreq', state: this.cam.status().state }); }
 
     _onState(st) {
+        const first = !this.state;
         this.state = st;
-        if (st.settings && st.settings.enabled) this._mapAway(); else this._mapBack();
+        const on = !!(st.settings && st.settings.enabled);
+        // the tool's first state after a start (it starts off): the driver's last choice again
+        if (first && !on && this.store.get('tvOn') === true) { this.log.info('turn view: on again, as left'); this.enable(true); }
+        if (on) this._mapAway(); else this._mapBack();
         if (this.calibrating && !this.draft && st.settings && st.settings.cal) this.draft = Object.assign({}, st.settings.cal);
         this.emit('change');
     }
@@ -134,7 +139,7 @@ class TurnView extends EventEmitter {
     }
 
     enabled() { return !!(this.state && this.state.settings && this.state.settings.enabled); }
-    enable(on) { this._send({ op: 'set', settings: { enabled: !!on } }); }
+    enable(on) { this.store.set('tvOn', !!on); this._send({ op: 'set', settings: { enabled: !!on } }); }
 
     calib(on) {
         on = !!on;

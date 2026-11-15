@@ -3,7 +3,7 @@
 ## 0.9.22
 
 - **Turn View** (IterioDev's, with their permission): the front camera in the cluster's central map area with
-  navigation arrows on the road and a turn card. A Turn View tab switches it on (off at every start of the car), shows
+  navigation arrows on the road and a turn card. A Turn View tab switches it on or off (kept over a start of the car), shows
   the camera, the route and the next turn, and calibrates the arrows. While it is on, the Waze map leaves the cluster:
   to the HUD, or off on a car without one; it comes back when Turn View goes off. Its tool (turn-view) comes with
   Cluster functions.
