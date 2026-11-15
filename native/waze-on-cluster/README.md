@@ -190,8 +190,8 @@ and replaces `hide_bmw_guidance` (1) of the settings. The service makes the
 folder, owned by `hmi_5000`, at each start. A value other than 0 or 1, or a
 state file that does not read, hides the box, with a warning in the log.
 The status event carries the choice as `hide_bmw_guidance`, and
-`guide_disabled` 1 while cluster-render's mapping guard keeps the hold off
-(cluster-render README "Mapping guard"): the box then shows whatever the
+`guide_disabled` 1 while cluster-render reports the hold disabled
+(`guide_disabled` in its `target` event): the box then shows whatever the
 choice. With a
 cluster-render before 0.3.7, which has no `guide_hold`, the switch changes
 nothing.
@@ -374,14 +374,15 @@ cluster-render's `hud` target is slot 0x323 (its README.md "The HUD").
   grey-blue field; a day map (light background) is left as it is. Green is
   never made black, and does not count towards the background.
 - **It gives way.** The HUD map steps aside while the HUD's media and list
-  pop-ups show (cluster-render `hud_yield_slots`), and never takes the HUD
-  from BMW's own content.
-- **Disabled after errors.** cluster-render's mapping guard turns the HUD
-  off after two cluster restarts within 10 s of its mapping; the status
-  says `hud_state` `disabled`, the app shows `HUD map: Disabled after
-  errors`, and its frames are no longer copied or scaled. The cluster's map
-  is not affected. Choosing Cluster and then the HUD again does not undo it; as
-  root, `cluster-render guard-reset` does.
+  pop-ups show (the media source list; cluster-render `hud_yield_slots`)
+  and comes back 1.5 s after they go, never for route guidance, and never
+  takes the HUD from BMW's own content. With `hud_keep_shown` 1 (the app's
+  **Keep HUD map over BMW's pop-ups**) it stays shown over them.
+- **Disabled after errors.** While cluster-render reports the HUD disabled
+  (`disabled` in its `target` event), the status says `hud_state`
+  `disabled`, the app shows `HUD map: Disabled after errors`, and its
+  frames are no longer copied or scaled. The cluster's map is not
+  affected.
 - The settings (`cluster`, `hud`, `hud_width_pct`, `hud_offset_x`,
   `hud_offset_y`, `hud_brightness_pct`) are saved by `patchd` in
   `/var/opt/waze-on-cluster/map.state.conf` (`map_state_file`), which this
@@ -412,7 +413,28 @@ From a shell, `waze-on-cluster -c <conf> run map|panel` (`sail` is an alias
 of `map`) sets the cluster target until the service restarts and prints the
 status.
 
-## Status and diagnostics
+**Inside another app's scene.** Another app that shows a scene file on a
+target (with `layers` 1) can host the map there (cluster-render
+PROTOCOL.md "Hosting another target"): it names the map's target, a rect in
+its own target and the part of the map's target it wants. While that holds,
+the cluster's map is drawn there and only there: one video layer where its
+part lands in that rect (the app's part is stretched over the rect, so a
+map smaller than that part keeps its place in it), its frames that part of
+the picture, scaled on the head unit to at most that size
+(`src/atlas_scale.*`, the HUD's worker), and no layer
+on its own target, so the KOMBI shows its own content there and nothing of
+the map goes to it twice. The decoder is the same: one decode, one upload,
+of that part only (a 560x400 part: 336,000 B a frame instead of 783,360).
+While the app hides it, there is no layer at all and nothing is sent; the
+newest picture is held and drawn first when it shows again. When the app's
+scene goes, or cluster-render restarts, the map is back on its own target
+(and in the scene again once it says so). The status says `hosted` 1 and
+the scene's target as `target`; hidden, `state` idle with the reason
+`hidden by the app it is shown in`; not hosted, the status line is as it
+always was (no `hosted` field). While a HUD map is hosted, a new HUD size
+or offset waits for its own place. Nothing changes without such an app.
+
+### Status and diagnostics
 
 Once a second the render writes, in `/run/waze-on-cluster/` (mode 0644):
 `status.json`, the status the app shows (`state` idle, starting, showing,

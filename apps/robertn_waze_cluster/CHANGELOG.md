@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.22
+
+- Carries cluster-render 0.6.0's client (Robert's latest: layers over a scene file, a scene hosting another target).
+
 ## 0.9.21
 
 - **The clock shows the car's time:** UTC from the cluster with the time zone set in BMW's menu (summer time
