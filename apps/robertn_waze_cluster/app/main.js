@@ -298,8 +298,10 @@ async function background(bg) {
     ctl.on('change', () => { toHud(); changed(); });
     // Turn View (IterioDev's, native/turn-view): its tool's switch and calibration, the front camera asked of the camera
     // unit (BMW's SDK on the car; none in a preview), the Waze map out of the cluster while it is on
+    // BMW's SDK as the deploy tool makes it for this package: require('oap-sdk')'s someipBuilders (no inner paths)
     let sdk = null;
-    try { sdk = require('oap-sdk/src/someip/someipBuilders'); } catch (e) { /* a preview: no camera request */ }
+    try { sdk = require('oap-sdk').someipBuilders || null; } catch (e) { /* a preview: no camera request */ }
+    if (!sdk) log.warn('turn view: no SOME/IP builders: the front camera is not asked for');
     const tvLog = (...a) => log.info('turn view: ' + a.map((x) => (typeof x === 'string' ? x : JSON.stringify(x))).join(' '));
     const tv = new TurnView({ log, ctl, hudOk, store: settings, camreq: sdk ? turnviewCamreq.create({ someipBuilders: sdk, log: tvLog }) : null }).start();
     tv.on('change', changed);

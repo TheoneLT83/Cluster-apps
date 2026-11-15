@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.23
+
+- **Turn View: the front camera is asked for.** 0.9.22 looked for BMW's SOME/IP builders where the package does not
+  have them, so it never asked the camera unit, and the cluster said "No camera" on a car with cameras. The camera
+  interfaces are declared in full, as IterioDev's Turn View app has them.
+
 ## 0.9.22
 
 - **Turn View** (IterioDev's, with their permission): the front camera in the cluster's central map area with

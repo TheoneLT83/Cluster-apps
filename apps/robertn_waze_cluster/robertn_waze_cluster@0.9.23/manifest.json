@@ -208,30 +208,9 @@
         "sendTasuResponse"
       ]
     },
-    "de.bmw.infotainment.video.cameraproxy.ICAM2Proxy": {
-      "instances": "1",
-      "attributes": {
-        "currentState": "r"
-      },
-      "methods": [
-        "changeState",
-        "clientAttach",
-        "clientDetach"
-      ]
-    },
-    "de.bmw.infotainment.video.cameraproxy.CameraProxy": {
-      "instances": "1",
-      "methods": [
-        "clientAttach",
-        "clientDetach"
-      ]
-    },
-    "de.bmw.dass.XView3D": {
-      "instances": "1",
-      "attributes": {
-        "CurrentState": "r"
-      }
-    }
+    "de.bmw.infotainment.video.cameraproxy.ICAM2Proxy": "*",
+    "de.bmw.infotainment.video.cameraproxy.CameraProxy": "*",
+    "de.bmw.dass.XView3D": "*"
   },
   "services": {
     "de.bmw.infotainment.telematic.oap.AppStatus": {
