@@ -704,8 +704,10 @@ mgu.run({
             const st = tv.state, s = st && st.status, on = tv.enabled();
             const col = (k) => (k === 'ok' ? th.ok || th.text : k === 'warn' ? th.warn : k === 'crit' ? th.crit || th.warn : th.text);
             G.panel(cv, th, 24, 44, 900, 468, 'Turn View');
-            line(cv, th, 'Camera in the cluster', 48, 128, 520, st ? null : th.dim);
-            toggle(cv, th, 820, 102, on, () => tv.enable(!on), 'tv-on', !st);
+            // the switch: one button, lit while Turn View is on
+            G.button(cv, th, 48, 106, 360, 56, on ? 'Turn View: On' : 'Turn View: Off', () => tv.enable(!on),
+                { primary: on, key: 'tv-on', busy: !st });
+            line(cv, th, 'The front camera in the cluster', 430, 142, 470, th.dim);
             if (!st) {
                 small(cv, th, 'The Turn View tool is not running: install Turn View in the Store (Head-unit tools), then restart the head unit.', 48, 176, 850, th.warn);
             } else {
@@ -717,8 +719,8 @@ mgu.run({
                     ['Next turn', [m ? m.text + ' · ' + m.kind + (m.exit ? ' · exit ' + m.exit : '') : s && s.route === 'active' ? 'None ahead' : '--', '']],
                     ['Camera request', [cs.text.charAt(0).toUpperCase() + cs.text.slice(1), cs.state === 'on' ? 'ok' : cs.state === 'refused' || cs.state === 'rearonly' ? 'crit' : '']],
                 ].forEach(([k, v], i) => {
-                    small(cv, th, k, 48, 196 + i * 40, 240, th.dim);
-                    small(cv, th, v[0], 300, 196 + i * 40, 600, col(v[1]));
+                    small(cv, th, k, 48, 196 + i * 40 + 12, 240, th.dim);
+                    small(cv, th, v[0], 300, 196 + i * 40 + 12, 600, col(v[1]));
                 });
                 small(cv, th, 'Off at every start of the car. Instrument cluster > Central display area: Map view.', 48, 420, 850, th.dim);
                 small(cv, th, on ? (hudOk() ? 'While it is on, the Waze map is on the HUD only.' : 'While it is on, the Waze map is off.')
