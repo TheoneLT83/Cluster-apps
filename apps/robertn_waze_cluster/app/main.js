@@ -35,6 +35,8 @@ const { HudOverlay, drawLight, LIGHT_HUD, anchorRect, mapRect, gearRect, arrowRe
 const { HvData } = require('./hv_data.js');
 const { MoreData } = require('./more_data.js');
 const { Diag } = require('./kit/diag');
+const { TurnView, CAL: TV_CAL } = require('./turn_view.js');
+const turnviewCamreq = require('./turnview_camreq.js');
 const PANEL = require('./cluster_panel.js');
 const { HudClaim } = require('./kit/hud_claim');
 const { GreenLight } = require('./green_light.js');
@@ -45,7 +47,7 @@ const qrcodegen = require('./qrcodegen.js');
 
 const { t } = i18n;
 const W = 1600, H = 520;
-const PAGES = ['Maps', 'Display', 'Log'];
+const PAGES = ['Maps', 'Display', 'Turn View', 'Log'];
 /* The Display page's switches, its HUD tab's and its Cluster tab's: the setting, its words. */
 const HUD_ITEMS = [['hudOn', 'Displays on HUD'], ['hudTurn', 'Turn signals'], ['hudGear', 'Gear'], ['realSpeed', 'Real speed on HUD'],
     ['greenLightHud', 'Green light alert'], ['hudNight', 'Dimmer at night']];
@@ -294,6 +296,14 @@ async function background(bg) {
     gearWanted();
     settings.onChange(gearWanted);
     ctl.on('change', () => { toHud(); changed(); });
+    // Turn View (IterioDev's, native/turn-view): its tool's switch and calibration, the front camera asked of the camera
+    // unit (BMW's SDK on the car; none in a preview), the Waze map out of the cluster while it is on
+    let sdk = null;
+    try { sdk = require('oap-sdk/src/someip/someipBuilders'); } catch (e) { /* a preview: no camera request */ }
+    const tvLog = (...a) => log.info('turn view: ' + a.map((x) => (typeof x === 'string' ? x : JSON.stringify(x))).join(' '));
+    const tv = new TurnView({ log, ctl, hudOk, store: settings, camreq: sdk ? turnviewCamreq.create({ someipBuilders: sdk, log: tvLog }) : null }).start();
+    tv.on('change', changed);
+    ctl.on('change', () => tv.mapChanged());
     logs.on('change', changed);
     profiles.on('change', changed);
     turns.on('change', () => { toHud(); changed(); });
@@ -372,7 +382,7 @@ async function background(bg) {
     ctl.on('change', toCluster);
     settings.onChange((key) => { if (key === 'hudInstalled') toCluster(); });
     log.info('Cluster functions ' + bg.spec.version + ' started (' + (bg.app && bg.app.startReason) + ')');
-    return { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, dataChoices, hudOk, green, panelKinds, panelItems, onChange: (fn) => listeners.push(fn) };
+    return { tv, ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, dataChoices, hudOk, green, panelKinds, panelItems, onChange: (fn) => listeners.push(fn) };
 }
 
 mgu.run({
@@ -381,7 +391,7 @@ mgu.run({
     async start(ctx) {
         const { ui, settings } = ctx;
         const b = ctx.background || await background(ctx);
-        const { ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, dataChoices, hudOk, green, panelKinds, panelItems } = b;
+        const { tv, ctl, logs, turns, hud, hv, profiles, car, lines, log, mapNow, gearNow, dataNow, dataChoices, hudOk, green, panelKinds, panelItems } = b;
         let page = 0, version = 0, drawn = -1, blink = true, phone = 'carplay';
         // the kit's header and Settings tab in the display language too
         const changed = () => {
@@ -684,6 +694,57 @@ mgu.run({
             }
         }
 
+        /* Turn View (IterioDev's): on / off and what the tool says on the left, its calibration on the right. Words in
+         * English in every language. */
+        const TV_CAMERA = { decoding: ['Front camera', 'ok'], waiting: ['Waiting for the camera', ''], idle: ['Waiting for Map view', ''],
+            stalled: ['Camera busy', 'warn'], refused: ['Cluster video full', 'crit'], off: ['Off', ''], restarting: ['Camera tool restarting', 'warn'],
+            missing: ['Camera tool missing', 'crit'] };
+        const TV_ROUTE = { none: 'No route', active: 'Active', recalculating: 'Recalculating' };
+        function drawTurnView(cv, th) {
+            const st = tv.state, s = st && st.status, on = tv.enabled();
+            const col = (k) => (k === 'ok' ? th.ok || th.text : k === 'warn' ? th.warn : k === 'crit' ? th.crit || th.warn : th.text);
+            G.panel(cv, th, 24, 44, 900, 468, 'Turn View');
+            line(cv, th, 'Camera in the cluster', 48, 128, 520, st ? null : th.dim);
+            toggle(cv, th, 820, 102, on, () => tv.enable(!on), 'tv-on', !st);
+            if (!st) {
+                small(cv, th, 'The Turn View tool is not running: install Turn View in the Store (Head-unit tools), then restart the head unit.', 48, 176, 850, th.warn);
+            } else {
+                const cam = s && s.state === 'off' && !on ? ['Off', ''] : (s && TV_CAMERA[s.camera]) || [(s && s.camera) || '--', ''];
+                const nav = s && s.nav === 'no navigation data' ? ['No guidance: is navigation on?', 'warn'] : [(s && TV_ROUTE[s.route]) || (s && s.route) || '--', s && s.route === 'active' ? 'ok' : ''];
+                const m = s && s.maneuver;
+                const cs = tv.camStatus();
+                [['Camera', cam], ['Route', nav], ['Navigation from', [(s && s.provider) || '--', '']],
+                    ['Next turn', [m ? m.text + ' · ' + m.kind + (m.exit ? ' · exit ' + m.exit : '') : s && s.route === 'active' ? 'None ahead' : '--', '']],
+                    ['Camera request', [cs.text.charAt(0).toUpperCase() + cs.text.slice(1), cs.state === 'on' ? 'ok' : cs.state === 'refused' || cs.state === 'rearonly' ? 'crit' : '']],
+                ].forEach(([k, v], i) => {
+                    small(cv, th, k, 48, 196 + i * 40, 240, th.dim);
+                    small(cv, th, v[0], 300, 196 + i * 40, 600, col(v[1]));
+                });
+                small(cv, th, 'Off at every start of the car. Instrument cluster > Central display area: Map view.', 48, 420, 850, th.dim);
+                small(cv, th, on ? (hudOk() ? 'While it is on, the Waze map is on the HUD only.' : 'While it is on, the Waze map is off.')
+                    : (hudOk() ? 'Switched on, it moves the Waze map to the HUD; off, the map comes back.' : 'Switched on, it turns the Waze map off; off, the map comes back.'), 48, 452, 850, th.dim);
+            }
+            small(cv, th, 'Turn View by IterioDev', 48, 492, 400, th.dim);
+
+            G.panel(cv, th, 944, 44, 632, 468, 'Calibrate');
+            if (!tv.calibrating) {
+                small(cv, th, 'Marks at 5, 10 and 20 m show on the camera: move them onto the road.', 968, 128, 590, th.dim);
+                G.button(cv, th, 968, 160, 260, 48, 'Calibrate', () => tv.calib(true), { primary: true, key: 'tv-calib', busy: !st });
+                return;
+            }
+            const d = tv.draft || {};
+            Object.keys(TV_CAL).forEach((k, i) => {
+                const c = TV_CAL[k], y = 104 + i * 62, v = typeof d[k] === 'number' ? d[k].toFixed(c.decimals) + c.unit : '--';
+                small(cv, th, c.label, 968, y + 30, 260, th.text);
+                small(cv, th, v, 1236, y + 30, 120, th.text);
+                G.button(cv, th, 1380, y, 80, 44, '-', () => tv.nudge(k, -1), { key: 'tv-' + k + '-' });
+                G.button(cv, th, 1472, y, 80, 44, '+', () => tv.nudge(k, 1), { key: 'tv-' + k + '+' });
+            });
+            G.button(cv, th, 968, 424, 170, 48, tv.saved ? 'Saved' : 'Save', () => tv.save(), { primary: !tv.saved, key: 'tv-save' });
+            G.button(cv, th, 1150, 424, 170, 48, 'Reset', () => tv.reset(), { key: 'tv-reset', confirm: true });
+            G.button(cv, th, 1332, 424, 220, 48, 'Done', () => tv.calib(false), { key: 'tv-done' });
+        }
+
         function drawLog(cv, th) {
             const ex = G.pageBottom(cv) - G.BOTTOM;
             G.panel(cv, th, 24, 44, 1000, 468, t('Log'));
@@ -713,11 +774,13 @@ mgu.run({
             drawn = version;
             const pages = pagesNow();
             if (page >= pages.length) page = 0;
+            // the calibration marks only while its page is open
+            if (pages[page] !== 'Turn View' && tv.calibrating) tv.calib(false);
             const want = pages[page] === 'Log';
             if (want !== logsOpen) { logsOpen = want; if (want) logs.open(); else logs.close(); }
             const th = ctx.theme();
             const cv = ctx.canvas(W, H).clear(th.bg);
-            ({ Maps: drawMaps, Display: drawDisplay, Log: drawLog })[pages[page]](cv, th);
+            ({ Maps: drawMaps, Display: drawDisplay, 'Turn View': drawTurnView, Log: drawLog })[pages[page]](cv, th);
             G.frame(cv, th, pages.map((p) => t(p)), page, []);
             await ui.image('MAIN_GFX', cv);
         }

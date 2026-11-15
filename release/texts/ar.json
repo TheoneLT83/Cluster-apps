@@ -10,5 +10,9 @@
   "robertn_waze_cluster": {
     "title": "Cluster functions",
     "description": "خريطة الهاتف على لوحة العدادات وشاشة العرض الأمامية (CarPlay وAndroid Auto)، مع حجم خريطة شاشة العرض الأمامية وموضعها وسطوعها، وإشارات الانعطاف وناقل الحركة على شاشة العرض الأمامية"
+  },
+  "turn-view": {
+    "title": "Turn View",
+    "description": "By IterioDev, in Cluster functions: the front camera in the instrument cluster's central map area with navigation arrows on the road and a turn card (BMW navigation, CarPlay or Android Auto), the camera alone without a route. Switched on in Cluster functions (Turn View tab), off at every start of the car; set Instrument cluster > Central display area to Map view. While it is on, the Waze map leaves the cluster (to the HUD, or off without one). Drawn by Cluster renderer."
   }
 }

@@ -77,6 +77,26 @@
       "_broadcasts": [
         "sendTasuResponse"
       ]
+    },
+    "de.bmw.infotainment.video.cameraproxy.ICAM2Proxy": {
+      "_optional": "Turn View: the front camera asked of the camera unit",
+      "currentState": "r",
+      "_methods": [
+        "changeState",
+        "clientAttach",
+        "clientDetach"
+      ]
+    },
+    "de.bmw.infotainment.video.cameraproxy.CameraProxy": {
+      "_optional": "Turn View: the camera unit attached",
+      "_methods": [
+        "clientAttach",
+        "clientDetach"
+      ]
+    },
+    "de.bmw.dass.XView3D": {
+      "_optional": "Turn View: the camera unit's state",
+      "CurrentState": "r"
     }
   },
   "screens": [

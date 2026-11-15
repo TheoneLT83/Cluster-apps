@@ -1,0 +1,18 @@
+[Unit]
+Description=Turn View (by IterioDev): the front camera with navigation arrows in the instrument cluster (drawn by cluster-render)
+After=vsomeipd.service cluster-render.socket
+
+[Service]
+# root: the vsomeip policy lets uid 0 request Guidance / Vehicle2 and MainApp's AppStart (hmictl), and the AVB camera
+# stream (mgu-camcluster). Settings in /var/opt/turn-view/settings.json (kept over updates).
+# Cluster functions' control socket: /run/turn-view/ctl.sock (0666, the app runs as its own uid)
+RuntimeDirectory=turn-view
+RuntimeDirectoryMode=0755
+ExecStart=/usr/bin/node /var/opt/turn-view/current/turnview.js
+# the car's system.conf has DefaultStandardOutput=null: the log would never reach the journal
+StandardOutput=journal
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

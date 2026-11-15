@@ -1,0 +1,110 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+'use strict';
+// node tools/test_turnview.js - app/turn_view.js against a simulated Turn View tool and waze-on-cluster
+const assert = require('assert');
+const fs = require('fs');
+const net = require('net');
+const os = require('os');
+const path = require('path');
+const EventEmitter = require('events');
+const { TurnView } = require('../app/turn_view.js');
+
+const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tv-'));
+const SOCK = path.join(dir, 'ctl.sock');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const until = async (what, fn) => { for (let i = 0; i < 100; i++) { if (fn()) return; await sleep(20); } throw new Error('timed out: ' + what); };
+let passed = 0;
+const ok = (c, m) => { assert(c, m); passed++; console.log('ok   ' + m); };
+
+/* The tool: answers get / set / preview / calib / reset as turnview.js does, pushing its state. */
+function tool() {
+    const t = { got: [], conns: [], settings: { enabled: false, cal: { h: 0.6, pitch: 3, fov: 60, yaw: 0, x: 0 } } };
+    t.push = () => t.conns.forEach((c) => c.write(JSON.stringify({ state: { settings: t.settings, status: { camera: t.settings.enabled ? 'decoding' : 'off', route: 'none', backend: 'id7' } } }) + '\n'));
+    t.server = net.createServer((c) => {
+        t.conns.push(c);
+        let buf = '';
+        c.on('data', (d) => {
+            buf += d;
+            for (let n; (n = buf.indexOf('\n')) >= 0; buf = buf.slice(n + 1)) {
+                const q = JSON.parse(buf.slice(0, n));
+                t.got.push(q);
+                if (q.op === 'set') t.settings = Object.assign({}, t.settings, q.settings);
+                if (q.op === 'reset') t.settings = { enabled: t.settings.enabled, cal: { h: 0.6, pitch: 3, fov: 60, yaw: 0, x: 0 } };
+                t.push();
+            }
+        });
+        c.on('close', () => { t.conns = t.conns.filter((x) => x !== c); });
+    });
+    return new Promise((r) => t.server.listen(SOCK, () => r(t)));
+}
+/* waze-on-cluster's choice: shownOn / showOn. */
+function map(where) {
+    const m = new EventEmitter();
+    m.where = where; m.asked = [];
+    m.shownOn = () => m.where;
+    m.showOn = (w) => { m.asked.push(w); m.where = w; m.emit('change'); };
+    return m;
+}
+function store() { const v = {}; return { get: (k) => (k in v ? v[k] : null), set: (k, x) => { v[k] = x; }, v }; }
+const quiet = { info() {}, warn() {} };
+
+(async () => {
+    const t = await tool();
+    // a car with a HUD, the map on the cluster
+    let m = map('cluster'), st = store();
+    let tv = new TurnView({ log: quiet, ctl: m, hudOk: () => true, store: st, path: SOCK }).start();
+    await until('connected', () => tv.state);
+    ok(!tv.enabled() && m.where === 'cluster', 'off: the map stays where it is');
+    tv.enable(true);
+    await until('on', () => tv.enabled());
+    ok(m.where === 'hud' && st.v.tvMapWas === 'cluster', 'on with a HUD: the map to the HUD alone, its place kept');
+    m.showOn('both'); tv.mapChanged();
+    ok(m.where === 'hud', 'the map put back on the cluster while it is on: off the cluster again');
+    tv.enable(false);
+    await until('off', () => !tv.enabled());
+    ok(m.where === 'cluster' && st.v.tvMapWas === null, 'off: the map back on the cluster');
+    tv.close();
+
+    // a car without a HUD, the map on both
+    m = map('both'); st = store();
+    tv = new TurnView({ log: quiet, ctl: m, hudOk: () => false, store: st, path: SOCK }).start();
+    await until('connected', () => tv.state);
+    tv.enable(true);
+    await until('on', () => tv.enabled());
+    ok(m.where === 'off' && st.v.tvMapWas === 'both', 'on without a HUD: the map off');
+    // the tool goes away (an update): the map back
+    t.conns.forEach((c) => c.destroy());
+    await until('gone', () => !tv.state);
+    ok(m.where === 'both' && st.v.tvMapWas === null, 'the tool gone: the map back');
+    await until('again', () => tv.state);
+    tv.close();
+
+    // the app started again after the car was switched off with Turn View on: the tool starts off, the map comes back
+    t.settings.enabled = false;
+    m = map('off'); st = store(); st.set('tvMapWas', 'cluster');
+    tv = new TurnView({ log: quiet, ctl: m, hudOk: () => false, store: st, path: SOCK }).start();
+    ok(m.where === 'cluster' && st.v.tvMapWas === null, 'a start with the map kept from before: back at once');
+    await until('connected', () => tv.state);
+
+    // calibration: a value a step at a time, within its range, previewed; Save keeps it; Reset the defaults
+    tv.calib(true);
+    ok(tv.calibrating && tv.draft && tv.draft.h === 0.6, 'calibrate: the saved values to start from');
+    tv.nudge('h', 1); tv.nudge('fov', -1);
+    await until('preview', () => t.got.some((q) => q.op === 'preview' && q.cal.h === 0.65 && q.cal.fov === 58));
+    ok(true, 'calibrate: each step previewed (0.6 -> 0.65 m, 60 -> 58°)');
+    for (let i = 0; i < 50; i++) tv.nudge('pitch', -1);
+    ok(tv.draft.pitch === 0, 'calibrate: never under its range');
+    tv.save();
+    await until('saved', () => t.settings.cal.h === 0.65);
+    ok(tv.saved && t.settings.cal.fov === 58, 'Save: the tool keeps it');
+    tv.reset();
+    await until('reset', () => t.settings.cal.h === 0.6);
+    tv.calib(false);
+    await until('calib off', () => t.got.filter((q) => q.op === 'calib').length === 2);
+    ok(t.got.filter((q) => q.op === 'calib').map((q) => q.on).join() === 'true,false', 'the marks on while calibrating, off after');
+    tv.close();
+    t.server.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+    console.log(`turnview: ${passed} checks pass`);
+    process.exit(0);
+})().catch((e) => { console.error(e); process.exit(1); });

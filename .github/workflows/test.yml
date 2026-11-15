@@ -156,6 +156,7 @@ jobs:
       - run: node apps/robertn_waze_cluster/tools/test_gear.js
       - run: node apps/robertn_waze_cluster/tools/test_green_light.js
       - run: node apps/robertn_waze_cluster/tools/test_panel.js
+      - run: node apps/robertn_waze_cluster/tools/test_turnview.js
 
   waze-on-cluster-x86:
     needs: changes

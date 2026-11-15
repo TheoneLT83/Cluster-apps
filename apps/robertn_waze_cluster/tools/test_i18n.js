@@ -28,7 +28,7 @@ const eq = (got, want, msg) => { checks += 1; assert.deepStrictEqual(got, want, 
 
 /* Words shown in English in every language (the owner's choice: no translations for them). */
 const ENGLISH_ONLY = ['Tyre pressures', 'Gearbox oil', 'Fuel range', 'Clock and drive time', 'Clock', 'Drive time',
-    'GEARBOX', 'RANGE', 'TIME', 'DRIVE', 'TYRES'];
+    'GEARBOX', 'RANGE', 'TIME', 'DRIVE', 'TYRES', 'Turn View'];
 
 /* ---- the words the app shows ---- */
 const used = new Set();

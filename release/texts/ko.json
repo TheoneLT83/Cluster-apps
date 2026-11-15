@@ -10,5 +10,9 @@
   "robertn_waze_cluster": {
     "title": "Cluster functions",
     "description": "계기판과 HUD에 휴대폰 지도 표시(CarPlay 및 Android Auto). HUD 지도 크기, 위치, 밝기와 HUD의 방향 지시등 및 기어 표시"
+  },
+  "turn-view": {
+    "title": "Turn View",
+    "description": "By IterioDev, in Cluster functions: the front camera in the instrument cluster's central map area with navigation arrows on the road and a turn card (BMW navigation, CarPlay or Android Auto), the camera alone without a route. Switched on in Cluster functions (Turn View tab), off at every start of the car; set Instrument cluster > Central display area to Map view. While it is on, the Waze map leaves the cluster (to the HUD, or off without one). Drawn by Cluster renderer."
   }
 }

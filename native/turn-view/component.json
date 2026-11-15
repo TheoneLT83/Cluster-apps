@@ -1,0 +1,210 @@
+{
+  "id": "turn-view",
+  "kind": "tool",
+  "version": "0.7.0",
+  "title": "Turn View",
+  "description": "By IterioDev, in Cluster functions: the front camera in the instrument cluster's central map area with navigation arrows on the road and a turn card (BMW navigation, CarPlay or Android Auto), the camera alone without a route. Switched on in Cluster functions (Turn View tab), off at every start of the car; set Instrument cluster > Central display area to Map view. While it is on, the Waze map leaves the cluster (to the HUD, or off without one). Drawn by Cluster renderer.",
+  "optional": true,
+  "uninstallable": true,
+  "mguHmi": [
+    "ID7"
+  ],
+  "requires": {
+    "cluster-render": "0.6.0",
+    "mgu-deploy": "0.7.11"
+  },
+  "files": [
+    {
+      "path": "turnview.js",
+      "from": "turnview.js",
+      "mode": "0644"
+    },
+    {
+      "path": "wire.js",
+      "from": "wire.js",
+      "mode": "0644"
+    },
+    {
+      "path": "nav.js",
+      "from": "nav.js",
+      "mode": "0644"
+    },
+    {
+      "path": "track.js",
+      "from": "track.js",
+      "mode": "0644"
+    },
+    {
+      "path": "scene.js",
+      "from": "scene.js",
+      "mode": "0644"
+    },
+    {
+      "path": "shaders.js",
+      "from": "shaders.js",
+      "mode": "0644"
+    },
+    {
+      "path": "card.js",
+      "from": "card.js",
+      "mode": "0644"
+    },
+    {
+      "path": "cluster_render_client.js",
+      "from": "cluster_render_client.js",
+      "mode": "0644"
+    },
+    {
+      "path": "kit/canvas.js",
+      "from": "kit/canvas.js",
+      "mode": "0644"
+    },
+    {
+      "path": "kit/fonts.js",
+      "from": "kit/fonts.js",
+      "mode": "0644"
+    },
+    {
+      "path": "kit/LICENSE",
+      "from": "kit/LICENSE",
+      "mode": "0644"
+    },
+    {
+      "path": "kit/SOURCE",
+      "from": "kit/SOURCE",
+      "mode": "0644"
+    },
+    {
+      "path": "kit/fonts/num.json",
+      "from": "kit/fonts/num.json",
+      "mode": "0644"
+    },
+    {
+      "path": "kit/fonts/bold.json",
+      "from": "kit/fonts/bold.json",
+      "mode": "0644"
+    },
+    {
+      "path": "kit/fonts/label.json",
+      "from": "kit/fonts/label.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/guidance-conclusiveDart.json",
+      "from": "schemas/guidance-conclusiveDart.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/guidance-state.json",
+      "from": "schemas/guidance-state.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/guidance-provider.json",
+      "from": "schemas/guidance-provider.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/vehicle2-speed.json",
+      "from": "schemas/vehicle2-speed.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/eventlist-query-in.json",
+      "from": "schemas/eventlist-query-in.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/eventlist-query-out.json",
+      "from": "schemas/eventlist-query-out.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/id7/guidance-conclusiveDart.json",
+      "from": "schemas/id7/guidance-conclusiveDart.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/id7/guidance-state.json",
+      "from": "schemas/id7/guidance-state.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/id7/guidance-provider.json",
+      "from": "schemas/id7/guidance-provider.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/id7/vehicle2-speed.json",
+      "from": "schemas/id7/vehicle2-speed.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/id7/eventlist-query-in.json",
+      "from": "schemas/id7/eventlist-query-in.json",
+      "mode": "0644"
+    },
+    {
+      "path": "schemas/id7/eventlist-query-out.json",
+      "from": "schemas/id7/eventlist-query-out.json",
+      "mode": "0644"
+    },
+    {
+      "path": "hmictl",
+      "from": "hmictl",
+      "mode": "0755"
+    },
+    {
+      "path": "cluster-render.d/turnview.conf",
+      "from": "cluster-render.d/turnview.conf",
+      "mode": "0644"
+    },
+    {
+      "path": "mgu-camcluster",
+      "from": "mgu-camcluster",
+      "mode": "0755"
+    },
+    {
+      "path": "LICENSE.camcluster",
+      "from": "LICENSE.camcluster",
+      "mode": "0644"
+    },
+    {
+      "path": "LICENSE.ffmpeg",
+      "from": "LICENSE.ffmpeg",
+      "mode": "0644"
+    },
+    {
+      "path": "LICENSE.md",
+      "from": "LICENSE.md",
+      "mode": "0644"
+    },
+    {
+      "path": "PERMISSION.md",
+      "from": "PERMISSION.md",
+      "mode": "0644"
+    }
+  ],
+  "units": [
+    {
+      "name": "turn-view.service",
+      "from": "turn-view.service"
+    }
+  ],
+  "enable": [
+    {
+      "unit": "turn-view.service",
+      "target": "multi-user.target"
+    }
+  ],
+  "recmgr": [
+    "turn-view"
+  ],
+  "crashNames": [
+    "hmictl",
+    "mgu-camcluster"
+  ],
+  "restart": [
+    "turn-view.service"
+  ]
+}

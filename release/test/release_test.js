@@ -187,8 +187,10 @@ test('the Waze chain: app -> waze-on-cluster -> cluster-render and a hook-runnin
     const renderer = byId('cluster-render');
     assert.ok(app && tool && renderer, 'all three are releasable');
     assert.deepStrictEqual(app.mguHmi, ['ID7']);
-    // the app draws on the Store's renderer, with the iDrive controller through the controller gate
-    assert.deepStrictEqual(Object.keys(app.requires), ['waze-on-cluster', 'mgu-render', 'mgu-inputgate']);
+    // the app draws on the Store's renderer, with the iDrive controller through the controller gate; Turn View's tool
+    // comes with it
+    assert.deepStrictEqual(Object.keys(app.requires), ['waze-on-cluster', 'mgu-render', 'mgu-inputgate', 'turn-view']);
+    assert.ok(catalog.compareVersions(byId('turn-view').version, app.requires['turn-view']) >= 0, 'Turn View\'s tool meets it');
     assert.ok(catalog.compareVersions(tool.version, app.requires['waze-on-cluster']) >= 0,
         'the tool meets the app\'s requirement');
     assert.deepStrictEqual(Object.keys(tool.requires), ['mgu-deploy', 'cluster-render'], 'the deploy tool installs first');
