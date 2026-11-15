@@ -26,6 +26,9 @@ const net = require('net');
 
 const CTL = process.env.TURNVIEW_CTL || '/run/turn-view/ctl.sock';
 const RETRY_MS = 2000;
+/* Switched on: the Waze map leaves the cluster first, and the camera is asked for once the cluster's video is free
+ * (waze-on-cluster says the cluster map is off), at most FREE_MS later. */
+const FREE_MS = 3000, FREE_POLL_MS = 100;
 /* The calibration: each value's range, step and decimals (the Turn View app's sliders), the tool's default. */
 const CAL = {
     h: { label: 'Camera height', min: 0.3, max: 1.2, step: 0.05, decimals: 2, unit: ' m' },
@@ -139,7 +142,24 @@ class TurnView extends EventEmitter {
     }
 
     enabled() { return !!(this.state && this.state.settings && this.state.settings.enabled); }
-    enable(on) { this.store.set('tvOn', !!on); this._send({ op: 'set', settings: { enabled: !!on } }); }
+    enable(on) {
+        on = !!on;
+        this.store.set('tvOn', on);
+        clearTimeout(this._freeTimer);
+        const send = () => this._send({ op: 'set', settings: { enabled: on } });
+        if (!on) return send();
+        // the map off the cluster before the camera asks for its video, so the camera's first ask finds it free
+        const was = this.ctl.shownOn();
+        this._mapAway();
+        if (was !== 'cluster' && was !== 'both') return send();
+        const t0 = Date.now();
+        const wait = () => {
+            if (this.ctl.clusterOn() === false || Date.now() - t0 >= FREE_MS) return send();
+            this._freeTimer = setTimeout(wait, FREE_POLL_MS);
+            return null;
+        };
+        return wait();
+    }
 
     calib(on) {
         on = !!on;

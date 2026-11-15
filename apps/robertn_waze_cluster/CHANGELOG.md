@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.24
+
+- **Turn View starts at once:** switched on, the Waze map leaves the cluster first and the camera is asked for once
+  the cluster's video is free (at most 3 s), so it no longer shows "Cluster video full" for a while.
+
 ## 0.9.23
 
 - **Turn View: the front camera is asked for.** 0.9.22 looked for BMW's SOME/IP builders where the package does not

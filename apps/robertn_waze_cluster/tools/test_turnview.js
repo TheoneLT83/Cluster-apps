@@ -42,6 +42,7 @@ function map(where) {
     const m = new EventEmitter();
     m.where = where; m.asked = [];
     m.shownOn = () => m.where;
+    m.clusterOn = () => m.where === 'cluster' || m.where === 'both';
     m.showOn = (w) => { m.asked.push(w); m.where = w; m.emit('change'); };
     return m;
 }
@@ -56,6 +57,7 @@ const quiet = { info() {}, warn() {} };
     await until('connected', () => tv.state);
     ok(!tv.enabled() && m.where === 'cluster', 'off: the map stays where it is');
     tv.enable(true);
+    ok(m.where === 'hud' && !t.got.some((q) => q.op === 'set' && q.settings.enabled), 'on: the map off the cluster before the camera is asked for');
     await until('on', () => tv.enabled());
     ok(m.where === 'hud' && st.v.tvMapWas === 'cluster', 'on with a HUD: the map to the HUD alone, its place kept');
     m.showOn('both'); tv.mapChanged();
