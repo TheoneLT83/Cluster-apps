@@ -68,11 +68,15 @@ eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GE
     eq(shown[shown.length - 1], 'red', 'the camera\'s red (as { value }), code 15 (no light) left out');
     camera({ trafficLightID: 5, trafficLightColor: 3 });
     eq(shown[shown.length - 1], 'green GO', 'the camera\'s green (renumbered): GO');
-    t += QUIET_MS + 1; kmh = null; g.tick();
-    camera({ trafficLightID: 7, trafficLightColor: 1 }); camera({ trafficLightID: 7, trafficLightColor: 3 });
-    eq(shown.slice(-2), ['red', 'green GO'], 'no speed known: red, then GO');
+    t += QUIET_MS + 1; kmh = 2; g.tick();
+    eq(shown[shown.length - 1], 'none', 'rolling at 2 km/h: gone');
+    kmh = null; camera({ trafficLightID: 7, trafficLightColor: 1 }); camera({ trafficLightID: 7, trafficLightColor: 3 });
+    eq(shown[shown.length - 1], 'none', 'no speed known: nothing');
     kmh = 0; t += GO_MS + 1; g.tick();
     camera({ trafficLightID: 6, trafficLightColor: 1 }); t += 1000; camera({ trafficLightID: 6, trafficLightColor: 3 });
+    eq(shown.slice(-2), ['red', 'green GO'], 'stopped at 0 km/h: red, then GO');
+    t += GO_MS + 1; g.tick();
+    camera({ trafficLightID: 8, trafficLightColor: 1 }); t += 1000; camera({ trafficLightID: 8, trafficLightColor: 3 });
     eq(shown.slice(-2), ['red', 'none'], 'within the quiet time: no second GO');
     t += RED_KEEP_MS + 1; foresight({ dispForesightEvent: 'AMPEL_ROT' }); t += RED_KEEP_MS + 1; g.tick();
     eq(shown[shown.length - 1], 'none', 'a red long ago: gone');

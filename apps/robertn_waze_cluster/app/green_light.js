@@ -14,9 +14,10 @@
  * Values come as numbers, enum names or { value } objects (num()). The camera numbers a light anew as it tracks it,
  * so any light counts, not only the same trafficLightID.
  *
- * Shown: a red, red and yellow or yellow light seen within RED_KEEP_MS while the car stands (below STILL_KMH, or no
- * speed known), unless the car drove on for PASSED_MS after it. A green within RED_KEEP_MS of a red while it stands: green with "GO" and the gong for GO_MS (at most
- * one each QUIET_MS). Nothing from MOVE_KMH up. The gong: BMW's gong player (IGPCommand.requestGong), as alexp50's
+ * Shown only while the car is fully stopped (0 km/h: its speed known and under STILL_KMH, the signal's smallest step):
+ * a red, red and yellow or yellow light seen within RED_KEEP_MS, unless the car drove on (MOVE_KMH up) for PASSED_MS
+ * after it. A green within RED_KEEP_MS of a red while stopped: green with "GO" and the gong for GO_MS (at most one
+ * each QUIET_MS). Gone as soon as the car rolls. The gong: BMW's gong player (IGPCommand.requestGong), as alexp50's
  * Green Light Alert (bmw-apps, MIT) plays it.
  *
  *   const g = new GreenLight({ signals, log, speed: () => kmh, now });
@@ -31,7 +32,7 @@ const GONG = 'de.bmw.infotainment.gp.gongplayer.IGPCommand';
 const EVENTS = { AMPEL_ROT: 12, AMPEL_ROT_GELB: 13, AMPEL_GELB: 14, AMPEL_GRUEN: 15, AMPEL_GRUEN_PULSIEREND: 16,
     AMPEL_GRUEN_SCHILD_RECHTS_OBEN: 17, AMPEL_GRUEN_SCHILD_RECHTS_UNTEN: 18 };
 const RAW_RED = 1, RAW_GREEN = 3, RAW_NONE = 15;
-const STILL_KMH = 3, MOVE_KMH = 5;
+const STILL_KMH = 0.1, MOVE_KMH = 5;
 const RED_KEEP_MS = 120000;
 const GO_MS = 4000;
 const QUIET_MS = 10000;
@@ -110,7 +111,7 @@ class GreenLight extends EventEmitter {
         this.light(code === RAW_RED ? 'red' : code === RAW_GREEN ? 'green' : null);
     }
 
-    _standing() { const kmh = this.speed(); return !(typeof kmh === 'number' && kmh >= STILL_KMH); }
+    _standing() { const kmh = this.speed(); return typeof kmh === 'number' && isFinite(kmh) && kmh < STILL_KMH; }
     _moving() { const kmh = this.speed(); return typeof kmh === 'number' && kmh >= MOVE_KMH; }
 
     /* A light's colour now. */
@@ -143,6 +144,8 @@ class GreenLight extends EventEmitter {
             return this._set(null);
         }
         this.movingSince = null;
+        // rolling (or no speed known): nothing shown; the red is remembered until the car drives on
+        if (!this._standing()) { this.goUntil = 0; return this._set(null); }
         if (t < this.goUntil) return null;
         const l = this.last;
         this._set(l && t - l.at <= RED_KEEP_MS && this._standing() ? { colour: l.colour, go: false } : null);
