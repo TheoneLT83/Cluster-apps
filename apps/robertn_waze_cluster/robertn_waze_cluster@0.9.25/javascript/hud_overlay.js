@@ -22,8 +22,9 @@
  *   const hud = new HudOverlay({ log });
  *   hud.update({ turn: { left, right }, gear: 'D3', map: { x, y, w, h }, arrowSize: 'medium', showTurn: true, showGear: true,
  *                data: [{ kind: 'slider', value, min, max, text }, { kind: 'value', label: 'OIL', text: '92°' }, ...], speed: 87 });
- *   hud.go(onHud, onCluster)   a traffic light with its green lit (green_light.js) at the top of the map's place on the HUD and in the middle of the
- *                    cluster (target `map`, 1088 x 480), as alerts over the rest, until go(false, false)
+ *   hud.go(light, onHud, onCluster)   the traffic light green_light.js shows ({ colour, go }) at the top of the map's place
+ *                    on the HUD and in the middle of the cluster (target `map`, 1088 x 480), as alerts over the rest, until
+ *                    go(null)
  *   hud.panel(items)  the cluster's info bar (cluster_panel.js) in the middle of the cluster, low (target `map`); null: none
  *   hud.dim(f)       the HUD's layers at f of their brightness (night: less), 1 by day
  *   hud.state()      -> 'off' | 'waiting' | 'shown' | 'disabled' | 'unavailable' (the HUD target, as the renderer says)
@@ -167,19 +168,28 @@ function drawArrow(cv, w, h, dir, color) {
     cv.fillRect(x0 - (dir < 0 ? 1 : 0), (h - shaft) / 2, x1 - x0 + 1, shaft, color);
 }
 
-/* A traffic light, its green lit: on w x h (taller than wide), red and yellow faint, green bright with a glow. */
-function drawLight(cv, w, h) {
+/* A traffic light on w x h (taller than wide): the lamps s.colour names lit with a glow ('red', 'redyellow', 'yellow',
+ * 'green'; the others faint), and with s.go "GO" in green under it, in the GO_H more below h. */
+const LAMPS = [['#ff3b30', '#4a1414'], ['#ffb020', '#4a3e10'], [GREEN, '#123d1f']];
+const LIT = { red: [0], redyellow: [0, 1], yellow: [1], green: [2] };
+function drawLight(cv, w, h, s) {
+    const st = s || { colour: 'green', go: false };
     const r = Math.min(w * 0.36, h * 0.13), cx = w / 2, gap = (h - 6 * r) / 4;
     cv.roundRect(cx - r * 1.45, 0, r * 2.9, h, r * 0.9, '#1a1d22');
     cv.strokeRoundRect(cx - r * 1.45, 1, r * 2.9, h - 2, r * 0.9, 2, '#5c636b');
-    const y = (i) => gap + r + i * (2 * r + gap);
-    cv.circle(cx, y(0), r, '#4a1414');
-    cv.circle(cx, y(1), r, '#4a3e10');
-    cv.circle(cx, y(2), r * 1.12, withAlpha(GREEN, 0.35));
-    cv.circle(cx, y(2), r, GREEN);
+    const y = (i) => gap + r + i * (2 * r + gap), lit = LIT[st.colour] || [];
+    LAMPS.forEach(([on, off], i) => {
+        if (lit.indexOf(i) < 0) return cv.circle(cx, y(i), r, off);
+        cv.circle(cx, y(i), r * 1.12, withAlpha(on, 0.35));
+        return cv.circle(cx, y(i), r, on);
+    });
+    if (st.go && cv.text) cv.text('GO', cx, h + GO_H(w) * 0.86, GO_H(w), GREEN, { font: 'bold', align: 'center' });
 }
+const GO_H = (w) => Math.round(w * 0.6);
 const LIGHT_HUD = { w: 44, h: 112 };
 const LIGHT_CLUSTER = { x: 516, y: 24, w: 56, h: 150 };     // small, at the top of the cluster's middle
+/* A light's layer: wide enough for "GO", tall enough for it under the light. */
+const lightRect = (l) => ({ w: Math.round(l.w * 1.5), h: l.h + GO_H(l.w) + 4 });
 
 /* The gear on cv from x, y (0, 0: its layer), k the scale, alpha its brightness (a preview's faint one). */
 function drawGear(cv, gear, o) {
@@ -250,9 +260,10 @@ class HudOverlay {
         Object.keys(this.layers).forEach((n) => { if (this.layers[n].target === 'hud') this.cr.set(this.layers[n].ref, { opacity: f }); });
     }
 
-    go(onHud, onCluster) {
-        this.goWant = { hud: !!onHud, cluster: !!onCluster };
-        if ((onHud || onCluster) && !this.connected) { this.connected = true; this.cr.connect(); }
+    /* The traffic light (green_light.js's shown: null or { colour, go }) on the HUD and / or the cluster. */
+    go(light, onHud, onCluster) {
+        this.goWant = { hud: !!(light && onHud), cluster: !!(light && onCluster), light: light || null };
+        if ((this.goWant.hud || this.goWant.cluster) && !this.connected) { this.connected = true; this.cr.connect(); }
         this._draw();
     }
 
@@ -291,14 +302,22 @@ class HudOverlay {
             const pr = PANEL.panelRect(this.panelItems);
             this._layer('panel', pr, (cv) => PANEL.drawPanel(cv, 0, 0, this.panelItems), JSON.stringify(this.panelItems), { target: 'map', klass: 'overlay', z: 12 });
         } else this._drop('panel');
-        const g = this.goWant;
-        if (g.cluster) this._layer('go-cluster', LIGHT_CLUSTER, (cv) => drawLight(cv, LIGHT_CLUSTER.w, LIGHT_CLUSTER.h), 'go', { target: 'map', klass: 'alert', z: 20 });
-        else this._drop('go-cluster');
+        const g = this.goWant, key = g.light ? g.light.colour + (g.light.go ? '-go' : '') : '';
+        // the light alone centred in its layer, "GO" under it
+        const light = (l) => (cv) => drawLight({ roundRect: (x, ...o) => cv.roundRect(x + (lightRect(l).w - l.w) / 2, ...o),
+            strokeRoundRect: (x, ...o) => cv.strokeRoundRect(x + (lightRect(l).w - l.w) / 2, ...o),
+            circle: (x, ...o) => cv.circle(x + (lightRect(l).w - l.w) / 2, ...o),
+            text: (s, x, ...o) => cv.text(s, x + (lightRect(l).w - l.w) / 2, ...o) }, l.w, l.h, g.light);
+        if (g.cluster) {
+            const lr = lightRect(LIGHT_CLUSTER);
+            this._layer('go-cluster', { x: Math.round(LIGHT_CLUSTER.x + (LIGHT_CLUSTER.w - lr.w) / 2), y: LIGHT_CLUSTER.y, w: lr.w, h: lr.h },
+                light(LIGHT_CLUSTER), key, { target: 'map', klass: 'alert', z: 20 });
+        } else this._drop('go-cluster');
         const w = this.want;
         if (g.hud) {
-            const a = anchorRect((w && w.map) || mapRect(0));
-            const rect = { x: Math.round(a.x + (a.w - LIGHT_HUD.w) / 2), y: a.y + 4, w: LIGHT_HUD.w, h: LIGHT_HUD.h };
-            this._layer('go-hud', rect, (cv) => drawLight(cv, LIGHT_HUD.w, LIGHT_HUD.h), 'go', { target: 'hud', klass: 'alert', z: 20 });
+            const a = anchorRect((w && w.map) || mapRect(0)), lr = lightRect(LIGHT_HUD);
+            const rect = { x: Math.round(a.x + (a.w - lr.w) / 2), y: a.y + 4, w: lr.w, h: lr.h };
+            this._layer('go-hud', rect, light(LIGHT_HUD), key, { target: 'hud', klass: 'alert', z: 20 });
         } else this._drop('go-hud');
         if (!w) return;
         const [aw, ah] = ARROW[w.arrowSize] || ARROW.medium;
@@ -338,5 +357,5 @@ class HudOverlay {
     }
 }
 
-module.exports = { HudOverlay, drawLight, LIGHT_HUD, LIGHT_CLUSTER, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
+module.exports = { HudOverlay, drawLight, lightRect, GO_H, LIGHT_HUD, LIGHT_CLUSTER, mapRect, anchorRect, rowRect, gearRect, arrowRect, dataRect, drawArrow, drawGear, drawData, HUD_W, HUD_H, ARROW, GEAR_W, GEAR_H,
     GEAR_RECT, LEFT_ARROW_X, RIGHT_END, DATA_X, ROW_H, SPEED_RECT, MAX_KW, GREEN, WHITE, AMBER, DIM };

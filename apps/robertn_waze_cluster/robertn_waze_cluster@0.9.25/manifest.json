@@ -179,6 +179,12 @@
         "RecognitionTrafficLightCamera"
       ]
     },
+    "de.bmw.infotainment.gp.gongplayer.IGPCommand": {
+      "instances": "1",
+      "methods": [
+        "requestGong"
+      ]
+    },
     "de.bmw.infotainment.vehicle.TPMS": {
       "instances": "1",
       "attributes": {
