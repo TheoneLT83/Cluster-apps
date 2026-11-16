@@ -12,7 +12,6 @@
  *
  *   Render control socket (RENDER_PATH)
  *     app  -> tool  {"cmd":"guide","hide":0|1}  BMW's turn box hidden while the map shows, or not
- *     app  -> tool  {"cmd":"turns","on":"0"|"1"}  Waze's turns to BMW's guidance on the HUD and the cluster, or not
  *                   {"cmd":"cluster"|"hud","on":"0"|"1"}, {"cmd":"hud","hud_width_pct"|"hud_x","hud_y"|"hud_keep_shown"}
  *                    the map's settings (patchd saves them)
  *     tool -> app   {"ev":"status","state":"idle"|"starting"|"showing"|"frozen"|"error"|"unsupported",
@@ -321,7 +320,7 @@ class WazeClusterControl extends EventEmitter {
             this._clearAskedHud();
             this.emit('change');
         };
-        this.render.on('connect', () => { reset(); if (this._turns !== undefined) this.render.send({ cmd: 'turns', on: this._turns ? '1' : '0' }); });
+        this.render.on('connect', reset);
         this.render.on('close', reset);
         this.patch.on('connect', () => { this._forget(); this.emit('change'); });
         this.patch.on('close', () => { this._forget(); this._restartRequested = false; this.emit('change'); });
@@ -842,13 +841,6 @@ class WazeClusterControl extends EventEmitter {
     guidanceUnavailable() {
         const rs = this.renderStatus;
         return !!(rs && rs.guide_disabled === 1);
-    }
-
-    /* Waze's turns (read from CarPlay) to BMW's own guidance on the HUD and the cluster, or not; told again on every
-     * connection. */
-    setTurns(on) {
-        this._turns = !!on;
-        this.render.send({ cmd: 'turns', on: this._turns ? '1' : '0' });
     }
 
     /* Flips the turn box's setting; the render's next status shows it.

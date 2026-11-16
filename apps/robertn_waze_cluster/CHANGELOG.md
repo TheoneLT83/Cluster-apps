@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.28
+
+- **Waze's turns on the HUD and the cluster taken out again** (waze-on-cluster 0.10.7): they were read from
+  CarPlay's card on the centre screen, so they stopped as soon as another app was in front.
+
 ## 0.9.27
 
 - **Turn View without the turn card** (turn-view 0.7.4): the cluster shows the camera and the arrows on the road

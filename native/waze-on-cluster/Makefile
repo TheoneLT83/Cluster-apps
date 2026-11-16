@@ -54,8 +54,7 @@ WOC_SRC = src/main.cpp src/refused.cpp src/video_producer.cpp src/freeze_watch.c
           src/guide_setting.cpp src/map_state.cpp \
           src/udp_source.cpp src/avb_source.cpp src/framing_probe.cpp src/rtp_h264.cpp src/sps_info.cpp \
           src/decoder_msdk.cpp src/nal_reader.cpp src/stream_health.cpp $(KIT)/map_geometry.cpp $(KIT)/yuv_atlas.cpp \
-          $(KIT)/block_pack.cpp \
-          src/hud_draw.cpp src/hud_banner.cpp src/hud_maparrow.cpp src/hud_route.cpp src/screen_grab.cpp src/hud_arrows.cpp
+          $(KIT)/block_pack.cpp
 CR_SRC  = $(CR)/client/client.cpp $(CR)/client/protocol.cpp
 SRC     = $(WOC_SRC) $(CR_SRC) $(CR)/src/config.cpp $(CR)/src/log.cpp $(CR)/src/head_unit.cpp
 
@@ -67,7 +66,7 @@ CPP_TESTS = $(BUILD)/host/nal_reader_test $(BUILD)/host/rtp_h264_test $(BUILD)/h
 		$(BUILD)/host/stream_health_test $(BUILD)/host/source_crop_test \
 		$(BUILD)/host/map_rect_test $(BUILD)/host/guide_setting_test $(BUILD)/host/decoder_test \
 		$(BUILD)/host/map_state_test $(BUILD)/host/atlas_scale_test $(BUILD)/host/sps_info_test \
-		$(BUILD)/host/picture_pace_test $(BUILD)/host/hud_banner_test $(BUILD)/host/hud_maparrow_test $(BUILD)/host/hud_route_test
+		$(BUILD)/host/picture_pace_test
 # The control socket (accept4) and the producer (pipe2) are Linux's: built and run on Linux only
 # (make test-x86).
 LINUX_TESTS = $(if $(filter Linux,$(shell uname -s)),$(BUILD)/host/refused_test $(BUILD)/host/video_producer_test)
@@ -113,7 +112,6 @@ test-node:
 	umask 077 && $(NODE) patch/test/aapd_locate_test.js
 	umask 077 && $(NODE) patch/test/aapd_test.js
 	umask 077 && $(NODE) patch/test/head_unit_test.js
-	umask 077 && $(NODE) patch/test/hudguide_test.js
 
 test-cpp: $(CPP_TESTS)
 	$(BUILD)/host/nal_reader_test
@@ -133,9 +131,6 @@ test-cpp: $(CPP_TESTS)
 	$(BUILD)/host/map_state_test
 	$(BUILD)/host/atlas_scale_test
 	$(BUILD)/host/sps_info_test
-	$(BUILD)/host/hud_banner_test
-	$(BUILD)/host/hud_maparrow_test
-	$(BUILD)/host/hud_route_test
 	$(if $(LINUX_TESTS),$(foreach t,$(LINUX_TESTS),$(t) &&) true,@echo 'refused_test, video_producer_test: Linux only (make test-x86)')
 	$(MAKE) -C $(CR) test-kit BUILD=$(abspath $(BUILD))/kit
 
@@ -257,18 +252,6 @@ $(BUILD)/host/guide_setting_test: test/guide_setting_test.cpp src/guide_setting.
 $(BUILD)/host/map_state_test: test/map_state_test.cpp src/map_state.cpp src/map_state.h $(CR)/src/config.cpp $(CR)/src/log.cpp
 	mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) -Isrc -I$(CR)/src -o $@ test/map_state_test.cpp src/map_state.cpp $(CR)/src/config.cpp $(CR)/src/log.cpp -lpthread
-
-# Waze's turns read from CarPlay (JustAnotherPU's waze-hud, README.md "Waze's turns on the HUD and the cluster")
-HUD_SRC = src/hud_draw.cpp src/hud_banner.cpp
-$(BUILD)/host/hud_maparrow_test: test/hud_maparrow_test.cpp src/hud_maparrow.cpp src/hud_maparrow.h $(HUD_SRC) src/hud_draw.h src/hud_banner.h
-	mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Isrc -o $@ test/hud_maparrow_test.cpp src/hud_maparrow.cpp $(HUD_SRC)
-$(BUILD)/host/hud_route_test: test/hud_route_test.cpp src/hud_route.cpp src/hud_route.h src/hud_maparrow.h src/hud_banner.h
-	mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Isrc -o $@ test/hud_route_test.cpp src/hud_route.cpp
-$(BUILD)/host/hud_banner_test: test/hud_banner_test.cpp $(HUD_SRC) src/hud_draw.h src/hud_banner.h
-	mkdir -p $(@D)
-	$(CXX) $(CXXFLAGS) -Isrc -o $@ test/hud_banner_test.cpp $(HUD_SRC)
 
 # ---- target binary (in Docker) --------------------------------------------
 target:

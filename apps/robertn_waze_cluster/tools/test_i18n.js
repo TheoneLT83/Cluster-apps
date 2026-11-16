@@ -27,7 +27,7 @@ const ok = (cond, msg) => { checks += 1; assert(cond, msg); };
 const eq = (got, want, msg) => { checks += 1; assert.deepStrictEqual(got, want, msg); };
 
 /* Words shown in English in every language (the owner's choice: no translations for them). */
-const ENGLISH_ONLY = ['Waze turns on HUD and cluster', 'map', 'Tyre pressures', 'Gearbox oil', 'Fuel range', 'Clock and drive time', 'Clock', 'Drive time',
+const ENGLISH_ONLY = ['map', 'Tyre pressures', 'Gearbox oil', 'Fuel range', 'Clock and drive time', 'Clock', 'Drive time',
     'GEARBOX', 'RANGE', 'TIME', 'DRIVE', 'TYRES', 'Turn View'];
 
 /* ---- the words the app shows ---- */

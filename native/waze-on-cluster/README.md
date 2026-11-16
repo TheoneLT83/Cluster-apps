@@ -576,23 +576,6 @@ and `/dev/shm/waze-on-cluster/logs.sock` (the logs service, group
 `tm_oap_app`; a connection starts it). The app's README lists the
 protocols.
 
-## Waze's turns on the HUD and the cluster
-
-Waze sends CarPlay no route guidance, so BMW's HUD and cluster show no arrows for it, while they do for Apple Maps and
-Google Maps. The turn reader (JustAnotherPU's [waze-hud](https://github.com/JustAnotherPU/waze-hud), GPL-3.0-or-later:
-`src/hud_*`, `src/screen_grab.*`, `patch/hudguide.js`, `patch/pmg_schema.js`, `tools/hud_*templates.py`) reads Waze's
-next turn from CarPlay's card on the centre screen (the unit's `winston-grabber`, a few pictures a second, only while
-it is on): the arrow from its shape, the distance and the street with glyph templates. `hudguide` (its own service, as
-carplay's user) hands the turn to BMW's navigation (`ProjectedModeGuiding`), as carplay does Apple's and Google's:
-BMW's own arrow, distance and street on the HUD and the cluster, and Turn View sees them as CarPlay turns.
-
-- The templates (`hud-templates/`) are made from **Inter** (SIL OFL, a free font close to Apple's SF Pro) with
-  `tools/hud_font_templates.py hud-templates Inter-Bold.otf`; JustAnotherPU's own test cards read right with them
-  (30 m; 450 m, Laan). A card the templates misread shows the arrow without the distance.
-- Only while CarPlay's card is on the centre screen; a turn read holds 3 s.
-- On and off: Cluster functions' setting "Waze turns on HUD and cluster" (`{"cmd":"turns","on":"0"|"1"}`; `turns` in
-  the configuration, on).
-
 ## Logs
 
 **The journal service** (`waze-on-cluster-journal.service`,
