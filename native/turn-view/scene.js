@@ -8,7 +8,7 @@
  * (camcluster's last `rect` line):
  *   chevrons  mesh  z 10   the road arrows (shaders.js) while the camera decodes (0.5.0: always the whole frame)
  *   marks     mesh  z 15   5 / 10 / 20 m lines while calibrating, same camera
- *   card      image z 20   icon + distance, top centre (card.js; on `map` 0.8x, below the cluster's model badge)
+ *   card      image z 20   icon + distance, top centre (card.js; on `map` 0.55x, just below the cluster's model badge)
  *   shade     effect z 30  a dark fill with soft edges, no upload
  *   notice    image z 31   "No front camera" (the car has none: before everything, alone) / "Camera busy" / "No camera",
  *                          centred; "Turn View is off" (switched off, iDrive 8: camcluster keeps the widget in the
@@ -31,8 +31,8 @@ const DRAWN = { route: true, near: true, passed: true, recalc: true };
 // targets the cluster shows by itself while a layer wants them (iDrive 7's central map area): nothing drawn = given back
 const SELF_SHOWN = { map: true };
 // iDrive 7's map: the cluster draws its model badge over the top 64 rows and its readouts over the sides (waze-on-cluster
-// PATCH.md "Safe area" 504x368@286,72): the card smaller, at the clear middle's top
-const CARD_MAP = { k: 0.8, y: 80 };
+// PATCH.md "Safe area" 504x368@286,72): the card small, right under the badge
+const CARD_MAP = { k: 0.55, y: 66 };
 
 function camOf(cal) { return { cx: cal.x, cy: cal.h, cz: 0, crx: -cal.pitch, cry: -cal.yaw, crz: 0, fov: cal.fov }; }
 

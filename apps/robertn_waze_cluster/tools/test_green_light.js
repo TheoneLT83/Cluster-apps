@@ -23,8 +23,9 @@ let checks = 0;
 const eq = (got, want, msg) => { checks += 1; assert.deepStrictEqual(got, want, msg); };
 const log = { info() {}, warn() {}, error() {} };
 
-eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GRUEN_PULSIEREND'), foresightColour('STOPPSCHILD')],
-    ['red', 'red', 'green', null], 'BMW\'s traffic-light events');
+eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GRUEN_PULSIEREND'), foresightColour('STOPPSCHILD'),
+    foresightColour({ value: 15 }), foresightColour('12')],
+    ['red', 'red', 'green', null, 'green', 'red'], 'BMW\'s traffic-light events, as numbers, names, text or { value }');
 
 (async () => {
     let t = 0, kmh = 0, foresight = null, camera = null;
@@ -50,13 +51,17 @@ eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GR
     foresight({ dispForesightEvent: 'AMPEL_ROT' }); foresight({ dispForesightEvent: 'AMPEL_GRUEN' });
     eq(gos, [true], 'driving: nothing');
     kmh = 0;
-    camera({ trafficLightID: 4, trafficLightColor: 1 }); camera({ trafficLightID: 5, trafficLightColor: 3 });
+    camera({ trafficLightID: 4, trafficLightColor: { value: 1 } }); camera({ trafficLightID: 4, trafficLightColor: 15 });
     eq(g.found(), true, 'the camera\'s lights came: found');
-    eq(gos, [true], 'another light\'s green: nothing');
-    camera({ trafficLightID: 4, trafficLightColor: 3 });
-    eq(gos, [true, true], 'the camera\'s light, red then green: GO');
+    eq(gos, [true], 'code 15 (no light): nothing');
+    camera({ trafficLightID: 5, trafficLightColor: { value: 3 } });
+    eq(gos, [true, true], 'the camera\'s red, then green (renumbered, as { value }): GO');
+    t += QUIET_MS + 1; kmh = null;
+    camera({ trafficLightID: 7, trafficLightColor: 1 }); camera({ trafficLightID: 7, trafficLightColor: 3 });
+    eq(gos, [true, true, true], 'no speed known: GO');
+    kmh = 0;
     camera({ trafficLightID: 6, trafficLightColor: 1 }); t += 1000; camera({ trafficLightID: 6, trafficLightColor: 3 });
-    eq(gos, [true, true], 'within the quiet time: nothing');
+    eq(gos, [true, true, true], 'within the quiet time: nothing');
     g.stop();
 
     // the overlay: alert layers on the HUD and in the cluster's middle

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.25
+
+- **Green light alert shows again:** the traffic light's colour is read however the car sends it (a number, a name or
+  a { value } object), a green after any red counts (the camera numbers a light anew while tracking it), and a car
+  whose speed is not known yet counts as standing.
+- **Turn View's turn card smaller and higher** (turn-view 0.7.2): 0.55x, right under the cluster's top badge.
+
 ## 0.9.24
 
 - **Turn View starts at once:** switched on, the Waze map leaves the cluster first and the camera is asked for once
