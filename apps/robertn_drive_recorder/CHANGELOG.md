@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+- **The player answers it** (Drive Recorder player 1.2.7): the player answered only IterioDev's own app, so Drive
+  recorder said it was not installed. It now starts for Drive recorder (within 10 s of the app's install).
+
 ## 1.0.0
 
 - **Drive recorder**: the car's cameras kept recording from the car's start, Save clip (the seconds before and after),
