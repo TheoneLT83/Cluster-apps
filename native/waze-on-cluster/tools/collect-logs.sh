@@ -20,7 +20,9 @@
 # the patch records, the aapd boot recovery's state, the restart records the
 # boot step kept, the cluster coding's
 # KI_KOMBI_VARIANT, the deploy tool's versions and state, and BMW's restart
-# records, recmgr's crash table and the list of kept core dumps (root's to
+# records, recmgr's crash table, the list of kept core dumps and the apps'
+# own logs (app-<id>.log: eDrive's and the other kit apps', the newest part)
+# (root's to
 # read: the logs service gets them from the snapshot its firewall unit takes
 # as root, in SNAPSHOT; run by root, it takes them itself),
 # patchd-logs.json: patchd's carplay, marker and AVB lines and its DLT

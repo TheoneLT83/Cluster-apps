@@ -264,13 +264,47 @@ function dumpsText() {
     return out.join('\n') + '\n';
 }
 
+/* The apps' own logs (the idrive7-apps kit's <id>.log and .log.1, in each app's data folder under the app manager's
+ * OAP folders): the newest CAP bytes of each, their folders walked APP_DEPTH deep, at most APP_LOGS of them. eDrive,
+ * Ambient config and the others log only there. */
+var OAP = '/var/opt/public/oap', APP_DEPTH = 5, APP_LOGS = 24;
+function tailText(file) {
+    return function () {
+        var st = fs.lstatSync(file);
+        if (!st.isFile()) return null;
+        var n = Math.min(st.size, CAP - 200), fd = fs.openSync(file, 'r'), b = Buffer.alloc(n);
+        try { fs.readSync(fd, b, 0, n, st.size - n); } finally { fs.closeSync(fd); }
+        var text = b.toString('utf8');
+        if (n < st.size) text = '-- the last ' + n + ' of ' + st.size + ' bytes\n' + text.slice(text.indexOf('\n') + 1);
+        return text;
+    };
+}
+function appLogs() {
+    var found = [];
+    function walk(dir, depth) {
+        var names;
+        try { names = fs.readdirSync(dir); } catch (e) { return; }
+        names.sort().forEach(function (n) {
+            if (found.length >= APP_LOGS) return;
+            var f = path.join(dir, n), st;
+            try { st = fs.lstatSync(f); } catch (e) { return; }
+            if (st.isDirectory() && depth < APP_DEPTH && n !== 'node_modules') walk(f, depth + 1);
+            else if (st.isFile() && path.basename(dir) === 'data' && /^[A-Za-z0-9_.-]+\.log(\.1)?$/.test(n)) found.push(f);
+        });
+    }
+    var roots;
+    try { roots = fs.readdirSync(r(OAP)).filter(function (n) { return /^oap_\d+$/.test(n); }).sort(); } catch (e) { roots = []; }
+    roots.forEach(function (n) { walk(path.join(r(OAP), n), 1); });
+    return found.map(function (f) { return ['app-' + path.basename(f), tailText(f)]; });
+}
+
 function snapshot(dir) {
-    writeParts(dir, [
+    writeParts(dir, appLogs().concat([
         ['restartInfo-recmgr.xml', fileText(r(SIN + '/recmgr/restartInfo.xml'))],
         ['restartInfo-crashhandler.xml', fileText(r(SIN + '/crashhandler/restartInfo.xml'))],
         ['recmgr-crashes.txt', crashesText],
         ['core-dumps.txt', dumpsText],
-    ]);
+    ]));
 }
 
 /* The snapshot into SNAPSHOT.new, then renamed into place whole: a copy

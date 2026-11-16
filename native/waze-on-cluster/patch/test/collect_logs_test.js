@@ -142,6 +142,12 @@ var SQL_ARGS = path.join(dir, 'sqlite-args');
 fs.writeFileSync(path.join(bin, 'sqlite3'), '#!/bin/sh\nprintf "%s\\n" "$@" > ' + SQL_ARGS + '\n' +
     'printf "CrashKey|Timestamp|Name|CrashID|LC\\n2|2026-11-05 06:53:00|carplay|WBA8E9C50GK123456-7|41\\n1|2026-11-05 06:51:00|carplay|c1|40\\n"\n', { mode: 0o755 });
 
+/* the apps' own logs in their data folders: the newest part of a long one, scrubbed; nothing outside a data folder */
+var appLog = '';
+for (i = 0; i < 3000; i++) appLog += '2026-11-16T19:' + String(i % 60).padStart(2, '0') + ':00.000Z INFO poll ' + i + '\n';
+mk('var/opt/public/oap/oap_12215/apps/edrive/data/edrive.log', appLog + '2026-11-16T19:22:00.000Z WARN soc failed for WBA8E9C50GK123456\n');
+mk('var/opt/public/oap/oap_12215/apps/edrive/data/edrive.log.1', 'older\n');
+mk('var/opt/public/oap/oap_12215/apps/edrive/notes.log', 'not a data folder\n');
 var XENV = Object.assign({}, ENV, { WOC_LOGS_ROOT: U, WOC_LOGS_SNAPSHOT: SNAP, WOC_BOOT_ID: path.join(U, 'boot_id') });
 var asRoot = process.getuid && process.getuid() === 0;
 if (!asRoot) {
@@ -183,6 +189,11 @@ assert(dumps.some(function (l) { return /Z  20261108204714_000_carplay\/context_
 assert(dumps.some(function (l) { return /Z  core\.1794170822\.carplay\.4222\.gz$/.test(l); }));
 assert(dumps.indexOf('-- /var/opt/kerneldump (the newest 100 of 130)') >= 0, 'at most 100 a folder');
 assert.strictEqual(dumps.filter(function (l) { return / {2}dump-\d+$/.test(l); }).length, 100);
+var ed = get('app-edrive.log');
+assert(/^-- the last \d+ of \d+ bytes\n/.test(ed) && /WARN soc failed for <VIN>\n$/.test(ed) && ed.indexOf(' poll 0\n') < 0, 'the newest part, scrubbed');
+assert(Buffer.byteLength(ed) <= 64 * 1024, 'capped');
+assert.strictEqual(get('app-edrive.log.1'), 'older\n');
+assert(!fs.existsSync(path.join(A, 'app-notes.log')), 'only the data folders');
 /* a VIN across the cap is scrubbed whole before the cut */
 var edge = path.join(dir, 'edge');
 fs.mkdirSync(edge);
@@ -214,7 +225,7 @@ cp.execFileSync('rm', ['-rf', path.join(U, 'var/opt/public/sin/recmgr'), path.jo
 var snap3 = path.join(dir, 'snap3');
 fs.mkdirSync(snap3);
 cp.execFileSync(process.execPath, [path.join(CUR, 'logs_extra.js'), 'snapshot', snap3], { env: XENV });
-assert.deepStrictEqual(fs.readdirSync(snap3).sort(), ['core-dumps.txt', 'restartInfo-crashhandler.xml']);
+assert.deepStrictEqual(fs.readdirSync(snap3).sort(), ['app-edrive.log', 'app-edrive.log.1', 'core-dumps.txt', 'restartInfo-crashhandler.xml']);
 assert(fs.readFileSync(path.join(snap3, 'core-dumps.txt'), 'utf8').indexOf('kerneldump') < 0);
 console.log('ok   a hung sqlite3 is killed at 2 s; what is absent is left out');
 
