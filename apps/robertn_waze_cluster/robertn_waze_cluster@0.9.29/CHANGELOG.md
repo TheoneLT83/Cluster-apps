@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.29
+
+- **The HUD map's brightness sent once when the renderer comes back**, not again with each of its first statuses.
+- Diagnostics (waze-on-cluster 0.10.9): the load line names the app each busy `node` process runs
+  (`node:robertn_store[745] 44%`).
+
 ## 0.9.28
 
 - **Waze's turns on the HUD and the cluster taken out again** (waze-on-cluster 0.10.7): they were read from

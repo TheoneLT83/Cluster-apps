@@ -316,6 +316,7 @@ class WazeClusterControl extends EventEmitter {
         const reset = () => {
             this.renderStatus = null;
             this._askedShownOn = null;
+            this._sentBright = null;
             this._heldHud = false;
             this._clearAskedHud();
             this.emit('change');
@@ -1205,8 +1206,12 @@ class WazeClusterControl extends EventEmitter {
                 if (this._day() == null) {
                     this._setDay(bp);
                 }
+                // sent once: the statuses before the render shows it ask nothing more
                 const want = this._shown(this._day());
-                if (bp !== want) {
+                if (bp === want) {
+                    this._sentBright = null;
+                } else if (this._sentBright !== want) {
+                    this._sentBright = want;
                     this.render.send({ cmd: 'hud', hud_brightness_pct: String(want) });
                 }
             }

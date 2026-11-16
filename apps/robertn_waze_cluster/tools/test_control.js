@@ -542,6 +542,16 @@ test('at night the HUD map is 30 points darker in the render only: the chosen br
         dayBright: { get: () => kept, set: (v) => { kept = v; } } });
     d.open();
     await until('70 % again', () => render.hudBrightness === 70 && d.hudBrightness() === 70);
+    // statuses before the render shows it: sent once
+    render.hudBrightness = 40;
+    render.received.length = 0;
+    const apply = render.received.push;
+    render.received.push = function (m) { if (m.hud_brightness_pct !== undefined) render.hudBrightness = 40; return apply.call(this, m); };
+    for (let i = 0; i < 5; i++) render.announce(render.state, render.reason);
+    await until('asked', () => render.received.length > 0);
+    await new Promise((r) => setTimeout(r, 200));
+    assert.strictEqual(render.received.filter((m) => m.hud_brightness_pct !== undefined).length, 1, 'one brightness sent for 5 statuses');
+    delete render.received.push;
     d.close();
 });
 

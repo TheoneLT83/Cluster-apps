@@ -347,6 +347,22 @@ LoadSampler.prototype.sample = function () {
     }
     return { at: this.now(), procs: procs, d: d };
 };
+/* A process's name, a node's with the app or tool its script is in ("node:robertn_store"): the folder nearest its
+ * first .js path argument that is not a generic one; nothing else of the command line. */
+var GENERIC = /^(javascript|source|src|lib|js|current|app|apps|oap|var|opt|public|data|usr|bin|node_modules|run|tmp|kit|runtime|dist|oap_\d+)$/;
+LoadSampler.prototype.label = function (p) {
+    if (p.name !== 'node') return p.name;
+    var cmd;
+    try { cmd = fs.readFileSync(this.proc + '/' + p.pid + '/cmdline', 'latin1').split('\0'); } catch (e) { return p.name; }
+    var script = cmd.slice(1).filter(function (a) { return /^\/[^=]*\.js$/.test(a); })[0];
+    if (!script) return p.name;
+    var parts = script.split('/').slice(0, -1).reverse();
+    for (var i = 0; i < parts.length; i++) {
+        var n = parts[i].replace(/@[\d.]+$/, '');
+        if (/^[A-Za-z][\w.-]{2,40}$/.test(n) && !GENERIC.test(n)) return 'node:' + n;
+    }
+    return p.name;
+};
 LoadSampler.prototype.line = function () {
     var t0 = this.now(), cur;
     try { cur = this.sample(); } catch (e) { return null; }
@@ -362,8 +378,9 @@ LoadSampler.prototype.line = function () {
     var load = '?', avail = '?';
     try { load = fs.readFileSync(this.proc + '/loadavg', 'utf8').split(' ').slice(0, 3).join(' '); } catch (e) { /* none */ }
     try { avail = Math.round(Number(/^MemAvailable:\s+(\d+)/m.exec(fs.readFileSync(this.proc + '/meminfo', 'utf8'))[1]) / 1024) + ' MiB'; } catch (e) { /* none */ }
+    var self = this;
     return 'load ' + load + '; MemAvailable ' + avail + '; D state ' + cur.d + '; CPU over ' + Math.round(secs) + ' s: ' +
-        (top.slice(0, TOP).map(function (x) { return x.p.name + '[' + x.p.pid + '] ' + x.pct.toFixed(1) + '%'; }).join(', ') || 'none') +
+        (top.slice(0, TOP).map(function (x) { return self.label(x.p) + '[' + x.p.pid + '] ' + x.pct.toFixed(1) + '%'; }).join(', ') || 'none') +
         '; sampled in ' + Math.round(this.now() - t0) + ' ms';
 };
 

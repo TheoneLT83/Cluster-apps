@@ -306,6 +306,16 @@ var USEFUL = [
         console.log('ok   the load line: /proc sampled in ' + ms + ' ms over ' + n + ' processes');
     }
     console.log('ok   the load line: load, MemAvailable, D state, the top 5 by CPU over the interval, names and pids only');
+    /* a node names its app: the folder of its script, never its other arguments */
+    stat(700, 'node', 'S', 0); stat(701, 'node', 'S', 0);
+    s.line();
+    now += 30000;
+    stat(700, 'node', 'S', 600); stat(701, 'node', 'S', 300);
+    fs.writeFileSync(path.join(proc, '700', 'cmdline'), 'node\0--secret=/x/SECRET.js\0/var/opt/public/oap/oap_12201/apps/robertn_store/javascript/app.js\0SECRET\0');
+    fs.writeFileSync(path.join(proc, '701', 'cmdline'), 'node\0-e\0SECRET\0');
+    l = s.line();
+    assert(/node:robertn_store\[700\] 20\.0%, node\[701\] 10\.0%/.test(l) && l.indexOf('SECRET') < 0, l);
+    console.log('ok   the load line: a node named by its app\'s folder, no other argument');
 })();
 
 /* The service with a stand-in journalctl: without -f it prints `backlog`
