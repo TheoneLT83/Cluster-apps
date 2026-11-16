@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.26
+
+- **Waze's turns on the HUD and the cluster** (waze-on-cluster 0.10.6, from JustAnotherPU's waze-hud): Waze sends
+  CarPlay no route guidance, so BMW showed no arrows for it. Its next turn is now read from CarPlay's card on the
+  centre screen (the arrow, the distance and the street) and handed to BMW's own navigation, as CarPlay hands Apple
+  Maps' and Google Maps' turns: BMW's arrow, distance and street on the HUD and the cluster, and Turn View gets the
+  turns too. The distance and street are read with templates made from Inter, a free font close to Apple's: nothing
+  to install. Setting "Waze turns on HUD and cluster" (on).
+
 ## 0.9.25
 
 - **Traffic light on the cluster and the HUD:** at up to 10 km/h, the light the car sees ahead in its colour (red,

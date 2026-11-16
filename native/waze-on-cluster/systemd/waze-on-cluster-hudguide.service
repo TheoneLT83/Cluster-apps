@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026 JustAnotherPU
+[Unit]
+Description=waze-on-cluster turns: Waze's next turn to BMW's own guidance on the HUD and the cluster (ProjectedModeGuiding), as carplay sends Apple's and Google's (from JustAnotherPU's waze-hud)
+RequiresMountsFor=/var/opt
+After=local-fs.target waze-on-cluster.service
+# A start that fails (no navigation, a changed interface file) is retried
+# every 30 s, at most 5 times in 10 min, then left failed.
+StartLimitIntervalSec=600
+StartLimitBurst=5
+
+[Service]
+# carplay's own user: the navigation's SOME/IP services answer it (VERIFIED
+# on the car as cia_13002; they refuse hmi_5000), so no root. It reads
+# /run/waze-on-cluster/hud.json, which waze-on-cluster writes while its turns are
+# on; without it the file is absent and this sends
+# nothing. On stop it clears what it sent (INACTIVE), within 4 s.
+User=cia_13002
+Group=cia_13002
+ExecStart=/usr/bin/node /var/opt/waze-on-cluster/current/hudguide.js
+Restart=on-failure
+RestartSec=30
+NoNewPrivileges=yes
+TimeoutStopSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

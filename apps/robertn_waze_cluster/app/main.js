@@ -375,6 +375,9 @@ async function background(bg) {
     });
     green.start().catch((e) => log.warn('green light: ' + e.message));
 
+    // Waze's turns to BMW's guidance (waze-on-cluster): the setting, now and when it changes
+    ctl.setTurns(settings.get('wazeTurns') !== false);
+    settings.onChange((k) => { if (k === 'wazeTurns') ctl.setTurns(settings.get('wazeTurns') !== false); });
     ctl.open();
     profiles.start();
     toHud();

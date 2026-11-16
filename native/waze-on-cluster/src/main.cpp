@@ -40,6 +40,7 @@
 #include "config.h"
 #include "control.h"
 #include "guide_setting.h"
+#include "hud_arrows.h"
 #include "head_unit.h"
 #include "log.h"
 #include "block_pack.h"
@@ -96,7 +97,9 @@ std::string status_line(const FeedStatus &s)
 
 class Server : public Control::Handler {
 public:
-    Server(MapFeeds *feeds, GuideSetting *guide) : feeds_(feeds), guide_(guide) {}
+    Server(MapFeeds *feeds, GuideSetting *guide, bool turns) : feeds_(feeds), guide_(guide), turns_(turns) {}
+    /* Waze's turns to BMW's HUD and cluster guidance (hud_arrows.h): the app's switch */
+    bool turns() const { return turns_; }
     void set_control(Control *c) { control_ = c; }
 
     /* start picks the cluster target the map goes to (`run`); cluster and
@@ -120,6 +123,9 @@ public:
         } else if (cmd == "guide" && hide != msg.end() && guide_->set(hide->second)) {
             log_info("guide: BMW's turn box %s while the map shows", guide_->hide() ? "hidden" : "shown");
             feeds_->set_guide_hold(guide_->hide());
+        } else if (cmd == "turns" && on != msg.end() && (on->second == "0" || on->second == "1")) {
+            turns_ = on->second == "1";
+            log_info("turns: Waze's turns to BMW's guidance %s", turns_ ? "on" : "off");
         } else if (cmd == "cluster" && on != msg.end() && (on->second == "0" || on->second == "1")) {
             feeds_->set_cluster(on->second == "1");
         } else if (cmd == "hud" && (on != msg.end() || pct != msg.end() || hx != msg.end() || hy != msg.end() ||
@@ -197,10 +203,87 @@ public:
 private:
     MapFeeds *feeds_;
     GuideSetting *guide_;
+    bool turns_;
     Control *control_ = nullptr;
     uint64_t log_seq_ = 0;
     std::string last_;
 };
+
+/* Waze's turns (hud_arrows.h): their settings from the configuration; false (logged) when one is wrong. */
+static bool hud_config(const Config &cfg, HudConfig *out)
+{
+    HudConfig hc;
+    if (!parse_rect(cfg.str("hud_icon_rect"), &hc.icon) || !parse_rect(cfg.str("hud_dist_rect"), &hc.dist) ||
+        !parse_rect(cfg.str("hud_roi"), &hc.roi)) {
+        log_error("hud_icon_rect, hud_dist_rect and hud_roi must be WxH+X+Y");
+        return false;
+    }
+    hc.reader = cfg.str("hud_reader");
+    if (hc.reader != "card" && hc.reader != "map" && hc.reader != "banner") {
+        log_error("hud_reader must be card, map or banner");
+        return false;
+    }
+    hc.map.car_x = (unsigned)cfg.num("hud_car_x");
+    hc.map.car_y = (unsigned)cfg.num("hud_car_y");
+    hc.map.min_luma = (unsigned)cfg.num("hud_min_luma");
+    hc.card = cfg.num("hud_card") == 1;
+    if (hc.reader == "card" && !hc.card) {
+        log_error("hud_reader = card needs hud_card = 1");
+        return false;
+    }
+    if (!parse_rect(cfg.str("hud_card_icon_rect"), &hc.card_cfg.icon) ||
+        !parse_rect(cfg.str("hud_card_dist_rect"), &hc.card_cfg.dist) ||
+        !parse_rect(cfg.str("hud_card_plain_rect"), &hc.card_cfg.plain) ||
+        !parse_rect(cfg.str("hud_card_street_rect"), &hc.card_cfg.street) || !parse_rect(cfg.str("hud_card_roi"), &hc.card_roi)) {
+        log_error("hud_card_icon_rect, hud_card_dist_rect, hud_card_plain_rect, hud_card_street_rect and hud_card_roi must be WxH+X+Y");
+        return false;
+    }
+    {   /* the grabber converts only what the card reader and its dumps read */
+        unsigned x0 = ~0u, y0 = ~0u, x1 = 0, y1 = 0;
+        for (const Rect &r : {hc.card_cfg.icon, hc.card_cfg.dist, hc.card_cfg.plain, hc.card_cfg.street, hc.card_roi}) {
+            x0 = std::min(x0, r.x), y0 = std::min(y0, r.y);
+            x1 = std::max(x1, r.x + r.w), y1 = std::max(y1, r.y + r.h);
+        }
+        hc.grab.crop_x = x0, hc.grab.crop_y = y0, hc.grab.crop_w = x1 - x0, hc.grab.crop_h = y1 - y0;
+    }
+    struct HudRange { const char *key; long lo, hi; } hud_ranges[] = {
+        {"hud_min_score", 1, 100}, {"hud_sample_ms", 200, 5000}, {"hud_stable", 1, 10},
+        {"hud_dump_max", 0, 10000}, {"hud_builtin_icons", 0, 1},
+        {"hud_car_x", 0, 4096}, {"hud_car_y", 0, 4096}, {"hud_min_luma", 128, 255}, {"hud_card", 0, 1},
+        {"hud_route_ymin", 0, 255}, {"hud_route_min_px", 1, 100000}, {"hud_bg_hold_s", 0, 3600},
+        {"hud_route_bright_ymin", 0, 255}, {"hud_geo_car_x", 0, 4096}, {"hud_geo_car_y", 0, 4096}, {"hud_geo_next", 0, 1}};
+    for (const HudRange &r : hud_ranges)
+        if (cfg.num(r.key) < r.lo || cfg.num(r.key) > r.hi) {
+            log_error("%s must be from %ld to %ld", r.key, r.lo, r.hi);
+            return false;
+        }
+    hc.templates_dir = cfg.str("hud_templates");
+    hc.builtin_icons = cfg.num("hud_builtin_icons") == 1;
+    hc.min_score = cfg.num("hud_min_score") / 100.0f;
+    hc.sample_ms = (unsigned)cfg.num("hud_sample_ms");
+    hc.stable = (unsigned)cfg.num("hud_stable");
+    hc.dump_flag = cfg.str("hud_dump_flag");
+    hc.dump_dir = cfg.str("hud_dump_dir");
+    hc.dump_max = (unsigned)cfg.num("hud_dump_max");
+    if (!cfg.str("hud_route_uv").empty() && !parse_route_uv(cfg.str("hud_route_uv"), &hc.route)) {
+        log_error("hud_route_uv must be umin,umax,vmin,vmax (0-255, min <= max) or empty");
+        return false;
+    }
+    hc.route.ymin = (int)cfg.num("hud_route_ymin");
+    hc.route.min_px = (unsigned)cfg.num("hud_route_min_px");
+    /* the route ahead (hud_route.h): unset hud_geo_uv, no trace and no geo */
+    hc.geo.ahead = RouteBounds();
+    if ((!cfg.str("hud_geo_uv").empty() && !parse_route_uv(cfg.str("hud_geo_uv"), &hc.geo.ahead)) ||
+        !parse_route_uv(cfg.str("hud_label_uv"), &hc.geo.label)) {
+        log_error("hud_geo_uv (or empty) and hud_label_uv must be umin,umax,vmin,vmax (0-255, min <= max)");
+        return false;
+    }
+    hc.geo.ahead.ymin = (int)cfg.num("hud_route_bright_ymin");
+    hc.geo.car_x = (unsigned)cfg.num("hud_geo_car_x");
+    hc.geo.car_y = (unsigned)cfg.num("hud_geo_car_y");
+    *out = hc;
+    return true;
+}
 
 int serve(Config cfg)
 {
@@ -309,7 +392,14 @@ int serve(Config cfg)
     std::string err;
     VideoProducer producer(vc);
     MapFeeds feed(fc, cfg.num("cluster") == 1, cfg.num("hud") == 1, (unsigned)cfg.num("hud_fps"));
-    Server server(&feed, &guide);
+    // Waze's turns (JustAnotherPU's waze-hud): read from CarPlay's card on the centre screen, handed to BMW's
+    // navigation (ProjectedModeGuiding, through the hudguide service) as CarPlay hands Apple's and Google's: BMW's own
+    // arrow and distance on the HUD and the cluster
+    HudConfig hc;
+    if (!hud_config(cfg, &hc))
+        return 1;
+    HudArrows turns(hc, std::unique_ptr<HudBackend>(new NativeGuidanceHud()));
+    Server server(&feed, &guide, cfg.num("turns") == 1);
     Control control(&server);
     server.set_control(&control);
     if (!control.listen(cfg.str("socket_path"), (unsigned)std::strtoul(cfg.str("socket_mode").c_str(), nullptr, 8),
@@ -332,6 +422,10 @@ int serve(Config cfg)
         std::vector<pollfd> p = {{sig_fd, POLLIN, 0}, {control.listen_fd(), POLLIN, 0}, {control.owner_fd(), POLLIN, 0},
                                  {producer.ready_fd(), POLLIN, 0}};
         feed.poll_fds(&p);   /* one per target's renderer connection */
+        HudBackend *tb = turns.backend();
+        const size_t tb_at = p.size();
+        if (tb->fd() >= 0)
+            p.push_back({tb->fd(), (short)(POLLIN | (tb->wants_write() ? POLLOUT : 0)), 0});
         /* A decoded frame wakes it (the producer's ready fd), and so does the
          * renderer's socket, and the HUD's next frame when one is due; four
          * times a second otherwise, so the client retries its connection, a
@@ -350,6 +444,9 @@ int serve(Config cfg)
         uint64_t id = 0;
         bool same = false;
         if (producer.take(&frame, &id, &same)) {
+            /* Waze's route on the cluster map, read from the luma before the frame goes */
+            if (!same)
+                turns.sample(frame.data(), vc.tex_width, vc.tex_height, now);
             if (same)
                 feed.repeat(id, now);
             else
@@ -368,6 +465,10 @@ int serve(Config cfg)
         producer.set_pictures(feed.wants_frames());
         feed.set_stream(live, producer.frozen(now), producer.picture(now));
         feed.poll(now);
+        (void)tb_at;
+        turns.set_stream(live && !producer.frozen(now), now);
+        turns.set_active(server.turns() && live && !producer.frozen(now), now);
+        tb->poll(now);
         producer.retry_sources(now);
         const FeedStatus fs = feed.status(producer.decode_status(), producer.stream_reason());
         const std::string status = status_line(fs);
@@ -415,7 +516,7 @@ int serve(Config cfg)
              * map layer's writes, the upload cap), for the diagnostics. */
             write_sibling_file(cfg.str("fifo_path"), "probe.txt",
                                producer.probe_report() + "stream: " + (detail.empty() ? "whole" : detail) + "\n" +
-                                   feed.report());
+                                   feed.report() + turns.report());
             feed.request_report();
             last_status_write = now;
         }
@@ -521,6 +622,39 @@ int bench_pack(const Config &cfg, const char *path)
  * before any conf is loaded, so Config accepts them. */
 void define_keys(Config *cfg)
 {
+    /* Waze's turns to BMW's guidance (hud_arrows.h; JustAnotherPU's waze-hud) */
+    cfg->define("turns", "1");
+    cfg->define("hud_reader", "card");
+    cfg->define("hud_card", "1");
+    cfg->define("hud_card_icon_rect", "85x90+150+26");
+    cfg->define("hud_card_dist_rect", "320x60+236+40");
+    cfg->define("hud_card_plain_rect", "80x80+580+30");
+    cfg->define("hud_card_street_rect", "510x60+150+114");
+    cfg->define("hud_card_roi", "580x220+120+0");
+    cfg->define("hud_car_x", "544");
+    cfg->define("hud_car_y", "360");
+    cfg->define("hud_min_luma", "235");
+    cfg->define("hud_roi", "1088x480+0+0");
+    cfg->define("hud_icon_rect", "88x88+294+80");
+    cfg->define("hud_dist_rect", "200x56+390+96");
+    cfg->define("hud_templates", "/var/opt/waze-on-cluster/current/hud-templates");
+    cfg->define("hud_builtin_icons", "0");
+    cfg->define("hud_min_score", "60");
+    cfg->define("hud_sample_ms", "250");
+    cfg->define("hud_stable", "2");
+    cfg->define("hud_dump_flag", "/tmp/woc-hud-dump");
+    cfg->define("hud_dump_dir", "/tmp/woc-hud");
+    cfg->define("hud_dump_max", "200");
+    cfg->define("hud_bg_hold_s", "600");  /* hudguide's: the reckoned turn's safety cap */
+    cfg->define("hud_route_uv", "");      /* unset: route -1, hudguide never reckons */
+    cfg->define("hud_route_ymin", "0");
+    cfg->define("hud_route_min_px", "40");
+    cfg->define("hud_geo_uv", "152,190,28,90");   /* measured on the car's night frames, 2026-11-08 */
+    cfg->define("hud_route_bright_ymin", "150");
+    cfg->define("hud_label_uv", "156,168,76,90");
+    cfg->define("hud_geo_car_x", "541");
+    cfg->define("hud_geo_car_y", "250");
+    cfg->define("hud_geo_next", "0");   /* read by hudguide.js only */
     cfg->define("fifo_path", "/run/waze-on-cluster/alt.h264");
     cfg->define("carplay_group", "video");
     cfg->define("udp_port", "20557");
