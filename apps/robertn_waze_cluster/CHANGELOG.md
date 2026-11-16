@@ -2,10 +2,12 @@
 
 ## 0.9.25
 
-- **Green light alert shows again:** the traffic light's colour is read however the car sends it (a number, a name or
-  a { value } object), a green after any red counts (the camera numbers a light anew while tracking it), and a car
-  whose speed is not known yet counts as standing.
-- **Turn View's turn card smaller and higher** (turn-view 0.7.2): 0.55x, right under the cluster's top badge.
+- **Traffic light while waiting at it:** standing at a red light, the cluster and the HUD show it red (or red and
+  yellow); when it turns green, green with "GO" and BMW's gong (as alexp50's Green Light Alert plays it). It goes once
+  the car moves. The light's colour is read however the car sends it (a number, a name or a { value } object), any
+  light the camera tracks counts, and a car whose speed is not known yet counts as standing.
+- **Turn View's turn card smaller and higher** (turn-view 0.7.2): 0.55x, right under the cluster's top badge; the
+  arrows bend toward the turn from 100 m.
 - robertnisipeanu/idrive-apps' Maps on cluster 0.6.9 and 0.6.10 (waze-on-cluster 0.10.4, cluster-render 0.6.5): the
   cluster map asks CarPlay for its arrival-time card, and a patch written without it is offered again by CarPlay's
   Patch button; the status says "Showing map"; image layers stay hidden until their first complete upload.

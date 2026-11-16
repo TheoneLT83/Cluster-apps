@@ -52,8 +52,9 @@ const PAGES = ['Maps', 'Display', 'Turn View', 'Log'];
 const HUD_ITEMS = [['hudOn', 'Displays on HUD'], ['hudTurn', 'Turn signals'], ['hudGear', 'Gear'], ['realSpeed', 'Real speed on HUD'],
     ['greenLightHud', 'Green light alert'], ['hudNight', 'Dimmer at night']];
 const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert'], ['clusterPanel', 'Info bar']];
-/* The picture's "GO" in its loop: shown GO_DEMO_ON of each GO_DEMO_MS while that alert is on. */
+/* The pictures' traffic light in its loop of GO_DEMO_MS: red, then green with "GO" for the last GO_DEMO_ON. */
 const GO_DEMO_MS = 4000, GO_DEMO_ON = 1500;
+const demoLight = () => (Date.now() % GO_DEMO_MS < GO_DEMO_MS - GO_DEMO_ON ? { colour: 'red', go: false } : { colour: 'green', go: true });
 /* The car's day / night enum (setting hudNight: the HUD map darker at night, waze_cluster_control nightDim). */
 const DAY_NIGHT = { KEINE_AENDERUNG: 0, TAG: 1, NACHT: 2, SIGNAL_UNGUELTIG: 3 };
 /* The part of the HUD's 800 x 480 scene the glass shows, about (a G21's, Redline's hud.js), with BMW's speed row. */
@@ -364,11 +365,12 @@ async function background(bg) {
     };
     setInterval(sayStates, 2000);
     turns.start();
-    // the light ahead turned green while the car waits: "GO" on the cluster, and on the HUD while ours is shown there
+    // the light the car waits at: red while it stands, green with "GO" and the gong; on the cluster, and on the HUD while
+    // ours is shown there
     const green = new GreenLight({ signals: bg.signals, log, speed: () => { const d = car.data(); return d && !d.demo ? d.speed : null; } });
-    green.on('go', (on) => {
-        hud.go(on && settings.get('greenLightHud') !== false && hudOk() && settings.get('hudOn') !== false && !given(),
-            on && settings.get('greenLightCluster') !== false);
+    green.on('show', (s) => {
+        hud.go(s, settings.get('greenLightHud') !== false && hudOk() && settings.get('hudOn') !== false && !given(),
+            settings.get('greenLightCluster') !== false);
     });
     green.start().catch((e) => log.warn('green light: ' + e.message));
 
@@ -596,9 +598,9 @@ mgu.run({
                 PANEL.drawPanel(kc, 0, 0, items);
             }
             if (go) {
-                // small, at the top of the middle (hud_overlay LIGHT_CLUSTER)
-                const lh = mh * 0.46, lw = lh * 0.375;
-                drawLight(scaled(cv, mx + (mw - lw) / 2, my + mh * 0.04, 1), lw, lh);
+                // small, at the top of the middle (hud_overlay LIGHT_CLUSTER), "GO" under it
+                const lh = mh * 0.4, lw = lh * 0.375;
+                drawLight(scaled(cv, mx + (mw - lw) / 2, my + mh * 0.04, 1), lw, lh, go);
             }
             return h;
         };
@@ -607,13 +609,14 @@ mgu.run({
             roundRect: (a, b, w, h, rr, c) => cv.roundRect(x + a * k, y + b * k, w * k, h * k, rr * k, c),
             strokeRoundRect: (a, b, w, h, rr, lw, c) => cv.strokeRoundRect(x + a * k, y + b * k, w * k, h * k, rr * k, lw, c),
             circle: (a, b, rr, c) => cv.circle(x + a * k, y + b * k, rr * k, c),
+            text: (s, a, b, sz, c, o) => cv.text(s, x + a * k, y + b * k, sz * k, c, o),
         });
         /* The Display page: the switches and the info bar's choices on the left (DL wide), the pictures on the right. */
         const DL = 1056, DCOL = 504, DCOLS = 4, DBTN = 243;
         function drawDisplay(cv, th) {
             const hasHud = hudOk();
             if (!hasHud) dispTab = 'cluster';
-            const goNow = Date.now() % GO_DEMO_MS < GO_DEMO_ON;
+            const goNow = demoLight();
 
             // the switches on the left: a tab for the HUD, one for the cluster
             G.panel(cv, th, 24, 44, DL, 468, null);
@@ -682,16 +685,16 @@ mgu.run({
             const px = 24 + DL + 20, pw = 1576 - px;
             G.panel(cv, th, px, 44, pw, 468, t('Display'));
             const cw = pw - 40, cx = px + 20;
-            const ch = clusterPicture(cv, th, cx, hasHud ? 96 : 150, cw, goNow && settings.get('greenLightCluster') !== false);
+            const ch = clusterPicture(cv, th, cx, hasHud ? 96 : 150, cw, settings.get('greenLightCluster') !== false ? goNow : null);
             if (hasHud) {
                 // as wide as the cluster: the part of the HUD's scene the glass shows (HUD_GLASS)
                 const hw = cw, hx = cx, hy = 96 + ch + 12, hudOnNow = settings.get('hudOn') !== false;
                 demoTurns = true;
                 hudPicture(cv, th, hx, hy, hw, HUD_GLASS);
                 demoTurns = false;
-                if (hudOnNow && goNow && settings.get('greenLightHud') !== false) {
+                if (hudOnNow && settings.get('greenLightHud') !== false) {
                     const k = hw / HUD_GLASS.w, a = anchorRect(mapNow());
-                    drawLight(scaled(cv, hx + (a.x - HUD_GLASS.x + (a.w - LIGHT_HUD.w) / 2) * k, hy + (a.y - HUD_GLASS.y + 4) * k, k), LIGHT_HUD.w, LIGHT_HUD.h);
+                    drawLight(scaled(cv, hx + (a.x - HUD_GLASS.x + (a.w - LIGHT_HUD.w) / 2) * k, hy + (a.y - HUD_GLASS.y + 4) * k, k), LIGHT_HUD.w, LIGHT_HUD.h, goNow);
                 }
             }
         }

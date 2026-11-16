@@ -16,63 +16,77 @@ const STAGE = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-green-'));
 fs.cpSync(path.join(REPO, 'kit', 'runtime'), path.join(STAGE, 'kit'), { recursive: true });
 ['green_light.js', 'hud_overlay.js', 'cluster_panel.js'].forEach((f) => fs.copyFileSync(path.join(HERE, 'app', f), path.join(STAGE, f)));
 fs.copyFileSync(path.join(REPO, 'native', 'cluster-render', 'js', 'cluster_render_client.js'), path.join(STAGE, 'cluster_render_client.js'));
-const { GreenLight, foresightColour, QUIET_MS, LOOK_MS } = require(path.join(STAGE, 'green_light.js'));
+const { GreenLight, foresightColour, QUIET_MS, LOOK_MS, GO_MS, RED_KEEP_MS } = require(path.join(STAGE, 'green_light.js'));
 const { HudOverlay } = require(path.join(STAGE, 'hud_overlay.js'));
 
 let checks = 0;
 const eq = (got, want, msg) => { checks += 1; assert.deepStrictEqual(got, want, msg); };
 const log = { info() {}, warn() {}, error() {} };
 
-eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GRUEN_PULSIEREND'), foresightColour('STOPPSCHILD'),
-    foresightColour({ value: 15 }), foresightColour('12')],
-    ['red', 'red', 'green', null, 'green', 'red'], 'BMW\'s traffic-light events, as numbers, names, text or { value }');
+eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GELB'), foresightColour('AMPEL_GRUEN_PULSIEREND'),
+    foresightColour('STOPPSCHILD'), foresightColour({ value: 15 }), foresightColour('12')],
+    ['red', 'redyellow', 'yellow', 'green', null, 'green', 'red'], 'BMW\'s traffic-light events, as numbers, names, text or { value }');
 
 (async () => {
     let t = 0, kmh = 0, foresight = null, camera = null;
+    const gongs = [];
     const signals = {
         watch: async (i, inst, h) => { foresight = h.displayForesight; return {}; },
         proxy: async () => ({}),
         on: async (p, name, fn) => { camera = fn; },
+        call: async (p, m, v) => { gongs.push([m, v.identifier]); },
     };
     const g = new GreenLight({ signals, log, speed: () => kmh, now: () => t });
-    const gos = [];
-    g.on('go', (on) => gos.push(on));
+    const shown = [];
+    const name = (s) => (s ? s.colour + (s.go ? ' GO' : '') : 'none');
+    g.on('show', (s) => shown.push(name(s)));
     await g.start();
+    clearInterval(g.timer);            // ticked by hand
     eq(g.found(), null, 'just started: still looking for the camera');
     t += LOOK_MS + 1;
     eq(g.found(), false, 'nothing answered: no traffic-light camera');
     t -= LOOK_MS + 1;
     foresight({ dispForesightEvent: 'AMPEL_GRUEN' });
-    eq(gos, [], 'a green without a red: nothing');
-    foresight({ dispForesightEvent: 'AMPEL_ROT' }); t += 20000;
+    eq(shown, [], 'a green without a red: nothing');
+    kmh = 30; foresight({ dispForesightEvent: 'AMPEL_ROT' });
+    eq(shown, [], 'a red while driving: nothing yet');
+    kmh = 0; t += 500; g.tick();
+    eq(shown, ['red'], 'stopped at it: red');
+    t += 20000; foresight({ dispForesightEvent: 'AMPEL_ROT_GELB' });
+    eq(shown, ['red', 'redyellow'], 'red and yellow');
     foresight({ dispForesightEvent: 'AMPEL_GRUEN' });
-    eq([gos, g.showing()], [[true], true], 'red, then green while standing: GO');
-    t += QUIET_MS + 1; kmh = 30;
-    foresight({ dispForesightEvent: 'AMPEL_ROT' }); foresight({ dispForesightEvent: 'AMPEL_GRUEN' });
-    eq(gos, [true], 'driving: nothing');
-    kmh = 0;
+    eq([shown, gongs], [['red', 'redyellow', 'green GO'], [['requestGong', 208]]], 'green while standing: GO and the gong');
+    kmh = 8; t += 1000; g.tick();
+    eq(shown[shown.length - 1], 'none', 'moving off: gone');
+    t += QUIET_MS + 1; kmh = 0;
+    foresight({ dispForesightEvent: 'AMPEL_ROT' }); t += 1000; foresight({ dispForesightEvent: 'AMPEL_GRUEN' });
+    t += GO_MS + 1; g.tick();
+    eq(shown.slice(-3), ['red', 'green GO', 'none'], 'standing on after the GO: gone after GO_MS');
+    t += QUIET_MS + 1;
     camera({ trafficLightID: 4, trafficLightColor: { value: 1 } }); camera({ trafficLightID: 4, trafficLightColor: 15 });
     eq(g.found(), true, 'the camera\'s lights came: found');
-    eq(gos, [true], 'code 15 (no light): nothing');
-    camera({ trafficLightID: 5, trafficLightColor: { value: 3 } });
-    eq(gos, [true, true], 'the camera\'s red, then green (renumbered, as { value }): GO');
-    t += QUIET_MS + 1; kmh = null;
+    eq(shown[shown.length - 1], 'red', 'the camera\'s red (as { value }), code 15 (no light) left out');
+    camera({ trafficLightID: 5, trafficLightColor: 3 });
+    eq(shown[shown.length - 1], 'green GO', 'the camera\'s green (renumbered): GO');
+    t += QUIET_MS + 1; kmh = null; g.tick();
     camera({ trafficLightID: 7, trafficLightColor: 1 }); camera({ trafficLightID: 7, trafficLightColor: 3 });
-    eq(gos, [true, true, true], 'no speed known: GO');
-    kmh = 0;
+    eq(shown.slice(-2), ['red', 'green GO'], 'no speed known: red, then GO');
+    kmh = 0; t += GO_MS + 1; g.tick();
     camera({ trafficLightID: 6, trafficLightColor: 1 }); t += 1000; camera({ trafficLightID: 6, trafficLightColor: 3 });
-    eq(gos, [true, true, true], 'within the quiet time: nothing');
+    eq(shown.slice(-2), ['red', 'none'], 'within the quiet time: no second GO');
+    t += RED_KEEP_MS + 1; foresight({ dispForesightEvent: 'AMPEL_ROT' }); t += RED_KEEP_MS + 1; g.tick();
+    eq(shown[shown.length - 1], 'none', 'a red long ago: gone');
     g.stop();
 
     // the overlay: alert layers on the HUD and in the cluster's middle
     const made = [], dropped = [];
     const client = { on() {}, connect() {}, close() {}, set() {}, pixels() {}, image: (o) => { made.push(o); return made.length; }, drop: (r) => dropped.push(r) };
     const hud = new HudOverlay({ log, client });
-    hud.go(true, true);
-    eq(made.map((o) => [o.target, o.klass]), [['map', 'alert'], ['hud', 'alert']], 'GO on the cluster and the HUD, as alerts');
-    hud.go(false, false);
+    hud.go({ colour: 'red', go: false }, true, true);
+    eq(made.map((o) => [o.target, o.klass]), [['map', 'alert'], ['hud', 'alert']], 'the light on the cluster and the HUD, as alerts');
+    hud.go(null, true, true);
     eq(dropped.length, 2, 'gone after');
-    hud.go(false, true);
+    hud.go({ colour: 'green', go: true }, false, true);
     eq(made[made.length - 1].target, 'map', 'without the HUD: the cluster only');
     hud.close();
     console.log('green light: ' + checks + ' checks pass');

@@ -50,6 +50,12 @@
         "RecognitionTrafficLightCamera"
       ]
     },
+    "de.bmw.infotainment.gp.gongplayer.IGPCommand": {
+      "_optional": "the gong when the traffic light turns green",
+      "_methods": [
+        "requestGong"
+      ]
+    },
     "de.bmw.infotainment.vehicle.Vehicle": {
       "statusDayNightChangeOver": "rs",
       "_optional": "the HUD dimmer at night"

@@ -14,7 +14,7 @@
  * then none) - calib (calibrating: wins over everything). video: every state but off (0.6.0, user 2026-11-14: the
  * front camera also without a route).
  */
-const NEAR_M = 80, JUMP_M = 30, BLEND_MS = 1000, PASSED_MS = 500, RECALC_MS = 5000, STALE_MS = 1000;
+const NEAR_M = 100, JUMP_M = 30, BLEND_MS = 1000, PASSED_MS = 500, RECALC_MS = 5000, STALE_MS = 1000;
 const GUARD_M = 10000, NO_BEND = 10000;
 const VIDEO = { none: true, route: true, near: true, passed: true, recalc: true, calib: true };
 const NONE = { uid: null, angle: 0, side: 1, exit: 0, icon: '', text: '' };
