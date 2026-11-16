@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.27
+
+- **Turn View without the turn card** (turn-view 0.7.4): the cluster shows the camera and the arrows on the road
+  only; the turn and its distance are BMW's own on the HUD (Waze's too).
+
 ## 0.9.26
 
 - **Waze's turns on the HUD and the cluster** (waze-on-cluster 0.10.6, from JustAnotherPU's waze-hud): Waze sends

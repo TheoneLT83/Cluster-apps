@@ -8,7 +8,7 @@
  * (camcluster's last `rect` line):
  *   chevrons  mesh  z 10   the road arrows (shaders.js) while the camera decodes (0.5.0: always the whole frame)
  *   marks     mesh  z 15   5 / 10 / 20 m lines while calibrating, same camera
- *   card      image z 20   icon + distance, top centre (card.js; on `map` 0.55x, just below the cluster's model badge)
+ *   card      image z 20   icon + distance, top centre (card.js); none on `map` (iDrive 7: the HUD has BMW's own)
  *   shade     effect z 30  a dark fill with soft edges, no upload
  *   notice    image z 31   "No front camera" (the car has none: before everything, alone) / "Camera busy" / "No camera",
  *                          centred; "Turn View is off" (switched off, iDrive 8: camcluster keeps the widget in the
@@ -33,6 +33,8 @@ const SELF_SHOWN = { map: true };
 // iDrive 7's map: the cluster draws its model badge over the top 64 rows and its readouts over the sides (waze-on-cluster
 // PATCH.md "Safe area" 504x368@286,72): the card small, right under the badge
 const CARD_MAP = { k: 0.55, y: 66 };
+// no turn card on iDrive 7's map: BMW's own arrow and distance are on the HUD (Waze's too, waze-on-cluster's turns)
+const CARD_OFF = { map: true };
 
 function camOf(cal) { return { cx: cal.x, cy: cal.h, cz: 0, crx: -cal.pitch, cry: -cal.yaw, crz: 0, fov: cal.fov }; }
 
@@ -124,7 +126,7 @@ function createScene(cr, o) {
             const shade = !gone && (offNote || (!off && (noFront || (view.video && !decoding))));
             const n = offNote ? 'off' : shade ? noticeOf(view, t) : null;
             const want = { chevrons: !off && !gone && drawn && decoding && !shade, marks: !off && !gone && st === 'calib' && decoding && !shade,
-                card: !off && !gone && drawn && !shade, shade, notice: !!n };
+                card: !off && !gone && drawn && !shade && !CARD_OFF[target], shade, notice: !!n };
             lastNotice = n;
             // pixels before they show: a layer without content would be stalled
             if (n && n !== noticeKey) { const p = C.notice(n); cr.pixels(refs.notice, null, p.rgba); noticeKey = n; }
