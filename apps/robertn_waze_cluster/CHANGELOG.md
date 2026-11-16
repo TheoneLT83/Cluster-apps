@@ -6,6 +6,9 @@
   a { value } object), a green after any red counts (the camera numbers a light anew while tracking it), and a car
   whose speed is not known yet counts as standing.
 - **Turn View's turn card smaller and higher** (turn-view 0.7.2): 0.55x, right under the cluster's top badge.
+- robertnisipeanu/idrive-apps' Maps on cluster 0.6.9 and 0.6.10 (waze-on-cluster 0.10.4, cluster-render 0.6.5): the
+  cluster map asks CarPlay for its arrival-time card, and a patch written without it is offered again by CarPlay's
+  Patch button; the status says "Showing map"; image layers stay hidden until their first complete upload.
 
 ## 0.9.24
 

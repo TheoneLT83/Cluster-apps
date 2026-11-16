@@ -1938,7 +1938,10 @@ static void forced_skipped()
 static const uint64_t kBaseTranslucent[6] = {0xe96284518c0ad5e6ull, 3119, 40754688, 379, 4, 30};
 static const uint64_t kBaseTurned[6] = {0x1106d7c0c0d903a6ull, 3119, 40754688, 379, 4, 30};
 static const uint64_t kBaseHud[6] = {0x99f29e51858a4bfdull, 1472, 30050304, 334, 0, 0};
-static const uint64_t kBaseOverlay[6] = {0x1fea6ba2ae1fcf24ull, 734, 99647488, 168, 0, 0};
+/* First-upload visibility adds one show after the image has pixels. Bytes,
+ * flushes and failures are unchanged; compositor_test checks the deferred
+ * upload independently, including a flush by another layer. */
+static const uint64_t kBaseOverlay[6] = {0xa9cf97d429f48a33ull, 735, 99647488, 168, 0, 0};
 /* A minute (camera_minute_trace), kinds 0 to 4: the trace, then the map's
  * frames, bytes and packed frames and the camera's. */
 static const uint64_t kBaseMinute[5][12] = {

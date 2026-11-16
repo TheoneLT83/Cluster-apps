@@ -305,10 +305,13 @@ static std::vector<const FakeQuad *> atlas_quads(FakeGraph *g)
 
 /* Recorded with video_trace.h from the build before composites (main at
  * 05e38ec), with this fork's HUD feather uniforms (two more calls per quad
- * made, each pass): hash, calls, write bytes, flushes, failed flushes, failed writes. */
+ * made, each pass): hash, calls, write bytes, flushes, failed flushes, failed writes.
+ * The image case includes first-upload visibility gating: two extra show
+ * transitions, with identical writes, flushes and injected failure counts.
+ * compositor_test separately verifies no uninitialized pixels become visible. */
 static const uint64_t kMainTrace[2][6] = {
     {0x958ce2643fe35956ull, 1224, 31669248, 227, 5, 0},
-    {0x6f23fff9923b6536ull, 1331, 33012736, 256, 5, 8},
+    {0x138626360b78f198ull, 1333, 33012736, 256, 5, 8},
 };
 /* A camera joining a shown map, and sets (video_trace.h join_trace). */
 static const uint64_t kMainJoinTrace[2][6] = {
