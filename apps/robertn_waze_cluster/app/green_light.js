@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 'use strict';
 /**
- * green_light - the traffic light the car waits at, on the cluster and the HUD: its red (or red and yellow, or yellow)
- * while the car stands at it, then its green with "GO" and BMW's gong. Gone once the car moves.
+ * green_light - the traffic light ahead, on the cluster and the HUD, while the car is at most SLOW_KMH: its colour (red,
+ * red and yellow, yellow, green); a green after a red with "GO" and BMW's gong. Gone above SLOW_KMH.
  *
  * Two of the front camera's (KAFAS) sources, either enough:
  *   - TrafficSignDisplayControl.displayForesight, what BMW's own driver assistance shows: dispForesightEvent
@@ -14,11 +14,10 @@
  * Values come as numbers, enum names or { value } objects (num()). The camera numbers a light anew as it tracks it,
  * so any light counts, not only the same trafficLightID.
  *
- * Shown only while the car is fully stopped (0 km/h: its speed known and under STILL_KMH, the signal's smallest step):
- * a red, red and yellow or yellow light seen within RED_KEEP_MS, unless the car drove on (MOVE_KMH up) for PASSED_MS
- * after it. A green within RED_KEEP_MS of a red while stopped: green with "GO" and the gong for GO_MS (at most one
- * each QUIET_MS). Gone as soon as the car rolls. The gong: BMW's gong player (IGPCommand.requestGong), as alexp50's
- * Green Light Alert (bmw-apps, MIT) plays it.
+ * Shown only while the car's speed is known and at most SLOW_KMH: the last light seen, within RED_KEEP_MS, unless the
+ * car drove on (over SLOW_KMH for PASSED_MS) after it. A green within RED_KEEP_MS of a red: "GO" and the gong for
+ * GO_MS (at most one each QUIET_MS), then the green alone. The gong: BMW's gong player (IGPCommand.requestGong), as
+ * alexp50's Green Light Alert (bmw-apps, MIT) plays it.
  *
  *   const g = new GreenLight({ signals, log, speed: () => kmh, now });
  *   await g.start();     g.on('show', (s) => ...)   s: null, or { colour: 'red' | 'redyellow' | 'yellow' | 'green', go }
@@ -32,13 +31,13 @@ const GONG = 'de.bmw.infotainment.gp.gongplayer.IGPCommand';
 const EVENTS = { AMPEL_ROT: 12, AMPEL_ROT_GELB: 13, AMPEL_GELB: 14, AMPEL_GRUEN: 15, AMPEL_GRUEN_PULSIEREND: 16,
     AMPEL_GRUEN_SCHILD_RECHTS_OBEN: 17, AMPEL_GRUEN_SCHILD_RECHTS_UNTEN: 18 };
 const RAW_RED = 1, RAW_GREEN = 3, RAW_NONE = 15;
-const STILL_KMH = 0.1, MOVE_KMH = 5;
+const SLOW_KMH = 10;
 const RED_KEEP_MS = 120000;
 const GO_MS = 4000;
 const QUIET_MS = 10000;
 const LOOK_MS = 30000;
 const TICK_MS = 500;
-const PASSED_MS = 10000;           // moving this long after a red: driven past it, not stopping at it
+const PASSED_MS = 10000;           // over SLOW_KMH this long: driven past the light
 const GONG_CALL = { location: 0, identifier: 208, duration: 0, type: 16, distance: 0, angle: 0 };
 
 /* An enum as the signal gives it (number, name, numeric text or { value }) -> its number, or null. */
@@ -73,7 +72,7 @@ class GreenLight extends EventEmitter {
         this.redAt = -Infinity;    // when a light was last red (or red and yellow)
         this.last = null;          // { colour, at }: the last red, red and yellow or yellow light
         this.state = null;         // what is shown: null or { colour, go }
-        this.movingSince = null;
+        this.fastSince = null;
         this.goUntil = 0;
         this.lastGo = -Infinity;
         this.rawSeen = [];
@@ -111,44 +110,42 @@ class GreenLight extends EventEmitter {
         this.light(code === RAW_RED ? 'red' : code === RAW_GREEN ? 'green' : null);
     }
 
-    _standing() { const kmh = this.speed(); return typeof kmh === 'number' && isFinite(kmh) && kmh < STILL_KMH; }
-    _moving() { const kmh = this.speed(); return typeof kmh === 'number' && kmh >= MOVE_KMH; }
+    _slow() { const kmh = this.speed(); return typeof kmh === 'number' && isFinite(kmh) && kmh <= SLOW_KMH; }
 
     /* A light's colour now. */
     light(colour) {
         const t = this.now();
         if (!colour) return;
-        if (colour !== 'green') {
-            if (colour !== 'yellow') this.redAt = t;
-            this.last = { colour, at: t };
-            if (!(this.state && this.state.go)) this.tick();
+        const wasRed = t - this.redAt <= RED_KEEP_MS;
+        if (colour === 'red' || colour === 'redyellow') this.redAt = t;
+        this.last = { colour, at: t };
+        if (colour === 'green' && wasRed && this._slow() && t - this.lastGo >= QUIET_MS) {
+            this.redAt = -Infinity;
+            this.lastGo = t;
+            this.goUntil = t + GO_MS;
+            this.log.info('green light: green after red');
+            this._set({ colour: 'green', go: true });
+            this._playGong();
             return;
         }
-        this.last = null;
-        if (t - this.redAt > RED_KEEP_MS || !this._standing() || t - this.lastGo < QUIET_MS) { this.tick(); return; }
-        this.redAt = -Infinity;
-        this.lastGo = t;
-        this.goUntil = t + GO_MS;
-        this.log.info('green light: green after red');
-        this._set({ colour: 'green', go: true });
-        this._playGong();
+        if (colour !== 'green') this.goUntil = 0;
+        this.tick();
     }
 
-    /* What is shown now: the car moving, the GO over, the red long gone (or driven past: moving PASSED_MS on). */
+    /* What is shown now: faster than SLOW_KMH (or no speed known) nothing; the light forgotten once driven past it
+     * (over SLOW_KMH for PASSED_MS) or seen long ago. */
     tick() {
         const t = this.now();
-        if (this._moving()) {
-            if (this.movingSince === null) this.movingSince = t;
-            if (t - this.movingSince >= PASSED_MS) this.last = null;
+        if (!this._slow()) {
+            if (this.fastSince === null) this.fastSince = t;
+            if (t - this.fastSince >= PASSED_MS) { this.last = null; this.redAt = -Infinity; }
             this.goUntil = 0;
             return this._set(null);
         }
-        this.movingSince = null;
-        // rolling (or no speed known): nothing shown; the red is remembered until the car drives on
-        if (!this._standing()) { this.goUntil = 0; return this._set(null); }
+        this.fastSince = null;
         if (t < this.goUntil) return null;
         const l = this.last;
-        this._set(l && t - l.at <= RED_KEEP_MS && this._standing() ? { colour: l.colour, go: false } : null);
+        this._set(l && t - l.at <= RED_KEEP_MS ? { colour: l.colour, go: false } : null);
         return null;
     }
 
@@ -177,4 +174,4 @@ class GreenLight extends EventEmitter {
     stop() { clearInterval(this.timer); this.timer = null; }
 }
 
-module.exports = { GreenLight, foresightColour, num, RAW_RED, RAW_GREEN, STILL_KMH, MOVE_KMH, GO_MS, QUIET_MS, LOOK_MS, RED_KEEP_MS };
+module.exports = { GreenLight, foresightColour, num, RAW_RED, RAW_GREEN, SLOW_KMH, GO_MS, QUIET_MS, LOOK_MS, RED_KEEP_MS };
