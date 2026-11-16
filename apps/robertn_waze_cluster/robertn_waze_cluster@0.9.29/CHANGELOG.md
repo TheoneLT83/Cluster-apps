@@ -2,6 +2,10 @@
 
 ## 0.9.29
 
+- **Turn View: when it shows** (turn-view 0.7.5), on its page: Signal or turn (a turn signal on or the turn
+  near), Turn only, or Always, each in Map view.
+- **Turn View comes up faster:** the front camera is asked of the camera ECU as soon as the cluster wants it, not
+  5 s later, and checked every 0.5 s.
 - **The HUD map's brightness sent once when the renderer comes back**, not again with each of its first statuses.
 - Diagnostics (waze-on-cluster 0.10.9): the load line names the app each busy `node` process runs
   (`node:robertn_store[745] 44%`).

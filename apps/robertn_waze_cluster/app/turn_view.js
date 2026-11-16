@@ -156,6 +156,10 @@ class TurnView extends EventEmitter {
         return send();
     }
 
+    /* When it shows in Map view: 'signal' (a turn signal on or the turn near), 'near' (the turn near), 'always'. */
+    show() { const st = this.state; return (st && st.settings && st.settings.show) || 'signal'; }
+    setShow(v) { this._send({ op: 'set', settings: { show: v } }); }
+
     calib(on) {
         on = !!on;
         if (on === this.calibrating) return;

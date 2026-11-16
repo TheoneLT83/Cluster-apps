@@ -1,6 +1,7 @@
 // Turn View's camera request: IterioDev's (github.com/IterioDev/car-apps, the Turn View app iteriodev_turnview 1.5.0,
 // src/camreq.js), PolyForm Strict License 1.0.0, in Cluster functions with IterioDev's permission (native/turn-view/
-// PERMISSION.md). Unchanged.
+// PERMISSION.md). Changed for Cluster functions: the showing file read every 0.5 s, the ECU's state read at once when
+// a period starts.
 'use strict';
 /*
  * Turn View: the front camera asked of the camera ECU while the cluster widget shows it and no other app asks
@@ -8,8 +9,8 @@
  * recorder.js (connect, named, camCall, attach, camRequest, camCheck, camRelease) with the same behaviour:
  *
  * mgu-camcluster writes the camera the widget shows ("front") to /dev/shm/camcluster/showing every 5 s while it
- * decodes; read here every 2 s, fresh = written less than 15 s ago and "front". A period starts when it turns fresh:
- * state 'waiting', 5 s later the ECU's state is read (XView3D CurrentState, else ICAM2Proxy currentState). DR_ACTIVE
+ * decodes; read here every 0.5 s, fresh = written less than 15 s ago and "front". A period starts when it turns fresh:
+ * state 'waiting', the ECU's state read at once (XView3D CurrentState, else ICAM2Proxy currentState). DR_ACTIVE
  * with perspective 1 -> 'on' (asked by us when attached, else by another app: Drive Recorder in its DR mode asks
  * itself), read again every 5 s while fresh. Not applied -> attached as icam2proxy's indirect client (once) and
  * DR_ACTIVE / MODE_MOSAIK / 1 asked, read back 5 s later ('asked'), at most 3 tries a period. Both states are read
@@ -33,7 +34,7 @@ const fs = require('fs');
 const EventEmitter = require('events');
 
 const SHOWING = '/dev/shm/camcluster/showing';
-const READ_MS = 2000, FRESH_MS = 15000, CHECK_MS = 5000, TRIES = 3, RETRY_MS = 30e3;
+const READ_MS = 500, FRESH_MS = 15000, CHECK_MS = 5000, TRIES = 3, RETRY_MS = 30e3;
 const VIEW = 1;                         // the front camera alone (recorder.js VIEWS: req 1 -> shown 1)
 const FALLBACK = [5, 7, 2], REAR = 2;   // recorder.js VIEWS: 5 front + rear -> shown 5/6, 7 all -> 7/9/10, 2 rear -> 2
 const WITH_FRONT = [1, 5, 6, 7, 9, 10]; // CurrentState perspectives whose frames hold the front camera (camera.h)
@@ -120,10 +121,10 @@ function create(o) {
         });
     }
 
-    // the next read of the ECU's state, CHECK_MS from now (a newer one, or the period's end, cancels it)
-    function schedule() {
+    // the next read of the ECU's state, ms (CHECK_MS) from now (a newer one, or the period's end, cancels it)
+    function schedule(ms) {
         const g = ++gen;
-        setTimer(() => { if (g === gen) check(); }, CHECK_MS);
+        setTimer(() => { if (g === gen) check(); }, ms === undefined ? CHECK_MS : ms);
     }
 
     function ask(view) {
@@ -179,7 +180,7 @@ function create(o) {
     function read() {
         if (fresh()) {
             staleSince = null;
-            if (!period) { period = { tries: 0, fb: 0, asked: null, rearBefore: false, rearOnly: false }; set('waiting', 'checking the camera'); schedule(); }
+            if (!period) { period = { tries: 0, fb: 0, asked: null, rearBefore: false, rearOnly: false }; set('waiting', 'checking the camera'); schedule(0); }
         } else if (period) {
             if (staleSince === null) staleSince = now();
             else if (now() - staleSince >= FRESH_MS) endPeriod();

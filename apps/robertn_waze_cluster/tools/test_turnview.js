@@ -8,6 +8,7 @@ const os = require('os');
 const path = require('path');
 const EventEmitter = require('events');
 const { TurnView } = require('../app/turn_view.js');
+const { gateOpen, mergeSettings } = require('../../../native/turn-view/turnview.js');
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tv-'));
 const SOCK = path.join(dir, 'ctl.sock');
@@ -19,8 +20,8 @@ const ok = (c, m) => { assert(c, m); passed++; console.log('ok   ' + m); };
 /* The tool: answers get / set / preview / calib / reset as turnview.js does, pushing its state. */
 function tool() {
     const t = { got: [], conns: [], signal: false, near: false, settings: { enabled: false, cal: { h: 0.6, pitch: 3, fov: 60, yaw: 0, x: 0 } } };
-    // the gate as turnview.js has it: open while on and a turn signal is on or the turn is near
-    const gate = () => (t.settings.enabled && (t.signal || t.near) ? 'open' : 'closed');
+    // the gate: turnview.js's, Map view selected
+    const gate = () => (t.settings.enabled && gateOpen(t.settings.show || 'signal', t.near ? 'near' : 'route', t.signal, true) ? 'open' : 'closed');
     t.push = () => t.conns.forEach((c) => c.write(JSON.stringify({ state: { settings: t.settings, status: { gate: gate(), camera: t.settings.enabled ? 'decoding' : 'off', route: 'none', backend: 'id7' } } }) + '\n'));
     t.server = net.createServer((c) => {
         t.conns.push(c);
@@ -132,6 +133,25 @@ const quiet = { info() {}, warn() {} };
     tv.calib(false);
     await until('calib off', () => t.got.filter((q) => q.op === 'calib').length === 2);
     ok(t.got.filter((q) => q.op === 'calib').map((q) => q.on).join() === 'true,false', 'the marks on while calibrating, off after');
+    // when it shows: the turn only, all the time, as before
+    t.signal = false; t.near = false;
+    tv.enable(true);
+    tv.setShow('always');
+    await until('always', () => tv.show() === 'always' && tv.shows());
+    ok(true, 'Always: shown with no signal and no turn near');
+    tv.setShow('near');
+    await until('turn only', () => tv.show() === 'near' && !tv.shows());
+    tv.signal(true);
+    await sleep(100);
+    ok(!tv.shows(), 'Turn only: a turn signal does not show it');
+    tv.signal(false);
+    tv.setShow('signal');
+    await until('signal', () => tv.show() === 'signal');
+    ok([['signal', 'route', true, true], ['near', 'near', false, true], ['always', 'none', false, null]].every((a) => gateOpen(...a)) &&
+        ![['near', 'route', true, true], ['always', 'none', false, false], ['always', 'off', false, true], ['signal', 'route', false, true]].some((a) => gateOpen(...a)),
+        'the tool\'s gate: each choice, never out of Map view or off');
+    ok(mergeSettings(null, null).show === 'signal' && mergeSettings({ show: 'near' }, { show: 'bad' }).show === 'near' && mergeSettings(null, { show: 'always' }).show === 'always',
+        'the choice: signal by default, kept, only the three');
     tv.close();
     t.server.close();
     fs.rmSync(dir, { recursive: true, force: true });

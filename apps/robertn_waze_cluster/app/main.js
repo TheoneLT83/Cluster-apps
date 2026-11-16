@@ -711,9 +711,13 @@ mgu.run({
             const col = (k) => (k === 'ok' ? th.ok || th.text : k === 'warn' ? th.warn : k === 'crit' ? th.crit || th.warn : th.text);
             G.panel(cv, th, 24, 44, 900, 468, 'Turn View');
             // the switch: one button, lit while Turn View is on
-            G.button(cv, th, 48, 106, 360, 56, on ? 'Turn View: On' : 'Turn View: Off', () => tv.enable(!on),
+            G.button(cv, th, 48, 106, 296, 56, on ? 'Turn View: On' : 'Turn View: Off', () => tv.enable(!on),
                 { primary: on, key: 'tv-on', busy: !st });
-            line(cv, th, 'The front camera in the cluster', 430, 142, 470, th.dim);
+            // when it shows in Map view
+            let sx = 364;
+            [['signal', 'Signal or turn'], ['near', 'Turn only'], ['always', 'Always']].forEach(([v, text]) => {
+                sx += G.button(cv, th, sx, 112, 0, 44, text, () => tv.setShow(v), { primary: tv.show() === v, busy: !st, key: 'tv-show-' + v }) + 10;
+            });
             if (!st) {
                 small(cv, th, 'The Turn View tool is not running: install Turn View in the Store (Head-unit tools), then restart the head unit.', 48, 176, 850, th.warn);
             } else {

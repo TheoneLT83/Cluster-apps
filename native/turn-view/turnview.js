@@ -108,10 +108,23 @@ function clampCal(cur, p) {
     });
     return out;
 }
+/* settings.show: when Turn View shows, in Map view - 'signal' a turn signal on or the turn near, 'near' the turn near
+ * only, 'always' all the time */
+const SHOW = ['signal', 'near', 'always'];
+/* Turn View shown in Map view (mapView not false) as show says: a turn signal on or the turn near and just passed; the
+ * turn only; all the time. Else the layers draw nothing and the cluster's map area is given back. Calibrating: always. */
+function gateOpen(show, state, signal, mapView) {
+    const near = state === 'near' || state === 'passed';
+    const when = show === 'always' ? true : show === 'near' ? near : signal || near;
+    return state === 'calib' || (state !== 'off' && mapView !== false && when);
+}
+
 function mergeSettings(cur, p) {
-    const out = { enabled: cur && typeof cur.enabled === 'boolean' ? cur.enabled : true, cal: clampCal(cur && cur.cal) };
+    const out = { enabled: cur && typeof cur.enabled === 'boolean' ? cur.enabled : true, cal: clampCal(cur && cur.cal),
+        show: cur && SHOW.includes(cur.show) ? cur.show : 'signal' };
     if (!p || typeof p !== 'object') return out;
     if (typeof p.enabled === 'boolean') out.enabled = p.enabled;
+    if (SHOW.includes(p.show)) out.show = p.show;
     if (p.cal) out.cal = clampCal(out.cal, p.cal);
     return out;
 }
@@ -357,9 +370,7 @@ function main() {
     let lastState = '';
     setInterval(() => {
         const t = mono(), tv = track.tick(t);
-        // shown only while a turn signal is on or the turn is near (and just passed), and Map view is selected; else the
-        // layers draw nothing and the cluster's map area is given back (calibrating: always)
-        const want = tv.state === 'calib' || (tv.state !== 'off' && gate.mapView !== false && (gate.signal || tv.state === 'near' || tv.state === 'passed'));
+        const want = gateOpen(settings.show, tv.state, gate.signal, gate.mapView);
         if (want !== gate.open) { gate.open = want; status.gate = want ? 'open' : 'closed'; log(`gate ${status.gate}`); push(); }
         const v = want ? tv : Object.assign({}, tv, { state: 'none', video: false, alpha: 0 });
         if (tv.state !== lastState) { log(`state ${lastState || '-'} -> ${tv.state}`); lastState = tv.state; status.state = tv.state; push(); }
@@ -453,4 +464,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { mergeSettings, clampCal, backoff, DEFAULT_CAL, RANGE };
+module.exports = { mergeSettings, gateOpen, SHOW, clampCal, backoff, DEFAULT_CAL, RANGE };

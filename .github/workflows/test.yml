@@ -157,6 +157,7 @@ jobs:
       - run: node apps/robertn_waze_cluster/tools/test_green_light.js
       - run: node apps/robertn_waze_cluster/tools/test_panel.js
       - run: node apps/robertn_waze_cluster/tools/test_turnview.js
+      - run: node apps/robertn_waze_cluster/tools/test_camreq.js
       - run: node apps/robertn_drive_recorder/tools/stage.js && git diff --exit-code -- apps/robertn_drive_recorder
 
   waze-on-cluster-x86:
