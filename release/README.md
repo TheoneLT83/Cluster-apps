@@ -10,9 +10,10 @@ reads (its `docs/PUBLISHING.md`, "2. Catalog"): each tool with a
 node release/release.js list                          # versions and publish state
 node release/release.js build [<id>...]               # artifacts and catalog.json into release/out/
 node release/release.js check [<id>...]               # build twice, compare byte for byte
-node release/release.js bump <id> <x.y.z>             # set a component's version
-node release/release.js publish [<id>...] [--dry-run] # (GitHub Actions) new versions, then the catalog
-MGU_PUBLISH=dir:<folder> node release/release.js publish   # a local catalog (emulator, USB stick)
+node release/release.js versions <base>               # a pull request's version and CHANGELOG checks
+node release/release.js stamp [<id>...] [--dry-run]   # next versions into the tree, the release commit
+node release/release.js publish [<id>...|--stamped] [--dry-run]  # (GitHub Actions) new versions, then the catalog
+MGU_PUBLISH=dir:<folder> node release/release.js publish   # a local catalog (a folder, a USB stick)
 node release/test/release_test.js
 ```
 
@@ -47,17 +48,8 @@ refused.
 `publish` lists them on every entry it carries over too, so changed texts
 need no new version.
 
-| Entry | Fields |
-|---|---|
-| `cluster-render` (tool) | `requires: {"mgu-deploy": "0.4.0"}`, `uninstallable`, `mguHmi: ["ID7"]` (`native/cluster-render/component.json`) |
-| `waze-on-cluster` (tool) | `requires: {"mgu-deploy": "0.7.11", "cluster-render": …}`, `uninstallable`, `mguHmi: ["ID7"]` (`native/waze-on-cluster/component.json`) |
-| `robertn_waze_cluster` (app) | `requires: {"waze-on-cluster": …, "mgu-render": …, "mgu-inputgate": …}`, `uninstallable`, `mguHmi: ["ID7"]`, `icon`, `iconSha256` (`apps/robertn_waze_cluster/release.json`) |
-
-An app's release.json `"icon"` (a PNG of at most 128 KiB in its folder) is the
-icon the Store shows before the app is installed: the catalog lists it as the
-file at the published commit on `raw.githubusercontent.com` (in a folder
-target, a copy beside the catalog) with its sha256 (`iconSha256`). `publish`
-lists it on every entry it carries over too, so a new icon needs no new version.
+An entry's `requires`, `uninstallable`, `mguHmi` and `build` come from the
+tool's `component.json` or the app's `release.json`.
 
 The catalog is not signed: the Store fetches it over HTTPS and checks each
 artifact's size and sha256 against it.
