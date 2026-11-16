@@ -256,7 +256,7 @@ function appendPairs(dir, line) {
         var st = null, uid = process.getuid();
         try { st = fs.lstatSync(dir); } catch (e) { fs.mkdirSync(dir, 0o755); st = fs.lstatSync(dir); }
         if (!st.isDirectory() || st.uid !== uid) return false;
-        if (st.mode & 0o022) fs.chmodSync(dir, 0o755);   /* 0.7.84's 1777 folder */
+        if ((st.mode & 0o7777) !== 0o755) fs.chmodSync(dir, 0o755);   /* 0755 whatever the umask (0.7.84's 1777 folder too) */
         var c = fs.constants;
         fd = fs.openSync(dir + '/pairs.csv', c.O_WRONLY | c.O_APPEND | c.O_CREAT | c.O_NOFOLLOW, 0o644);
         var size = fs.fstatSync(fd).size;
