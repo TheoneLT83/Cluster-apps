@@ -96,7 +96,7 @@ void main() {
 
 /* Near the turn: SIGN_N chevrons side by side pointing to the turn's side (u_side -1 left, 1 right), as on a curve
  * sign, lit one after another toward the turn (u_time, the renderer's clock: nothing sent per frame); u_alpha fades
- * them after the turn. Deep blue at the foot to cyan-white at the top, see-through as the road arrows. */
+ * them after the turn; u_scale sizes them (track.js distance: small at 100 m, whole near the turn). Deep blue at the foot to cyan-white at the top, see-through as the road arrows. */
 const SIGN_N = 5;
 const SIGN_FS = `#version 100
 #ifdef GL_FRAGMENT_PRECISION_HIGH
@@ -107,12 +107,16 @@ precision mediump float;
 uniform vec2 u_size;
 uniform float u_side;
 uniform float u_alpha;
+uniform float u_scale;
 uniform float u_time;
 varying vec2 v_uv;
 void main() {
+    // u_scale of the strip, about its centre: small far from the turn, the whole strip at it
+    vec2 uv = (v_uv - 0.5) / max(u_scale, 0.05) + 0.5;
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) { gl_FragColor = vec4(0.0); return; }
     float n = ${SIGN_N.toFixed(1)};
-    float cx = v_uv.x * n, i = floor(cx);
-    float x = fract(cx), y = (v_uv.y - 0.5) * 2.0;
+    float cx = uv.x * n, i = floor(cx);
+    float x = fract(cx), y = (uv.y - 0.5) * 2.0;
     if (u_side > 0.0) x = 1.0 - x;                    // pointing right: the cell mirrored
     float ay = abs(y);
     // an arm from the tip (0.12, 0) to (0.6, +-0.86), 0.34 of the cell thick (measured across x)
@@ -123,7 +127,7 @@ void main() {
     float k = u_side > 0.0 ? i : n - 1.0 - i;
     float f = fract(u_time * 1.1 - k / n);
     float lit = 0.55 + 0.45 * smoothstep(0.0, 0.12, f) * (1.0 - smoothstep(0.25, 0.7, f));
-    vec3 c = mix(vec3(0.0, 0.35, 1.0), vec3(0.7, 0.95, 1.0), smoothstep(0.1, 1.0, 1.0 - v_uv.y) * lit);
+    vec3 c = mix(vec3(0.0, 0.35, 1.0), vec3(0.7, 0.95, 1.0), smoothstep(0.1, 1.0, 1.0 - uv.y) * lit);
     gl_FragColor = vec4(c, inside * (0.6 + 0.4 * lit) * u_alpha);
 }`;
 

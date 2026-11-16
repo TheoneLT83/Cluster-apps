@@ -8,7 +8,7 @@
  * (camcluster's last `rect` line):
  *   chevrons  mesh  z 10   the road arrows (shaders.js) while the camera decodes (0.5.0: always the whole frame)
  *   sign      effect z 12  near the turn (<= 100 m, and just after it): chevrons pointing to its side, lit one after
- *                          another, instead of the road arrows (a turn under 20 degrees keeps the road arrows)
+ *                          another, growing as the turn comes, instead of the road arrows (a turn under 20 degrees keeps the road arrows)
  *   marks     mesh  z 15   5 / 10 / 20 m lines while calibrating, same camera
  *   card      image z 20   icon + distance, top centre (card.js); none on `map` (iDrive 7: the HUD has BMW's own)
  *   shade     effect z 30  a dark fill with soft edges, no upload
@@ -40,6 +40,13 @@ const CARD_OFF = { map: true };
 // near the turn (track.js NEAR_M) and just after it: the sign chevrons instead of the road arrows, for a turn of at
 // least SIGN_MIN_DEG; their strip SIGN.w x SIGN.h of the rect, its top SIGN.y down it (under iDrive 7's badge)
 const SIGN = { w: 0.62, h: 0.24, y: 0.22 }, SIGN_MIN_DEG = 20;
+// their size by the metres to the turn: SIGN_SMALL of the strip at SIGN_FAR_M, the whole strip from SIGN_FULL_M, in
+// SIGN_STEP steps (each size sent is a scene change)
+const SIGN_FAR_M = 100, SIGN_FULL_M = 15, SIGN_SMALL = 0.45, SIGN_STEP = 0.05;
+function signScale(m) {
+    const f = Math.max(0, Math.min(1, (SIGN_FAR_M - m) / (SIGN_FAR_M - SIGN_FULL_M)));
+    return Math.round((SIGN_SMALL + (1 - SIGN_SMALL) * f) / SIGN_STEP) * SIGN_STEP;
+}
 const NEAR = { near: true, passed: true };
 
 function camOf(cal) { return { cx: cal.x, cy: cal.h, cz: 0, crx: -cal.pitch, cry: -cal.yaw, crz: 0, fov: cal.fov }; }
@@ -176,7 +183,10 @@ function createScene(cr, o) {
                         keys: `0:${view.travel.toFixed(3)} ${ANIM_MS}:${(view.travel + view.speed * ANIM_MS / 1000).toFixed(3)}` });
                 }
             }
-            if (want.sign) { signUniform('u_side', view.side); signUniform('u_alpha', view.alpha); }
+            if (want.sign) {
+                signUniform('u_side', view.side); signUniform('u_alpha', view.alpha);
+                signUniform('u_scale', st === 'passed' ? 1 : signScale(view.l0 - view.travel));
+            }
             Object.keys(want).forEach((k) => setVis(k, want[k]));
         },
         drop() {
@@ -196,4 +206,4 @@ function createScene(cr, o) {
     return sc;
 }
 
-module.exports = { createScene, camOf, K1, NOCAM_MS, CARD_MS, CARD_SLOW_MS };
+module.exports = { createScene, signScale, camOf, K1, NOCAM_MS, CARD_MS, CARD_SLOW_MS };

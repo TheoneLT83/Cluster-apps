@@ -171,6 +171,9 @@ const quiet = { info() {}, warn() {} };
     sc.show(view('near', 10, 1), 200);
     L = sc.status().layers;
     ok(L.chevrons && !L.sign, 'a slight bend (10 deg): the road arrows');
+    const { signScale } = require('../../../native/turn-view/scene.js');
+    ok(signScale(100) < 0.5 && signScale(50) > signScale(100) && signScale(15) === 1 && signScale(0) === 1,
+        'the chevrons small at 100 m, growing, whole from 15 m (' + [100, 50, 15].map(signScale).join(', ') + ')');
     tv.close();
     t.server.close();
     fs.rmSync(dir, { recursive: true, force: true });

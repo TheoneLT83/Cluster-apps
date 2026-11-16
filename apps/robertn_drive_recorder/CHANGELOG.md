@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+- **Installs in one go** (Drive Recorder player 1.2.8): the player, installed first, stopped while Drive recorder
+  was not there yet, so the Store took the install back ("not healthy"). It now waits for the app and starts with it.
+
 ## 1.0.1
 
 - **The player answers it** (Drive Recorder player 1.2.7): the player answered only IterioDev's own app, so Drive
