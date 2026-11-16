@@ -152,28 +152,20 @@ const quiet = { info() {}, warn() {} };
         'the tool\'s gate: each choice, never out of Map view or off');
     ok(mergeSettings(null, null).show === 'signal' && mergeSettings({ show: 'near' }, { show: 'bad' }).show === 'near' && mergeSettings(null, { show: 'always' }).show === 'always',
         'the choice: signal by default, kept, only the three');
-    // the scene: near a turn the sign chevrons instead of the road arrows, a slight bend keeps the road arrows
+    // the scene (IterioDev's): the road arrows and the turn card on the map, drawn up to about 50 m ahead
     const { createScene } = require('../../../native/turn-view/scene.js');
+    const SH = require('../../../native/turn-view/shaders.js');
+    const sets = {};
     let n = 0;
-    const sets = {}, unis = [];
-    const cr = new Proxy({}, { get: (o, k) => (k === 'set' ? (ref, v) => { if (v && 'visible' in v) sets[ref] = v.visible; }
-        : k === 'uniform' ? (ref, name, v) => unis.push([ref, name, v[0]]) : () => ++n) });
+    const cr = new Proxy({}, { get: (o, k) => (k === 'set' ? (ref, v) => { if (v && 'visible' in v) sets[ref] = v.visible; } : () => ++n) });
     const sc = createScene(cr, { target: 'map' });
     sc.rect({ x: 286, y: 72, w: 504, h: 368 });
     sc.camera('decoding');
-    const view = (state, angle, side) => ({ state, video: true, l0: 50, travel: 0, speed: 5, angle, side, exit: 0, icon: '', text: '', alpha: 1, dim: false });
-    sc.show(view('route', 90, -1), 0);
-    let L = sc.status().layers;
-    ok(L.chevrons && !L.sign, 'far from the turn: the road arrows');
-    sc.show(view('near', 90, -1), 100);
-    L = sc.status().layers;
-    ok(!L.chevrons && L.sign && unis.some((u) => u[1] === 'u_side' && u[2] === -1), 'near a left turn: the sign chevrons pointing left, no road arrows');
-    sc.show(view('near', 10, 1), 200);
-    L = sc.status().layers;
-    ok(L.chevrons && !L.sign, 'a slight bend (10 deg): the road arrows');
-    const { signScale } = require('../../../native/turn-view/scene.js');
-    ok(signScale(100) < 0.5 && signScale(50) > signScale(100) && signScale(15) === 1 && signScale(0) === 1,
-        'the chevrons small at 100 m, growing, whole from 15 m (' + [100, 50, 15].map(signScale).join(', ') + ')');
+    sc.show({ state: 'near', video: true, l0: 40, travel: 0, speed: 5, angle: 90, side: -1, exit: 0, icon: 'left', text: '40 m', alpha: 1, dim: false }, 5000);
+    const L = sc.status().layers;
+    ok(L.chevrons && L.card, 'near a turn on the map: the road arrows and the turn card');
+    const bent = SH.pathPoint(SH.PITCH * 12, 0, { travel: 0, l0: 40, angle: 90, side: -1 });
+    ok(bent.a > 0 && bent.x < -1, 'a turn 40 m ahead: the arrows seen bending into it (' + bent.x.toFixed(1) + ' m aside)');
     tv.close();
     t.server.close();
     fs.rmSync(dir, { recursive: true, force: true });

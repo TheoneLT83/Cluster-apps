@@ -7,10 +7,8 @@
  * camera draws nothing there, so the stock map (or Waze on cluster's) comes back. Class overlay, over the camera's rect
  * (camcluster's last `rect` line):
  *   chevrons  mesh  z 10   the road arrows (shaders.js) while the camera decodes (0.5.0: always the whole frame)
- *   sign      effect z 12  near the turn (<= 100 m, and just after it): chevrons pointing to its side, lit one after
- *                          another, growing as the turn comes, instead of the road arrows (a turn under 20 degrees keeps the road arrows)
  *   marks     mesh  z 15   5 / 10 / 20 m lines while calibrating, same camera
- *   card      image z 20   icon + distance, top centre (card.js); none on `map` (iDrive 7: the HUD has BMW's own)
+ *   card      image z 20   icon + distance, top centre (card.js; on `map` 0.8x, below the cluster's model badge)
  *   shade     effect z 30  a dark fill with soft edges, no upload
  *   notice    image z 31   "No front camera" (the car has none: before everything, alone) / "Camera busy" / "No camera",
  *                          centred; "Turn View is off" (switched off, iDrive 8: camcluster keeps the widget in the
@@ -33,21 +31,8 @@ const DRAWN = { route: true, near: true, passed: true, recalc: true };
 // targets the cluster shows by itself while a layer wants them (iDrive 7's central map area): nothing drawn = given back
 const SELF_SHOWN = { map: true };
 // iDrive 7's map: the cluster draws its model badge over the top 64 rows and its readouts over the sides (waze-on-cluster
-// PATCH.md "Safe area" 504x368@286,72): the card small, right under the badge
-const CARD_MAP = { k: 0.55, y: 66 };
-// no turn card on iDrive 7's map: BMW's own arrow and distance are on the HUD (Waze's too, waze-on-cluster's turns)
-const CARD_OFF = { map: true };
-// near the turn (track.js NEAR_M) and just after it: the sign chevrons instead of the road arrows, for a turn of at
-// least SIGN_MIN_DEG; their strip SIGN.w x SIGN.h of the rect, its top SIGN.y down it (under iDrive 7's badge)
-const SIGN = { w: 0.62, h: 0.24, y: 0.22 }, SIGN_MIN_DEG = 20;
-// their size by the metres to the turn: SIGN_SMALL of the strip at SIGN_FAR_M, the whole strip from SIGN_FULL_M, in
-// SIGN_STEP steps (each size sent is a scene change)
-const SIGN_FAR_M = 100, SIGN_FULL_M = 15, SIGN_SMALL = 0.45, SIGN_STEP = 0.05;
-function signScale(m) {
-    const f = Math.max(0, Math.min(1, (SIGN_FAR_M - m) / (SIGN_FAR_M - SIGN_FULL_M)));
-    return Math.round((SIGN_SMALL + (1 - SIGN_SMALL) * f) / SIGN_STEP) * SIGN_STEP;
-}
-const NEAR = { near: true, passed: true };
+// PATCH.md "Safe area" 504x368@286,72): the card smaller, at the clear middle's top
+const CARD_MAP = { k: 0.8, y: 80 };
 
 function camOf(cal) { return { cx: cal.x, cy: cal.h, cz: 0, crx: -cal.pitch, cry: -cal.yaw, crz: 0, fov: cal.fov }; }
 
@@ -58,7 +43,7 @@ function createScene(cr, o) {
     let refs = null, rect = null;
     let camera = 'off', cameraSince = now(), camreq = 'idle', capKb = 5500, noFront = false, disabled = false;
     let cal = { h: 0.5, pitch: 12, fov: 60, yaw: 0, x: 0 };
-    let vis = {}, uni = {}, signUni = {}, travelSent = false, animAt = -Infinity, cardKey = '', cardWant = '', cardAt = -Infinity, noticeKey = null, lastNotice = null;
+    let vis = {}, uni = {}, travelSent = false, animAt = -Infinity, cardKey = '', cardWant = '', cardAt = -Infinity, noticeKey = null, lastNotice = null;
 
     const place = (w, h, at) => (at === 'top'
         ? { x: Math.round(rect.x + (rect.w - w) / 2), y: rect.y + 16, w, h }
@@ -68,10 +53,6 @@ function createScene(cr, o) {
         const w = Math.round(C.CARD.w * CARD_MAP.k), h = Math.round(C.CARD.h * CARD_MAP.k);
         return { x: Math.round(rect.x + (rect.w - w) / 2), y: rect.y + CARD_MAP.y, w, h };
     }
-    function signRect() {
-        const w = Math.round(rect.w * SIGN.w), h = Math.round(Math.min(rect.h * SIGN.h, w / 3.4));
-        return { x: Math.round(rect.x + (rect.w - w) / 2), y: Math.round(rect.y + rect.h * SIGN.y), w, h };
-    }
     function make() {
         const base = { target, klass: KLASS, visible: false, contend: SELF_SHOWN[target] ? 1 : 0 };
         const mesh = (z) => cr.mesh(Object.assign({}, base, rect, { z, near: 0.5, far: 150 }, camOf(cal)));
@@ -80,19 +61,16 @@ function createScene(cr, o) {
         cr.geometry(refs.chevrons, 1, SH.chevronGeometry());
         cr.part(refs.marks, 1, { vs: SH.MARKS_VS, fs: SH.MARKS_FS, depth: false, cull: 'none', blend: 'alpha' });
         cr.geometry(refs.marks, 1, SH.marksGeometry());
-        refs.sign = cr.effect(Object.assign({}, base, signRect(), { z: 12, fs: SH.SIGN_FS, time: true }));
-        const sr = signRect();
-        cr.uniform(refs.sign, 'u_size', [sr.w, sr.h]);
         refs.card = cr.image(Object.assign({}, base, cardRect(), { z: 20, iw: C.CARD.w, ih: C.CARD.h }));
         refs.shade = cr.effect(Object.assign({}, base, rect, { z: 30, fs: SH.SHADE_FS }));
         refs.notice = cr.image(Object.assign({}, base, place(C.NOTICE.w, C.NOTICE.h, 'mid'), { z: 31, iw: C.NOTICE.w, ih: C.NOTICE.h }));
         cr.uniform(refs.shade, 'u_size', [rect.w, rect.h]);
-        vis = {}; uni = {}; signUni = {}; travelSent = false; animAt = -Infinity; cardKey = ''; cardAt = -Infinity; noticeKey = null;
+        vis = {}; uni = {}; travelSent = false; animAt = -Infinity; cardKey = ''; cardAt = -Infinity; noticeKey = null;
         log(`scene: layers made on ${target} at ${rect.w}x${rect.h}@${rect.x},${rect.y}`);
     }
     function unmake() {
         if (!refs) return;
-        ['chevrons', 'marks', 'sign', 'card', 'shade', 'notice'].forEach((k) => cr.drop(refs[k]));
+        ['chevrons', 'marks', 'card', 'shade', 'notice'].forEach((k) => cr.drop(refs[k]));
         refs = null;
         log(`scene: layers dropped from ${target}`);
     }
@@ -105,11 +83,6 @@ function createScene(cr, o) {
         if (uni[name] !== undefined && Math.abs(uni[name] - v) <= 1e-4) return;
         uni[name] = v;
         cr.uniform(refs.chevrons, name, [v], { part: 1 });
-    }
-    function signUniform(name, v) {
-        if (signUni[name] !== undefined && Math.abs(signUni[name] - v) <= 1e-3) return;
-        signUni[name] = v;
-        cr.uniform(refs.sign, name, [v]);
     }
     function noticeOf(view, t) {
         if (noFront) return 'nofront';                  // (user 2026-11-12: such a car gets that and nothing else)
@@ -128,8 +101,6 @@ function createScene(cr, o) {
             if (!moved) return;
             ['chevrons', 'marks', 'shade'].forEach((n) => cr.set(refs[n], rect));
             cr.set(refs.card, cardRect());
-            cr.set(refs.sign, signRect());
-            cr.uniform(refs.sign, 'u_size', [signRect().w, signRect().h]);
             cr.set(refs.notice, place(C.NOTICE.w, C.NOTICE.h, 'mid'));
             cr.uniform(refs.shade, 'u_size', [rect.w, rect.h]);
         },
@@ -152,10 +123,8 @@ function createScene(cr, o) {
             const gone = self && noFront;                   // iDrive 7, no front camera: the map area given back
             const shade = !gone && (offNote || (!off && (noFront || (view.video && !decoding))));
             const n = offNote ? 'off' : shade ? noticeOf(view, t) : null;
-            const road = !off && !gone && drawn && decoding && !shade;
-            const sign = road && !!NEAR[st] && Math.abs(view.angle) >= SIGN_MIN_DEG;
-            const want = { chevrons: road && !sign, sign, marks: !off && !gone && st === 'calib' && decoding && !shade,
-                card: !off && !gone && drawn && !shade && !CARD_OFF[target], shade, notice: !!n };
+            const want = { chevrons: !off && !gone && drawn && decoding && !shade, marks: !off && !gone && st === 'calib' && decoding && !shade,
+                card: !off && !gone && drawn && !shade, shade, notice: !!n };
             lastNotice = n;
             // pixels before they show: a layer without content would be stalled
             if (n && n !== noticeKey) { const p = C.notice(n); cr.pixels(refs.notice, null, p.rgba); noticeKey = n; }
@@ -183,10 +152,6 @@ function createScene(cr, o) {
                         keys: `0:${view.travel.toFixed(3)} ${ANIM_MS}:${(view.travel + view.speed * ANIM_MS / 1000).toFixed(3)}` });
                 }
             }
-            if (want.sign) {
-                signUniform('u_side', view.side); signUniform('u_alpha', view.alpha);
-                signUniform('u_scale', st === 'passed' ? 1 : signScale(view.l0 - view.travel));
-            }
             Object.keys(want).forEach((k) => setVis(k, want[k]));
         },
         drop() {
@@ -200,10 +165,10 @@ function createScene(cr, o) {
             return true;
         },
         restore() { o.dropped = false; },
-        status: () => ({ layers: Object.assign({ chevrons: false, sign: false, marks: false, card: false, shade: false, notice: false }, vis),
+        status: () => ({ layers: Object.assign({ chevrons: false, marks: false, card: false, shade: false, notice: false }, vis),
             notice: lastNotice, made: !!refs }),
     };
     return sc;
 }
 
-module.exports = { createScene, signScale, camOf, K1, NOCAM_MS, CARD_MS, CARD_SLOW_MS };
+module.exports = { createScene, camOf, K1, NOCAM_MS, CARD_MS, CARD_SLOW_MS };
