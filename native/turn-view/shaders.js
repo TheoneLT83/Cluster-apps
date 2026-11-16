@@ -94,6 +94,39 @@ void main() {
     gl_FragColor = vec4(0.0, 0.0, 0.0, 0.78 * (1.0 - smoothstep(-24.0, 0.0, d)));
 }`;
 
+/* Near the turn: SIGN_N chevrons side by side pointing to the turn's side (u_side -1 left, 1 right), as on a curve
+ * sign, lit one after another toward the turn (u_time, the renderer's clock: nothing sent per frame); u_alpha fades
+ * them after the turn. Deep blue at the foot to cyan-white at the top, see-through as the road arrows. */
+const SIGN_N = 5;
+const SIGN_FS = `#version 100
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 u_size;
+uniform float u_side;
+uniform float u_alpha;
+uniform float u_time;
+varying vec2 v_uv;
+void main() {
+    float n = ${SIGN_N.toFixed(1)};
+    float cx = v_uv.x * n, i = floor(cx);
+    float x = fract(cx), y = (v_uv.y - 0.5) * 2.0;
+    if (u_side > 0.0) x = 1.0 - x;                    // pointing right: the cell mirrored
+    float ay = abs(y);
+    // an arm from the tip (0.12, 0) to (0.6, +-0.86), 0.34 of the cell thick (measured across x)
+    float edge = 0.12 + 0.48 * ay / 0.86;
+    float d = abs(x - edge - 0.17) - 0.17;
+    float inside = (1.0 - smoothstep(-0.02, 0.02, d)) * (1.0 - smoothstep(0.84, 0.9, ay));
+    // the order toward the turn: the far side lights first
+    float k = u_side > 0.0 ? i : n - 1.0 - i;
+    float f = fract(u_time * 1.1 - k / n);
+    float lit = 0.55 + 0.45 * smoothstep(0.0, 0.12, f) * (1.0 - smoothstep(0.25, 0.7, f));
+    vec3 c = mix(vec3(0.0, 0.35, 1.0), vec3(0.7, 0.95, 1.0), smoothstep(0.1, 1.0, 1.0 - v_uv.y) * lit);
+    gl_FragColor = vec4(c, inside * (0.6 + 0.4 * lit) * u_alpha);
+}`;
+
 /* COUNT chevrons one every PITCH m from s 0 (seen from AHEAD m on, faded out from 25 m): two arms each from the tip (0, s0 + DEPTH) to the end (±HALF_W, s0), THICK
  * wide, 8 x 2 cells per arm (a lens term can bend them); positions [w, height, s], texcoords (across, along).
  * Raised: each arm leans back from the road at TILT (a low fence of arrows), because a flat one seen from a bumper
@@ -171,4 +204,4 @@ function project(p, cal, aspect) {
     return { x: (f / aspect) * x / -z, y: f * y / -z };
 }
 
-module.exports = { CHEVRON_VS, CHEVRON_FS, MARKS_VS, MARKS_FS, SHADE_FS, chevronGeometry, marksGeometry, pathPoint, project, R, PITCH, AHEAD, COUNT };
+module.exports = { CHEVRON_VS, CHEVRON_FS, SIGN_FS, SIGN_N, MARKS_VS, MARKS_FS, SHADE_FS, chevronGeometry, marksGeometry, pathPoint, project, R, PITCH, AHEAD, COUNT };

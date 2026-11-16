@@ -4,6 +4,8 @@
 
 - **Turn View: when it shows** (turn-view 0.7.5), on its page: Signal or turn (a turn signal on or the turn
   near), Turn only, or Always, each in Map view.
+- **Turn View near a turn** (turn-view 0.7.5): from 100 m a row of chevrons pointing to the turn's side, lit one
+  after another toward it, instead of the arrows on the road; a slight bend under 20° keeps the road arrows.
 - **Turn View comes up faster:** the front camera is asked of the camera ECU as soon as the cluster wants it, not
   5 s later, and checked every 0.5 s.
 - **The HUD map's brightness sent once when the renderer comes back**, not again with each of its first statuses.
