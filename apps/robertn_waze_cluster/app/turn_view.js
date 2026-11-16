@@ -12,7 +12,9 @@
  *   The tool starts off at every start of the car; the driver's last choice is kept here ('tvOn') and asked of it again
  *   once it answers, so Turn View left on comes back on. It draws the camera into the cluster's central map area (Map view).
  *
- *   Waze: while Turn View is on, the map leaves the cluster - to the HUD on a car with one (shown on HUD only), off
+ *   The tool shows the camera only while a turn signal is on (tv.signal) or the turn is near, and Map view is selected
+ *   (its status.gate 'open'); otherwise the cluster keeps the Waze map.
+ *   Waze: while Turn View shows, the map leaves the cluster - to the HUD on a car with one (shown on HUD only), off
  *   without (shown nowhere); the place it had is kept (store) and given back when Turn View goes off, the tool goes
  *   away or the car starts again with Turn View off.
  *
@@ -26,9 +28,6 @@ const net = require('net');
 
 const CTL = process.env.TURNVIEW_CTL || '/run/turn-view/ctl.sock';
 const RETRY_MS = 2000;
-/* Switched on: the Waze map leaves the cluster first, and the camera is asked for once the cluster's video is free
- * (waze-on-cluster says the cluster map is off), at most FREE_MS later. */
-const FREE_MS = 3000, FREE_POLL_MS = 100;
 /* The calibration: each value's range, step and decimals (the Turn View app's sliders), the tool's default. */
 const CAL = {
     h: { label: 'Camera height', min: 0.3, max: 1.2, step: 0.05, decimals: 2, unit: ' m' },
@@ -85,6 +84,7 @@ class TurnView extends EventEmitter {
             this.log.info('turn view: connected to the tool');
             this._camreq();
             this._send({ op: 'get' });
+            if (this.signalOn) this._send({ op: 'signal', on: true });
             if (this.calibrating) { this._send({ op: 'calib', on: true }); if (this.draft) this._send({ op: 'preview', cal: this.draft }); }
         });
         s.on('data', (d) => {
@@ -112,7 +112,7 @@ class TurnView extends EventEmitter {
         const on = !!(st.settings && st.settings.enabled);
         // the tool's first state after a start (it starts off): the driver's last choice again
         if (first && !on && this.store.get('tvOn') === true) { this.log.info('turn view: on again, as left'); this.enable(true); }
-        if (on) this._mapAway(); else this._mapBack();
+        if (this.shows()) this._mapAway(); else this._mapBack();
         if (this.calibrating && !this.draft && st.settings && st.settings.cal) this.draft = Object.assign({}, st.settings.cal);
         this.emit('change');
     }
@@ -137,28 +137,23 @@ class TurnView extends EventEmitter {
     }
     /* waze-on-cluster's state changed (it answered, or the driver moved the map): the rule again. */
     mapChanged() {
-        const on = !!(this.state && this.state.settings && this.state.settings.enabled);
-        if (on) this._mapAway(); else this._mapBack();
+        if (this.shows()) this._mapAway(); else this._mapBack();
     }
+    /* On and showing now (a tool without the gate: whenever on). */
+    shows() {
+        const st = this.state;
+        return !!(st && st.settings && st.settings.enabled) && !(st.status && st.status.gate === 'closed');
+    }
+    /* A turn signal on or off, for the tool's gate. */
+    signal(on) { on = !!on; if (on !== this.signalOn) { this.signalOn = on; this._send({ op: 'signal', on }); } }
 
     enabled() { return !!(this.state && this.state.settings && this.state.settings.enabled); }
     enable(on) {
         on = !!on;
         this.store.set('tvOn', on);
-        clearTimeout(this._freeTimer);
         const send = () => this._send({ op: 'set', settings: { enabled: on } });
-        if (!on) return send();
-        // the map off the cluster before the camera asks for its video, so the camera's first ask finds it free
-        const was = this.ctl.shownOn();
-        this._mapAway();
-        if (was !== 'cluster' && was !== 'both') return send();
-        const t0 = Date.now();
-        const wait = () => {
-            if (this.ctl.clusterOn() === false || Date.now() - t0 >= FREE_MS) return send();
-            this._freeTimer = setTimeout(wait, FREE_POLL_MS);
-            return null;
-        };
-        return wait();
+        // the map leaves the cluster only while the tool shows (its gate open: _onState)
+        return send();
     }
 
     calib(on) {

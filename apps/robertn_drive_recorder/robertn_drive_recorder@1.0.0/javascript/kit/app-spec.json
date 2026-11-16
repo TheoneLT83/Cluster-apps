@@ -1,0 +1,19 @@
+{
+ "id": "robertn_drive_recorder",
+ "title": "Drive recorder",
+ "version": "1.0.0",
+ "screens": [
+  {
+   "name": "MAIN",
+   "kind": "canvas",
+   "title": "Drive recorder",
+   "buttons": []
+  }
+ ],
+ "settings": [],
+ "config": null,
+ "startWidget": null,
+ "stateIds": {
+  "MAIN": 1
+ }
+}

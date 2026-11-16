@@ -1,0 +1,30 @@
+{
+  "id": "robertn_drive_recorder",
+  "title": "Drive recorder",
+  "description": "Keeps the car's cameras recording and saves a clip when you ask (the seconds before and after); watch, lock, delete and copy clips to a USB stick while parked. Recording and playback by IterioDev's Drive Recorder player",
+  "version": "1.0.0",
+  "vendor": "custom",
+  "loggingId": "OADR",
+  "iconGlyph": "camera",
+  "autostart": true,
+  "signals": {
+    "de.bmw.infotainment.vehicle.Vehicle2": {
+      "statusCarSpeed2": "rs"
+    },
+    "de.bmw.dass.svsrecorder.svsrecordercontrol.SvsRecorderControlCoordinator": "*",
+    "de.bmw.dass.svsrecorder.svsrecorderdata.SvsRecorderData": "*",
+    "de.bmw.infotainment.telematic.provisioning.Provisioning": "*",
+    "de.bmw.infotainment.video.cameraproxy.ICAM2Proxy": "*",
+    "de.bmw.infotainment.video.cameraproxy.CameraProxy": "*",
+    "de.bmw.dass.XView3D": "*"
+  },
+  "screens": [
+    {
+      "name": "MAIN",
+      "kind": "canvas",
+      "title": "Drive recorder",
+      "buttons": []
+    }
+  ],
+  "settings": []
+}

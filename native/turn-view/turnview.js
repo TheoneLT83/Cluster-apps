@@ -145,9 +145,11 @@ function main() {
     if (GEN === 7) settings.enabled = false;
     log(`start: enabled ${settings.enabled}${GEN === 7 ? ' (iDrive 7: off at every start)' : ''}, cal ${JSON.stringify(settings.cal)}${noFront ? ', no front camera (saved)' : ''}`);
 
-    const status = { camera: 'off', rect: null, route: 'none', provider: null, maneuver: null, cr: 'connecting', backend: null,
+    const status = { gate: 'closed', camera: 'off', rect: null, route: 'none', provider: null, maneuver: null, cr: 'connecting', backend: null,
         nav: 'waiting', state: 'none', camreq: 'idle', noFront, widget: WIDGETS.widget };
     let crTarget = null;                                // the target, from cluster-render's hello (null: none yet)
+    // what lets Turn View show (the tick): a turn signal on (the app's 'signal'), Map view selected (null: not known)
+    const gate = { signal: false, mapView: null, open: false };
     function setNoFront(on) {
         if (on === noFront) return;
         noFront = on; status.noFront = on; scene.noFront(on);
@@ -179,6 +181,13 @@ function main() {
         push();
     });
     cr.on('disconnected', () => { status.cr = 'not running'; push(); });
+    // Map view selected: the cluster's map area as others hold it while Turn View shows nothing - someone else's
+    // content in front of it (another view of the central display) is not; the stock map or a map shown is
+    cr.on('target', (name, state, holder) => {
+        if (name !== 'map' || gate.open) return;
+        const sel = /^(parked|waiting)$/.test(state) && holder === 'foreign' ? false : state === 'shown' || holder === 'stock' ? true : gate.mapView;
+        if (sel !== gate.mapView) { gate.mapView = sel; log(`map view ${sel ? 'selected' : 'not selected'} (map target ${state}${holder ? ', ' + holder : ''})`); }
+    });
     cr.on('budget', (cap) => scene.budget(cap));
     cr.on('refused', (op, ref, reason) => log(`cluster-render refused ${op} (ref ${ref}): ${reason}`));
     cr.on('layer', (ref, state, reason) => { if (/error/.test(state)) log(`layer ${ref}: ${state} ${reason || ''}`); });
@@ -347,8 +356,13 @@ function main() {
     });
     let lastState = '';
     setInterval(() => {
-        const t = mono(), v = track.tick(t);
-        if (v.state !== lastState) { log(`state ${lastState || '-'} -> ${v.state}`); lastState = v.state; status.state = v.state; push(); }
+        const t = mono(), tv = track.tick(t);
+        // shown only while a turn signal is on or the turn is near (and just passed), and Map view is selected; else the
+        // layers draw nothing and the cluster's map area is given back (calibrating: always)
+        const want = tv.state === 'calib' || (tv.state !== 'off' && gate.mapView !== false && (gate.signal || tv.state === 'near' || tv.state === 'passed'));
+        if (want !== gate.open) { gate.open = want; status.gate = want ? 'open' : 'closed'; log(`gate ${status.gate}`); push(); }
+        const v = want ? tv : Object.assign({}, tv, { state: 'none', video: false, alpha: 0 });
+        if (tv.state !== lastState) { log(`state ${lastState || '-'} -> ${tv.state}`); lastState = tv.state; status.state = tv.state; push(); }
         if (status.nav === 'waiting' && t - subscribedAt > NAV_SILENT_MS && !lastNavAt) { status.nav = 'no navigation data'; push(); }
         if (status.cr === 'unsupported') return;              // not our cluster: nothing drawn
         scene.show(v, t);
@@ -395,6 +409,8 @@ function main() {
         } else if (q.op === 'reset') {
             settings = mergeSettings(settings, { cal: DEFAULT_CAL });
             save(); applyCal(settings.cal); push();
+        } else if (q.op === 'signal') {
+            gate.signal = q.on === true;
         } else if (q.op === 'camreq' && typeof q.state === 'string') {
             status.camreq = q.state === 'nofront' ? 'refused' : q.state.slice(0, 20); scene.camreq(status.camreq);
             if (status.camreq === 'rearonly' && status.camera !== 'decoding') setNoFront(true);

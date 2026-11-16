@@ -6,6 +6,9 @@
   red and yellow, yellow, green); when it turns green after red, "GO" and BMW's gong (as alexp50's Green Light Alert
   plays it). Gone above 10 km/h. The light's colour is read however the car sends it (a number, a name or a
   { value } object), and any light the camera tracks counts.
+- **Turn View only when it helps** (turn-view 0.7.3): switched on, it shows the camera only while a turn signal is
+  on or the next turn is near (100 m, and just after it), and only with Map view selected on the cluster; the rest of
+  the time the cluster keeps the Waze map, which leaves for the HUD only while Turn View shows.
 - **Turn View's turn card smaller and higher** (turn-view 0.7.2): 0.55x, right under the cluster's top badge; the
   arrows bend toward the turn from 100 m.
 - robertnisipeanu/idrive-apps' Maps on cluster 0.6.9 and 0.6.10 (waze-on-cluster 0.10.4, cluster-render 0.6.5): the

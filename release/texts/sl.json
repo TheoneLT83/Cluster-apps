@@ -14,5 +14,13 @@
   "turn-view": {
     "title": "Turn View",
     "description": "By IterioDev, in Cluster functions: the front camera in the instrument cluster's central map area with navigation arrows on the road and a turn card (BMW navigation, CarPlay or Android Auto), the camera alone without a route. Switched on in Cluster functions (Turn View tab), off at every start of the car; set Instrument cluster > Central display area to Map view. While it is on, the Waze map leaves the cluster (to the HUD, or off without one). Drawn by Cluster renderer."
+  },
+  "robertn_drive_recorder": {
+    "title": "Drive recorder",
+    "description": "Keeps the car's cameras recording and saves a clip when you ask (the seconds before and after); watch, lock, delete and copy clips to a USB stick while parked. Recording and playback by IterioDev's Drive Recorder player, installed with it."
+  },
+  "iteriodev-drplay": {
+    "title": "Drive Recorder player",
+    "description": "By IterioDev: records the car's cameras and plays, locks, deletes and copies the clips for Drive recorder. Installed with it."
   }
 }

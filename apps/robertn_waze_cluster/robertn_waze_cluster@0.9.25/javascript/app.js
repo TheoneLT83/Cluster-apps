@@ -309,7 +309,8 @@ async function background(bg) {
     ctl.on('change', () => tv.mapChanged());
     logs.on('change', changed);
     profiles.on('change', changed);
-    turns.on('change', () => { toHud(); changed(); });
+    // Turn View shows while a turn signal is on (or the turn is near): the tool is told
+    turns.on('change', () => { toHud(); const st = turns.state(); if (typeof tv !== 'undefined' && tv) tv.signal(!!(st.left || st.right)); changed(); });
     settings.onChange(() => { hvWanted(); claims(); toHud(); toPanel(); dimNow(); changed(); });
     // boost, torque, the temperatures and the programme come without a sample of their own: the HUD looks again
     // often (only what changed is sent; the layers take up to 25 frames a second)

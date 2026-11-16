@@ -18,8 +18,10 @@ const ok = (c, m) => { assert(c, m); passed++; console.log('ok   ' + m); };
 
 /* The tool: answers get / set / preview / calib / reset as turnview.js does, pushing its state. */
 function tool() {
-    const t = { got: [], conns: [], settings: { enabled: false, cal: { h: 0.6, pitch: 3, fov: 60, yaw: 0, x: 0 } } };
-    t.push = () => t.conns.forEach((c) => c.write(JSON.stringify({ state: { settings: t.settings, status: { camera: t.settings.enabled ? 'decoding' : 'off', route: 'none', backend: 'id7' } } }) + '\n'));
+    const t = { got: [], conns: [], signal: false, near: false, settings: { enabled: false, cal: { h: 0.6, pitch: 3, fov: 60, yaw: 0, x: 0 } } };
+    // the gate as turnview.js has it: open while on and a turn signal is on or the turn is near
+    const gate = () => (t.settings.enabled && (t.signal || t.near) ? 'open' : 'closed');
+    t.push = () => t.conns.forEach((c) => c.write(JSON.stringify({ state: { settings: t.settings, status: { gate: gate(), camera: t.settings.enabled ? 'decoding' : 'off', route: 'none', backend: 'id7' } } }) + '\n'));
     t.server = net.createServer((c) => {
         t.conns.push(c);
         let buf = '';
@@ -29,6 +31,7 @@ function tool() {
                 const q = JSON.parse(buf.slice(0, n));
                 t.got.push(q);
                 if (q.op === 'set') t.settings = Object.assign({}, t.settings, q.settings);
+                if (q.op === 'signal') t.signal = q.on;
                 if (q.op === 'reset') t.settings = { enabled: t.settings.enabled, cal: { h: 0.6, pitch: 3, fov: 60, yaw: 0, x: 0 } };
                 t.push();
             }
@@ -57,9 +60,17 @@ const quiet = { info() {}, warn() {} };
     await until('connected', () => tv.state);
     ok(!tv.enabled() && m.where === 'cluster', 'off: the map stays where it is');
     tv.enable(true);
-    ok(m.where === 'hud' && !t.got.some((q) => q.op === 'set' && q.settings.enabled), 'on: the map off the cluster before the camera is asked for');
     await until('on', () => tv.enabled());
-    ok(m.where === 'hud' && st.v.tvMapWas === 'cluster', 'on with a HUD: the map to the HUD alone, its place kept');
+    ok(m.where === 'cluster', 'on, no turn signal and no turn near: the map stays on the cluster');
+    tv.signal(true);
+    await until('shown', () => m.where === 'hud');
+    ok(st.v.tvMapWas === 'cluster', 'a turn signal on: Turn View shows, the map to the HUD alone, its place kept');
+    tv.signal(false);
+    await until('back', () => m.where === 'cluster');
+    ok(st.v.tvMapWas === null, 'the turn signal off: the map back on the cluster');
+    t.near = true; t.push();
+    await until('near', () => m.where === 'hud');
+    ok(true, 'a turn near: Turn View shows again');
     m.showOn('both'); tv.mapChanged();
     ok(m.where === 'hud', 'the map put back on the cluster while it is on: off the cluster again');
     tv.enable(false);
@@ -68,7 +79,7 @@ const quiet = { info() {}, warn() {} };
     tv.close();
 
     // a car without a HUD, the map on both
-    m = map('both'); st = store();
+    m = map('both'); st = store(); t.near = true;
     tv = new TurnView({ log: quiet, ctl: m, hudOk: () => false, store: st, path: SOCK }).start();
     await until('connected', () => tv.state);
     tv.enable(true);
@@ -91,7 +102,7 @@ const quiet = { info() {}, warn() {} };
     // left on: the tool starts off at the next start of the car, and is switched on again
     tv.close();
     t.settings.enabled = false;
-    m = map('cluster'); st = store(); st.set('tvOn', true);
+    m = map('cluster'); st = store(); st.set('tvOn', true); t.near = true;
     tv = new TurnView({ log: quiet, ctl: m, hudOk: () => true, store: st, path: SOCK }).start();
     await until('on again', () => tv.enabled());
     ok(m.where === 'hud', 'left on: on again at the next start, the map to the HUD again');

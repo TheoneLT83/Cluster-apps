@@ -28,6 +28,8 @@ const SOCKETS = process.env.MGU_RENDERD_SOCKET ? [process.env.MGU_RENDERD_SOCKET
 const SOCKET = SOCKETS[0];
 const isSocket = (p) => { try { return fs.statSync(p).isSocket(); } catch (e) { return false; } };
 const M = { HELLO: 1, PLACE: 2, SHOW: 3, ATLAS: 4, RAMP: 5, LAYER: 6, FRAME: 7, DROP_LAYER: 8, IMAGE: 9, GRAB: 10 };
+// IterioDev's numbers, which mgu-render/1 uses for videos (PROTOCOL.md "Video")
+const VIDEO = 13, DROP_VIDEO = 14;
 const E = { READY: 101, TICK: 102, ERROR: 103, STATS: 104, CCU: 105 };
 // touch (mgu-render, IterioDev's mgu-renderd): message 9 is CLAIM there; 105 and 106 come back as TOUCH and CLOSED
 const CLAIM = 9, TOUCH = 105, CLOSED = 106;
@@ -58,7 +60,7 @@ class RenderClient extends EventEmitter {
         this.placement = null;
         this.visible = false;
         this.inbuf = Buffer.alloc(0);
-        this.sent = { atlas: new Set(), ramp: new Set(), layer: new Set(), image: new Map() };
+        this.sent = { atlas: new Set(), ramp: new Set(), layer: new Set(), image: new Map(), video: new Map() };
         this.stats = null;
         this.waiting = false;        // a frame was sent, no tick back yet
         this.retry = null;
@@ -162,7 +164,7 @@ class RenderClient extends EventEmitter {
         if (this.sock) this.sock.destroy();
         if (this.fd !== null) { fs.closeSync(this.fd); this.fd = null; }
     }
-    _reset() { this.sent.atlas.clear(); this.sent.ramp.clear(); this.sent.layer.clear(); this.sent.image.clear(); this.waiting = false; }
+    _reset() { this.sent.atlas.clear(); this.sent.ramp.clear(); this.sent.layer.clear(); this.sent.image.clear(); this.sent.video.clear(); this.waiting = false; }
     _write(b) {
         if (this.fd !== null) { fs.writeSync(this.fd, b); return true; }
         return this.sock && this.connected ? this.sock.write(b) : false;
@@ -295,6 +297,20 @@ class RenderClient extends EventEmitter {
         if (r.ramps) r.ramps.forEach((id) => this._ensureRamp(id));
         if (r.layersUsed || r.sublayers) (r.layersUsed || r.sublayers).forEach((id) => this._ensureLayer(id));
         if (r.images) r.images.forEach((id) => this._ensureImage(id));
+    }
+    /**
+     * mgu-render/1: frames another program writes to `path` (/dev/shm/mgu-video-<name>), drawn with
+     * Recorder.video(id, ...). Sent once per connection; call again each frame (a new connection needs it again).
+     */
+    video(id, path) {
+        if (!this.ready || !this.native || this.sent.video.get(id) === path) return;
+        const p = Buffer.alloc(4 + Buffer.byteLength(path) + 1);
+        p.writeUInt32LE(id, 0); p.write(path, 4);
+        this._write(msg(VIDEO, p));
+        this.sent.video.set(id, path);
+    }
+    dropVideo(id) {
+        if (this.sent.video.delete(id) && this.ready) this._write(this._u32msg(DROP_VIDEO, [id]));
     }
     /** upload a pixel image when this connection hasn't got its current version */
     _ensureImage(id) {
