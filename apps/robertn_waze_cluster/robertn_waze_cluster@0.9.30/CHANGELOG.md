@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.30
+
+robertnisipeanu/idrive-apps' 0.6.11 (waze-on-cluster 0.10.11 here): Apple Maps and Google Maps keep their arrival
+time, road names and turn card inside the part of the cluster map you can see, from the next head-unit start.
+
 ## 0.9.29
 
 - **Turn View: when it shows** (turn-view 0.7.5), on its page: Signal or turn (a turn signal on or the turn
