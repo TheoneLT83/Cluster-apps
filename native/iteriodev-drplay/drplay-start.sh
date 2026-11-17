@@ -15,10 +15,20 @@ CLIPS=${DR_CLIPS:-/var/opt/public/ent/driverecorder /mnt/share/ent/driverecorder
 WAIT_S=${DR_WAIT_S:-5}
 RETRY_S=${DR_RETRY_S:-30}
 uid_of() { [ -f "$1" ] && sed -n 's/.*"userId"[^0-9]*\([0-9][0-9]*\).*/\1/p' "$1" | head -n 1; }
-clips() { for c in $CLIPS; do [ -d "$c" ] && return 0; done; return 1; }
-dirs() { d=; for c in $CLIPS; do [ -d "$c" ] && d="${d:+$d,}$c"; done; printf '%s' "$d"; }
+clips() { [ -n "$(dirs)" ]; }
+# a folder the player, once it drops to uid 3912 (groups 929 mgu_driverec, 903 mgu_persist), can list and enter:
+# its owner, one of its groups, or anyone with r and x
+usable() {
+    m=$(stat -c '%a %u %g' "$1" 2>/dev/null) || return 1
+    set -- $m
+    p=$(printf '%04d' "$1"); o=$(printf '%s' "$p" | cut -c2); g=$(printf '%s' "$p" | cut -c3); a=$(printf '%s' "$p" | cut -c4)
+    rx() { [ $(( $1 & 5 )) -eq 5 ]; }
+    if [ "$2" = 3912 ]; then rx "$o"; elif [ "$3" = 929 ] || [ "$3" = 903 ]; then rx "$g"; else rx "$a"; fi
+}
+dirs() { d=; for c in $CLIPS; do [ -d "$c" ] && usable "$c" && d="${d:+$d,}$c"; done; printf '%s' "$d"; }
 # why the player is not up, for the Drive recorder app (STATE: one line, anyone may read it; removed while it runs)
 STATE=${DR_STATE:-/run/iteriodev-drplay/start-state}
+ERR=${DR_ERR:-/run/iteriodev-drplay/player.err}
 said=
 say() { [ "$said" = "$1" ] || { echo "drplay-start: $1" >&2; said=$1; printf '%s\n' "$1" > "$STATE.tmp" 2>/dev/null && chmod 644 "$STATE.tmp" && mv -f "$STATE.tmp" "$STATE"; }; }
 while :; do
@@ -27,8 +37,11 @@ while :; do
     elif ! clips; then say "no clip folder yet ($CLIPS), waiting"
     else
         rm -f "$STATE"; said=
-        if [ -n "$U" ]; then "$BIN" --dirs "$(dirs)" --uid "$U"; else "$BIN" --dirs "$(dirs)"; fi
-        say "the player ended (exit $?), again in $RETRY_S s"
+        # (its errors kept in ERR as well as in the journal: the last line says why it ended)
+        if [ -n "$U" ]; then "$BIN" --dirs "$(dirs)" --uid "$U" 2>"$ERR"; else "$BIN" --dirs "$(dirs)" 2>"$ERR"; fi
+        rc=$?
+        cat "$ERR" >&2 2>/dev/null
+        say "the player ended (exit $rc): $(grep -v '^[[:space:]]*$' "$ERR" 2>/dev/null | tail -n 1 | cut -c1-160)"
         sleep "$RETRY_S"
         said=
         continue

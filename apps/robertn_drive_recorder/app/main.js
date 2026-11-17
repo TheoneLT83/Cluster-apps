@@ -94,7 +94,10 @@ function playerWhy() {
     }
     if (!why) return null;
     if (/^no clip folder/.test(why)) return ['PLAYER WAITING', 'No clip folder from the car yet: restart the head unit once'];
-    if (/^the player ended/.test(why)) return ['PLAYER RESTARTING', 'It stopped and starts again in 30 s'];
+    if (/^the player ended/.test(why)) {
+        const said = why.replace(/^the player ended \(exit \d+\):\s*/, '').replace(/^mgu-drplay:\s*/, '');
+        return ['PLAYER RESTARTING', (said && said !== why ? said.slice(0, 60) + ' - ' : '') + 'starts again in 30 s'];
+    }
     if (/^no Drive recorder/.test(why)) return ['PLAYER STARTING', 'It starts in a few seconds'];
     return ['PLAYER WAITING', why];
 }

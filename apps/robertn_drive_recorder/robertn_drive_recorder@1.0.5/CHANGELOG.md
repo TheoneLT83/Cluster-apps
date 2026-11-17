@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.5
+
+- **The player gets only clip folders it can open** (Drive Recorder player 1.2.12): one it cannot read (the
+  `/var/opt/hdshare` one on some cars) made it stop at once ("no clip folders / bad uid").
+- While the player restarts, the Record page says why it stopped (the player's own last words).
+
 ## 1.0.4
 
 - **Clips where the car keeps them** (Drive Recorder player 1.2.11): a car whose recorder writes to
