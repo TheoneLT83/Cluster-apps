@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.7
+
+- **The player answers this app** (Drive Recorder player 1.2.14): the player answers only the app in IterioDev's
+  app record and runs as the uid it is given, so it refused this app and could not open its connection ("socket ...
+  Permission denied"). It now runs as its own user with a record of this app that only it sees.
+
 ## 1.0.6
 
 - **The player can open its connection again** (Drive Recorder player 1.2.13): before each start its folder in /run is
