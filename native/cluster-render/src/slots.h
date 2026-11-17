@@ -155,7 +155,8 @@
  *   slot (mapped again behind ours). A hold with
  *   TargetSpec::table_slots has no slot until a table report has one of
  *   its take_over_contents mapped (shown or parked) in one of them, not
- *   reported disabled, and moves to the one the latest such report names
+ *   reported disabled (or, while the target it follows has hide_badge, the
+ *   first of them reported available), and moves to the one the latest such report names
  *   (move_hold): released there first if requested, so it never holds two
  *   slots; a wait on the ladder carries over. A hold the display refuses
  *   for its slot (Refusal::NoSlot) is not asked for again until the service
@@ -685,6 +686,8 @@ private:
      * disabled (shown first, then its own slot, then 0x105); *why says
      * which; 0: none. */
     uint64_t reported_slot(int i, const std::map<uint64_t, std::vector<SlotInfo>> &rows, std::string *why) const;
+    /* The first of the hold's TargetSpec::table_slots the slot table reports available (not disabled); 0: none. */
+    uint64_t available_slot(int i) const;
     /* The hold to slot: a loss when it had one, released
      * there first if requested; still waiting on the ladder until the same
      * time if it was, else idle. */

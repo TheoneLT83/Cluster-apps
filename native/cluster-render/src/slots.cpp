@@ -267,6 +267,13 @@ void SlotManager::follow(int64_t now_ms)
             continue;
         const int lead = index(specs_[i].follows);
         const bool declined = lead >= 0 && !t_[lead].guide_hold;
+        /* (or the target it follows asks for the badge to be covered: held with no box too) */
+        const bool badge = lead >= 0 && t_[lead].hide_badge;
+        /* A hold whose slot comes from the table, with no box seen yet: for the badge, the first of its slots the
+         * table reports available (no box, no slot otherwise). */
+        if (badge && !specs_[i].slot && !specs_[i].table_slots.empty())
+            if (const uint64_t to = available_slot(i))
+                move_hold(i, to, "the badge covered: the first of its slots the table reports available", now_ms);
         if (declined != t.declined)
             log_info("target %s: %s", specs_[i].name.c_str(),
                      declined ? "not held: a layer of the target it follows has guide_hold 0"
@@ -279,8 +286,6 @@ void SlotManager::follow(int64_t now_ms)
         if (mapped)
             t.box_ms = now_ms;
         /* Kept through a lock: the lock unmapped the box with ours. */
-        /* (or the target it follows asks for the badge to be covered: held with no box too) */
-        const bool badge = lead >= 0 && t_[lead].hide_badge;
         const bool boxed = mapped || badge || t.kept || (t.requested && t.box_ms >= 0 && now_ms - t.box_ms < kNotMappedMs);
         if (boxed != t.boxed)
             log_info("target %s: %s; slot 0x%llx %s", specs_[i].name.c_str(),
@@ -395,6 +400,16 @@ uint64_t SlotManager::reported_slot(int i, const std::map<uint64_t, std::vector<
                       (unsigned long long)box->content, box->klass, box->map_status);
         *why = b;
         return box->slot;
+    }
+    return 0;
+}
+
+uint64_t SlotManager::available_slot(int i) const
+{
+    for (uint64_t id : specs_[i].table_slots) {
+        auto r = slots_.find(id);
+        if (r != slots_.end() && !r->second.empty() && r->second.front().status)
+            return id;
     }
     return 0;
 }
