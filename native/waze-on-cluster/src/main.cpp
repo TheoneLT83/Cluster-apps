@@ -27,11 +27,13 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <fcntl.h>
 #include <poll.h>
 #include <pthread.h>
 #include <sys/signalfd.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <unistd.h>
 #include <vector>
@@ -65,6 +67,18 @@ using crk::texture_size_error;
 #endif
 
 namespace {
+
+/* Turn View (native/turn-view) keeps this file's time fresh, every second, while its camera video is on the cluster
+ * map's target: the cluster map gives its video buffer up meanwhile (the display has two, and the HUD map may hold
+ * the other). Older than kVideoYieldStaleS: Turn View gone, the map back. */
+const char *const kVideoYieldFile = "/run/turn-view/map-yield";
+const time_t kVideoYieldStaleS = 3;
+
+bool video_yield_wanted()
+{
+    struct stat st;
+    return stat(kVideoYieldFile, &st) == 0 && time(nullptr) - st.st_mtime <= kVideoYieldStaleS;
+}
 
 /* Accepted and ignored, so a local_conf that sets them still starts the
  * service: the map is drawn by the shared renderer, whose own configuration
@@ -384,6 +398,7 @@ int serve(Config cfg)
         producer.set_live(live, now);
         producer.set_pictures(feed.wants_frames());
         feed.set_stream(live, producer.frozen(now), producer.picture(now));
+        feed.set_cluster_yield(video_yield_wanted());
         feed.poll(now);
         if (fc.vpp_scale)
             producer.set_part(feed.part());

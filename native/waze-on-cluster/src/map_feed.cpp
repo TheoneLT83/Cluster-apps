@@ -103,6 +103,8 @@ MapFeed::MapFeed(const FeedConfig &cfg)
 
 void MapFeed::make_layer()
 {
+    if (yielded_)
+        return;
     part_ = OutputPart();
     uint32_t tw = 0, th = 0;
     if (!target_size(client_.targets, cfg_.target, &tw, &th)) {
@@ -370,6 +372,24 @@ void MapFeed::set_guide_hold(bool hold)
         lo_.guide_hold = hold;
         lo_.hide_badge = hold;
         client_.set(layer_, lo_);
+    }
+}
+
+void MapFeed::set_yield_video(bool yield)
+{
+    if (yield == yielded_)
+        return;
+    yielded_ = yield;
+    log_info("render: map layer %s", yield ? "dropped: its video buffer given to another video on the cluster"
+                                           : "made again: the other video on the cluster is gone");
+    if (yield) {
+        if (layer_) {
+            keep_newest();
+            client_.drop(layer_);
+            layer_ = 0;
+        }
+    } else if (client_.connected() && !layer_) {
+        make_layer();
     }
 }
 
@@ -650,6 +670,10 @@ FeedStatus MapFeed::status(const std::string &decode, const std::string &stream)
         s.state = "idle";   /* no layer: nothing sent */
         s.page = decode;
         s.reason = kHostHidden;
+    } else if (yielded_) {
+        s.state = "idle";   /* no layer: its buffer given to another video on the cluster */
+        s.page = decode;
+        s.reason = "another video on the cluster (Turn View)";
     } else if (layer_state_ == "shown") {
         s.state = "showing";
         char p[400];

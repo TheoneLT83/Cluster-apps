@@ -174,6 +174,9 @@ public:
     bool set_target(const std::string &name);
     /* The layer's guide_hold from now on. */
     void set_guide_hold(bool hold);
+    /* True: no layer, its video buffer free for another video on the cluster (Turn View's camera); its newest
+     * picture kept and the layer made again with it once false. */
+    void set_yield_video(bool yield);
     const std::string &target() const { return cfg_.target; }
     /* The HUD map's size (FeedConfig::hud_width_pct), applied at once to a
      * map on the HUD. */
@@ -274,6 +277,7 @@ private:
     cr::Client client_;
     cr::Host host_;   /* the feed's target's host, from the renderer's events */
     uint32_t layer_ = 0;
+    bool yielded_ = false;   /* set_yield_video */
     cr::LayerOptions lo_;   /* the layer's options as last sent */
     bool show_due_ = false;   /* visible once the frame waiting has gone */
     /* The newest frame, while held_new_; on a layer that scales, once there

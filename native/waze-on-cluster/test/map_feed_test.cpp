@@ -309,6 +309,22 @@ static void guide_hold()
 
 }
 
+/* Another video on the cluster (Turn View's camera): the map's layer dropped, its buffer free; back, the layer made
+ * again and the map showing with the next frame. */
+static void yield_video()
+{
+    const std::vector<uint8_t> f = atlas(7);
+    Rig r(false, 6000, true);
+    r.pump(1500, &f);
+    ok("yield: the map showing first", r.st().state == "showing");
+    r.feed->set_yield_video(true);
+    r.pump(500, &f);
+    ok("yield: no layer, the map not showing", !r.feed->takes_frames() && r.st().state != "showing");
+    r.feed->set_yield_video(false);
+    r.pump(1500, &f);
+    ok("yield over: the layer made again, the map showing", r.feed->takes_frames() && r.st().state == "showing");
+}
+
 /* The HUD's worker is still scaling a frame: the feed then asks to be woken
  * in kScaleWaitMs however much later it is asked, while a frame due in
  * kScaleWaitMs asks for a millisecond less a millisecond later. */
@@ -974,6 +990,7 @@ int main()
     signal(SIGPIPE, SIG_IGN);
     setvbuf(stdout, nullptr, _IONBF, 0);
     hosting();
+    yield_video();
     vpp_hosting();
     always_packed_map();
     old_renderer();

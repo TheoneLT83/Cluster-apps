@@ -54,6 +54,7 @@ void MapFeeds::follow()
          * KOMBI shows its own content again */
         if (cluster_on_) {
             cluster_.reset(new MapFeed(base_));
+            cluster_->set_yield_video(cluster_yield_);
             cluster_->set_stream(live_, frozen_, picture_);
             if (hud_ && hud_->latest(&copy_))
                 cluster_->hold(&copy_, id_);
@@ -130,6 +131,13 @@ void MapFeeds::set_hud_keep_shown(bool keep)
     base_.hud_keep_shown = keep;
     if (hud_)
         hud_->set_hud_keep_shown(keep);
+}
+
+void MapFeeds::set_cluster_yield(bool yield)
+{
+    cluster_yield_ = yield;
+    if (cluster_)
+        cluster_->set_yield_video(yield);
 }
 
 void MapFeeds::set_guide_hold(bool hold)

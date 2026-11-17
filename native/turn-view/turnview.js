@@ -30,7 +30,7 @@
  * car has the rear camera alone, the widget says "No front camera" only until the front view works), turnview.log (1 MB, one
  * old file kept). Never stops a system service; the native parts are children, restarted with a growing delay when
  * they die young. Times are monotonic (the MGU sets its clock after boot).
- * Env (tests): TURNVIEW_DATA, TURNVIEW_CTL, TURNVIEW_HMICTL, TURNVIEW_CAMCLUSTER, TURNVIEW_CR_SOCKET, TURNVIEW_TICK_MS,
+ * Env (tests): TURNVIEW_DATA, TURNVIEW_CTL, TURNVIEW_MAP_YIELD, TURNVIEW_HMICTL, TURNVIEW_CAMCLUSTER, TURNVIEW_CR_SOCKET, TURNVIEW_TICK_MS,
  * TURNVIEW_START_MS (app start retry), TURNVIEW_PASSED_MS, TURNVIEW_GEN (7 | 8; else by MainApp's folder, as
  * cluster-render's generation.cpp).
  */
@@ -44,6 +44,8 @@ const { createScene } = require('./scene');
 
 const DATA = process.env.TURNVIEW_DATA || '/var/opt/turn-view';
 const CTL = process.env.TURNVIEW_CTL || '/run/turn-view/ctl.sock';
+const MAP_YIELD = process.env.TURNVIEW_MAP_YIELD || '/run/turn-view/map-yield';
+const YIELD_MS = 400;
 const HMICTL = process.env.TURNVIEW_HMICTL || path.join(__dirname, 'hmictl');
 const CAMCLUSTER = process.env.TURNVIEW_CAMCLUSTER || path.join(__dirname, 'mgu-camcluster');
 const CR_SOCKET = process.env.TURNVIEW_CR_SOCKET || '/dev/shm/cluster-render/render.sock';
@@ -302,12 +304,17 @@ function main() {
     subscribe();
 
     // ---- mgu-camcluster: the video, as its status lines say ----
-    let cam = null, camOut = '', videoOn = false, camTarget = null;
+    let cam = null, camOut = '', videoOn = false, camTarget = null, camRetries = 0;
     const camSt = { startedAt: 0, delay: 0 };
     function camState(s) {
         if (status.camera === s) return;
         log(`camera: ${s}`); status.camera = s; scene.camera(s);
         if (s === 'decoding') setNoFront(false);
+        // refused while the map still had its buffer (MAP_YIELD): asked again, a few times
+        if (s === 'refused' && videoOn && camTarget === 'map' && camRetries < 5) {
+            camRetries++;
+            setTimeout(() => { if (cam && videoOn) cam.stdin.write('video off\nvideo on\n'); }, YIELD_MS);
+        } else if (s === 'decoding') camRetries = 0;
         push();
     }
     function camStart() {
@@ -343,11 +350,35 @@ function main() {
             push();
         } else if ((m = /^video (idle|waiting|decoding|stalled|off|refused)$/.exec(line))) camState(m[1]);   // 0.6.1: refused
     }
+    // On iDrive 7's map target the display's two video buffers may both be taken (the cluster map, the HUD map):
+    // MAP_YIELD kept fresh (every second) while the video is on there makes waze-on-cluster give its cluster map's up
+    // (it looks 4 times a second; older than 3 s counts as gone). The video goes on YIELD_MS after it is written, and
+    // the file goes YIELD_MS after the video is off, so the map's layer is made again once ours is gone.
+    let yieldTimer = null, yieldTouch = null;
+    function mapYield(on) {
+        clearInterval(yieldTouch); yieldTouch = null;
+        if (on) {
+            const touch = () => { try { fs.writeFileSync(MAP_YIELD, `${process.pid}\n`); } catch (e) { log(`map yield: ${e.message}`); } };
+            touch(); yieldTouch = setInterval(touch, 1000);
+        } else {
+            try { fs.unlinkSync(MAP_YIELD); } catch (e) { /* none */ }
+        }
+    }
+    process.on('exit', () => mapYield(false));
     function video(on) {
         if (on === videoOn) return;
         videoOn = on;
+        camRetries = 0;
         log(`video ${on ? 'on' : 'off'}`);
-        if (cam) cam.stdin.write(`video ${on ? 'on' : 'off'}\n`);
+        clearTimeout(yieldTimer);
+        const send = () => { if (cam) cam.stdin.write(`video ${videoOn ? 'on' : 'off'}\n`); };
+        if (on && camTarget === 'map') {
+            const wait = !yieldTouch;
+            mapYield(true);
+            if (wait) { yieldTimer = setTimeout(send, YIELD_MS); return; }
+        }
+        send();
+        if (!on && yieldTouch) yieldTimer = setTimeout(() => mapYield(false), YIELD_MS);
     }
 
     // ---- the app: started when the camera is wanted and it is not connected ----

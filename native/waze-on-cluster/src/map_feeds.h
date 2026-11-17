@@ -70,6 +70,8 @@ public:
     int hud_offset_y() const { return base_.hud_offset_y; }
     /* The cluster map layer's guide_hold. */
     void set_guide_hold(bool hold);
+    /* The cluster map's video buffer given up while another video is on the cluster (MapFeed::set_yield_video). */
+    void set_cluster_yield(bool yield);
 
     /* For poll(): one entry per feed, appended. */
     size_t poll_fds(std::vector<pollfd> *fds) const;
@@ -104,6 +106,7 @@ private:
     FeedConfig base_;
     unsigned hud_fps_;
     bool cluster_on_, hud_on_;
+    bool cluster_yield_ = false;
     std::unique_ptr<MapFeed> cluster_, hud_;
     std::vector<uint8_t> copy_;   /* a picture on its way from one feed to the other */
     uint64_t id_ = 0;   /* the newest frame's */
