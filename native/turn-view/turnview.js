@@ -110,15 +110,14 @@ function clampCal(cur, p) {
     });
     return out;
 }
-/* settings.show: when Turn View shows, in Map view - 'signal' a turn signal on or the turn near, 'near' the turn near
- * only, 'always' all the time */
-const SHOW = ['signal', 'near', 'always'];
-/* Turn View shown in Map view (mapView not false) as show says: a turn signal on or the turn near and just passed; the
- * turn only; all the time. Else the layers draw nothing and the cluster's map area is given back. Calibrating: always. */
-function gateOpen(show, state, signal, mapView) {
+/* settings.show: when Turn View shows, in Map view - 'near' the turn near (and just passed), 'always' all the time. A
+ * saved 'signal' (a turn signal on, before 0.8.1) counts as 'near'. */
+const SHOW = ['near', 'always'];
+/* Turn View shown in Map view (mapView not false) as show says. Else the layers draw nothing and the cluster's map area
+ * is given back. Calibrating: always. */
+function gateOpen(show, state, mapView) {
     const near = state === 'near' || state === 'passed';
-    const when = show === 'always' ? true : show === 'near' ? near : signal || near;
-    return state === 'calib' || (state !== 'off' && mapView !== false && when);
+    return state === 'calib' || (state !== 'off' && mapView !== false && (show === 'always' || near));
 }
 
 /* Side view shown: a side wanted, Turn View off (the two never share the camera), Map view not known to be unselected. */
@@ -128,7 +127,7 @@ function sideOpen(side, enabled, mapView) {
 
 function mergeSettings(cur, p) {
     const out = { enabled: cur && typeof cur.enabled === 'boolean' ? cur.enabled : true, cal: clampCal(cur && cur.cal),
-        show: cur && SHOW.includes(cur.show) ? cur.show : 'signal' };
+        show: cur && SHOW.includes(cur.show) ? cur.show : 'near' };
     if (!p || typeof p !== 'object') return out;
     if (typeof p.enabled === 'boolean') out.enabled = p.enabled;
     if (SHOW.includes(p.show)) out.show = p.show;
@@ -379,7 +378,7 @@ function main() {
     setInterval(() => {
         const t = mono(), tv = track.tick(t);
         const side = sideOpen(gate.side, settings.enabled, gate.mapView);
-        const want = side || gateOpen(settings.show, tv.state, gate.signal, gate.mapView);
+        const want = side || gateOpen(settings.show, tv.state, gate.mapView);
         if (want !== gate.open) { gate.open = want; status.gate = want ? 'open' : 'closed'; log(`gate ${status.gate}${side ? ' (side view ' + gate.side + ')' : ''}`); push(); }
         if ((side ? gate.side : null) !== status.side) { status.side = side ? gate.side : null; push(); }
         const v = side ? Object.assign({}, tv, { state: 'side', video: true, alpha: 0 })

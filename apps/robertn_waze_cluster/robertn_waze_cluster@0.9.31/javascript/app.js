@@ -731,7 +731,7 @@ mgu.run({
                 { primary: on, key: 'tv-on', busy: !st });
             // when it shows in Map view
             let sx = 364;
-            [['signal', 'Signal or turn'], ['near', 'Turn only'], ['always', 'Always']].forEach(([v, text]) => {
+            [['near', 'Near a turn'], ['always', 'Always']].forEach(([v, text]) => {
                 sx += G.button(cv, th, sx, 112, 0, 44, text, () => tv.setShow(v), { primary: tv.show() === v, busy: !st, key: 'tv-show-' + v }) + 10;
             });
             if (!st) {

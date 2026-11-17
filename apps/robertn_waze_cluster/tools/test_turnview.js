@@ -21,7 +21,7 @@ const ok = (c, m) => { assert(c, m); passed++; console.log('ok   ' + m); };
 function tool() {
     const t = { got: [], conns: [], signal: false, near: false, settings: { enabled: false, cal: { h: 0.6, pitch: 3, fov: 60, yaw: 0, x: 0 } } };
     // the gate: turnview.js's, Map view selected
-    const gate = () => (t.settings.enabled && gateOpen(t.settings.show || 'signal', t.near ? 'near' : 'route', t.signal, true) ? 'open' : 'closed');
+    const gate = () => (t.settings.enabled && gateOpen(t.settings.show || 'near', t.near ? 'near' : 'route', true) ? 'open' : 'closed');
     t.push = () => t.conns.forEach((c) => c.write(JSON.stringify({ state: { settings: t.settings, status: { gate: gate(), camera: t.settings.enabled ? 'decoding' : 'off', route: 'none', backend: 'id7' } } }) + '\n'));
     t.server = net.createServer((c) => {
         t.conns.push(c);
@@ -64,14 +64,17 @@ const quiet = { info() {}, warn() {} };
     await until('on', () => tv.enabled());
     ok(m.where === 'cluster', 'on, no turn signal and no turn near: the map stays on the cluster');
     tv.signal(true);
-    await until('shown', () => m.where === 'hud');
-    ok(st.v.tvMapWas === 'cluster', 'a turn signal on: Turn View shows, the map to the HUD alone, its place kept');
+    await sleep(100);
+    ok(m.where === 'cluster', 'a turn signal alone: nothing');
     tv.signal(false);
-    await until('back', () => m.where === 'cluster');
-    ok(st.v.tvMapWas === null, 'the turn signal off: the map back on the cluster');
     t.near = true; t.push();
     await until('near', () => m.where === 'hud');
-    ok(true, 'a turn near: Turn View shows again');
+    ok(st.v.tvMapWas === 'cluster', 'a turn near: Turn View shows, the map to the HUD alone, its place kept');
+    t.near = false; t.push();
+    await until('back', () => m.where === 'cluster');
+    ok(st.v.tvMapWas === null, 'past it: the map back on the cluster');
+    t.near = true; t.push();
+    await until('near again', () => m.where === 'hud');
     m.showOn('both'); tv.mapChanged();
     ok(m.where === 'hud', 'the map put back on the cluster while it is on: off the cluster again');
     tv.enable(false);
@@ -133,7 +136,7 @@ const quiet = { info() {}, warn() {} };
     tv.calib(false);
     await until('calib off', () => t.got.filter((q) => q.op === 'calib').length === 2);
     ok(t.got.filter((q) => q.op === 'calib').map((q) => q.on).join() === 'true,false', 'the marks on while calibrating, off after');
-    // when it shows: the turn only, all the time, as before
+    // when it shows: near a turn, or all the time
     t.signal = false; t.near = false;
     tv.enable(true);
     tv.setShow('always');
@@ -143,15 +146,13 @@ const quiet = { info() {}, warn() {} };
     await until('turn only', () => tv.show() === 'near' && !tv.shows());
     tv.signal(true);
     await sleep(100);
-    ok(!tv.shows(), 'Turn only: a turn signal does not show it');
+    ok(!tv.shows(), 'Near a turn: a turn signal does not show it');
     tv.signal(false);
-    tv.setShow('signal');
-    await until('signal', () => tv.show() === 'signal');
-    ok([['signal', 'route', true, true], ['near', 'near', false, true], ['always', 'none', false, null]].every((a) => gateOpen(...a)) &&
-        ![['near', 'route', true, true], ['always', 'none', false, false], ['always', 'off', false, true], ['signal', 'route', false, true]].some((a) => gateOpen(...a)),
+    ok([['near', 'near', true], ['near', 'passed', null], ['always', 'none', null]].every((a) => gateOpen(...a)) &&
+        ![['near', 'route', true], ['always', 'none', false], ['always', 'off', true]].some((a) => gateOpen(...a)),
         'the tool\'s gate: each choice, never out of Map view or off');
-    ok(mergeSettings(null, null).show === 'signal' && mergeSettings({ show: 'near' }, { show: 'bad' }).show === 'near' && mergeSettings(null, { show: 'always' }).show === 'always',
-        'the choice: signal by default, kept, only the three');
+    ok(mergeSettings(null, null).show === 'near' && mergeSettings({ show: 'signal' }, null).show === 'near' && mergeSettings({ show: 'always' }, { show: 'bad' }).show === 'always',
+        'the choice: near a turn by default (an old saved signal choice too), kept, only the two');
     // Side view: the app asks the tool for a side; the tool shows it only while Turn View is off and in Map view
     tv.side('left');
     await until('side sent', () => t.got.some((q) => q.op === 'side' && q.side === 'left'));

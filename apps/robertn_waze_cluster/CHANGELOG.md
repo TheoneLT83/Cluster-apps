@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.31
+
+- **Turn View shows near a turn, or always** (turn-view 0.8.1): the choice of showing it with a turn signal is gone;
+  a car that had it chosen shows it near a turn.
+
 ## 0.9.30
 
 - **Side view** (Display page, Cluster): while a turn signal is on, that side's camera in the cluster's map area, kept
