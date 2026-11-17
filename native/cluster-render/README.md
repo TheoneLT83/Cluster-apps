@@ -426,6 +426,52 @@ evidence at other times is logged, not counted:
 | a flush or a setData refused | 2 |
 | a flush that took `slow_flush_ms` (150) or longer | 1 |
 
+- The cap starts at the ceiling: `upload_kb_per_s` (5500 KB/s), or the
+  remembered ceiling below it. When the link shows congestion (a shown
+  scene removed, heartbeat replies stalling, refused or slow flushes) it
+  steps down by 500 KB/s, to 2000 KB/s at the least, and recovers slowly, up
+  to the ceiling. A shown scene the KOMBI removes while the cap is above
+  4000 KB/s lowers the ceiling for the rest of the drive. Clients get a
+  `budget` event when the cap changes.
+- **Remembered ceiling.** A removal also lowers the ceiling for later
+  drives to one step below the level it came at, kept in
+  `/var/opt/cluster-render/state/upload-ceiling`. After 3 clean drives at
+  it (each with a target shown 10 min in all and no removal) the next drive
+  tries one step higher, and keeps it if that drive is clean; a removal
+  there keeps the old ceiling and starts the count over. A firmware update
+  or another KOMBI variant forgets it. `upload_kb_per_s` set in the local
+  conf is the ceiling, and the remembered one is not used.
+- **What the log keeps.** One `INCIDENT` line each time a shown target is
+  lost (why, the cap and ceiling, how long it was shown) and when it is
+  back (put back after a lock, asked for in full, or shown again by the
+  cluster). On a removal, the 30 s before it second by second: KB written,
+  budget holds, offer-to-flush time and the deepest TCP send queue on the
+  head unit with its peer; once a minute, a summary of the same. In the car
+  logs none of these rose reliably before a removal, so none steers the
+  cap.
+- Within the cap the top layers write first. A video frame whose exact
+  write the budget cannot cover goes as packed 4x4 blocks (with
+  `pan_blocks`), the exact picture follows when the budget allows, and only
+  the newest frame waits.
+- **Always packed.** A video layer sent with `always_packed` 1 (optional,
+  PROTOCOL.md; only to a service whose hello has `always_packed` 1) writes
+  every update as packed 4x4 blocks, never the exact atlas, for about a
+  third of the bytes. Updates are planned as exact ones (the tiles,
+  `dirty_threshold`, `settle_ms`), and only the blocks in them that changed
+  are written, in place, in at most 64 rects. The whole packed buffer goes
+  with the layer's first write in a scene and after a failed write; a still
+  picture writes nothing. waze-on-cluster's `always_packed` key uses it
+  (its README, "Experimental: hosted_vpp_scale and always_packed"). Layers
+  without it write as above.
+- **The HUD's share.** While `hud` has a layer, its layers and assets write
+  from up to half of the budget, only as much as they spend; what the HUD
+  leaves goes to the cluster. With the cluster idle the HUD gets the whole
+  cap. Together they never exceed it.
+- Video tiles wholly covered by opaque layers drawn above them are not
+  written while they stay hidden (`src/occlusion.h`). Opaque means a video,
+  or an image where its pixels have alpha 255, drawn unturned, unanimated
+  and at full opacity, not fading; effect and mesh layers never cover.
+
 - At 6 points the cap steps down 500 KB/s, to the 2000 KB/s floor at most,
   and the window starts empty. A removal reaches 6 alone: on the car the
   KOMBI removed a shown map, with healthy heartbeats and no lock, after the

@@ -220,6 +220,13 @@ frame for `idle_ms` (60 s) takes it down too. Without that connection
 a static map and closes it when the stream ends is still to be confirmed on
 the car.
 
+**Inside another app's scene.** An app that shows a scene file on a target
+with `layers` 1 can host the map there (cluster-render PROTOCOL.md
+"Hosting another target"): the map is then drawn only in the rect it
+names, scaled on the head unit to that part of the picture. With
+`hosted_vpp_scale = 1` the GPU does that scaling instead ("Experimental:
+hosted_vpp_scale and always_packed" below).
+
 CarPlay starts the cluster stream as soon as the phone connects (PATCH.md
 Edit 3), and, where Edit 5's sites are found, gives the cluster display the
 map's URL, so the phone streams its map from connect, route or not (on the
@@ -715,7 +722,10 @@ too. Details: the cluster-render README.
 
 Settings are in `waze-on-cluster.conf` (documented inline). Overrides go in
 `/var/opt/waze-on-cluster/waze-on-cluster.local.conf`, which updates keep;
-the app's map settings in `/var/opt/waze-on-cluster/map.state.conf`.
+the app's map settings are in `/var/opt/waze-on-cluster/map.state.conf`, and
+the opt-in settings in `/var/opt/waze-on-cluster/features.conf`. A key the
+local conf has that this version does not know is left out with a warning
+in the log.
 
 ## The patch
 
@@ -734,6 +744,85 @@ its shipped SHA-256 before the first edit:
 |---|---|---|
 | 22.28.3 | `5de62156575d737391ea42254e778a97dbbb51f8` | `ddb33e33161387c6479c391684b3d019b0de54ecfcee8d6877eca94aa62f3e50` |
 | 21.27.4 | `389c1d0536f8cc9283c156410f2f2634a9f952c0` | `fb5d6b179ad4f62a968697d21e84dbb80adc1ad8e618a6f02c6a9a0467aca1ac` |
+
+The map covers the cluster's central map area, 1088x480 on the 1920x720
+panel. The patch advertises exactly that, so `tex_size` must equal it.
+`src_crop` takes part of a picture of one size and scales it to `tex_size`
+(Android Auto's 1280x720 stream has its map in the top 1280x564).
+`map_rect` draws the map stretched into a rect of the current target.
+`target_fps` (30) caps the frame rate; `picture_fps` (0: every frame) makes
+at most that many pictures a second, which saves CPU when the phone sends
+more than the cluster takes (set it to `target_fps` then).
+`always_packed = 1` sends fewer bytes for the same map ("Experimental:
+hosted_vpp_scale and always_packed" below).
+
+### Experimental: hosted_vpp_scale and always_packed
+
+Two settings for a head unit that is short of CPU or of upload to the
+cluster, for example while an app hosts the map in its own scene. Both are
+0 (off) by default, and with 0 nothing changes.
+
+| Key | What it does | When it helps | Cost |
+|---|---|---|---|
+| `hosted_vpp_scale` | While an app hosts the map and the HUD map is off, the decoder's VPP crops the host's part of each picture and scales it to the size shown, on the GPU. The CPU then copies and packs only that part and scales nothing. | A hosted map: the CPU neither copies the whole 1088x480 frame nor scales it. | VPP's scaling looks a little different from the CPU's. |
+| `always_packed` | Every update of the cluster's map, in its own slot or hosted, goes as packed 4x4 colour blocks, never the exact picture. Only the blocks that changed are sent, at most 64 rects an update. The whole packed picture goes once when the map's layer starts (a new stream, a new size, a host moving it). A still map sends nothing. The HUD map is not affected. | Little upload to spare: about a third of the exact bytes, or less, for the same change. | A slightly softer picture: thin lines and small text show the 4x4 blocks. |
+
+They can be used alone or together; with both, the GPU-made part is packed.
+
+**Turning them on.** Add the lines to `/var/opt/waze-on-cluster/features.conf`,
+which updates keep and earlier versions do not read:
+
+```
+hosted_vpp_scale = 1
+always_packed = 1
+```
+
+They take effect when waze-on-cluster next starts (the next head-unit
+start). A restart of the service applies them at once, but the map stays
+blank until the phone connects again.
+
+Not in `waze-on-cluster.local.conf`: there they are left out, and patchd
+moves them to `features.conf`.
+
+**What they need.**
+- Both: a waze-on-cluster whose `waze-on-cluster.conf` has the key. An older
+  one does not read `features.conf` and sends the map as with 0.
+- `hosted_vpp_scale`: only acts while an app hosts the map (cluster-render
+  PROTOCOL.md "Hosting another target") and the HUD map is off. Otherwise
+  the map goes as with 0.
+- `always_packed`: a cluster-render whose hello has `always_packed`
+  (PROTOCOL.md), `pan_blocks = 1`, and a map (or host's part) whose width
+  and height are multiples of 4. waze-on-cluster reads the hello at every
+  connection, so a cluster-render updated later is picked up when it
+  reconnects.
+
+**Checking they work.** In the log ("Logs" below):
+- `decoder: VPP makes the output's WxH at X,Y as WxH (hosted_vpp_scale)`:
+  the GPU makes the host's part.
+- `render: map layer on ... every update packed (always_packed)`: the map is
+  packed.
+
+If one cannot be used, the log says why once, and the map goes as with 0:
+- `decoder: VPP cannot make ...`: the part is an odd size, outside the
+  frame, more than 8 times smaller than its rect, or VPP failed. That
+  stream's pictures are scaled on the CPU.
+- `render: always_packed: the map's WxH not packed, ...`: the size is not
+  a multiple of 4, or cluster-render does not take it.
+
+**Side effects of `hosted_vpp_scale`.**
+- The freeze watch and the minute's tally judge a blank or frozen picture
+  by the part shown, not the whole frame.
+- A host moving the map, the map going back to its own slot when the host
+  drops it, and the HUD map turning on all show the map from the phone's
+  next frame.
+
+**Apps that host the map** can turn these on for their users by writing the
+lines into `features.conf`, never over a value the owner set. Remove the
+lines when the app is removed.
+
+Not yet measured on a car: the unit's VPP with a part, the packed picture
+and the CPU and GPU cost. `waze-on-cluster.conf` has the details for each
+key.
 
 21.27.4 was confirmed on a G07 X7 through CarPlay's Patch button
 ([#95](https://github.com/robertnisipeanu/idrive-apps/issues/95)). The
