@@ -8,7 +8,7 @@ const os = require('os');
 const path = require('path');
 const EventEmitter = require('events');
 const { TurnView } = require('../app/turn_view.js');
-const { gateOpen, mergeSettings } = require('../../../native/turn-view/turnview.js');
+const { gateOpen, mergeSettings, sideOpen } = require('../../../native/turn-view/turnview.js');
 
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tv-'));
 const SOCK = path.join(dir, 'ctl.sock');
@@ -152,7 +152,16 @@ const quiet = { info() {}, warn() {} };
         'the tool\'s gate: each choice, never out of Map view or off');
     ok(mergeSettings(null, null).show === 'signal' && mergeSettings({ show: 'near' }, { show: 'bad' }).show === 'near' && mergeSettings(null, { show: 'always' }).show === 'always',
         'the choice: signal by default, kept, only the three');
-    // the scene (IterioDev's): the road arrows and the turn card on the map, drawn up to about 50 m ahead
+    // Side view: the app asks the tool for a side; the tool shows it only while Turn View is off and in Map view
+    tv.side('left');
+    await until('side sent', () => t.got.some((q) => q.op === 'side' && q.side === 'left'));
+    tv.side('left');
+    tv.side(null);
+    await until('side off', () => t.got.filter((q) => q.op === 'side').map((q) => q.side).join() === 'left,');
+    ok(true, 'side view: left asked once, then none');
+    ok(sideOpen('left', false, true) && sideOpen('right', false, null) && !sideOpen('left', true, true) && !sideOpen('left', false, false) && !sideOpen(null, false, true),
+        'side view: only with Turn View off, never out of Map view');
+    // the scene (IterioDev's 0.8.0): near a turn the turn sign and the card; further away, straight on and in Side view no sign
     const { createScene } = require('../../../native/turn-view/scene.js');
     const SH = require('../../../native/turn-view/shaders.js');
     const sets = {};
@@ -161,11 +170,19 @@ const quiet = { info() {}, warn() {} };
     const sc = createScene(cr, { target: 'map' });
     sc.rect({ x: 286, y: 72, w: 504, h: 368 });
     sc.camera('decoding');
-    sc.show({ state: 'near', video: true, l0: 40, travel: 0, speed: 5, angle: 90, side: -1, exit: 0, icon: 'left', text: '40 m', alpha: 1, dim: false }, 5000);
-    const L = sc.status().layers;
-    ok(L.chevrons && L.card, 'near a turn on the map: the road arrows and the turn card');
-    const bent = SH.pathPoint(SH.PITCH * 12, 0, { travel: 0, l0: 40, angle: 90, side: -1 });
-    ok(bent.a > 0 && bent.x < -1, 'a turn 40 m ahead: the arrows seen bending into it (' + bent.x.toFixed(1) + ' m aside)');
+    const view = (state, l0, angle) => ({ state, video: true, l0, travel: 0, speed: 5, angle, side: -1, exit: 0, icon: 'left', text: '40 m', alpha: 1, dim: false });
+    sc.show(view('near', 40, 90), 5000);
+    let L = sc.status().layers;
+    ok(L.chevrons && L.card, 'near a turn on the map: the turn sign and the turn card');
+    sc.show(view('route', 300, 90), 6000);
+    L = sc.status().layers;
+    ok(!L.chevrons, 'far from the turn: no sign');
+    sc.show(view('side', 0, 0), 7000);
+    L = sc.status().layers;
+    ok(!L.chevrons && !L.card && !L.shade, 'side view: the camera alone');
+    const cal = { h: 0.6, pitch: 3, fov: 60, yaw: 0, x: 0 };
+    const p100 = SH.signPoint(0, 0, { travel: 0, l0: 100, alpha: 1 }, cal, 504 / 368), p40 = SH.signPoint(0, 0, { travel: 0, l0: 40, alpha: 1 }, cal, 504 / 368);
+    ok(p100.a === 0 && p40.a === 1, 'the sign fades in from 100 m, whole from 80 m');
     tv.close();
     t.server.close();
     fs.rmSync(dir, { recursive: true, force: true });

@@ -51,7 +51,10 @@ const PAGES = ['Maps', 'Display', 'Turn View', 'Log'];
 /* The Display page's switches, its HUD tab's and its Cluster tab's: the setting, its words. */
 const HUD_ITEMS = [['hudOn', 'Displays on HUD'], ['hudTurn', 'Turn signals'], ['hudGear', 'Gear'], ['realSpeed', 'Real speed on HUD'],
     ['greenLightHud', 'Green light alert'], ['hudNight', 'Dimmer at night']];
-const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert'], ['clusterPanel', 'Info bar']];
+const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert'], ['clusterPanel', 'Info bar'], ['sideView', 'Side view']];
+/* Side view: the side signalled, its camera on the cluster (Turn View's tool) while Turn View is off; kept SIDE_HOLD_MS after
+ * the signal (its blink and a lane change's short taps). Hazards: nothing. */
+const SIDE_HOLD_MS = 1500;
 /* The pictures' traffic light in its loop of GO_DEMO_MS: red, then green with "GO" for the last GO_DEMO_ON. */
 const GO_DEMO_MS = 4000, GO_DEMO_ON = 1500;
 const demoLight = () => (Date.now() % GO_DEMO_MS < GO_DEMO_MS - GO_DEMO_ON ? { colour: 'red', go: false } : { colour: 'green', go: true });
@@ -310,8 +313,16 @@ async function background(bg) {
     logs.on('change', changed);
     profiles.on('change', changed);
     // Turn View shows while a turn signal is on (or the turn is near): the tool is told
-    turns.on('change', () => { toHud(); const st = turns.state(); if (typeof tv !== 'undefined' && tv) tv.signal(!!(st.left || st.right)); changed(); });
-    settings.onChange(() => { hvWanted(); claims(); toHud(); toPanel(); dimNow(); changed(); });
+    let sideTimer = null;
+    function sideNow() {
+        const st = turns.state(), on = settings.get('sideView') === true && !tv.enabled();
+        const s = on && st.left && !st.right ? 'left' : on && st.right && !st.left ? 'right' : null;
+        if (s || !on) { clearTimeout(sideTimer); sideTimer = null; tv.side(s); return; }
+        if (tv.sideNow && !sideTimer) sideTimer = setTimeout(() => { sideTimer = null; tv.side(null); }, SIDE_HOLD_MS);
+    }
+    turns.on('change', () => { toHud(); const st = turns.state(); if (typeof tv !== 'undefined' && tv) { tv.signal(!!(st.left || st.right)); sideNow(); } changed(); });
+    tv.on('change', sideNow);
+    settings.onChange(() => { hvWanted(); claims(); toHud(); toPanel(); dimNow(); sideNow(); changed(); });
     // boost, torque, the temperatures and the programme come without a sample of their own: the HUD looks again
     // often (only what changed is sent; the layers take up to 25 frames a second)
     setInterval(() => { if (settings.get('hudOn') !== false && hudOk() && !given()) toHud(); toPanel(); }, 80);
@@ -666,7 +677,12 @@ mgu.run({
                 row(1, 'guide', t('Hide logo on the cluster'), !!hide, () => ctl.toggleGuidance(), gu || hide === null);
                 // the info bar shows under the map: off while the map is not on the cluster
                 const noBar = (key) => key === 'clusterPanel' && !clusterNow;
-                CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), settings.get(key) !== false && !noBar(key), flip(key), noBar(key), camera(key)));
+                // Side view: off (and saying why) while Turn View is on, or without Turn View's tool
+                const sideOff = (key) => key === 'sideView' && (tv.enabled() || !tv.present());
+                const sideNote = (key) => (key !== 'sideView' ? null : !tv.present() ? { text: t('Needs the Turn View tool'), color: th.dim }
+                    : tv.enabled() ? { text: t('Off while Turn View is on'), color: th.dim } : null);
+                CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), (key === 'sideView' ? settings.get(key) === true && !tv.enabled() : settings.get(key) !== false) && !noBar(key),
+                    flip(key), noBar(key) || sideOff(key), camera(key) || sideNote(key)));
                 // the info bar's items, as the HUD's reading: a button each, lit while on (up to PANEL_MAX)
                 const barOn = settings.get('clusterPanel') !== false && clusterNow;
                 const offered = PANEL_ITEMS.filter(([k]) => offers(k, hv, settings));

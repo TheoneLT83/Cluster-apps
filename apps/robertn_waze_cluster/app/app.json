@@ -273,6 +273,13 @@
       "hidden": true
     },
     {
+      "key": "sideView",
+      "label": "Side view",
+      "type": "bool",
+      "default": false,
+      "hidden": true
+    },
+    {
       "key": "greenLightCluster",
       "label": "Green light alert",
       "type": "bool",

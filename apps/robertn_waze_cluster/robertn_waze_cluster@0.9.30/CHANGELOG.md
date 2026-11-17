@@ -2,6 +2,12 @@
 
 ## 0.9.30
 
+- **Side view** (Display page, Cluster): while a turn signal is on, that side's camera in the cluster's map area, kept
+  1.5 s after the signal; hazards show nothing. Only while Turn View is off, so the two never take the camera from each
+  other (turn-view 0.8.0).
+- **Turn View: the turn sign** (turn-view 0.8.0, IterioDev's): near a turn three blue chevrons, like a curve sign,
+  stand just past it and point the way, fading in from 100 m and growing as it comes; nothing while driving straight.
+
 robertnisipeanu/idrive-apps' 0.6.11 (waze-on-cluster 0.10.11 here): Apple Maps and Google Maps keep their arrival
 time, road names and turn card inside the part of the cluster map you can see, from the next head-unit start.
 

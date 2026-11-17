@@ -21,6 +21,8 @@
  *                             one. No pop-up any more (an old saved `popup` setting is dropped)
  *   control socket            /run/turn-view/ctl.sock (0666, JSON lines) for Cluster functions (robertn_waze_cluster):
  *       -> { op: 'get' | 'reset' } | { op: 'set', settings } | { op: 'preview', cal } | { op: 'calib', on } | { op: 'camreq', state }
+ *          | { op: 'signal', on } | { op: 'side', side: 'left' | 'right' | null } (Side view: that camera alone, the
+ *          camera request the app's, only while Turn View is off; status.side says which shows)
  *       <- { state: { settings, status } }   (pushed on every change, at most 4 a second)
  *   The app asks the camera ECU for the front view (its CameraProxy / ICAM2Proxy grants); the tool starts it in the
  *   background (`hmictl start robertn_waze_cluster`) when the camera is wanted and the app is not connected.
@@ -119,6 +121,11 @@ function gateOpen(show, state, signal, mapView) {
     return state === 'calib' || (state !== 'off' && mapView !== false && when);
 }
 
+/* Side view shown: a side wanted, Turn View off (the two never share the camera), Map view not known to be unselected. */
+function sideOpen(side, enabled, mapView) {
+    return !!side && !enabled && mapView !== false;
+}
+
 function mergeSettings(cur, p) {
     const out = { enabled: cur && typeof cur.enabled === 'boolean' ? cur.enabled : true, cal: clampCal(cur && cur.cal),
         show: cur && SHOW.includes(cur.show) ? cur.show : 'signal' };
@@ -158,11 +165,12 @@ function main() {
     if (GEN === 7) settings.enabled = false;
     log(`start: enabled ${settings.enabled}${GEN === 7 ? ' (iDrive 7: off at every start)' : ''}, cal ${JSON.stringify(settings.cal)}${noFront ? ', no front camera (saved)' : ''}`);
 
-    const status = { gate: 'closed', camera: 'off', rect: null, route: 'none', provider: null, maneuver: null, cr: 'connecting', backend: null,
+    const status = { gate: 'closed', side: null, camera: 'off', rect: null, route: 'none', provider: null, maneuver: null, cr: 'connecting', backend: null,
         nav: 'waiting', state: 'none', camreq: 'idle', noFront, widget: WIDGETS.widget };
     let crTarget = null;                                // the target, from cluster-render's hello (null: none yet)
     // what lets Turn View show (the tick): a turn signal on (the app's 'signal'), Map view selected (null: not known)
-    const gate = { signal: false, mapView: null, open: false };
+    // Side view (the app's 'side': 'left' / 'right' / null): the camera alone, only while Turn View is off
+    const gate = { signal: false, mapView: null, open: false, side: null };
     function setNoFront(on) {
         if (on === noFront) return;
         noFront = on; status.noFront = on; scene.noFront(on);
@@ -370,9 +378,12 @@ function main() {
     let lastState = '';
     setInterval(() => {
         const t = mono(), tv = track.tick(t);
-        const want = gateOpen(settings.show, tv.state, gate.signal, gate.mapView);
-        if (want !== gate.open) { gate.open = want; status.gate = want ? 'open' : 'closed'; log(`gate ${status.gate}`); push(); }
-        const v = want ? tv : Object.assign({}, tv, { state: 'none', video: false, alpha: 0 });
+        const side = sideOpen(gate.side, settings.enabled, gate.mapView);
+        const want = side || gateOpen(settings.show, tv.state, gate.signal, gate.mapView);
+        if (want !== gate.open) { gate.open = want; status.gate = want ? 'open' : 'closed'; log(`gate ${status.gate}${side ? ' (side view ' + gate.side + ')' : ''}`); push(); }
+        if ((side ? gate.side : null) !== status.side) { status.side = side ? gate.side : null; push(); }
+        const v = side ? Object.assign({}, tv, { state: 'side', video: true, alpha: 0 })
+            : want ? tv : Object.assign({}, tv, { state: 'none', video: false, alpha: 0 });
         if (tv.state !== lastState) { log(`state ${lastState || '-'} -> ${tv.state}`); lastState = tv.state; status.state = tv.state; push(); }
         if (status.nav === 'waiting' && t - subscribedAt > NAV_SILENT_MS && !lastNavAt) { status.nav = 'no navigation data'; push(); }
         if (status.cr === 'unsupported') return;              // not our cluster: nothing drawn
@@ -422,6 +433,8 @@ function main() {
             save(); applyCal(settings.cal); push();
         } else if (q.op === 'signal') {
             gate.signal = q.on === true;
+        } else if (q.op === 'side') {
+            gate.side = q.side === 'left' || q.side === 'right' ? q.side : null;
         } else if (q.op === 'camreq' && typeof q.state === 'string') {
             status.camreq = q.state === 'nofront' ? 'refused' : q.state.slice(0, 20); scene.camreq(status.camreq);
             if (status.camreq === 'rearonly' && status.camera !== 'decoding') setNoFront(true);
@@ -464,4 +477,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { mergeSettings, gateOpen, SHOW, clampCal, backoff, DEFAULT_CAL, RANGE };
+module.exports = { mergeSettings, gateOpen, sideOpen, SHOW, clampCal, backoff, DEFAULT_CAL, RANGE };

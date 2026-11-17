@@ -1,7 +1,7 @@
 // Turn View's camera request: IterioDev's (github.com/IterioDev/car-apps, the Turn View app iteriodev_turnview 1.5.0,
 // src/camreq.js), PolyForm Strict License 1.0.0, in Cluster functions with IterioDev's permission (native/turn-view/
 // PERMISSION.md). Changed for Cluster functions: the showing file read every 0.5 s, the ECU's state read at once when
-// a period starts.
+// a period starts; side() asks a side camera alone for Side view.
 'use strict';
 /*
  * Turn View: the front camera asked of the camera ECU while the cluster widget shows it and no other app asks
@@ -36,6 +36,7 @@ const EventEmitter = require('events');
 const SHOWING = '/dev/shm/camcluster/showing';
 const READ_MS = 500, FRESH_MS = 15000, CHECK_MS = 5000, TRIES = 3, RETRY_MS = 30e3;
 const VIEW = 1;                         // the front camera alone (recorder.js VIEWS: req 1 -> shown 1)
+const SIDE = { left: 3, right: 4 };     // Drive Recorder's views of one side camera alone
 const FALLBACK = [5, 7, 2], REAR = 2;   // recorder.js VIEWS: 5 front + rear -> shown 5/6, 7 all -> 7/9/10, 2 rear -> 2
 const WITH_FRONT = [1, 5, 6, 7, 9, 10]; // CurrentState perspectives whose frames hold the front camera (camera.h)
 const IF = {
@@ -63,6 +64,7 @@ function create(o) {
     let state = 'idle', text = 'not needed';
     let period = null, staleSince = null, gen = 0;     // period: { tries } from the file turning fresh to 15 s stale
     let camCookie = null, attaching = null;
+    let side = null;                                   // Side view: SIDE's view asked instead of the front (side())
 
     function set(s, t) {
         if (s === state && t === text) return;
@@ -128,9 +130,9 @@ function create(o) {
     }
 
     function ask(view) {
-        const p = period, what = view === VIEW ? `try ${++p.tries}` : `view ${view}`;
+        const own = view === VIEW || view === side, p = period, what = own ? `try ${++p.tries}` : `view ${view}`;
         p.asked = view;
-        set('asked', view === VIEW ? `asked ${p.tries} of ${TRIES}` : `front view not given, asking view ${view}`);
+        set('asked', own ? `asked ${p.tries} of ${TRIES}` : `front view not given, asking view ${view}`);
         return attach()
             .then(() => {
                 if (period !== p) return null;                  // the widget went meanwhile
@@ -147,6 +149,14 @@ function create(o) {
         return Promise.all([get('xv', 'CurrentState'), get('icam', 'currentState')]).then((both) => {
             if (period !== p) return null;
             const ss = both.filter((x) => x && typeof x === 'object'), s = ss[0], by = camCookie !== null ? '' : ', by another app';
+            if (side) {                                     // a side camera alone: no fall-backs
+                const name = side === SIDE.left ? 'left' : 'right';
+                if (ss.some((x) => drView(x) === side)) { set('on', `${name} camera on${by}`); schedule(); return null; }
+                if (p.tries < TRIES) return ask(side);
+                set('refused', `no ${name} camera given (${stateText(s)})`);
+                schedule();
+                return null;
+            }
             const front = ss.find(applied) || (p.tries >= TRIES && ss.find((x) => WITH_FRONT.indexOf(drView(x)) >= 0));
             if (front) { set('on', `front view on${applied(front) ? '' : ` (view ${drView(front)})`}${by}`); schedule(); return null; }
             if (p.tries < TRIES) return ask(VIEW);
@@ -191,6 +201,15 @@ function create(o) {
     api.status = () => ({ state, text, tries: period ? period.tries : 0, attached: camCookie !== null });
     api.start = () => { Object.keys(IF).forEach(connect); loop(); };
     api.release = camRelease;
+    /* Side view: 'left' / 'right' asks that camera alone (SIDE) while the cluster shows the camera, null the front
+     * again; a change during a period asks at once. */
+    api.side = (v) => {
+        const want = SIDE[v] || null;
+        if (want === side) return;
+        side = want;
+        log(`camera request: ${v ? v + ' camera' : 'front camera'} wanted`);
+        if (period) { period.tries = 0; period.fb = 0; schedule(0); }
+    };
     return api;
 }
 
