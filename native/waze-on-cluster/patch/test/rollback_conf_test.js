@@ -52,7 +52,8 @@ if (!list.length) {
     list = tags() || [];
 }
 var RELEASES = list.map(function (t) { return t.slice('waze-on-cluster@'.length); }).filter(function (v) { return /^\d+\.\d+\.\d+$/.test(v); }).sort(cmp);
-ok('every release from 0.5.0 to 0.10.7 is at hand', RELEASES.indexOf('0.5.0') >= 0 && RELEASES.indexOf('0.10.7') >= 0, RELEASES.join(' '));
+// (this repository's releases start at 0.9.2; 0.10.12 is the last before this version, robertnisipeanu/idrive-apps' 0.10.7)
+ok('every release up to 0.10.12 is at hand', RELEASES.indexOf('0.9.2') >= 0 && RELEASES.indexOf('0.10.12') >= 0, RELEASES.join(' '));
 if (!RELEASES.length) process.exit(1);
 
 /* A conf's lines as Config::load reads them: [key, value] or [null, line]
@@ -87,13 +88,13 @@ ok('no release reads features.conf', RELEASES.every(function (v) { return !READS
 /* The local conf the owner keeps: keys every release knows. */
 var USER = '# mine\ntarget_fps = 20\npan_blocks = 1\n';
 ok('every release starts with the owner\'s own local conf', refusing(USER).length === 0, refusing(USER).join(' '));
-/* What this test guards against: every release up to 0.10.7 refuses an
+/* What this test guards against: every release up to 0.10.12 refuses an
  * opt-in key in the local conf. */
-var UP_TO_0107 = RELEASES.filter(function (v) { return cmp(v, '0.10.7') <= 0; });
+var UP_TO_0107 = RELEASES.filter(function (v) { return cmp(v, '0.10.12') <= 0; });
 ['hosted_vpp_scale', 'always_packed'].forEach(function (k) {
     var refused = refusing(USER + k + ' = 1\n').map(function (r) { return r.split(' ')[0]; });
     var accepted = UP_TO_0107.filter(function (v) { return refused.indexOf(v) < 0; });
-    ok('every release up to 0.10.7 refuses ' + k + ' in the local conf', accepted.length === 0, accepted.join(' '));
+    ok('every release up to 0.10.12 refuses ' + k + ' in the local conf', accepted.length === 0, accepted.join(' '));
 });
 
 /* ---- this version's patchd on a temporary /var/opt/waze-on-cluster ------- */
