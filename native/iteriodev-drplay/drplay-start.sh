@@ -27,6 +27,7 @@ usable() {
 }
 dirs() { d=; for c in $CLIPS; do [ -d "$c" ] && usable "$c" && d="${d:+$d,}$c"; done; printf '%s' "$d"; }
 # why the player is not up, for the Drive recorder app (STATE: one line, anyone may read it; removed while it runs)
+RUN=${DR_RUN:-/run/iteriodev-drplay}
 STATE=${DR_STATE:-/run/iteriodev-drplay/start-state}
 ERR=${DR_ERR:-/run/iteriodev-drplay/player.err}
 said=
@@ -36,6 +37,10 @@ while :; do
     if [ -z "$U" ] && [ ! -f "$APPS/oap-driverecorder-next.json" ]; then say "no Drive recorder installed yet, waiting"
     elif ! clips; then say "no clip folder yet ($CLIPS), waiting"
     else
+        # its socket folder its own again (the player makes drplay.sock there after it drops to uid 3912, group 929;
+        # setup.sh does this only at the service's start), and an old socket gone
+        mkdir -p "$RUN" && chown 3912:929 "$RUN" && chmod 755 "$RUN"
+        rm -f "$RUN/drplay.sock"
         rm -f "$STATE"; said=
         # (its errors kept in ERR as well as in the journal: the last line says why it ended)
         if [ -n "$U" ]; then "$BIN" --dirs "$(dirs)" --uid "$U" 2>"$ERR"; else "$BIN" --dirs "$(dirs)" 2>"$ERR"; fi

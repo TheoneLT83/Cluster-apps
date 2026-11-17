@@ -1,1 +1,1 @@
-{"build": "node tools/build.js", "requires": {"iteriodev-drplay": "1.2.12", "mgu-render": "0.6.17", "mgu-inputgate": "1.0.0"}, "uninstallable": true, "mguHmi": ["ID7"], "icon": "app/icon.png"}
+{"build": "node tools/build.js", "requires": {"iteriodev-drplay": "1.2.13", "mgu-render": "0.6.17", "mgu-inputgate": "1.0.0"}, "uninstallable": true, "mguHmi": ["ID7"], "icon": "app/icon.png"}

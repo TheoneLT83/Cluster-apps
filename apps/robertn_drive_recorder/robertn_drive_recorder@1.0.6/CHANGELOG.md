@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.6
+
+- **The player can open its connection again** (Drive Recorder player 1.2.13): before each start its folder in /run is
+  made the player's own again and an old connection file removed ("socket ... Permission denied").
+
 ## 1.0.5
 
 - **The player gets only clip folders it can open** (Drive Recorder player 1.2.12): one it cannot read (the
