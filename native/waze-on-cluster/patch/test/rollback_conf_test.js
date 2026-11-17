@@ -51,8 +51,9 @@ if (!list.length) {
     try { git(['fetch', '--no-tags'].concat(shallow ? ['--depth=1'] : [], ['origin', '+refs/tags/waze-on-cluster@*:refs/tags/waze-on-cluster@*'])); } catch (e) {}
     list = tags() || [];
 }
-var RELEASES = list.map(function (t) { return t.slice('waze-on-cluster@'.length); }).filter(function (v) { return /^\d+\.\d+\.\d+$/.test(v); }).sort(cmp);
-// (this repository's releases start at 0.9.2; 0.10.12 is the last before this version, robertnisipeanu/idrive-apps' 0.10.7)
+// the releases before the opt-in keys (0.10.13 knows them): this repository's start at 0.9.2; 0.10.12 is the last,
+// robertnisipeanu/idrive-apps' 0.10.7
+var RELEASES = list.map(function (t) { return t.slice('waze-on-cluster@'.length); }).filter(function (v) { return /^\d+\.\d+\.\d+$/.test(v) && cmp(v, '0.10.13') < 0; }).sort(cmp);
 ok('every release up to 0.10.12 is at hand', RELEASES.indexOf('0.9.2') >= 0 && RELEASES.indexOf('0.10.12') >= 0, RELEASES.join(' '));
 if (!RELEASES.length) process.exit(1);
 
