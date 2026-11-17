@@ -1,7 +1,7 @@
 {
  "id": "robertn_drive_recorder",
  "title": "Drive recorder",
- "version": "1.0.2",
+ "version": "1.0.3",
  "screens": [
   {
    "name": "MAIN",

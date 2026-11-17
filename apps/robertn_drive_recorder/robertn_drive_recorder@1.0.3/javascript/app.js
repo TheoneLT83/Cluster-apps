@@ -83,6 +83,22 @@ async function background(bg) {
     return { rec, player, settings, saveSettings, speed };
 }
 
+/* Why the player tool is not up, as its start script says (the tool's start-state; none: not installed or not started),
+ * read at most every 2 s: [head, line] for the Record page, or null. */
+const START_STATE = '/run/iteriodev-drplay/start-state';
+let whyAt = 0, why = null;
+function playerWhy() {
+    if (Date.now() - whyAt > 2000) {
+        whyAt = Date.now();
+        try { why = fs.readFileSync(START_STATE, 'utf8').trim() || null; } catch (e) { why = null; }
+    }
+    if (!why) return null;
+    if (/^no clip folder/.test(why)) return ['PLAYER WAITING', 'No clip folder from the car yet: restart the head unit once'];
+    if (/^the player ended/.test(why)) return ['PLAYER RESTARTING', 'It stopped and starts again in 30 s'];
+    if (/^no Drive recorder/.test(why)) return ['PLAYER STARTING', 'It starts in a few seconds'];
+    return ['PLAYER WAITING', why];
+}
+
 mgu.run({
     background,
     async start(ctx) {
@@ -98,11 +114,12 @@ mgu.run({
         function drawRecord(cv, t) {
             const s = rec.status(), on = s.vb === 'RECORDING', tool = player.up;
             G.panel(cv, t, 24, 44, 900, 468, null);
-            const head = !tool ? ['PLAYER NOT RUNNING', t.crit] : s.vb === null ? ['STARTING', t.dim] : on ? ['RECORDING', REC] : ['NOT RECORDING', t.warn];
+            const wait = !tool && playerWhy();
+            const head = wait ? [wait[0], t.warn] : !tool ? ['PLAYER NOT RUNNING', t.crit] : s.vb === null ? ['STARTING', t.dim] : on ? ['RECORDING', REC] : ['NOT RECORDING', t.warn];
             if (on) cv.circle(64, 96, 12, REC);
             cv.text(head[0], on ? 88 : 48, 106, 34, head[1], { font: 'bold', spacing: 2 });
             const held = Math.round(s.filled || 0);
-            cv.text(tool ? 'The last ' + held + ' s kept' : 'Install "Drive Recorder player" from the Store', 48, 156, 26, t.dim);
+            cv.text(tool ? 'The last ' + held + ' s kept' : wait ? wait[1] : 'Install "Drive Recorder player" from the Store', 48, 156, 26, t.dim);
             cv.text('CAMERAS', 48, 222, 22, t.dim, { font: 'bold', spacing: 1.5 });
             (s.views || []).forEach((v, i) => {
                 G.button(cv, t, 48 + i * 212, 240, 200, 52, v.label, go(() => rec.setView(v.req)), { primary: s.view === v.req, key: 'view-' + v.req, busy: s.checking });

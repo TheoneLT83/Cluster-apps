@@ -7,7 +7,7 @@ Drive recorder app (`apps/robertn_drive_recorder`), which also uses IterioDev's 
 Settings tab.
 
 Changed here: `drplay-start.sh` (new) starts the player with `--uid` set to Drive recorder's user id (the player
-answers one app only, by default IterioDev's); `iteriodev-drplay.service` runs it. Version 1.2.9 here.
+answers one app only, by default IterioDev's); `iteriodev-drplay.service` runs it. Version 1.2.10 here.
 
 Shipped unchanged: the binaries `mgu-drplay` and `mgu-driverec-rx` (IterioDev's builds; they link FFmpeg, libjpeg-turbo
 and OpenH264, see their LICENSE files), the scripts and the services. Its id stays `iteriodev-drplay` (its folders and

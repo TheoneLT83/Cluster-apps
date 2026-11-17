@@ -21,6 +21,14 @@ chown "$U:$G" "$R"
 chmod 755 "$R"
 # (only regular files the player owns: -h never follows a link, -type f leaves links out)
 find "$T" "$X" -xdev -type f -user "$U" ! -group "$P2" -exec chgrp -h "$P2" {} \; 2>/dev/null || :
+# 1.2.10: the main clip folder made, as the car makes it (02775 ent_mono:mgu_driverec), on a car whose camera service has
+# made none: the player ends at once without one ("no clip folders"), and the receiver writes the clips there. Only
+# where nothing is at that name, its parent a real folder.
+CF=/var/opt/public/ent/driverecorder
+if [ ! -e "$CF" ] && [ ! -L "$CF" ] && [ -d "${CF%/*}" ] && [ ! -L "${CF%/*}" ]; then
+    O=root; id -u ent_mono >/dev/null 2>&1 && O=ent_mono
+    (umask 022; mkdir "$CF") && chown "$O:$G" "$CF" && chmod 2775 "$CF" && echo "clip folder made: $CF ($O:$G 2775)" || :
+fi
 # the clip folders (02775 ent_mono:mgu_driverec: group 929 writes there; the HDD one only on cars with a disk): root
 # only makes locked/ where nothing is - mkdir never follows a link at that name, the setgid folder gives it group 929
 # and setgid. No chown / chmod by path in a folder others write to.

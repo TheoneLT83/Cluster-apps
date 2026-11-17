@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.3
+
+- **The player starts on a car without a clip folder yet** (Drive Recorder player 1.2.10): the player waited for the
+  folder the car's camera service makes, so Drive recorder said "player not running" although it was installed. The
+  player's set-up now makes that folder as the car does. While the player waits or restarts, the Record page says why
+  instead of asking to install it.
+
 ## 1.0.2
 
 - **Installs in one go** (Drive Recorder player 1.2.8): the player, installed first, stopped while Drive recorder
