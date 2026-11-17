@@ -1,5 +1,5 @@
 // From IterioDev's Drive Recorder 2.5.0 (github.com/IterioDev/car-apps, PolyForm Strict), used here with IterioDev's
-// permission and unchanged; credits in this app's Settings tab and README.
+// permission; one change: REC_DIRS also has /var/opt/hdshare/ent/driverecorder. Credits in this app's Settings tab and README.
 'use strict';
 /*
  * Drive Recorder: the recording side - the HU's camera ring buffer kept running, saves, the camera DR mode. Moved from
@@ -59,7 +59,7 @@ const EventEmitter = require('events');
 // layout. No provisioning / coding / OTA gate. The camera DR mode is still driven here over ICAM2Proxy (ungated).
 const RX_SOCK = '/var/opt/iteriodev-drplay/recd.sock';
 
-const REC_DIRS = ['/var/opt/public/ent/driverecorder', '/mnt/share/ent/driverecorder'];   // icam2proxy: eMMC / HDD
+const REC_DIRS = ['/var/opt/public/ent/driverecorder', '/mnt/share/ent/driverecorder', '/var/opt/hdshare/ent/driverecorder'];   // icam2proxy: eMMC / HDD / hdshare
 const LENGTHS = [[10, 5], [20, 10], [30, 15], [60, 30]];   // seconds before / after the tap
 // clips are about 5 MB per second (car: 59 MB for 11 s, 88 MB for 17 s); a failed store leaves an 80 KB "(0sec)" file
 const MIN_BEFORE = 5;      // 2.3.9: a save needs at least this many seconds before the tap (else: shorter clips, not none)

@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4
+
+- **Clips where the car keeps them** (Drive Recorder player 1.2.11): a car whose recorder writes to
+  `/var/opt/hdshare/ent/driverecorder` has its clips listed and played too.
+
 ## 1.0.3
 
 - **The player starts on a car without a clip folder yet** (Drive Recorder player 1.2.10): the player waited for the

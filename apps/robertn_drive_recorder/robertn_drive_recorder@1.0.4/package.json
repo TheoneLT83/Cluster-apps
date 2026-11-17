@@ -1,6 +1,6 @@
 {
   "name": "robertn_drive_recorder",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Keeps the car's cameras recording and saves a clip when you ask (the seconds before and after); watch, lock, delete and copy clips to a USB stick while parked. Recording and playback by IterioDev's Drive Recorder player",
   "main": "javascript/app.js",
   "private": false,
