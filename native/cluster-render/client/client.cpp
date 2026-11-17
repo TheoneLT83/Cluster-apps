@@ -350,6 +350,8 @@ std::vector<std::pair<std::string, std::string>> Client::fields(const char *op, 
         {"prewarm", flag(lo.prewarm)},   {"contend", flag(lo.contend)},
         {"guide_hold", flag(lo.guide_hold)}, {"yield", flag(lo.yield)},
         {"opacity", num(lo.opacity)}};
+    if (lo.hide_badge)
+        kv.push_back({"hide_badge", "1"});
     if (lo.feather > 0)
         kv.push_back({"feather", num(lo.feather)});
     if (lo.feather_bottom >= 0)

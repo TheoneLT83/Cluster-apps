@@ -402,7 +402,9 @@ public:
      * shown at all, whether a wanting layer contends with the stock HMI, lets
      * the holds that follow it hold (guide_hold) and lets it give way to the
      * stock pop-ups (yield). */
-    void want(int target, bool wanted, bool contend, bool guide_hold = true, bool yield = true);
+    /* hide_badge: a hold that follows it is held with no box mapped too, so the KOMBI's badge (eDrive logo, M
+     * emblem) is covered while the target is shown. */
+    void want(int target, bool wanted, bool contend, bool guide_hold = true, bool yield = true, bool hide_badge = false);
     /* After the compositor's wants: each hold is wanted, contending, exactly
      * while the target it follows is shown and its wanting layers let it
      * hold (none has guide_hold false), one of take_over_contents is mapped
@@ -505,7 +507,7 @@ public:
 private:
     struct Target {
         TargetStatus status;
-        bool wanted = false, contend = false, guide_hold = true;
+        bool wanted = false, contend = false, guide_hold = true, hide_badge = false;
         bool yield = true;   /* no wanting layer has yield false (popup_blocks) */
         bool requested = false;
         bool refused = false;        /* a hold whose slot the display refused: not asked for again */

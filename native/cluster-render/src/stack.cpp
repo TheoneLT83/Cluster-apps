@@ -54,6 +54,7 @@ Arrangement arrange(std::vector<StackItem> items)
             r.wanted = true;
             r.contend = r.contend || it.contend;
             r.guide_hold = r.guide_hold && it.guide_hold;
+            r.hide_badge = r.hide_badge || it.hide_badge;
             r.yield = r.yield && it.yield;
         }
     }

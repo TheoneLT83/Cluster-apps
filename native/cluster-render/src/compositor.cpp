@@ -822,6 +822,7 @@ void Compositor::arrange(int64_t now_ms)
             it.prewarm = l.params.prewarm;
             it.contend = l.params.contend;
             it.guide_hold = l.params.guide_hold;
+            it.hide_badge = l.params.hide_badge;
             it.yield = l.params.yield;
             it.shown = l.on_display();
             items.push_back(it);
@@ -837,7 +838,7 @@ void Compositor::arrange(int64_t now_ms)
             t.arr.contend = t.arr.contend || scenes_[sc].contend;
         }
         fade((int)ti, t, now_ms);
-        slots_->want((int)ti, t.arr.wanted, t.arr.contend, t.arr.guide_hold, t.arr.yield);
+        slots_->want((int)ti, t.arr.wanted, t.arr.contend, t.arr.guide_hold, t.arr.yield, t.arr.hide_badge);
         if (!t.graph)
             continue;
         const bool cv = t.composite && t.composite->attached();
@@ -918,6 +919,7 @@ void Compositor::fade(int ti, Target &t, int64_t now_ms)
             t.arr.wanted = true;
             t.arr.contend = t.last_contend;
             t.arr.guide_hold = t.last_guide_hold;
+            t.arr.hide_badge = t.last_hide_badge;
             t.arr.yield = t.last_yield;
         }
     }
@@ -925,6 +927,7 @@ void Compositor::fade(int ti, Target &t, int64_t now_ms)
         t.last_drawn = t.arr.drawn;
         t.last_contend = t.arr.contend;
         t.last_guide_hold = t.arr.guide_hold;
+        t.last_hide_badge = t.arr.hide_badge;
         t.last_yield = t.arr.yield;
     }
     /* The layers get it by steps, each in the target's next flush; 0 and 1

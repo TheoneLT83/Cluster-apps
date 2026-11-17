@@ -2918,6 +2918,30 @@ static void guide_auto_slot()
        requested_none(joined()) && x.guide_slot() == kGuideSlot && x.state(GuideRig::kGuide) == TargetState::Idle);
 }
 
+/* hide_badge on the map: held with no box too (the car's badge covered), asked for in the pass the map wants it; the
+ * flag cleared, released after the hold's linger. */
+static void guide_badge_covered()
+{
+    GuideRig r(false);
+    r.rows(kGuideSlot, 2, {{kBelt, 3}});   /* no box: the slot shows the badge */
+    r.show_map();
+    r.m.want(0, true, true, true, true, true);
+    joined();
+    logged();
+    r.pass();
+    ok("hide_badge, no box: asked for, logged", joined().find("request guide") != std::string::npos &&
+        logged().find("target guide: the badge covered: held while the map is shown") != std::string::npos);
+    r.rows(kGuideSlot, 2, {{kGuideScene, 1}, {kBelt, 3}});
+    r.m.on_shown(kGuideScene, r.now);
+    r.pass(60000);
+    ok("hide_badge, no box: held a minute", calls_are("") && r.state(GuideRig::kGuide) == TargetState::Shown);
+    r.m.want(0, true, true, true, true, false);
+    r.pass();
+    r.pass(5000);
+    ok("hide_badge cleared, no box: released after the hold's linger", joined().find("release guide") != std::string::npos &&
+        r.state(GuideRig::kGuide) == TargetState::Idle);
+}
+
 /* The hold occupies its slot only while the box is mapped there: no box
  * (Waze, no route), no hold, the car's badge left in the slot; the box
  * mapped (a route), held and taken over; the box mapped again behind ours,
@@ -3821,6 +3845,7 @@ int main()
     guide_no_flapping();
     guide_auto_slot();
     guide_box_comes_and_goes();
+    guide_badge_covered();
     hud_drops();
     panel_hud_map_together();
     panel_falls_back_on_refusal();

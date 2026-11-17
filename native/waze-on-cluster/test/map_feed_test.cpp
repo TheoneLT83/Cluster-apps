@@ -280,6 +280,14 @@ static void guide_hold()
        off.st().state == "showing" && off.in_box_slot(kGuide) == -1 && off.in_box_slot(kBox) == 1);
     ok("turn box: the hold not disabled, the status says so", !h.st().guide_disabled);
 
+    /* no turn box (Waze, no route): the badge in its slot covered while the switch is on */
+    Rig badge(false, 6000, true);
+    badge.pump(3000, &f);
+    ok("no turn box, the switch on: held anyway, the car's badge covered", badge.in_box_slot(kGuide) == 1);
+    badge.feed->set_guide_hold(false);
+    badge.pump(5000, &f);
+    ok("no turn box, the switch off: not held, the badge shows", badge.in_box_slot(kGuide) == -1);
+
 }
 
 /* The HUD's worker is still scaling a frame: the feed then asks to be woken

@@ -232,8 +232,9 @@ bool SlotManager::yields(int i, int64_t now_ms)
     return true;
 }
 
-void SlotManager::want(int i, bool wanted, bool contend, bool guide_hold, bool yield)
+void SlotManager::want(int i, bool wanted, bool contend, bool guide_hold, bool yield, bool hide_badge)
 {
+    t_[i].hide_badge = hide_badge;
     t_[i].wanted = wanted && !t_[i].refused;
     t_[i].contend = t_[i].wanted && contend;
     t_[i].guide_hold = guide_hold;
@@ -278,10 +279,12 @@ void SlotManager::follow(int64_t now_ms)
         if (mapped)
             t.box_ms = now_ms;
         /* Kept through a lock: the lock unmapped the box with ours. */
-        const bool boxed = mapped || t.kept || (t.requested && t.box_ms >= 0 && now_ms - t.box_ms < kNotMappedMs);
+        /* (or the target it follows asks for the badge to be covered: held with no box too) */
+        const bool badge = lead >= 0 && t_[lead].hide_badge;
+        const bool boxed = mapped || badge || t.kept || (t.requested && t.box_ms >= 0 && now_ms - t.box_ms < kNotMappedMs);
         if (boxed != t.boxed)
             log_info("target %s: %s; slot 0x%llx %s", specs_[i].name.c_str(),
-                     boxed ? "the box is mapped: held while the map is shown" : "no box mapped: not held",
+                     boxed ? (mapped || t.kept ? "the box is mapped: held while the map is shown" : badge ? "the badge covered: held while the map is shown" : "the box was mapped: held a moment more") : "no box mapped: not held",
                      (unsigned long long)specs_[i].slot, rows_text(specs_[i].slot).c_str());
         t.boxed = boxed;
         /* While the map is kept through a lock or mapped again after it, a
