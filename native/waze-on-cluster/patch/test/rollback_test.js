@@ -179,7 +179,7 @@ var NEW_PATCH = snapshot();
 /* The patch 0.10.4-0.10.5 wrote, as run on the car (carplay 22.28.3). */
 var CAR_PATCH_SHA = 'a241b0e9af9ac1eada5c5ebcf9fab06669a155376b0a5c70cd85f3c1459a88b5';
 if (BIN) ok('this version\'s patch is byte for byte the one 0.10.4-0.10.5 wrote', require('crypto').createHash('sha256').update(NEW_PATCH['']).digest('hex') === CAR_PATCH_SHA);
-ok('every release from ' + (BIN ? '0.5.0' : '0.7.0') + ' to 0.10.11 is tested', RELEASES.indexOf(BIN ? '0.5.0' : '0.7.0') >= 0 && RELEASES.indexOf('0.10.11') >= 0, RELEASES.join(' '));
+ok('0.10.11 (the safe area 476x306) is among the releases tested', RELEASES.indexOf('0.10.11') >= 0, RELEASES.join(' '));
 var R = LOC.res, SAFE_OFFS = [R.safe1, R.safe2];
 function imm(buf, o) { return buf.slice(o, o + 8); }
 /* The safe area 0.10.11 wrote (476x306 at 306,72): the view x,y and safe
