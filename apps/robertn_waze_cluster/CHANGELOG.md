@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.32
+
+robertnisipeanu/idrive-apps' 0.6.12 (waze-on-cluster 0.10.12 here): the safe area CarPlay keeps its guidance in is
+504x368 at (286, 72) again, as before 0.9.30; from the next head-unit start.
+
 ## 0.9.31
 
 - **Turn View shows near a turn, or always** (turn-view 0.8.1): the choice of showing it with a turn signal is gone;
