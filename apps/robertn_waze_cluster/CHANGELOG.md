@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.33
+
+Turn View takes the camera as it is when it already shows the front camera in a view of several (Drive recorder's
+all cameras): it no longer asks for the front camera alone, which kept Drive recorder from recording ("all cameras
+asked 3 times, the ECU stays at view 1").
+
 ## 0.9.32
 
 robertnisipeanu/idrive-apps' 0.6.12 (waze-on-cluster 0.10.12 here): the safe area CarPlay keeps its guidance in is

@@ -1,7 +1,8 @@
 // Turn View's camera request: IterioDev's (github.com/IterioDev/car-apps, the Turn View app iteriodev_turnview 1.5.0,
 // src/camreq.js), PolyForm Strict License 1.0.0, in Cluster functions with IterioDev's permission (native/turn-view/
 // PERMISSION.md). Changed for Cluster functions: the showing file read every 0.5 s, the ECU's state read at once when
-// a period starts; side() asks a side camera alone for Side view.
+// a period starts; side() asks a side camera alone for Side view; a DR view that holds the front camera (WITH_FRONT,
+// Drive recorder's all cameras) counts as on at once, so Turn View never asks it away.
 'use strict';
 /*
  * Turn View: the front camera asked of the camera ECU while the cluster widget shows it and no other app asks
@@ -149,6 +150,8 @@ function create(o) {
         return Promise.all([get('xv', 'CurrentState'), get('icam', 'currentState')]).then((both) => {
             if (period !== p) return null;
             const ss = both.filter((x) => x && typeof x === 'object'), s = ss[0], by = camCookie !== null ? '' : ', by another app';
+            // no state read yet (the camera service still connecting): read again in 1 s before asking anything
+            if (!ss.length && !p.waited) { p.waited = true; schedule(1000); return null; }
             if (side) {                                     // a side camera alone: no fall-backs
                 const name = side === SIDE.left ? 'left' : 'right';
                 if (ss.some((x) => drView(x) === side)) { set('on', `${name} camera on${by}`); schedule(); return null; }
@@ -157,7 +160,7 @@ function create(o) {
                 schedule();
                 return null;
             }
-            const front = ss.find(applied) || (p.tries >= TRIES && ss.find((x) => WITH_FRONT.indexOf(drView(x)) >= 0));
+            const front = ss.find(applied) || ss.find((x) => WITH_FRONT.indexOf(drView(x)) >= 0);   // (a view with the front in it, e.g. Drive recorder's 7: taken as it is, not asked away)
             if (front) { set('on', `front view on${applied(front) ? '' : ` (view ${drView(front)})`}${by}`); schedule(); return null; }
             if (p.tries < TRIES) return ask(VIEW);
             if (p.rearOnly) { set('rearonly', 'rear camera only'); schedule(); return null; }    // holds for the period (camera given back)
