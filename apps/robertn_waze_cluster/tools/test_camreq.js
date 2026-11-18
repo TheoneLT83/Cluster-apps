@@ -23,7 +23,7 @@ const run = (ms) => {
 let view = { application: 'DR_ACTIVE', mode: 'MODE_MOSAIK', perspective: 1 };
 const proxy = { CurrentState: { getValue: () => view } };
 const cam = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/XView3D/.test(n) ? Promise.resolve(proxy) : Promise.reject(new Error('no'))) },
-    showingFile: file, now: () => t, setTimer });
+    showingFile: file, cookieFile: path.join(dir, 'cookie'), now: () => t, setTimer });
 (async () => {
     fs.writeFileSync(file, 'front\n');
     const mtime = fs.statSync(file).mtime.getTime();
@@ -41,7 +41,7 @@ const cam = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/XView3D/
     const icam = { currentState: { getValue: () => sv }, changeState: (a) => { asked.push(a.desiredState.perspective); sv = Object.assign({}, sv, { perspective: a.desiredState.perspective }); return Promise.resolve(); },
         clientAttach: () => Promise.resolve({ cookie: 7 }), clientDetach: () => Promise.resolve() };
     const cam2 = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/ICAM2Proxy/.test(n) ? Promise.resolve(icam) : Promise.reject(new Error('no'))) },
-        showingFile: file, now: () => t, setTimer });
+        showingFile: file, cookieFile: path.join(dir, 'cookie'), now: () => t, setTimer });
     fs.utimesSync(file, new Date(t), new Date(t));
     cam2.start();
     cam2.side('left');
@@ -56,7 +56,7 @@ const cam = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/XView3D/
     const icam3 = { currentState: { getValue: () => dr }, changeState: (a) => { asked3.push(a.desiredState.perspective); return Promise.resolve(); },
         clientAttach: () => Promise.resolve({ cookie: 8 }), clientDetach: () => Promise.resolve() };
     const cam3 = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/ICAM2Proxy/.test(n) ? Promise.resolve(icam3) : Promise.reject(new Error('no'))) },
-        showingFile: file, now: () => t, setTimer });
+        showingFile: file, cookieFile: path.join(dir, 'cookie'), now: () => t, setTimer });
     fs.utimesSync(file, new Date(t), new Date(t));
     cam3.start();
     let st3 = null;
@@ -71,7 +71,7 @@ const cam = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/XView3D/
     const icam4 = { currentState: { getValue: () => s4 }, changeState: (a) => { asked4.push(a.desiredState.perspective); s4 = Object.assign({}, s4, { perspective: a.desiredState.perspective }); return Promise.resolve(); },
         clientAttach: () => Promise.resolve({ cookie: 9 }), clientDetach: () => Promise.resolve() };
     const cam4 = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/ICAM2Proxy/.test(n) ? Promise.resolve(icam4) : Promise.reject(new Error('no'))) },
-        showingFile: file, now: () => t, setTimer });
+        showingFile: file, cookieFile: path.join(dir, 'cookie'), now: () => t, setTimer });
     cam4.start();
     cam4.side('right');
     let st4 = null;
@@ -79,7 +79,25 @@ const cam = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/XView3D/
     for (let i = 0; i < 120 && !(st4 && st4.state === 'on'); i++) { run(100); await new Promise((r) => setImmediate(r)); }
     assert(asked4[0] === 4 && st4 && /right camera on/.test(st4.text), 'the right camera asked without camcluster: ' + JSON.stringify([asked4, st4]));
     console.log('ok   side view without camcluster: the right camera asked (view 4) and on');
+    assert(cam4.sideOn(), 'sideOn while the right camera shows');
+    console.log('ok   sideOn() while the side asked for is the ECU\'s view');
+    // a claim a stopped copy left is given back; a side never given: the claim made anew once
+    fs.writeFileSync(path.join(dir, 'cookie5'), '41');
+    const detached = [], asked5 = [];
+    let attaches = 0;
+    const s5 = { application: 'DR_STANDBY', mode: 'MODE_MOSAIK', perspective: 7 };
+    const icam5 = { currentState: { getValue: () => s5 }, changeState: (a) => { asked5.push(a.desiredState.perspective); return Promise.resolve(); },
+        clientAttach: () => Promise.resolve({ cookie: 50 + ++attaches }), clientDetach: (a) => { detached.push(a.cookie); return Promise.resolve(); } };
+    const cam5 = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/ICAM2Proxy/.test(n) ? Promise.resolve(icam5) : Promise.reject(new Error('no'))) },
+        showingFile: file, cookieFile: path.join(dir, 'cookie5'), now: () => t, setTimer });
+    cam5.start();
+    cam5.side('left');
+    for (let i = 0; i < 100; i++) { run(100); await new Promise((r) => setImmediate(r)); }
+    assert(detached[0] === 41, 'the stale claim given back: ' + JSON.stringify(detached));
+    assert(attaches === 2 && detached.indexOf(51) >= 0 && asked5.length >= 6 && !cam5.sideOn(), 'claimed anew after 3 tries: ' + JSON.stringify([attaches, detached, asked5]));
+    assert(fs.readFileSync(path.join(dir, 'cookie5'), 'utf8') === '52', 'the new claim kept for the next start');
+    console.log('ok   a stopped copy\'s claim given back; the left camera never given: the camera claimed anew, the new claim kept');
     fs.rmSync(dir, { recursive: true, force: true });
-    console.log('camreq: 4 checks pass');
+    console.log('camreq: 6 checks pass');
     process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });

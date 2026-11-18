@@ -317,7 +317,10 @@ async function background(bg) {
     function sideNow() {
         const st = turns.state(), on = settings.get('sideView') === true && !tv.enabled();
         const s = on && st.left && !st.right ? 'left' : on && st.right && !st.left ? 'right' : null;
-        if (s || !on) { clearTimeout(sideTimer); sideTimer = null; tv.side(s); ctl.showSide(!!s); return; }
+        // the camera copy shown only while the ECU shows the side asked for (no mosaic or front view in between)
+        const shown = () => !!tv.sideNow && (!tv.cam || tv.cam.sideOn());
+        if (s || !on) { clearTimeout(sideTimer); sideTimer = null; tv.side(s); ctl.showSide(shown()); return; }
+        ctl.showSide(shown());
         if (tv.sideNow && !sideTimer) sideTimer = setTimeout(() => { sideTimer = null; tv.side(null); ctl.showSide(false); }, SIDE_HOLD_MS);
     }
     turns.on('change', () => { toHud(); const st = turns.state(); if (typeof tv !== 'undefined' && tv) { tv.signal(!!(st.left || st.right)); sideNow(); } changed(); });

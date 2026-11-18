@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.34
+
+Side view: the camera shows on the cluster only once the camera unit shows the side asked for (read back 0.3 s after
+the request, then every 0.5 s), so its own all-cameras view at the car's start or the front view never flashes up; a
+side not given after 3 requests (the camera unit restarted, or ignores the request) gets the camera claimed anew; a
+claim a stopped copy of the app left (a Store update) is given back at the next start.
+
 ## 0.9.33
 
 Turn View takes the camera as it is when it already shows the front camera in a view of several (Drive recorder's

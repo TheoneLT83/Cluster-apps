@@ -38,6 +38,15 @@ const SHOWING = '/dev/shm/camcluster/showing';
 const READ_MS = 500, FRESH_MS = 15000, CHECK_MS = 5000, TRIES = 3, RETRY_MS = 30e3;
 const VIEW = 1;                         // the front camera alone (recorder.js VIEWS: req 1 -> shown 1)
 const SIDE = { left: 3, right: 4 };     // Drive Recorder's views of one side camera alone
+// Side view: the ECU's view read back SIDE_CHECK_MS after a request and every SIDE_WATCH_MS while it shows (it
+// confirms a view in about 0.1 s; after the car starts it restarts into its own all-cameras mosaic and forgets our
+// request), so the cluster shows the camera only while the side asked for is there (sideOn()). Not given TRIES times:
+// the camera given back and claimed anew (at most once a RECLAIM_MS).
+const SIDE_CHECK_MS = 300, SIDE_WATCH_MS = 500, RECLAIM_MS = 10000;
+// the claim (cookie) kept where a Store update that stops the app without its release leaves it: the next start gives
+// it back, so two claims never ask two views (the cluster flickering between them); /dev/shm empties at each start
+// of the head unit, as the camera unit forgets its clients then
+const COOKIE_FILE = '/dev/shm/robertn_waze_cluster-camcookie';
 const FALLBACK = [5, 7, 2], REAR = 2;   // recorder.js VIEWS: 5 front + rear -> shown 5/6, 7 all -> 7/9/10, 2 rear -> 2
 const WITH_FRONT = [1, 5, 6, 7, 9, 10]; // CurrentState perspectives whose frames hold the front camera (camera.h)
 const IF = {
@@ -59,6 +68,7 @@ const parking = (s) => /^(TOPREARVIEW|SIDEVIEW|RFK|OFFROAD|REMOTE360|1|2|3|20|60
 
 function create(o) {
     const log = o.log || (() => {}), someipBuilders = o.someipBuilders, file = o.showingFile || SHOWING;
+    const cookieFile = o.cookieFile === undefined ? COOKIE_FILE : o.cookieFile;
     const now = o.now || Date.now, setTimer = o.setTimer || ((fn, ms) => setTimeout(fn, ms));
     const api = new EventEmitter();
     const px = {}, link = {};
@@ -78,7 +88,7 @@ function create(o) {
     function connect(name) {
         link[name] = link[name] || 'connecting';
         Promise.resolve().then(() => someipBuilders.buildAndInitTypedProxy(IF[name][0], IF[name][1], 10000))
-            .then((p) => { px[name] = p; link[name] = 'ok'; log(`${name} connected`); },
+            .then((p) => { px[name] = p; link[name] = 'ok'; log(`${name} connected`); if (name === 'icam') dropStale(); },
                 (e) => {
                     if (link[name] === 'connecting') log(`${name} not there yet (again every ${RETRY_MS / 1000} s):`, errText(e));
                     link[name] = `ERR ${errText(e)}`;
@@ -111,7 +121,7 @@ function create(o) {
     // attached as icam2proxy's indirect client (one cookie: a second request waits for the attach under way)
     const attach = () => (camCookie !== null ? Promise.resolve(camCookie) : attaching || (attaching =
         named((a) => camCall('clientAttach', a), { type: 'CLIENT_INDIRECT' }, { type: CAM_WIRE.CLIENT_INDIRECT })
-            .then((r) => { attaching = null; camCookie = r && typeof r === 'object' ? r.cookie : r; log(`camera: attached, cookie ${camCookie}`); return camCookie; },
+            .then((r) => { attaching = null; camCookie = r && typeof r === 'object' ? r.cookie : r; keepCookie(camCookie); log(`camera: attached, cookie ${camCookie}`); return camCookie; },
                 (e) => { attaching = null; throw e; })));
 
     function camRelease() {
@@ -120,8 +130,24 @@ function create(o) {
             if (camCookie === null) return null;
             const c = camCookie;
             return Promise.resolve().then(() => camCall('clientDetach', { cookie: c }))
-                .then(() => { camCookie = null; log(`camera: released (cookie ${c})`); }, (e) => log('camera release failed:', errText(e)));
+                .then(() => { camCookie = null; keepCookie(null); log(`camera: released (cookie ${c})`); }, (e) => log('camera release failed:', errText(e)));
         });
+    }
+
+    function keepCookie(c) {
+        if (!cookieFile) return;
+        try { if (c === null) fs.unlinkSync(cookieFile); else fs.writeFileSync(cookieFile, String(c)); } catch (e) { /* none to drop / no /dev/shm */ }
+    }
+    // a claim a stopped copy of the app left (COOKIE_FILE): given back once the camera service is there
+    let staleDone = false;
+    function dropStale() {
+        if (staleDone || !cookieFile) return;
+        staleDone = true;
+        let c = null;
+        try { c = Number(String(fs.readFileSync(cookieFile, 'utf8')).trim()); } catch (e) { return; }
+        if (!Number.isFinite(c) || c === camCookie) return;
+        camCall('clientDetach', { cookie: c }).then(() => log(`camera: gave back the claim a stopped copy left (cookie ${c})`), () => {})
+            .then(() => { if (camCookie === null) keepCookie(null); });
     }
 
     // the next read of the ECU's state, ms (CHECK_MS) from now (a newer one, or the period's end, cancels it)
@@ -140,7 +166,7 @@ function create(o) {
                 return camRequest(view).then(() => log(`camera: cookie ${camCookie}, requested DR_ACTIVE / MODE_MOSAIK / ${view} (${what})`));
             })
             .catch((e) => log(`camera request failed (${what}):`, errText(e)))
-            .then(() => { if (period === p) schedule(); });
+            .then(() => { if (period === p) schedule(side ? SIDE_CHECK_MS : undefined); });
     }
 
     function check() {
@@ -154,10 +180,16 @@ function create(o) {
             if (!ss.length && !p.waited) { p.waited = true; schedule(1000); return null; }
             if (side) {                                     // a side camera alone: no fall-backs
                 const name = side === SIDE.left ? 'left' : 'right';
-                if (ss.some((x) => drView(x) === side)) { set('on', `${name} camera on${by}`); schedule(); return null; }
+                if (ss.some((x) => drView(x) === side)) { set('on', `${name} camera on${by}`); schedule(SIDE_WATCH_MS); return null; }
                 if (p.tries < TRIES) return ask(side);
+                // not given: the claim given back and made anew (the ECU restarted, or ignores it)
+                if (!p.reclaimedAt || now() - p.reclaimedAt >= RECLAIM_MS) {
+                    p.reclaimedAt = now(); p.tries = 0;
+                    log(`camera: no ${name} camera after ${TRIES} tries (${stateText(s)}), claiming the camera anew`);
+                    return camRelease().then(() => { if (period === p) return ask(side); return null; });
+                }
                 set('refused', `no ${name} camera given (${stateText(s)})`);
-                schedule();
+                schedule(SIDE_WATCH_MS);
                 return null;
             }
             const front = ss.find(applied) || ss.find((x) => WITH_FRONT.indexOf(drView(x)) >= 0);   // (a view with the front in it, e.g. Drive recorder's 7: taken as it is, not asked away)
@@ -202,6 +234,8 @@ function create(o) {
     function loop() { read(); setTimer(loop, READ_MS); }
 
     api.status = () => ({ state, text, tries: period ? period.tries : 0, attached: camCookie !== null });
+    /* The side asked for ('left' / 'right') is the ECU's view now: the cluster shows the camera only then. */
+    api.sideOn = () => !!side && state === 'on';
     api.start = () => { Object.keys(IF).forEach(connect); loop(); };
     api.release = camRelease;
     /* Side view: 'left' / 'right' asks that camera alone (SIDE) while the cluster shows the camera, null the front
