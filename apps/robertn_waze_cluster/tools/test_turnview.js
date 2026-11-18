@@ -153,13 +153,13 @@ const quiet = { info() {}, warn() {} };
         'the tool\'s gate: each choice, never out of Map view or off');
     ok(mergeSettings(null, null).show === 'near' && mergeSettings({ show: 'signal' }, null).show === 'near' && mergeSettings({ show: 'always' }, { show: 'bad' }).show === 'always',
         'the choice: near a turn by default (an old saved signal choice too), kept, only the two');
-    // Side view: the app asks the tool for a side; the tool shows it only while Turn View is off and in Map view
+    // Side view: the side kept for the camera request; nothing asked of the tool (waze-on-cluster's copy shows it)
     tv.side('left');
-    await until('side sent', () => t.got.some((q) => q.op === 'side' && q.side === 'left'));
     tv.side('left');
+    await sleep(100);
+    const sideAsked = t.got.some((q) => q.op === 'side');
     tv.side(null);
-    await until('side off', () => t.got.filter((q) => q.op === 'side').map((q) => q.side).join() === 'left,');
-    ok(true, 'side view: left asked once, then none');
+    ok(!sideAsked && tv.sideNow === null, 'side view: the tool is not asked, the side kept until none');
     ok(sideOpen('left', false, true) && sideOpen('right', false, null) && !sideOpen('left', true, true) && !sideOpen('left', false, false) && !sideOpen(null, false, true),
         'side view: only with Turn View off, never out of Map view');
     // the scene (IterioDev's 0.8.0): near a turn the turn sign and the card; further away, straight on and in Side view no sign

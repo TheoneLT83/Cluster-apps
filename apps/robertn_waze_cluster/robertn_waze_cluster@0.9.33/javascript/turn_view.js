@@ -85,7 +85,6 @@ class TurnView extends EventEmitter {
             this._camreq();
             this._send({ op: 'get' });
             if (this.signalOn) this._send({ op: 'signal', on: true });
-            if (this.sideNow) this._send({ op: 'side', side: this.sideNow });
             if (this.calibrating) { this._send({ op: 'calib', on: true }); if (this.draft) this._send({ op: 'preview', cal: this.draft }); }
         });
         s.on('data', (d) => {
@@ -147,13 +146,12 @@ class TurnView extends EventEmitter {
     }
     /* A turn signal on or off, for the tool's gate. */
     signal(on) { on = !!on; if (on !== this.signalOn) { this.signalOn = on; this._send({ op: 'signal', on }); } }
-    /* Side view: 'left' / 'right' (that camera alone on the cluster, while Turn View is off) or null; the camera asked
-     * for that side meanwhile. */
+    /* Side view: 'left' / 'right' (that camera alone, while Turn View is off) or null: the camera unit asked for that
+     * side meanwhile; waze-on-cluster's second copy shows it (WazeClusterControl.showSide). */
     side(v) {
         v = v === 'left' || v === 'right' ? v : null;
         if (v === (this.sideNow || null)) return;
         this.sideNow = v;
-        this._send({ op: 'side', side: v });
         if (this.cam && this.cam.side) this.cam.side(v);
     }
     /* The tool is there to show it (it answers). */

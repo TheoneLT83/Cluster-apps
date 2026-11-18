@@ -1353,6 +1353,24 @@ test('CarPlay Wi-Fi from a patchd before it: none', async (render, patch) => {
     c.close();
 });
 
+test('Side view: the cluster map leaves the render while the camera copy shows, then comes back', async (render, patch) => {
+    const SSOCK = `/tmp/woc-s-${process.pid}.sock`;
+    const side = new FakeRender(SSOCK);
+    await side.listen();
+    const c = new WazeClusterControl({ renderPath: RSOCK, patchPath: PSOCK, sidePath: SSOCK, pendingPath: PENDING, retryMs: 100 });
+    c.open();
+    await until('render status', () => c.clusterOn() === true && c.sideReady());
+    await until('side told off at connect', () => side.received.length === 1);
+    c.showSide(true);
+    await until('map off, camera on', () => render.received.length === 1 && side.received.length === 2);
+    assert.deepStrictEqual([render.received[0], side.received[1]], [{ cmd: 'cluster', on: '0' }, { cmd: 'cluster', on: '1' }]);
+    c.showSide(false);
+    await until('camera off, map back', () => render.received.length === 2 && side.received.length === 3);
+    assert.deepStrictEqual([side.received[2], render.received[1]], [{ cmd: 'cluster', on: '0' }, { cmd: 'cluster', on: '1' }]);
+    c.close();
+    await side.close();
+});
+
 test('render unreachable while patched', async (render, patch) => {
     /* Only the patch daemon is up (the render socket is absent in this case). */
     const c = new WazeClusterControl({ renderPath: `/tmp/woc-none-${process.pid}.sock`, patchPath: PSOCK, retryMs: 100 });

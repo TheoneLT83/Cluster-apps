@@ -6,6 +6,11 @@ Turn View takes the camera as it is when it already shows the front camera in a 
 all cameras): it no longer asks for the front camera alone, which kept Drive recorder from recording ("all cameras
 asked 3 times, the ECU stays at view 1").
 
+Side view shows the side camera: waze-on-cluster's second copy (waze-on-cluster 0.10.15) draws the camera unit's
+video while a side shows, the cluster map leaving it meanwhile; IterioDev's camera tool shows only the front or rear
+camera, so the picture stayed black. The camera is asked for without Turn View's tool. Without waze-on-cluster
+0.10.15, Side view says "Update Waze on cluster".
+
 ## 0.9.32
 
 robertnisipeanu/idrive-apps' 0.6.12 (waze-on-cluster 0.10.12 here): the safe area CarPlay keeps its guidance in is

@@ -64,7 +64,22 @@ const cam = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/XView3D/
     for (let i = 0; i < 200; i++) { run(100); await new Promise((r) => setImmediate(r)); fs.utimesSync(file, new Date(t), new Date(t)); }
     assert(asked3.length === 0 && st3 && st3.state === 'on', 'view 7 taken as on, nothing asked: ' + JSON.stringify([asked3, st3]));
     console.log('ok   Drive recorder\'s all cameras (view 7) on: Turn View takes it, asks nothing');
+    // Side view without camcluster (no showing file): the right camera asked all the same
+    fs.rmSync(file, { force: true });
+    const asked4 = [];
+    let s4 = { application: 'DR_ACTIVE', mode: 'MODE_MOSAIK', perspective: 7 };
+    const icam4 = { currentState: { getValue: () => s4 }, changeState: (a) => { asked4.push(a.desiredState.perspective); s4 = Object.assign({}, s4, { perspective: a.desiredState.perspective }); return Promise.resolve(); },
+        clientAttach: () => Promise.resolve({ cookie: 9 }), clientDetach: () => Promise.resolve() };
+    const cam4 = create({ someipBuilders: { buildAndInitTypedProxy: (n) => (/ICAM2Proxy/.test(n) ? Promise.resolve(icam4) : Promise.reject(new Error('no'))) },
+        showingFile: file, now: () => t, setTimer });
+    cam4.start();
+    cam4.side('right');
+    let st4 = null;
+    cam4.on('change', (s) => { st4 = s; });
+    for (let i = 0; i < 120 && !(st4 && st4.state === 'on'); i++) { run(100); await new Promise((r) => setImmediate(r)); }
+    assert(asked4[0] === 4 && st4 && /right camera on/.test(st4.text), 'the right camera asked without camcluster: ' + JSON.stringify([asked4, st4]));
+    console.log('ok   side view without camcluster: the right camera asked (view 4) and on');
     fs.rmSync(dir, { recursive: true, force: true });
-    console.log('camreq: 3 checks pass');
+    console.log('camreq: 4 checks pass');
     process.exit(0);
 })().catch((e) => { console.error(e); process.exit(1); });

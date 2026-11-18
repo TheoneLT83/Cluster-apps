@@ -87,6 +87,8 @@ const net = require('net');
 const { t } = require('./i18n.js');
 
 const RENDER_PATH = '/dev/shm/waze-on-cluster/ctl.sock';
+/* waze-on-cluster's second copy, Side view's camera (waze-on-cluster-side.conf): its map turned on while a side shows */
+const SIDE_PATH = '/dev/shm/waze-on-cluster-side/ctl.sock';
 const PATCH_PATH = '/dev/shm/waze-on-cluster/patch.sock';
 const PENDING_PATH = '/dev/shm/waze-on-cluster/activation-pending';
 const AA_PENDING_PATH = '/dev/shm/waze-on-cluster/aa-pending';
@@ -298,6 +300,8 @@ class WazeClusterControl extends EventEmitter {
         /* the brightness chosen, kept by the app ({ get, set }): the render's own may be the night's */
         this._dayStore = o.dayBright || null;
         this._heldHud = false;      /* the HUD map is off in the render for it, on as chosen */
+        this._sideOn = false;       /* Side view's camera on the cluster (showSide) */
+        this._heldCluster = false;  /* the cluster map is off in the render for it, on as chosen */
 
         this.render = new LineSocket({
             path: o.renderPath || RENDER_PATH,
@@ -305,6 +309,16 @@ class WazeClusterControl extends EventEmitter {
             log: this._log,
             onMessage: (msg) => this._onRender(msg)
         });
+        this.side = new LineSocket({
+            path: o.sidePath || SIDE_PATH,
+            retryMs: o.retryMs,
+            log: this._log,
+            onMessage: () => {}
+        });
+        // (only a connection made or lost changes what the app shows: not each try while the copy is not there)
+        let sideUp = false;
+        this.side.on('connect', () => { sideUp = true; this.side.send({ cmd: 'cluster', on: this._sideOn ? '1' : '0' }); this.emit('change'); });
+        this.side.on('close', () => { if (sideUp) { sideUp = false; this.emit('change'); } });
         this.patch = new LineSocket({
             path: o.patchPath || PATCH_PATH,
             retryMs: o.retryMs,
@@ -318,6 +332,7 @@ class WazeClusterControl extends EventEmitter {
             this._askedShownOn = null;
             this._sentBright = null;
             this._heldHud = false;
+            this._heldCluster = false;
             this._clearAskedHud();
             this.emit('change');
         };
@@ -330,6 +345,7 @@ class WazeClusterControl extends EventEmitter {
     /* Open both sockets, each reconnecting while open. */
     open() {
         this.render.open();
+        this.side.open();
         this.patch.open();
     }
 
@@ -339,6 +355,7 @@ class WazeClusterControl extends EventEmitter {
         this._askedPos = null;
         this._clearAskedHud();
         this.render.close();
+        this.side.close();
         this.patch.close();
         this.renderStatus = null;
         this._forget();
@@ -465,6 +482,35 @@ class WazeClusterControl extends EventEmitter {
             this._heldHud = false;
             if (this.render.connected()) {
                 this.render.send({ cmd: 'hud', on: '1' });
+            }
+        }
+        this.emit('change');
+    }
+
+    /* Side view's camera there to show (waze-on-cluster 0.10.15's second copy answers). */
+    sideReady() {
+        return this.side.connected();
+    }
+
+    /* Side view's camera on the cluster (true) or not: the cluster map leaves the render meanwhile (the display's two
+     * video buffers: the camera takes the map's), in the render alone, so the choice patchd keeps stands; off, the
+     * camera goes first and the map comes back. */
+    showSide(on) {
+        on = !!on;
+        if (on === this._sideOn) {
+            return;
+        }
+        this._sideOn = on;
+        const rs = this.renderStatus;
+        if (on && rs && rs.cluster === 1 && this.render.connected()) {
+            this._heldCluster = true;
+            this.render.send({ cmd: 'cluster', on: '0' });
+        }
+        this.side.send({ cmd: 'cluster', on: on ? '1' : '0' });
+        if (!on && this._heldCluster) {
+            this._heldCluster = false;
+            if (this.render.connected()) {
+                this.render.send({ cmd: 'cluster', on: '1' });
             }
         }
         this.emit('change');

@@ -191,7 +191,7 @@ function create(o) {
         try { return now() - fs.statSync(file).mtime.getTime() < FRESH_MS && String(fs.readFileSync(file, 'utf8')).trim() === 'front'; } catch (e) { return false; }
     }
     function read() {
-        if (fresh()) {
+        if (side || fresh()) {                         // (Side view: a period of its own, without camcluster)
             staleSince = null;
             if (!period) { period = { tries: 0, fb: 0, asked: null, rearBefore: false, rearOnly: false }; set('waiting', 'checking the camera'); schedule(0); }
         } else if (period) {
