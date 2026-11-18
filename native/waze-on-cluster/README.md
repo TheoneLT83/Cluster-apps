@@ -196,30 +196,6 @@ choice. With a
 cluster-render before 0.3.7, which has no `guide_hold`, the switch changes
 nothing.
 
-Then connect the iPhone to CarPlay. Waze needs its server-side flag 1006 for
-the alternate display. The phone sends SPS, PPS and an IDR only at the start
-of a stream, so the render service runs from boot, and decodes from the
-stream's first SPS whether or not the map is shown. The app need not be open.
-It starts once BMW's media bus is up, after `ufipc_daemon.service` and
-`avbstreamhandler.service` (ordering only), and joins the bus at once,
-retrying every second while the bridge is not there.
-
-The map comes up at the stream's first non-blank picture in the native
-central-map slot `0x100` (scene `0x010004f0`, 1088x480), under the gauges,
-and stays while the stream is live: while carplay holds the phone's
-connection for the cluster stream, TCP port 6031 owned by carplay's uid
-13002 in `/proc/net/tcp6`, however few frames come (how often a static map
-sends a frame depends on the phone: one about every ten seconds, another
-about 30 a second).
-When that connection ends (the phone unplugged, the session or the stream
-ended) the map is taken down at the next check, once a second, and the slot
-returns to the cluster's own content; the next stream maps it again. No
-frame for `idle_ms` (60 s) takes it down too. Without that connection
-(carplay took another port) or if `/proc/net` cannot be read, a frame within
-`stall_ms` (6 s) counts as live. That the phone keeps the connection through
-a static map and closes it when the stream ends is still to be confirmed on
-the car.
-
 **Inside another app's scene.** An app that shows a scene file on a target
 with `layers` 1 can host the map there (cluster-render PROTOCOL.md
 "Hosting another target"): the map is then drawn only in the rect it
@@ -720,12 +696,16 @@ transitions peaked at about 3.2 MB/s. Every head-unit participant shares
 the link to the cluster, so an upload that outruns it can drop other contents
 too. Details: the cluster-render README.
 
-Settings are in `waze-on-cluster.conf` (documented inline). Overrides go in
-`/var/opt/waze-on-cluster/waze-on-cluster.local.conf`, which updates keep;
-the app's map settings are in `/var/opt/waze-on-cluster/map.state.conf`, and
-the opt-in settings in `/var/opt/waze-on-cluster/features.conf`. A key the
-local conf has that this version does not know is left out with a warning
-in the log.
+Settings are in `waze-on-cluster.conf` (documented inline), which each
+install writes anew. Besides it and the command line (the Android Auto
+crop, PATCH.md), the service reads only the app's saved choices
+(`/var/opt/waze-on-cluster/map.state.conf` and the turn-box setting) and
+the opt-in settings in `/var/opt/waze-on-cluster/features.conf`. On the
+cluster the map goes on its map slot, or into a hosting app's scene.
+
+`/var/opt/waze-on-cluster/waze-on-cluster.local.conf`, which versions up to
+0.10.9 read, is not read; it stays on the unit for a downgrade, and the log
+names it at each start.
 
 ## The patch
 
@@ -749,7 +729,7 @@ The map covers the cluster's central map area, 1088x480 on the 1920x720
 panel. The patch advertises exactly that, so `tex_size` must equal it.
 `src_crop` takes part of a picture of one size and scales it to `tex_size`
 (Android Auto's 1280x720 stream has its map in the top 1280x564).
-`map_rect` draws the map stretched into a rect of the current target.
+`map_rect` draws the map stretched into a rect of the map slot.
 `target_fps` (30) caps the frame rate; `picture_fps` (0: every frame) makes
 at most that many pictures a second, which saves CPU when the phone sends
 more than the cluster takes (set it to `target_fps` then).
@@ -781,8 +761,8 @@ They take effect when waze-on-cluster next starts (the next head-unit
 start). A restart of the service applies them at once, but the map stays
 blank until the phone connects again.
 
-Not in `waze-on-cluster.local.conf`: there they are left out, and patchd
-moves them to `features.conf`.
+patchd moves any it finds in `waze-on-cluster.local.conf` to
+`features.conf`, so a downgrade never meets them there.
 
 **What they need.**
 - Both: a waze-on-cluster whose `waze-on-cluster.conf` has the key. An older
