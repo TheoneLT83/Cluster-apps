@@ -26,10 +26,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 #include <fcntl.h>
 #include <poll.h>
 #include <pthread.h>
 #include <sys/signalfd.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <vector>
 
@@ -66,6 +68,20 @@ namespace {
 /* The local conf earlier versions read, kept on the unit for a downgrade.
  * This version does not read it. */
 const char kUnreadLocalConf[] = "/var/opt/waze-on-cluster/waze-on-cluster.local.conf";
+
+/* Another tool with a video on the cluster's map target (a Turn View camera, for one) keeps this file's time fresh,
+ * every second, while its video is there: the cluster map gives its video buffer up meanwhile (the display has two,
+ * and the HUD map may hold the other), its newest picture kept for when it is back. Older than kVideoYieldStaleS:
+ * the other tool gone, the map back. */
+const char *const kVideoYieldFile = "/run/turn-view/map-yield";
+const time_t kVideoYieldStaleS = 3;
+
+bool video_yield_wanted()
+{
+    struct stat st;
+    return stat(kVideoYieldFile, &st) == 0 && time(nullptr) - st.st_mtime <= kVideoYieldStaleS;
+}
+
 
 std::string status_line(const FeedStatus &s)
 {
@@ -345,6 +361,7 @@ int serve(Config cfg)
         producer.set_live(live, now);
         producer.set_pictures(feed.wants_frames());
         feed.set_stream(live, producer.frozen(now), producer.picture(now));
+        feed.set_cluster_yield(video_yield_wanted());
         feed.poll(now);
         if (fc.vpp_scale)
             producer.set_part(feed.part());
