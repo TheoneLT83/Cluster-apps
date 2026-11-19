@@ -538,41 +538,23 @@ protocols.
 ## Logs
 
 **The journal service** (`waze-on-cluster-journal.service`,
-`patch/journal_keep.js`) keeps the tools' part of the journal on
-`/var/opt`: the unit's journal is volatile and holds about four minutes on
-the car, where the navigation writes some 16,000 lines in that time. Its
-timer starts it 10 s after boot, so a start the head unit resets within
-its first minute still leaves its lines; it runs at the lowest CPU and I/O
-priority, no unit waits for it, and it is ordered against no head-unit unit.
-It reads what this boot logged so far, then follows this boot's lines of the
-waze-on-cluster services, cluster-render, carplay, recmgr and crashhandler,
-systemd's lines about them and their sockets, and the kernel's, and appends
-them every 2 s to
-`/var/opt/waze-on-cluster/journal/journal.log`, opening the file only for
-the write. In the boot's first 2 minutes each append is also synced to disk
-(`fdatasync`, through a read-only descriptor, so `var-opt-ro.service`'s
-remount never finds the file open for writing): a start reset without a
-shutdown keeps its lines up to the last 2 s before the reset. After that,
-`/var/opt`'s own commit (ext4, `data=ordered`, every 5 s) makes the lines
-durable within seconds. Each line is at most 1 KiB: the time (UTC, µs), the
-unit, the program and its pid, the message. Past 384 KiB the file becomes
-`journal.log.1` and the older ones move up to `journal.log.9`: at most 10
-files and 3.75 MiB. The tools' lines (waze-on-cluster, cluster-render) and
-the others each have 128 KiB a minute, with a minute's worth in reserve, so
-a flood of one kind never pushes out the other; what comes faster is
-dropped and counted (`journal-keep: dropped N other lines (M KiB) over the
-rate limit`). That keeps at least the last 10 minutes whatever the units
-log: the rotated files always hold more than 3447 KiB, and 10 minutes let
-through at most 2816 KiB. What this boot logged before the start is written
-whole, within the files' caps (its newest lines when it is more), not
-limited. On the car these units wrote 189 lines in four
-minutes with the map up (about 7 KiB a minute; carplay logs to DLT), the
-tools' own log files at most 67 KiB in any 10 minutes over two days, and the
-kernel about 1,650 lines (140 KiB) in a boot's first minute, so the limit is
-met only by a fault flooding the journal, and the files hold hours. A start
-writes what this boot logged after the newest line the files hold, all of it
-when this boot has no such line, then follows from the last entry's journal
-cursor, as does a journalctl started again; nothing depends on the clock.
+`patch/journal_keep.js`) keeps in RAM, in `/run/waze-on-cluster-journal/`
+(10 files of 384 KiB), the tools' journal, the lines of carplay, aapd,
+recmgr and the crash handler, systemd's lines about any unit that starts,
+stops, is killed or fails, and the kernel's, without the high-volume lines
+that explain nothing (the firewall's blocked packets, Wi-Fi scans, audit
+records) and with a short summary of each boot's kernel log. Every 30 s it
+adds a load line: the load averages, MemAvailable, the processes in D state
+and the 5 processes that used the most CPU. It writes the newest of those
+lines to `/var/opt/waze-on-cluster/journal/` only when they are worth
+keeping across a restart: shortly after a failure (an `INCIDENT` line, a
+crash or failure of carplay, aapd or one of the tools, a segfault or
+out-of-memory kill, a boot recovery step, a patch removed) and a minute
+later, and at each head-unit shutdown. Each write is one file
+`journal-<UTC>-<reason>.log` of at most 256 KiB: the last 10 minutes not
+written yet, lines that repeat with other numbers kept only 3 times. It
+keeps 16 files, 2 MiB at most, and removes the oldest of a shutdown before
+the oldest of a failure.
 
 **Save logs** on the app's Logs page asks the logs service
 (`waze-on-cluster-logs.service`, `patch/logs.js`) for an archive: with at
