@@ -105,39 +105,15 @@ unit**, a normal head-unit restart through the Node State Manager:
   `mediaddpserver` dumps core, and recmgr and crashhandler, on neither of
   whose whitelists it is, restart the head unit.
 
-With the drop-in loaded, any SIGKILL of CarPlay is a clean exit, also one
-`patchd` did not send (the out-of-memory killer, a shell). `carplay.service`
-does not start CarPlay again, so the recovery service does, where recmgr
-loaded the entry: 5 s, 15 s and 60 s after it, at most three starts per
-head-unit start together with those after a crash. Any other clean exit
-stays as it is.
-
-On a fresh install the patched CarPlay first runs at the next head-unit
-start, which also loads the recmgr entry.
-
-**When the patch keeps the head unit from starting.** A CarPlay crash (a
-core dump, or a watchdog timeout) fails `carplay.service`, and the head
-unit restarts as above; neither the recmgr entry nor the drop-in prevents
-it. Another process the patch makes fail restarts it through recmgr. A boot
-step that runs before CarPlay records each start of the patched CarPlay,
-and the recovery service marks it healthy once CarPlay has run 60 s. The
-next boot step counts a start that was not healthy as failed only on
-evidence: a crash of CarPlay, or a restart recmgr or crashhandler
-recorded, whatever process it names. A switch-off after the healthy window,
-a restart asked for or a start CarPlay never ran in counts nothing; a start
-that ended with no record (a power cut, or a shutdown inside the window
-with no restart record) is unknown, and two of those in a row count one,
-the accepted cost of catching a loop whose records are lost. It restores
-the original binary before CarPlay starts after the first failed start for
-a build outside the proven list, and for a proven one after the second
-with no healthy start between, in a second or two, deciding from small
-state files only. CarPlay comes back without the map, its Status row reads
-`Removed — head unit kept restarting`, and its Patch button applies the
-patch again.
-Where recmgr loaded the entry and the head unit stays up, the recovery
-service also restores at the threshold and starts CarPlay again, at most
-three times per head-unit start, 5 s, 15 s and 60 s after a crash.
-Details: PATCH.md "Boot recovery".
+**Boot recovery.** If a patch keeps the head unit restarting, the boot step
+restores the original binary before CarPlay (or aapd) starts: after one
+failed start for a patch not yet proven on that car, after two for a proven
+one. CarPlay comes back without the map, its Status reads `Removed — head
+unit kept restarting`, and its Patch button applies the patch again
+(PATCH.md "Boot recovery"). Android Auto's patch is removed at the first
+crash of the patched aapd, and aapd is started again after every end, so
+Android Auto comes back without the cluster map; the patch stays off until
+its Patch button applies it or an update brings a newer patch.
 
 To break a loop by hand: keep the phone from connecting (unplug it, or turn
 off its Wi-Fi and Bluetooth) so CarPlay has no session to crash in, then over
@@ -860,13 +836,15 @@ Auto's Patch button (or `apply --unproven`) patches it once. aapd.conf is edited
 when it has the 12.3" entries and numbers the geometry sets, and refused
 otherwise. Its edits, at the proven build's offsets:
 
-| Edit | What it does | Where |
-|---|---|---|
-| gate | `secondVideoEnabled()`: `KombiVariant <= 1` → `<= 2` | 1 B at `0x998c3` |
-| selfstart call | `onNewNavigationStatus()`'s `setNaviStreamStatus` call → `requestStream()` | rel32 at `0x1d43ec` |
-| selfstart guard | `requestStream()`'s `je` on a field never set → `jmp` | 6 B at `0x1d3f5d` |
-| screen | KombiVariant 2 reads the 12.3" profile, as 0 does | 16 B at `0x15b440` |
-| geometry | aapd.conf's 12.3" entry: a 1280x720 stream with the UI in its top 1280x564 (or whole with the turn card hidden), the chosen density, the safe area 592x432 at 336,84 | numbers in `KOMBI_DISPLAY` |
+| Command | |
+|---|---|
+| `status`, `aa-status` | what is on disk |
+| `probe` | where the edit sites are in a carplay binary and whether it is patchable, without writing |
+| `aa-probe [<file>]` | the same for aapd (`/usr/bin/aapd` by default) |
+| `verify` | whether carplay's patch is complete |
+| `revert [--force]` | restores the original carplay; `--force` over another build (a firmware update) |
+| `aa-revert [--force]` | restores the original aapd and aapd.conf |
+| `apply high\|mid` | applies the patch: `--avb` (the app's sink), no flag (`udp://127.0.0.1:20557`), `--capture` (FIFO) or `--sink <url>`, plus `--res WxH\|stock`, `--safe WxH+X+Y\|full` and `--unproven` |
 
 `aapd_patch.js status | apply [--dpi n] [--card shown|hidden] [--unproven] | revert [--force] [--drop-backup]`
 with `--target`, `--conf` and `--coding` for copies. `status` names the
