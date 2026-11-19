@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+[Unit]
+Description=waze-on-cluster as a side camera view: the camera unit's video on the cluster while an app asks for it
+RequiresMountsFor=/var/opt
+Requires=waze-on-cluster-side.socket
+Wants=cluster-render.socket
+After=local-fs.target waze-on-cluster-side.socket cluster-render.socket ufipc_daemon.service avbstreamhandler.service
+
+[Service]
+# as waze-on-cluster.service: the video group for the GPU decode, mgu_ufipc for the AVB bridge, tm_oap_app for the
+# cluster renderer's socket
+User=hmi_5000
+Group=hmi_5000
+SupplementaryGroups=mgu_ufipc tm_oap_app
+RuntimeDirectory=waze-on-cluster-side
+RuntimeDirectoryMode=0755
+ExecStartPre=-+/bin/sh -c 'mkdir -p /var/opt/waze-on-cluster/log /var/opt/waze-on-cluster/state && chown hmi_5000:hmi_5000 /var/opt/waze-on-cluster/log /var/opt/waze-on-cluster/state'
+ExecStart=/var/opt/waze-on-cluster/current/waze-on-cluster -c /var/opt/waze-on-cluster/current/waze-on-cluster-side.conf
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
