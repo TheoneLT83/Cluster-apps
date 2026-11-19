@@ -180,7 +180,8 @@
  *   slot (mapped again behind ours). A hold with
  *   TargetSpec::table_slots has no slot until a table report has one of
  *   its take_over_contents mapped (shown or parked) in one of them, not
- *   reported disabled, and moves to the one the latest such report names
+ *   reported disabled (or, while the target it follows has hide_badge, the
+ *   first of them reported available), and moves to the one the latest such report names
  *   (move_hold): released there first if requested, so it never holds two
  *   slots; a wait on the ladder carries over. A hold the display refuses
  *   for its slot (Refusal::NoSlot) is not asked for again until the service
@@ -443,7 +444,9 @@ public:
      * shown at all, whether a wanting layer contends with the stock HMI, lets
      * the holds that follow it hold (guide_hold) and lets it give way to the
      * stock pop-ups (yield). */
-    void want(int target, bool wanted, bool contend, bool guide_hold = true, bool yield = true);
+    /* hide_badge: a hold that follows it is held with no box mapped too, so the KOMBI's badge (eDrive logo, M
+     * emblem) is covered while the target is shown. */
+    void want(int target, bool wanted, bool contend, bool guide_hold = true, bool yield = true, bool hide_badge = false);
     /* After the compositor's wants: each hold is wanted, contending, exactly
      * while the target it follows is shown and its wanting layers let it
      * hold (none has guide_hold false), one of take_over_contents is mapped
@@ -547,7 +550,7 @@ public:
 private:
     struct Target {
         TargetStatus status;
-        bool wanted = false, contend = false, guide_hold = true;
+        bool wanted = false, contend = false, guide_hold = true, hide_badge = false;
         bool yield = true;   /* no wanting layer has yield false (popup_blocks) */
         bool requested = false;
         bool refused = false;        /* a hold whose slot the display refused: not asked for again */
@@ -733,6 +736,8 @@ private:
      * disabled (shown first, then its own slot, then 0x105); *why says
      * which; 0: none. */
     uint64_t reported_slot(int i, const std::map<uint64_t, std::vector<SlotInfo>> &rows, std::string *why) const;
+    /* The first of the hold's TargetSpec::table_slots the slot table reports available (not disabled); 0: none. */
+    uint64_t available_slot(int i) const;
     /* The hold to slot: a loss when it had one, released
      * there first if requested; still waiting on the ladder until the same
      * time if it was, else idle. */

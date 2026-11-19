@@ -205,6 +205,7 @@ void MapFeed::make_layer()
      * the scene's owner decides that */
     lo_.contend = !hosted();
     lo_.guide_hold = cfg_.guide_hold;
+    lo_.hide_badge = cfg_.guide_hold;
     lo_.yield = hosted() || cfg_.target != "hud" || !cfg_.hud_keep_shown;
     lo_.x = (int)q.x;
     lo_.y = (int)q.y;
@@ -320,8 +321,10 @@ void MapFeed::set_hud_width(unsigned pct)
 void MapFeed::set_guide_hold(bool hold)
 {
     cfg_.guide_hold = hold;
-    if (layer_ && lo_.guide_hold != hold) {
+    // the same switch covers the car's badge in the turn box's slot (cluster-render's hide_badge)
+    if (layer_ && (lo_.guide_hold != hold || lo_.hide_badge != hold)) {
         lo_.guide_hold = hold;
+        lo_.hide_badge = hold;
         client_.set(layer_, lo_);
     }
 }

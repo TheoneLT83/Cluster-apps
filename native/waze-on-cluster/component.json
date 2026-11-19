@@ -7,7 +7,7 @@
   "description": "Runs the cluster map in the background. It is installed with the Maps on cluster app, which you use to control it.",
   "requires": {
     "mgu-deploy": "0.7.17",
-    "cluster-render": "0.5.3"
+    "cluster-render": "next"
   },
   "uninstallable": true,
   "mguHmi": [

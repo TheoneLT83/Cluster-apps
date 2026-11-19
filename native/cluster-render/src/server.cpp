@@ -223,7 +223,7 @@ bool layer_params(const cr::Json &j, LayerParams *p, std::string *err)
     n.pivot_y = n.pivot_y || j.count("py");
     struct Flag { const char *key; bool *field; } flags[] = {
         {"visible", &n.visible}, {"exclusive", &n.exclusive}, {"prewarm", &n.prewarm}, {"contend", &n.contend},
-        {"guide_hold", &n.guide_hold}, {"yield", &n.yield}};
+        {"guide_hold", &n.guide_hold}, {"hide_badge", &n.hide_badge}, {"yield", &n.yield}};
     for (const Flag &f : flags) {
         v = *f.field ? 1 : 0;
         if (!num(j, f.key, 0, 1, &v, err)) return false;
