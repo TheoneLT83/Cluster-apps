@@ -2,9 +2,16 @@
 
 ## Unreleased
 
-## 0.10.18
+## 0.11.0
 
-robertnisipeanu/idrive-apps' 0.10.12 with this repository's 0.10.17: the diagnostic
-journal is kept in memory and written to storage only around failures and at
-shutdown, which greatly reduces writes to the head unit's storage.
+robertnisipeanu/idrive-apps' 0.10.12 and 0.11.0 with this repository's 0.10.17:
+
+- CarPlay's cluster map patch is applied in CarPlay's memory each time it
+  starts, and `/usr/bin/carplay` stays as it ships: no write of the system
+  partition to patch, remove or recover it. Updating from an earlier version
+  puts the original file back and keeps the map, with at most one head-unit
+  restart; where CarPlay already runs the earlier patch, none.
+- The diagnostic journal is kept in memory and written to storage only
+  around failures and at shutdown, which greatly reduces writes to the head
+  unit's storage.
 

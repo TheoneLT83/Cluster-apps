@@ -9,8 +9,8 @@ driven from the HMI by the companion app
 Both send the cluster map only as H.264 video, with no map data, so this is
 a video pipeline:
 
-1. **Ungate the second display.** A reversible patch to
-   `/usr/bin/carplay` makes `KI_KOMBI_VARIANT` 7 resolve to a supported
+1. **Ungate the second display.** A patch of carplay, applied in its
+   memory at start while `/usr/bin/carplay` stays as it ships, makes `KI_KOMBI_VARIANT` 7 resolve to a supported
    cluster variant, makes CarPlay start the cluster stream itself, and
    advertises the size the map is shown at ([patch/PATCH.md](patch/PATCH.md)).
    Another to `/usr/bin/aapd` and `/etc/aapd.conf` does the same for Android
@@ -46,42 +46,23 @@ them, on the lists, and runs the deactivate of the version a rollback or
 downgrade leaves (patch/PATCH.md "Rollback"). Requirements resolve across catalog sources.
 
 **Install.** The deploy tool runs `patchd.js activate` as root. On a car
-coded `KI_KOMBI_VARIANT` 7, with a proven
-carplay build, or one CarPlay's Patch button patched before, it writes the patch
-CarPlay's Patch button writes, keeps the running binary linked, and never stops,
-kills or restarts CarPlay. The Store shows a restart pending; the app shows
-`Status: Patched after restart`. One head-unit start runs the patched
-CarPlay and starts this tool's services. A first patch on a car counts as
-untested until CarPlay has run it for a healthy minute: boot recovery
-restores it after one failed start until then, after two from then on
-(PATCH.md "Boot recovery"). The hook leaves CarPlay as it is,
-and the app says why and offers CarPlay's Patch button, on a car coded
-otherwise or whose coding cannot be read (`Not supported on this car`,
-`Unavailable`), when CarPlay's Remove patch button was used, when
-the patcher cannot find or recognise one of its edit sites in the binary or
-something else modified it, when the build is outside the proven list and
-CarPlay's Patch button has not patched it, or when `carplay.service` starts another program.
-An update brings an older patch of ours up to date. The first install on a
-HIGH F head unit also applies the patch again where 0.8.2's boot recovery
-removed it, but not where boot recovery removed it after failed head-unit
-starts (PATCH.md "Supported head units").
-
-The same hook then writes the Android Auto patch, on a proven aapd build or
-one Android Auto's Patch button patched before, only on a car coded
-`KI_KOMBI_VARIANT` 7, and never stops or restarts aapd. On any other car,
-or an aapd build whose edit sites the patcher does not find, it leaves aapd
-as it is and the app's Android Auto status reads `Not supported on this
-car`; on another build whose sites it finds, `Untested version`, and
-Android Auto's Patch button patches it. Whatever happens to Android Auto,
-the install of the CarPlay patch goes ahead.
+coded `KI_KOMBI_VARIANT` 7 with a proven carplay build, it plans the patch
+in memory and arms CarPlay's next start, and never stops, kills or
+restarts CarPlay: the Store shows a restart pending, the app `Status:
+Patched after restart`, and one head-unit start runs CarPlay with the
+patch. Over an earlier release's patch of `/usr/bin/carplay` it puts the
+shipped file back in the same step; the earlier patch keeps running until
+CarPlay next starts, which then applies the patch in memory, so no restart
+is needed for it. It then writes the Android Auto patch on a proven aapd
+build. Anywhere else it leaves everything as it is, and the app's Status
+says why (PATCH.md "Install-time activation", "In memory").
 
 **Remove.** In the Store, remove the app, then the tool (refused while the
-app is installed). `patchd.js deactivate` reverts only our byte regions,
-keeps other tools' edits and drops our backup, and restores aapd and
-aapd.conf the same way; the deploy tool then removes
-this tool's services and files. The renderer and the deploy tool stay. The
-next head-unit start runs the original CarPlay and aapd. Details: PATCH.md
-"Install-time activation".
+app is installed). `patchd.js deactivate` turns the patch in memory off,
+reverts our edits to aapd and aapd.conf (and to carplay, where an earlier
+release wrote them) and drops our backups; the deploy tool then removes this
+tool's services and files. The next head-unit start runs the original
+CarPlay and aapd.
 
 ## Using it
 
@@ -106,9 +87,10 @@ unit**, a normal head-unit restart through the Node State Manager:
   whose whitelists it is, restart the head unit.
 
 **Boot recovery.** If a patch keeps the head unit restarting, the boot step
-restores the original binary before CarPlay (or aapd) starts: after one
-failed start for a patch not yet proven on that car, after two for a proven
-one. CarPlay comes back without the map, its Status reads `Removed — head
+stops arming CarPlay's patch in memory (and restores the original aapd)
+before CarPlay (or aapd) starts: after one failed start for a patch not yet
+proven on that car, after two for a proven one. CarPlay comes back without
+the map, its Status reads `Removed — head
 unit kept restarting`, and its Patch button applies the patch again
 (PATCH.md "Boot recovery"). Android Auto's patch is removed at the first
 crash of the patched aapd, and aapd is started again after every end, so
@@ -116,9 +98,10 @@ Android Auto comes back without the cluster map; the patch stays off until
 its Patch button applies it or an update brings a newer patch.
 
 To break a loop by hand: keep the phone from connecting (unplug it, or turn
-off its Wi-Fi and Bluetooth) so CarPlay has no session to crash in, then over
-SSH run `sh /var/opt/waze-on-cluster/current/woc-patch.sh revert` and
-restart the head unit.
+off its Wi-Fi and Bluetooth), then over SSH run
+`sh /var/opt/waze-on-cluster/current/woc-patch.sh off` (CarPlay: its next
+start runs stock) or `... woc-patch.sh aa-revert` (Android Auto), and restart
+the head unit.
 
 **Android Auto.** Android Auto's **Patch** and **Remove patch** buttons
 apply and revert its patch, **Zoom out** and **Zoom in** change the
@@ -667,8 +650,10 @@ names it at each start.
 
 ## The patch
 
-`patch/carplay_patch.js` (Node 8, no dependencies) makes five edits after a
-verified full backup. `patch/carplay_locate.js` finds each edit's site in
+`patch/carplay_patch.js` (Node 8, no dependencies) plans five edits that
+`preload/wocpatch.c` (`libwocpatch.so`, preloaded into carplay) applies in
+CarPlay's memory each time it starts; `/usr/bin/carplay` stays as it ships
+(PATCH.md "In memory"). `patch/carplay_locate.js` finds each edit's site in
 the build by its code and data and checks it before any write, so the patch
 applies to any carplay build in which every site is found exactly once and
 passes its cross-checks; a build where one does not is left alone, with the
@@ -676,7 +661,7 @@ reason. The install patches only a proven build; another build is a conflict
 until CarPlay's Patch button (or `apply --unproven`) patches it once. `carplay_patch.js
 probe` (`woc-patch.sh probe`) shows where the sites are in a binary and
 whether it is patchable, without writing. A proven build also has to match
-its shipped SHA-256 before the first edit:
+its shipped SHA-256 before it is planned:
 
 | carplay | build-id | sha256 |
 |---|---|---|
@@ -781,22 +766,26 @@ this tool requires, runs this version's deactivate before a rollback, a
 downgrade or a removal, and PATCH.md "Rollback" lists what each release does with it and
 the paths left open.
 
-`patchd` and the install hook apply `--panel high` with the stock sink.
-`woc-patch.sh` is the shell path, for experiments and for undoing the
-patches without the app: `status`, `probe`, `verify`, `revert [--force]`,
-`aa-status`, `aa-revert [--force]` (aapd and aapd.conf), and `apply
-high|mid` with `--avb` (the app's
-sink), no flag (`udp://127.0.0.1:20557`), `--capture` (FIFO) or `--sink
-<url>`, plus `--res WxH|stock`, `--safe WxH+X+Y|full` and `--unproven`. It
-remounts `/` read-write only for the write. **Never `systemctl stop` or
+`patchd` and the install hook plan `--panel high` with the stock sink.
+`woc-patch.sh` (in `/var/opt/waze-on-cluster/current/`) is the shell path,
+for reading the patches' state and undoing them without the app:
+
+| Command | |
+|---|---|
+| `status`, `aa-status` | what is on disk |
+| `probe` | where the edit sites are in a carplay binary and whether it is patchable, without writing |
+| `aa-probe [<file>]` | the same for aapd (`/usr/bin/aapd` by default) |
+| `verify` | whether carplay's patch is complete |
+| `off` | turns carplay's patch in memory off: its next start runs stock |
+| `revert [--force]` | restores the original carplay where an earlier release patched the file; `--force` over another build (a firmware update) |
+| `aa-revert [--force]` | restores the original aapd and aapd.conf |
+
+It remounts `/` read-write only for a write. **Never `systemctl stop` or
 `restart` carplay**: CarPlay dumps core on SIGTERM, which power-cycles the
 head unit, and so does any other failed CarPlay end; with the drop-in
 loaded, a SIGKILL is a clean exit.
-`revert` restores any binary of the backup's build
-(`/usr/bin/carplay.woc-orig`), and refuses another build (a firmware update)
-unless given `--force`.
-Every write of carplay, aapd or aapd.conf (apply, revert, boot recovery's
-restore) gives the file its original's owner and mode, recorded with the
+Every write of carplay (putting an earlier release's patch back), aapd or
+aapd.conf (apply, revert, boot recovery's restore) gives the file its original's owner and mode, recorded with the
 backup, with at least 0755 for carplay and aapd and 0644 for aapd.conf, set
 explicitly on the new file and checked before it replaces the old one,
 whatever the umask it runs under. carplay and aapd run as their own users:
@@ -824,9 +813,9 @@ otherwise. Its edits, at the proven build's offsets:
 | `probe` | where the edit sites are in a carplay binary and whether it is patchable, without writing |
 | `aa-probe [<file>]` | the same for aapd (`/usr/bin/aapd` by default) |
 | `verify` | whether carplay's patch is complete |
-| `revert [--force]` | restores the original carplay; `--force` over another build (a firmware update) |
+| `off` | turns carplay's patch in memory off: its next start runs stock |
+| `revert [--force]` | restores the original carplay where an earlier release patched the file; `--force` over another build (a firmware update) |
 | `aa-revert [--force]` | restores the original aapd and aapd.conf |
-| `apply high\|mid` | applies the patch: `--avb` (the app's sink), no flag (`udp://127.0.0.1:20557`), `--capture` (FIFO) or `--sink <url>`, plus `--res WxH\|stock`, `--safe WxH+X+Y\|full` and `--unproven` |
 
 `aapd_patch.js status | apply [--dpi n] [--card shown|hidden] [--unproven] | revert [--force] [--drop-backup]`
 with `--target`, `--conf` and `--coding` for copies. `status` names the
@@ -952,6 +941,7 @@ no guidance metadata, so this shows map pixels, not data-driven directions.
 make test                         # host tests: NAL, RTP, keyframe wait, the turn-box setting, the map
                                   # feed against cluster-render, the renderer's kit, patch/patchd/recovery/DLT,
                                   # the journal and logs services
+make test-preload                 # libwocpatch.so against a test program, with the unit's toolchain in Docker
 make test-x86                     # the C++ tests with the unit's toolchain in Docker (SSE2 paths)
 make target                       # build/target/waze-on-cluster in Docker, imports checked
 make test-firmware ROOTFS=<dir>   # DLT capture against the unit's own dlt-daemon in Docker
