@@ -92,13 +92,15 @@ Layer fields (all optional):
 | `class` | `content` | `ambient`, `content`, `overlay` or `alert`: the stack's order, bottom to top |
 | `z` | 0 | order within the class (-1000 to 1000); the newer layer is on top on a tie |
 | `x`, `y`, `w`, `h` | the whole target | where the layer is drawn, in the target's pixels from its top-left |
-| `visible` | 1 | 0 hides it; a target no visible layer wants is released after its linger |
+| `visible` | 1 | 0 hides it; a target no visible layer wants is released after its linger (with a `preload` layer: taken off screen and kept loaded) |
 | `exclusive` | 0 | 1 hides every layer below it while it is drawn, once its first write has gone |
 | `prewarm` | 0 | 1 asks for the slot before the layer's first content |
+| `preload` | 0 | 1, visible or not: while any layer on the target has it, the display keeps the target's scene loaded without showing it (`loading`, then `loaded`), so a layer that wants the target later is shown with no load (README.md "Arbitration"). No effect where the display cannot keep a scene loaded unshown (iDrive 8): there the target never reports `loading` or `loaded` |
 | `contend` | 0 | 1 retries the slot after the stock HMI takes it (2, 5, 10, 20, then every 30 s), and on a target that takes over from the stock HMI (`map`), takes it from the stock content; 0 waits until it is free |
 | `guide_hold` | 1 | on a target guide holds follow (`map`, iDrive 7): 0 keeps them released while this layer wants the target, so the stock HMI's turn box shows (README.md "Arbitration") |
 | `hide_badge` | 0 | 1: the guide holds that follow this layer's target (`map`, iDrive 7) are held while it wants the target even with no turn box mapped, so the car's badge (eDrive logo, M emblem) in that slot is covered; 0: held only while the box is mapped (README.md "Arbitration") |
 | `yield` | 1 | on a target with yield slots (`hud`): 0 keeps the target shown over the stock HMI's pop-ups while this layer wants it (README.md "Arbitration") |
+| `others_fps` | 0 | 15-60: bandwidth for this client ([below](#bandwidth-for-a-layer)); 1-14 count as 15; 0: no request. Send it only to a service whose hello has `others_fps` 1 (an older one ignores it) |
 | `opacity` | 1 | 0-1, for video and image layers; drawn times the target's fade in and out |
 | `feather` | 0 | video layers: the edges faded out over this many pixels each side (0-256, at most half the rect), as a smooth ramp of their alpha |
 | `feather_bottom` | -1 | video layers: the bottom edge's fade, when not `feather`'s (0-256; -1: as `feather`) |
@@ -448,16 +450,39 @@ videos only, and not for videos the target draws through one composite.
 Send them only to a service whose hello has `host_edge` 1 (an older one
 ignores them, and draws no edge).
 
+### Bandwidth for a layer
+
+While a layer with `others_fps` is `shown`, every video layer of the other
+clients is written at most `others_fps` times a second (its own `fps` when
+that is lower), so this client's layers get the upload budget they leave.
+A target's videos composed into one go at the highest rate their clients
+are held to, or at their own when one of them is not held. Of several such
+layers the lowest `others_fps` holds; a client's own videos are never held
+by its own layers. 15 is the least: half the 30 a second a map is made at,
+below which a panning map visibly stutters.
+
+The hold ends as soon as the service sees the layer is not shown (within
+its next loop, at most 250 ms): hidden, waiting
+(its target taken or not shown yet), dropped, `set` with `others_fps` 0,
+or its client gone, whatever way the connection ends. Nothing is kept: a
+service restarted holds nothing until a layer asks again, and the held
+videos' own `fps` is never changed. Each held client gets an `fps_cap`
+event when its hold starts, changes or ends, so a producer can make
+pictures no faster than they are written; a client never held gets none.
+The same on iDrive 7 and iDrive 8: the budget and the videos' clocks are
+the service's on both.
+
 ## Service to client
 
 Every JSON message has `ev`.
 
 | ev | Fields | When |
 |---|---|---|
-| `hello` | `proto`, `backend` (`id7`, or `id8` on iDrive 8), `targets` (`map:1088x480,panel:1920x720,hud:800x480`; on iDrive 8 `map:874x749,hud:353x203,guide:702x213,widget:2240x896,popup:2240x896`, then any a drop-in adds, README.md "iDrive 8"), `repeat` (1: takes `repeat`), `always_packed` (1: takes a video layer's `always_packed`; absent from older services), `host_edge` (1: takes a `host`'s `edge_*`; absent from older services) | after the client's hello |
+| `hello` | `proto`, `backend` (`id7`, or `id8` on iDrive 8), `targets` (`map:1088x480,panel:1920x720,hud:800x480`; on iDrive 8 `map:874x749,hud:353x203,guide:702x213,widget:2240x896,popup:2240x896`, then any a drop-in adds, README.md "iDrive 8"), `repeat` (1: takes `repeat`), `always_packed` (1: takes a video layer's `always_packed`; absent from older services), `host_edge` (1: takes a `host`'s `edge_*`; absent from older services), `preload` (1: knows a layer's `preload`; absent from older services), `others_fps` (1: knows a layer's `others_fps`; absent from older services) | after the client's hello |
 | `layer` | `ref`, `state`, `reason` | the layer's state changed |
 | `target` | `target`, `state`, `holder`, `reason`, `retry_in_ms`, `rendering`, `guide_disabled`, `disabled` | a target's state changed |
 | `budget` | `cap_kb_per_s`, `max_kb_per_s`, `floor_kb_per_s`, `reason` | the upload cap changed |
+| `fps_cap` | `fps` (0: not held any more), `app` (the client whose layer holds it; empty with 0) | another client's `others_fps` holds this client's video layers to `fps` updates a second, at another rate, or no longer ([above](#bandwidth-for-a-layer)) |
 | `error` | `op`, `ref`, `reason`; `line` for an edit line; `target` for a `host` | a message was refused, or an edit line changed nothing |
 | `status` | `text` | after a status request; among its lines, one for each slot the KOMBI's latest reports name: `slot 0x203 status 2: 0x1000400 class 0 map 1, ...` (each row's content, class and map status) |
 | `host` | `target`, `into` (the hosting scene's target; empty: `target` is not hosted any more), `shown`, `x`, `y`, `w`, `h`, `src_x`, `src_y`, `src_w`, `src_h` | after the client's hello for each hosted target, and to every client when a host comes, changes or ends ([above](#hosting-another-target)) |
@@ -475,12 +500,16 @@ frames stopped); `hidden`; `error` (the renderer refused it). Target states:
 iDrive 8: offered, until the cluster shows it), `shown`, `lingering`,
 `waiting` (with `holder` `stock` or `foreign` when
 someone else holds the slot, and `retry_in_ms` when on a timer),
-`unavailable`. `rendering`, for a shown or lingering target: `verified`
+`unavailable`, `loading` and `loaded` (a `preload` layer's target: its
+scene being loaded, and loaded, by the display, not shown; the slot shows
+other content). `rendering`, for a shown or lingering target: `verified`
 (the display's renderer is subscribed to its scene), `checking` (not
 subscribed yet; after 1.5 s shown the service asks for the slot again),
 `unobservable` (the service cannot see subscriptions); `none` otherwise.
 `guide_disabled` and `disabled` are always 0; no target or guide hold is
-ever turned off for good.
+ever turned off for good. A client treats a target or layer state it does not
+know as not shown: states are added as the service learns new ones, and
+`loading` and `loaded` occur only on a target some client preloads.
 
 On a head unit that refuses the service (README.md "Supported head
 units") no `hello` comes: a `status` request gets `text` `not supported on

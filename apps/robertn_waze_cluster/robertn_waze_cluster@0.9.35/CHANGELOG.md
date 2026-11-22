@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.35
+
+The cluster renderer's client from cluster-render 0.6.13, which knows its `preload` and `others_fps` layer
+fields; the app itself is unchanged.
+
 ## 0.9.34
 
 Side view: the camera shows on the cluster only once the camera unit shows the side asked for (read back 0.3 s after

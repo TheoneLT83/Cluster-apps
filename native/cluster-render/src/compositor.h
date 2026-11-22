@@ -325,10 +325,42 @@ public:
     int64_t wake_in_ms(int64_t now_ms) const;
 
     LayerState state(uint32_t id, std::string *reason) const;
+
+    /* Bandwidth for a client's layer (PROTOCOL.md "Bandwidth for a
+     * layer"): while a layer with others_fps is shown, every video layer
+     * of the other clients updates at most that many times a second (its
+     * own fps when lower), a composite's sources included, and a target's
+     * composite at the highest rate its sources' clients are held to (its
+     * own when one of them is not held). Below
+     * kOthersFpsFloor counts as it; of several such layers the lowest
+     * holds. Its own client's videos are not held by it. Applied in
+     * arrange(), from the layers' states then: a layer hidden, waiting,
+     * dropped or gone with its client releases its hold in the first
+     * arrange() that sees it, and the videos go back to their own clocks.
+     * With no such layer nothing of this runs. */
+    static const uint32_t kOthersFpsFloor = 15;
+    struct FpsRequest {
+        uint64_t owner = 0;
+        uint32_t layer = 0;
+        uint32_t fps = 0;   /* kOthersFpsFloor at least */
+    };
+    /* The layers shown with others_fps, as of the last arrange(). */
+    const std::vector<FpsRequest> &fps_requests() const { return fps_requests_; }
+    /* The rate owner's videos are held to; 0: none. *by: the request that
+     * holds them. */
+    uint32_t fps_cap(uint64_t owner, const FpsRequest **by = nullptr) const;
     Governor &governor() { return governor_; }
     /* The target's layers whose change waits to uncover a video's tiles
      * (defer_uncover). */
     uint32_t held_layers(int target) const { return targets_[target].held_n; }
+    /* The target's last render left a change to flush: a layer's write
+     * held by the budget, a change waiting to uncover, or a flush not
+     * gone. */
+    bool pending(int target) const
+    {
+        const Target &t = targets_[target];
+        return t.held_back || t.held_n || t.dirty;
+    }
     /* Since when the target's uncover has waited; -1: none waits. */
     int64_t uncover_waiting_since(int target) const { return targets_[target].uncover_since; }
     /* The byte budget the targets without the HUD's share write from. */
@@ -431,6 +463,7 @@ private:
         int64_t file_flush_ms = -1;   /* its edits' last flush */
         Arrangement arr;
         bool dirty = false;    /* changed outside a layer's stage(): flush */
+        bool held_back = false;   /* the last render held a layer's write for the budget */
         uint64_t tag = 0;
         bool flush_failing = false;
         /* The fade (above): where it is, what the layers were last
@@ -546,6 +579,9 @@ private:
      * or once allowed: kRemakeMs, kShrinkMs); *pl becomes the plan it is
      * made with when it does not. */
     bool keep_composite(int ti, VideoPlan *pl);
+    /* The shown others_fps requests (fps_requests_), and every video's
+     * clock held to its client's cap (fps_cap). */
+    void cap_videos(int64_t now_ms);
     void reconcile_drop(int ti, VideoPlan &pl);
     void reconcile_make(int ti, const VideoPlan &pl);
     void attach_composite(Target &t);
@@ -672,6 +708,8 @@ private:
     uint64_t seq_ = 0;
     uint64_t host_serial_ = 0;
     int64_t now_ms_ = 0;
+    std::vector<FpsRequest> fps_requests_;
+    bool capped_ = false;   /* a video's clock may be held: cap_videos() has work */
 };
 
 }  // namespace crs

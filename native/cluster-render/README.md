@@ -82,6 +82,17 @@ Every client's layers on a target are drawn in that target's scene.
   content (or is `prewarm`) and released when none has for
   `<target>_linger_ms` (`map` 0, `panel` and `hud` 3 s), after a fade-out.
   A client that comes back within the linger is shown at once.
+- **Preloading** (iDrive 7). While a layer on a target has `preload` 1,
+  visible or not, the cluster keeps the target's scene loaded without
+  showing it (`loaded`), and the service keeps drawing into it. A layer
+  that then wants the target is shown with no load of the scene, which
+  otherwise takes the cluster a moment before anything shows. When nothing
+  wants it any more, after the linger, the scene goes off screen and stays
+  loaded; with no `preload` layer left, it is released. A loaded scene is
+  not on screen: its slot shows other content. While `panel` is shown the
+  cluster takes the stock HMI's media widget (slot 0x200) off screen, and
+  puts it back as soon as `panel` goes off screen, before its scene is
+  released (seen on the car). On iDrive 8 `preload` has no effect.
 - **Fades.** A target's video and image layers fade in over `fade_ms`
   (250) once it is shown and out the same way when nothing wants it. Effect
   and mesh layers do not fade. A layer a client drops, or whose client goes,
@@ -179,6 +190,14 @@ within one budget (`src/governor.h`, `kit/upload_pacer.h`):
   picture writes nothing. waze-on-cluster's `always_packed` key uses it
   (its README, "Experimental: hosted_vpp_scale and always_packed"). Layers
   without it write as above.
+- **Bandwidth for a layer.** A layer sent with `others_fps` (PROTOCOL.md
+  "Bandwidth for a layer"; only to a service whose hello has `others_fps`
+  1) holds every other client's videos to at most that many writes a
+  second, 15 at the least, while it is shown, so a client drawing its own
+  cluster gets the bandwidth a map at 30 a second would take. The hold
+  ends as soon as the layer is hidden, waits, goes or its client goes, and
+  nothing of it is kept. The held clients get an `fps_cap` event; the
+  status lists who asks.
 - **The HUD's share.** While `hud` has a layer, its layers and assets write
   from up to half of the budget, only as much as they spend; what the HUD
   leaves goes to the cluster. With the cluster idle the HUD gets the whole

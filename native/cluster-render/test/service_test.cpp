@@ -44,7 +44,9 @@
  * released nor asked for again; its client gone, kept through the linger
  * and then released. The HUD's layers choose whether it gives way to the
  * stock pop-ups (yield), a client without the field getting it. A scene
- * with layers and a host of the map (layers_and_hosting). */
+ * with layers and a host of the map (layers_and_hosting). A layer's
+ * preload, end to end (preload). A layer's others_fps holding another
+ * client's video and releasing it (others_fps). */
 #include <fcntl.h>
 #include <poll.h>
 #include <signal.h>
@@ -1470,6 +1472,228 @@ static void layers_and_hosting()
     (void)removed;
 }
 
+/* Preload with the C++ client: the hello says the service knows it; a
+ * hidden preload layer has its target fetched and not mapped (loaded, in
+ * the status too); shown, the target is mapped with no second fetch;
+ * hidden again, unmapped after the linger and loaded, not released; the
+ * service restarting under the client, the field is sent again and the
+ * target loaded again; preload 0 releases it. A loaded target with nothing
+ * to flush leaves the loop at four ticks a second; wanted and waiting for
+ * its slot, a write the budget holds ticks it at the frame rate. */
+static void preload()
+{
+    Rig r;
+    cr::Client c("preload", r.path);
+    Events e;
+    e.wire(c);
+    r.clients = {&c};
+    r.pump(50);
+    ok("preload: the hello says the service knows preload", e.ready == 1 && c.takes_preload());
+    cr::LayerOptions lo;
+    lo.target = "panel";
+    lo.w = lo.h = 64;
+    lo.visible = false;
+    lo.preload = true;
+    cr::ImageOptions io;
+    io.w = io.h = 64;
+    const uint32_t img = c.image(lo, io);
+    std::vector<uint8_t> px(64 * 64 * 4, 200);
+    c.pixels(img, {}, px.data(), px.size());
+    r.pump(300);
+    ok("preload: a hidden preload layer: its target loaded, fetched and not mapped",
+       e.target["panel"] == "loaded" && e.layer[img] == "hidden" && r.port.loads == 1 && r.port.requests == 0 &&
+           !r.port.row(0x203, 0x01000400));
+    ok("preload: the status names the target loaded",
+       has(r.svc->server().status_text(r.now), "target panel: slot 0x203 scene 0x1000400 1920x720: loaded; scene "
+                                               "fetched, not mapped (preload)"));
+    lo.visible = true;
+    c.set(img, lo);
+    r.pump(1000);   /* the map spaced 1 s from the load */
+    ok("preload: made visible: shown, mapped with no second fetch", e.layer[img] == "shown" &&
+                                                                      e.target["panel"] == "shown" &&
+                                                                      r.port.remaps == 1 && r.port.loads == 1 &&
+                                                                      r.port.requests == 0);
+    lo.visible = false;
+    c.set(img, lo);
+    r.pump(4000);
+    ok("preload: hidden again: unmapped after the linger, loaded, not released",
+       e.target["panel"] == "loaded" && r.port.releases == 0 && !r.port.row(0x203, 0x01000400));
+    ok("preload: loaded with nothing to flush: the loop ticks four times a second",
+       r.svc->timeout_ms(r.now) == 250 && !r.svc->compositor().pending(1));
+    r.svc.reset();
+    r.start();
+    e.target.clear();
+    r.pump(2000);
+    ok("preload: the service restarted: the client sends preload again, the target loaded again",
+       e.ready == 2 && e.target["panel"] == "loaded" && r.port.loads == 2 && r.port.requests == 0);
+    lo.preload = false;
+    c.set(img, lo);
+    r.pump(100);
+    ok("preload: preload 0: released", e.target["panel"] == "idle" && r.port.releases == 1);
+
+    /* Wanted while loaded, its slot held by another app's content: its
+     * writes the budget holds tick the loop at the frame rate until they
+     * go. */
+    Rig b(64 * 1024);
+    cr::Client d("preload", b.path);
+    Events f;
+    f.wire(d);
+    b.clients = {&d};
+    b.pump(50);
+    cr::LayerOptions big = lo;
+    big.preload = true;
+    big.visible = false;
+    big.w = big.h = 256;
+    io.w = io.h = 256;
+    const uint32_t pic = d.image(big, io);
+    std::vector<uint8_t> whole(256 * 256 * 4, 90);
+    d.pixels(pic, {}, whole.data(), whole.size());
+    b.pump(300);
+    b.port.stock_map(0x203, 0x02000001);
+    big.visible = true;
+    d.set(pic, big);
+    b.pump(1500);
+    const bool waits = f.target["panel"] == "waiting" && b.svc->slots().loaded(1);
+    whole.assign(whole.size(), 91);
+    d.pixels(pic, {}, whole.data(), whole.size());
+    b.pump(10);
+    const bool held = b.svc->compositor().pending(1), fast = b.svc->timeout_ms(b.now) < 250;
+    ok("preload: wanted while loaded, the slot another app's: a write held by the budget ticks the loop fast",
+       waits && held && fast);
+    b.pump(5000);
+    ok("preload: once it has gone, idle again", !b.svc->compositor().pending(1) && b.svc->timeout_ms(b.now) == 250);
+}
+
+/* The updates a second the service's only video layer is clocked at now;
+ * 999: none. */
+static uint32_t video_clock(Rig &r)
+{
+    for (const Layer *l : r.svc->compositor().layers())
+        if (!std::strcmp(l->kind(), "video"))
+            return static_cast<const VideoLayer *>(l)->clock_fps();
+    return 999;
+}
+
+/* others_fps with the C++ client: the hello says the service knows it; a
+ * video alone keeps its own rate and its client gets no fps_cap event; a
+ * hidden layer with others_fps holds nothing; shown, the other client's
+ * video is written at most that often and its client told (with the app),
+ * the requesting client's own video not held and it told nothing; below 15
+ * counts as 15; hidden, set back to 0, dropped, or its client gone: the
+ * video back at its own rate and its client told 0. The service
+ * restarting: the held client told 0 as its connection goes, and held
+ * again once the request is shown again. */
+static void others_fps()
+{
+    Rig r;
+    cr::Client w("waze", r.path);
+    std::unique_ptr<cr::Client> k(new cr::Client("cluster", r.path));
+    Events ew, ek;
+    ew.wire(w);
+    ek.wire(*k);
+    std::vector<std::string> caps;
+    int cluster_caps = 0;
+    w.on_fps_cap = [&](unsigned fps, const std::string &app) { caps.push_back(std::to_string(fps) + " " + app); };
+    k->on_fps_cap = [&](unsigned, const std::string &) { cluster_caps++; };
+    r.clients = {&w, k.get()};
+    r.pump(50);
+    ok("others_fps: the hello says the service knows others_fps", w.takes_others_fps() && k->takes_others_fps());
+    cr::LayerOptions lo;
+    lo.target = "map";
+    lo.contend = true;
+    const uint32_t map = w.video(lo, cr::VideoOptions());
+    int seed = 1;
+    /* frames offered 100 a second for ms: the map's writes a second */
+    auto rate = [&](int64_t ms) {
+        const uint64_t before = r.svc->compositor().write_stats(0).frames;
+        for (int64_t t = 0; t < ms; t += 10) {
+            const std::vector<uint8_t> f = atlas(seed++);
+            w.frame(map, f.data(), f.size(), (uint64_t)seed);
+            r.pump(10);
+        }
+        return (unsigned)((r.svc->compositor().write_stats(0).frames - before) * 1000 / (uint64_t)ms);
+    };
+    rate(600);
+    unsigned alone = rate(2000);
+    ok("others_fps: a video alone: at its own 30 a second, no fps_cap event", ew.layer[map] == "shown" &&
+                                                                                 alone >= 28 && alone <= 31 &&
+                                                                                 caps.empty() &&
+                                                                                 video_clock(r) == 30);
+
+    cr::LayerOptions pl;
+    pl.target = "panel";
+    pl.w = pl.h = 64;
+    pl.visible = false;
+    pl.others_fps = 20;
+    cr::ImageOptions io;
+    io.w = io.h = 64;
+    const uint32_t img = k->image(pl, io);
+    std::vector<uint8_t> px(64 * 64 * 4, 200);
+    k->pixels(img, {}, px.data(), px.size());
+    unsigned hidden = rate(1000);
+    ok("others_fps: the request hidden: nothing held", hidden >= 28 && caps.empty() && video_clock(r) == 30);
+
+    pl.visible = true;
+    k->set(img, pl);
+    for (int i = 0; i < 100 && ek.layer[img] != "shown"; i++)
+        r.pump(10);
+    const unsigned held = rate(2000);
+    ok("others_fps: shown: the other client's video written at most 20 a second, its client told who asks",
+       ek.layer[img] == "shown" && held >= 18 && held <= 21 && video_clock(r) == 20 &&
+           caps == std::vector<std::string>{"20 cluster"} && w.fps_cap == 20 && w.fps_cap_app == "cluster");
+    ok("others_fps: the requesting client told nothing", k->fps_cap == 0 && cluster_caps == 0);
+    ok("others_fps: the status names the request",
+       r.svc->server().status_text(r.now).find("others_fps: cluster layer ") != std::string::npos);
+
+    pl.others_fps = 5;
+    k->set(img, pl);
+    r.pump(50);
+    ok("others_fps: below 15 counts as 15", w.fps_cap == 15 && video_clock(r) == 15);
+
+    pl.visible = false;
+    k->set(img, pl);
+    r.pump(50);
+    ok("others_fps: hidden: released, its client told 0",
+       w.fps_cap == 0 && caps.back() == "0 " && video_clock(r) == 30);
+    const unsigned back = rate(1000);
+    ok("others_fps: and back at 30 a second", back >= 28 && back <= 31);
+
+    pl.visible = true;
+    pl.others_fps = 20;
+    k->set(img, pl);
+    r.pump(100);
+    const bool again = w.fps_cap == 20;
+    pl.others_fps = 0;
+    k->set(img, pl);
+    r.pump(50);
+    ok("others_fps: set back to 0: released", again && w.fps_cap == 0 && video_clock(r) == 30);
+
+    pl.others_fps = 20;
+    k->set(img, pl);
+    r.pump(100);
+    const bool third = w.fps_cap == 20;
+    k->drop(img);
+    r.pump(50);
+    ok("others_fps: the layer dropped: released", third && w.fps_cap == 0 && video_clock(r) == 30);
+
+    const uint32_t img2 = k->image(pl, io);
+    k->pixels(img2, {}, px.data(), px.size());
+    r.pump(200);
+    const bool fourth = w.fps_cap == 20 && video_clock(r) == 20;
+    r.svc.reset();
+    r.start();
+    r.pump(10);
+    const bool restart_released = caps.back() == "0 ";
+    for (int i = 0; i < 300 && w.fps_cap != 20; i++)
+        r.pump(10);
+    ok("others_fps: the service restarted: told 0 as the connection goes, held again once the request is shown",
+       fourth && restart_released && w.fps_cap == 20);
+    r.clients = {&w};
+    k.reset();
+    r.pump(100);
+    ok("others_fps: its client gone: released", w.fps_cap == 0 && caps.back() == "0 " && video_clock(r) == 30);
+}
+
 int main()
 {
     signal(SIGPIPE, SIG_IGN);
@@ -1978,6 +2202,8 @@ int main()
     framing();
     scene_files();
     layers_and_hosting();
+    preload();
+    others_fps();
     std::printf(failures ? "%d FAILED\n" : "all ok\n", failures);
     return failures ? 1 : 0;
 }

@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+## 0.13.0
+
+Android Auto's cluster map patch is applied in aapd's memory each time it
+starts, as CarPlay's is: `/usr/bin/aapd` and `/etc/aapd.conf` stay as they
+ship. Updating from an earlier version puts the original files back and
+keeps the map, your zoom and turn-card settings included.
+
+## 0.12.1
+
+The rollback tests treat 0.11.0 and later as releases that patch CarPlay in
+memory.
+A map shown inside another app's scene on the cluster appears as soon as
+its picture is ready, including when that app shows it again while the map
+is still.
+
+## 0.12.0
+
+While another app's content on the cluster asks for upload bandwidth
+(cluster-render's `others_fps`), the map runs at the lower frame rate it
+asks for and makes no more pictures than that, and goes back to its own
+rate when that app hides its content or exits.
+
 ## 0.11.0
 
 robertnisipeanu/idrive-apps' 0.10.12 and 0.11.0 with this repository's 0.10.17:

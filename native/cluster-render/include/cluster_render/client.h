@@ -52,10 +52,16 @@ struct LayerOptions {
     bool visible = true;
     bool exclusive = false;          /* hides every layer below it while drawn */
     bool prewarm = false;            /* asks for the slot before the first content */
+    bool preload = false;            /* keeps the target's scene loaded on the display while not shown */
     bool contend = false;            /* retries a slot the stock HMI takes */
     bool guide_hold = true;          /* false: the stock HMI's guidance box shows while this layer wants the map */
     bool hide_badge = false;         /* true: the guide hold also with no guidance box, the car's badge covered */
     bool yield = true;               /* false: the target stays shown over the stock HMI's pop-ups while this layer wants it */
+    /* While this layer is shown, every other client's video at most this
+     * many updates a second (15 at least), so this app gets the upload
+     * bandwidth they leave; 0: no request (PROTOCOL.md "Bandwidth for a layer"). Sent
+     * when set, and with set() also when it goes back to 0. */
+    unsigned others_fps = 0;
     float opacity = 1.0f;
     float feather = 0;               /* video: the edges faded out over this many pixels (0: none) */
     float feather_bottom = -1;       /* video: the bottom edge's, when not feather's (-1: as feather) */
@@ -298,11 +304,22 @@ public:
      * hosted now, by name (none while not connected). */
     std::function<void(const Host &h)> on_host;
     std::map<std::string, Host> hosts;
+    /* Another client's layer shown with others_fps holds this client's
+     * videos to fps_cap updates a second (0: none; app: that client's
+     * name), from the service's fps_cap events; 0 while not connected.
+     * on_fps_cap: it changed, also to 0 when the connection goes. */
+    unsigned fps_cap = 0;
+    std::string fps_cap_app;
+    std::function<void(unsigned fps, const std::string &app)> on_fps_cap;
     void request_status();
     /* The service's hello: its backend ("id7", "id8") and targets ("map:1088x480,..."). */
     std::string backend, targets;
     /* The service's hello takes a video layer's always_packed (VideoOptions). */
     bool takes_always_packed() const { return always_packed_; }
+    /* The service's hello knows a layer's preload (LayerOptions). */
+    bool takes_preload() const { return preload_; }
+    /* The service's hello knows a layer's others_fps (LayerOptions). */
+    bool takes_others_fps() const { return others_fps_; }
 
 private:
     struct Part {
@@ -392,6 +409,8 @@ private:
     uint32_t last_frame_ref_ = 0;   /* the layer whose frame went last; cur_px_'s while it is sent */
     bool repeats_ = false;          /* the service takes repeats (its hello) */
     bool always_packed_ = false;    /* and always_packed */
+    bool preload_ = false;          /* and knows preload */
+    bool others_fps_ = false;       /* and others_fps */
 };
 
 }  // namespace cr

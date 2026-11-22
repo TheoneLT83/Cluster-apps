@@ -52,9 +52,13 @@ struct LayerParams {
     Klass klass = Klass::Content;
     int z = 0;
     bool visible = true, exclusive = false, prewarm = false, contend = false;
+    bool preload = false;     /* its target's scene kept fetched, not mapped, while nothing shows it (slots.h) */
     bool guide_hold = true;   /* false: no guide hold for its target while it wants it (slots.h) */
     bool hide_badge = false;  /* true: the guide hold also with no turn box, so the car's badge is covered (slots.h) */
     bool yield = true;        /* false: its target gives way to no stock pop-up while it wants it (slots.h) */
+    /* While it is shown, every other client's video at most this many
+     * updates a second (Compositor::fps_cap); 0: no request. */
+    uint32_t others_fps = 0;
     Rect rect;
     float opacity = 1.0f;
     /* Video layers: the edges faded out over this many pixels each side (0: a hard edge), the bottom one over

@@ -843,6 +843,7 @@ void Compositor::arrange(int64_t now_ms)
             it.ready = l.ready(now_ms) && assets_have(e);
             it.exclusive = l.params.exclusive;
             it.prewarm = l.params.prewarm;
+            it.preload = l.params.preload;
             it.contend = l.params.contend;
             it.guide_hold = l.params.guide_hold;
             it.hide_badge = l.params.hide_badge;
@@ -861,7 +862,7 @@ void Compositor::arrange(int64_t now_ms)
             t.arr.contend = t.arr.contend || scenes_[sc].contend;
         }
         fade((int)ti, t, now_ms);
-        slots_->want((int)ti, t.arr.wanted, t.arr.contend, t.arr.guide_hold, t.arr.yield, t.arr.hide_badge);
+        slots_->want((int)ti, t.arr.wanted, t.arr.contend, t.arr.guide_hold, t.arr.yield, t.arr.preload, t.arr.hide_badge);
         if (!t.graph)
             continue;
         const bool cv = t.composite && t.composite->attached();
@@ -914,6 +915,59 @@ void Compositor::arrange(int64_t now_ms)
         }
         if (t.composite && t.composite->arranged())
             t.dirty = true;
+    }
+    cap_videos(now_ms);
+}
+
+uint32_t Compositor::fps_cap(uint64_t owner, const FpsRequest **by) const
+{
+    const FpsRequest *low = nullptr;
+    for (const FpsRequest &r : fps_requests_)
+        if (r.owner != owner && (!low || r.fps < low->fps))
+            low = &r;
+    if (by)
+        *by = low;
+    return low ? low->fps : 0;
+}
+
+void Compositor::cap_videos(int64_t now_ms)
+{
+    fps_requests_.clear();
+    for (const auto &kv : layers_) {
+        const Layer &l = *kv.second.layer;
+        if (!l.params.others_fps)
+            continue;
+        std::string reason;
+        if (state(kv.first, &reason) == LayerState::Shown)
+            fps_requests_.push_back(FpsRequest{kv.second.owner, kv.first,
+                                               l.params.others_fps < kOthersFpsFloor ? kOthersFpsFloor
+                                                                                     : l.params.others_fps});
+    }
+    if (fps_requests_.empty() && !capped_)
+        return;
+    /* the last tick of a hold puts every clock back */
+    capped_ = !fps_requests_.empty();
+    for (size_t ti = 0; ti < targets_.size(); ti++) {
+        /* a composite: the highest cap of its sources' clients, none when
+         * one of them is not held */
+        uint32_t composite_cap = 0;
+        bool sources = false, unheld = false;
+        for (auto &kv : layers_) {
+            Entry &e = kv.second;
+            if (e.layer->target() != (int)ti || std::strcmp(e.layer->kind(), "video"))
+                continue;
+            const uint32_t cap = fps_cap(e.owner);
+            /* a composite's source too, so it draws itself at its client's
+             * rate when the composite goes */
+            static_cast<VideoLayer *>(e.layer.get())->cap_fps(cap, now_ms);
+            if (e.composited) {
+                sources = true;
+                unheld = unheld || !cap;
+                composite_cap = std::max(composite_cap, cap);
+            }
+        }
+        if (targets_[ti].composite)
+            targets_[ti].composite->cap_fps(sources && !unheld ? composite_cap : 0, now_ms);
     }
 }
 
@@ -1020,11 +1074,12 @@ void Compositor::render(int64_t now_ms)
     bool sharing = false;
     for (const auto &kv : layers_) {
         const int ti = kv.second.layer->target();
-        sharing = sharing || (slots_->targets()[ti].share && slots_->requested(ti));
+        sharing = sharing || (slots_->targets()[ti].share && (slots_->requested(ti) || slots_->loaded(ti)));
     }
     pacer_.set_share(sharing ? kSharePct : 0);
     /* Released, or kept through a lock: nothing of a target is asked for,
-     * and a kept scene keeps its last flush. Parked or being mapped again
+     * and a kept scene keeps its last flush. Loaded (preload): its scene is
+     * fetched, not mapped, and stages as a shown one's. Parked or being mapped again
      * after a lock: nothing of it is on screen, and the link carries the
      * HMI's content too. It stages again once shown. Each target staging is told what covers its videos; one
      * with held tiles to uncover, or an alert waiting for its first write,
@@ -1103,6 +1158,7 @@ void Compositor::render_target(int ti, Target &t, int64_t now_ms)
      * target: only its whole rewrite stages, and nothing flushes until
      * that goes, so the cluster keeps showing the last frame. */
     const bool hold = holds(t);
+    t.held_back = false;
     std::vector<Layer *> staged;
     std::vector<Asset *> staged_assets;
     bool wrote = false, failed = false;
@@ -1146,7 +1202,9 @@ void Compositor::render_target(int ti, Target &t, int64_t now_ms)
         }
         if (hold && !l->holds_flush() && !l->uncovering())
             continue;
+        const uint64_t holds = l->write_stats().holds;
         const Stage s = l->stage(now_ms);
+        t.held_back = t.held_back || l->write_stats().holds != holds;
         if (l == t.composite.get() && t.composite->placed_now())
             t.dirty = true;   /* quads moved over a canvas the display holds */
         if (s == Stage::Idle)
@@ -1730,11 +1788,11 @@ int64_t Compositor::wake_in_ms(int64_t now_ms) const
             best = w;
     };
     for (const auto &kv : layers_)
-        if (slots_->requested(kv.second.layer->target()))
+        if (slots_->requested(kv.second.layer->target()) || slots_->loaded(kv.second.layer->target()))
             at(kv.second.layer->wake_in_ms(now_ms));
     for (size_t ti = 0; ti < targets_.size(); ti++) {
         const Target &t = targets_[ti];
-        if (t.composite && slots_->requested((int)ti))
+        if (t.composite && (slots_->requested((int)ti) || slots_->loaded((int)ti)))
             at(t.composite->wake_in_ms(now_ms));
         if (t.remake_ms >= 0)
             at(std::max<int64_t>(1, t.remake_ms - now_ms));

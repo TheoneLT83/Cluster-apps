@@ -13,10 +13,10 @@ a video pipeline:
    memory at start while `/usr/bin/carplay` stays as it ships, makes `KI_KOMBI_VARIANT` 7 resolve to a supported
    cluster variant, makes CarPlay start the cluster stream itself, and
    advertises the size the map is shown at ([patch/PATCH.md](patch/PATCH.md)).
-   Another to `/usr/bin/aapd` and `/etc/aapd.conf` does the same for Android
-   Auto (PATCH.md "Android Auto"). Each is applied only where it is
-   supported, and each on its own: one that cannot be applied leaves the
-   other as it is.
+   Another, applied in aapd's memory while `/usr/bin/aapd` and
+   `/etc/aapd.conf` stay as they ship, does the same for Android Auto
+   (PATCH.md "Android Auto"). Each is applied only where it is supported,
+   and each on its own.
 2. **Capture.** The phone sends the stream as RTP to the stock media-bus sink,
    AVB stream `media_transport.avb_streaming.15`; the render joins it as an
    extra receiver, in-process. It also listens on a local UDP port and a FIFO,
@@ -53,14 +53,16 @@ Patched after restart`, and one head-unit start runs CarPlay with the
 patch. Over an earlier release's patch of `/usr/bin/carplay` it puts the
 shipped file back in the same step; the earlier patch keeps running until
 CarPlay next starts, which then applies the patch in memory, so no restart
-is needed for it. It then writes the Android Auto patch on a proven aapd
-build. Anywhere else it leaves everything as it is, and the app's Status
-says why (PATCH.md "Install-time activation", "In memory").
+is needed for it. It then does the same for Android Auto on a proven aapd
+build: an earlier release's patch of `/usr/bin/aapd` and `/etc/aapd.conf`
+goes back as they ship, and the patch is armed in aapd's memory. Anywhere
+else it leaves everything as it is, and the app's Status says why (PATCH.md
+"Install-time activation", "In memory").
 
 **Remove.** In the Store, remove the app, then the tool (refused while the
-app is installed). `patchd.js deactivate` turns the patch in memory off,
-reverts our edits to aapd and aapd.conf (and to carplay, where an earlier
-release wrote them) and drops our backups; the deploy tool then removes this
+app is installed). `patchd.js deactivate` turns both patches in memory
+off, reverts our edits to carplay, aapd and aapd.conf where an earlier
+release wrote them and drops our backups; the deploy tool then removes this
 tool's services and files. The next head-unit start runs the original
 CarPlay and aapd.
 
@@ -675,7 +677,12 @@ panel. The patch advertises exactly that, so `tex_size` must equal it.
 `map_rect` draws the map stretched into a rect of the map slot.
 `target_fps` (30) caps the frame rate; `picture_fps` (0: every frame) makes
 at most that many pictures a second, which saves CPU when the phone sends
-more than the cluster takes (set it to `target_fps` then).
+more than the cluster takes (set it to `target_fps` then). While another
+app's layer on the cluster asks for upload bandwidth (cluster-render's
+`others_fps`), the renderer writes the map at most at the rate it asks, 15
+a second at the least, and the pictures follow; when that app hides its
+content or exits, both go back to these settings. Nothing is written to
+disk for it.
 `always_packed = 1` sends fewer bytes for the same map ("Experimental:
 hosted_vpp_scale and always_packed" below).
 
@@ -776,9 +783,9 @@ for reading the patches' state and undoing them without the app:
 | `probe` | where the edit sites are in a carplay binary and whether it is patchable, without writing |
 | `aa-probe [<file>]` | the same for aapd (`/usr/bin/aapd` by default) |
 | `verify` | whether carplay's patch is complete |
-| `off` | turns carplay's patch in memory off: its next start runs stock |
+| `off`, `aa-off` | turns carplay's or Android Auto's patch in memory off: the next start runs stock |
 | `revert [--force]` | restores the original carplay where an earlier release patched the file; `--force` over another build (a firmware update) |
-| `aa-revert [--force]` | restores the original aapd and aapd.conf |
+| `aa-revert [--force]` | restores the original aapd and aapd.conf where an earlier release patched them |
 
 It remounts `/` read-write only for a write. **Never `systemctl stop` or
 `restart` carplay**: CarPlay dumps core on SIGTERM, which power-cycles the
@@ -796,32 +803,26 @@ cannot run or read its original's mode and owner.
 
 ## The Android Auto patch
 
-`patch/aapd_patch.js` (Node 8, no dependencies) edits `/usr/bin/aapd` and
-`/etc/aapd.conf` after a verified full backup of each, only on a car coded
+`patch/aapd_patch.js` (Node 8, no dependencies) plans four edits to aapd and
+a copy of aapd.conf with the cluster geometry, only on a car coded
 `KI_KOMBI_VARIANT` 7, read from `/dev/shm/rawcodingdata` the way aapd reads
-it. `patch/aapd_locate.js` finds each edit's site in the build by its code
-(PATCH.md "Android Auto"), and a build where a site is not found is refused
-with the reason. The install patches only a proven build (aapd 22.39.3,
-sha256 `6880f54c…`, by build-id); another build is a conflict until Android
-Auto's Patch button (or `apply --unproven`) patches it once. aapd.conf is edited
-when it has the 12.3" entries and numbers the geometry sets, and refused
-otherwise. Its edits, at the proven build's offsets:
+it. `libwocpatch.so` applies the plan in aapd's memory each time it starts,
+and aapd reads the copy from `/run/aapd.conf`: `/usr/bin/aapd` and
+`/etc/aapd.conf` stay as they ship. `patch/aapd_locate.js` finds each edit's
+site in the build by its code (PATCH.md "Android Auto"), and a build where a
+site is not found is refused with the reason. The install patches only a
+proven build (aapd 22.39.3, sha256 `6880f54c…`, by build-id); another build
+is a conflict until Android Auto's Patch button (or `plan --unproven`)
+patches it once. The aapd.conf copy is made when aapd.conf has the 12.3"
+entries and numbers the geometry sets, and refused otherwise.
 
-| Command | |
-|---|---|
-| `status`, `aa-status` | what is on disk |
-| `probe` | where the edit sites are in a carplay binary and whether it is patchable, without writing |
-| `aa-probe [<file>]` | the same for aapd (`/usr/bin/aapd` by default) |
-| `verify` | whether carplay's patch is complete |
-| `off` | turns carplay's patch in memory off: its next start runs stock |
-| `revert [--force]` | restores the original carplay where an earlier release patched the file; `--force` over another build (a firmware update) |
-| `aa-revert [--force]` | restores the original aapd and aapd.conf |
-
-`aapd_patch.js status | apply [--dpi n] [--card shown|hidden] [--unproven] | revert [--force] [--drop-backup]`
+`aapd_patch.js status | probe | plan | overlay | revert [--force] [--drop-backup]`
 with `--target`, `--conf` and `--coding` for copies. `status` names the
-build-id, the version and whether the build is proven. `revert` needs no
-locator: each file's backup is trusted by its recorded SHA-256 and written
-over a file of its own build. **Never `systemctl stop` or `restart` aapd.**
+build-id, the version and whether the build is proven. `revert` writes aapd
+and aapd.conf only to put back a patch an earlier release wrote into them,
+and needs no locator: each file's backup is trusted by its recorded SHA-256
+and written over a file of its own build. **Never `systemctl stop` or
+`restart` aapd.**
 
 ## Safety
 

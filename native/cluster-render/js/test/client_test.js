@@ -12,8 +12,12 @@
  * layers there waiting, its edit lines kept by key, a malformed one and one
  * changing nothing reported, and dropped; one with layers, the layers drawn
  * over it, hosting the map, shown and hidden, the other client told, and the
- * host ended when it is dropped; close() and connect() in one tick making one
- * connection. */
+ * host ended when it is dropped; a hidden preload layer keeping its target
+ * loaded, shown when made visible and loaded again after the linger, made
+ * again with preload after the restart, and preload 0 releasing the target;
+ * a layer's others_fps holding the other client (fps_cap) and releasing it
+ * when set to 0, dropped, or the held client closes; close() and connect()
+ * in one tick making one connection. */
 'use strict';
 
 const assert = require('assert');
@@ -139,16 +143,35 @@ async function main() {
     ovl.status();
     ok('the status names the asset', await until(() => status.indexOf('asset') >= 0 && status.indexOf('r8 64x32') >= 0, 1000));
 
+    ok('the hello says the service knows preload', ovl.preload === true);
+    const pre = ovl.image({ target: 'hud', visible: false, preload: true, w: 32, h: 32, iw: 32, ih: 32 });
+    ovl.pixels(pre, null, Buffer.alloc(32 * 32 * 4, 77));
+    ok('a hidden preload layer: its target loaded, the layer hidden',
+        await until(() => eo.target.hud === 'loaded', 2000) && eo.layer[pre] === 'hidden');
+    status = '';
+    ovl.status();
+    ok('the status names the target loaded', await until(() => status.indexOf('target hud') >= 0, 1000) &&
+        /target hud: [^\n]*: loaded/.test(status));
+    ovl.set(pre, { visible: true });
+    ok('made visible: shown', await until(() => eo.layer[pre] === 'shown' && eo.target.hud === 'shown', 3000));
+    ovl.set(pre, { visible: false });
+    ok('hidden again: loaded after the linger', await until(() => eo.target.hud === 'loaded', 5000));
+
     svc.kill();
     await new Promise((r) => svc.once('exit', r));
     ok('the service gone: both clients notice', await until(() => eo.gone === 1 && ew.gone === 1, 1000));
     eo.layer = {};
     ew.layer = {};
+    eo.target = {};
     svc = await startService();
     ok('it comes back: both clients reconnect and their layers are shown again',
         await until(() => eo.layer[badge] === 'shown' && ew.layer[map] === 'shown', 5000) && eo.ready >= 2);
     ok('the asset, its effect, the mesh part and its geometry are made again',
         await until(() => eo.layer[label] === 'shown' && eo.layer[car] === 'shown', 2000));
+    ok('the preload layer is made again with preload: its target loaded',
+        await until(() => eo.target.hud === 'loaded', 3000) && eo.layer[pre] === 'hidden');
+    ovl.set(pre, { preload: false });
+    ok('preload 0: the target released', await until(() => eo.target.hud === 'idle', 2000));
 
     const file = path.join(scenes, 'gauge.scene');
     fs.writeFileSync(file, GAUGE);
@@ -206,6 +229,33 @@ async function main() {
     ok('hosted again', await until(() => hosted[hosted.length - 1] === 'map:panel:1:560', 2000));
     ovl.drop(over);
     ok('dropped: the map not hosted any more', await until(() => hosted[hosted.length - 1] === 'map:-', 2000));
+
+    /* others_fps: the overlay's layer asks for the others' bandwidth. */
+    const caps = [];
+    waze.on('fps_cap', (fps, app) => caps.push(fps + ':' + app));
+    ok('the hello says the service knows others_fps', ovl.othersFps === true && waze.othersFps === true);
+    const ask = ovl.image({ target: 'panel', klass: 'overlay', others_fps: 20, w: 16, h: 16, iw: 16, ih: 16 });
+    ovl.pixels(ask, null, Buffer.alloc(16 * 16 * 4, 255));
+    ok('shown with others_fps 20: the other client told who asks, the asking one nothing',
+        await until(() => waze.fpsCap === 20, 3000) && waze.fpsCapApp === 'overlay' && ovl.fpsCap === 0 &&
+        caps.join() === '20:overlay');
+    ovl.set(ask, { others_fps: 0 });
+    ok('others_fps 0: released', await until(() => waze.fpsCap === 0, 2000) && caps.join() === '20:overlay,0:');
+    ovl.set(ask, { others_fps: 20 });
+    const held = await until(() => waze.fpsCap === 20, 2000);
+    ovl.drop(ask);
+    ok('dropped: released', held && await until(() => waze.fpsCap === 0, 2000));
+    const ask2 = ovl.image({ target: 'panel', klass: 'overlay', others_fps: 20, w: 16, h: 16, iw: 16, ih: 16 });
+    ovl.pixels(ask2, null, Buffer.alloc(16 * 16 * 4, 255));
+    const again = await until(() => waze.fpsCap === 20, 3000);
+    const before = caps.length;
+    waze.close();
+    ok('the held client closing: released here, told 0', again && waze.fpsCap === 0 && caps.length === before + 1 &&
+        caps[caps.length - 1] === '0:');
+    waze.connect();
+    ok('connected again: held again', await until(() => waze.fpsCap === 20, 3000));
+    ovl.drop(ask2);
+    ok('the request dropped: released', await until(() => waze.fpsCap === 0, 2000));
 
     clearInterval(feed);
     ok('frames stopping: the video is stalled after its stall time',
