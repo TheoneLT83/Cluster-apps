@@ -72,15 +72,16 @@ test('the plan of a patched file is refused; a changed file or plan is no longer
     assert(inmem.current('carplay') && rec);
 }, true);
 
-test('a build outside the proven list is refused without --unproven, and unproven (not on trial) with it', async () => {
+test('a build no list names is planned as any other, on trial, with or without --unproven', async () => {
     const buf = fs.readFileSync(CARPLAY_BIN);
     const id = buf.indexOf(Buffer.from('5de62156575d737391ea42254e778a97dbbb51f8', 'hex'));
     buf[id] ^= 1;
     fs.writeFileSync(T, buf);
-    await assert.rejects(plan(), (e) => /not a proven build/.test(e.refused || ''));
-    const rec = await plan(['--unproven']);
-    assert.strictEqual(rec.trial, false);
-    assert.strictEqual(rec.proven, false);
+    let rec = await plan();
+    assert.deepStrictEqual([rec.enabled, rec.trial, rec.proven], [true, true, false]);
+    assert.strictEqual(inmem.kind('carplay'), 'unproven');
+    rec = await plan(['--unproven']);
+    assert.deepStrictEqual([rec.trial, rec.proven], [true, false]);
     fs.copyFileSync(CARPLAY_BIN, T);
     await plan();
 }, true);
@@ -226,11 +227,9 @@ test('the same bytes written again (a new file): the record adopts it and boot r
     try { fs.unlinkSync(process.env.WOC_RECOVERY_STATE); } catch (e) {}
     inmem.disarm('carplay');
     const ino0 = fs.statSync(T).ino;
-    fs.unlinkSync(T);
-    fs.writeFileSync(T + '.new', fs.readFileSync(CARPLAY_BIN), { mode: 0o755 });
-    fs.writeFileSync(T + '.hold', '');   /* the new file takes another inode */
-    fs.renameSync(T + '.new', T);
-    fs.unlinkSync(T + '.hold');
+    fs.renameSync(T, T + '.old');   /* the old inode stays in use until the new file has its own */
+    fs.writeFileSync(T, fs.readFileSync(CARPLAY_BIN), { mode: 0o755 });
+    fs.unlinkSync(T + '.old');
     assert.strictEqual(inmem.current('carplay'), null, 'another inode: not described before it is adopted');
     assert.strictEqual(inmem.adopt('carplay'), true);
     assert(fs.statSync(T).ino !== ino0, 'the test wrote a new file');
@@ -274,11 +273,14 @@ test('woc-patch.sh off: the next start runs carplay as it ships, the record turn
 }, true);
 
 test('the patcher\'s refusals of a file are conflicts; a failure a later try may not meet is not', () => {
-    ['refusing: head unit: unknown variant is not supported', 'refusing: KI_KOMBI_VARIANT 9 is not the proven cluster coding (7); pass --unproven to patch it anyway',
+    ['refusing: head unit: unknown variant is not supported', 'refusing: KI_KOMBI_VARIANT 9 is not the supported cluster coding (7); pass --unproven to patch it anyway',
         'refusing: variant: not found', 'in memory needs the pristine build on disk: variant edited',
-        'build 1234 (carplay 23.1) is not a proven build; pass --unproven to patch it anyway'].forEach((w) => assert.strictEqual(inmem.refusal(w), true, w));
-    ['cannot read /usr/bin/carplay: EIO: i/o error', 'refusing: the edited image does not verify (sink)', 'refusing: the plan does not reproduce the edited image (bytes differ)',
+        'refusing: the edited image does not verify (sink)', 'refusing: the plan does not reproduce the edited image (bytes differ)'].forEach((w) => assert.strictEqual(inmem.refusal(w), true, w));
+    ['cannot read /usr/bin/carplay: EIO: i/o error',
         'refusing: the cluster coding cannot be read (/dev/shm/rawcodingdata unreadable); pass --unproven to patch it anyway'].forEach((w) => assert.strictEqual(inmem.refusal(w), false, w));
+    assert.strictEqual(inmem.refusalConflict('refusing: the edited image does not verify (sink)'), 'not patchable: the edited image does not verify (sink)');
+    assert.strictEqual(inmem.refusalConflict('refusing: the plan does not reproduce the edited image (bytes differ)'), 'not patchable: the plan does not reproduce the edited image (bytes differ)');
+    assert.strictEqual(inmem.refusalConflict('refusing: variant: not found'), 'refusing: variant: not found');
 });
 
 test('a plan armed by another version\'s library path is armed again (the env file only, the run\'s result kept); an arm that fails says why', async () => {

@@ -84,6 +84,106 @@ bool choice(const cr::Json &j, const char *key, const std::vector<std::string> &
     return false;
 }
 
+/* The render state fields onto *look: a mesh part's, or an effect layer's
+ * (quad: its depth and culling fields are ignored, as a field the service
+ * does not know). A blend field over a preset makes the preset custom. */
+bool look_fields(const cr::Json &j, bool quad, PartLook *look, std::string *err)
+{
+    static const std::vector<std::string> presets = {"alpha", "add", "none", "premultiplied", "max", "min", "subtract"};
+    static const std::vector<std::string> factors = {"zero",      "one",           "src_alpha",
+                                                     "one_minus_src_alpha", "dst_alpha", "one_minus_dst_alpha"};
+    static const std::vector<std::string> ops = {"add", "subtract", "reverse_subtract", "min", "max"};
+    static const std::vector<std::string> funcs = {"less",    "less_equal",    "equal", "not_equal",
+                                                   "greater", "greater_equal", "always", "never"};
+    int blend = (int)look->blend;
+    if (!choice(j, "blend", presets, &blend, err))
+        return false;
+    if (j.count("blend")) {
+        look->blend = (Blend)blend;
+        look->has_custom = false;
+    }
+    BlendState b = look->blending();
+    int src = (int)b.src, dst = (int)b.dst, src_a = (int)b.src_alpha, dst_a = (int)b.dst_alpha;
+    int op = (int)b.op, op_a = (int)b.op_alpha;
+    if (!choice(j, "blend_src", factors, &src, err) || !choice(j, "blend_dst", factors, &dst, err) ||
+        !choice(j, "blend_src_alpha", factors, &src_a, err) || !choice(j, "blend_dst_alpha", factors, &dst_a, err) ||
+        !choice(j, "blend_op", ops, &op, err) || !choice(j, "blend_op_alpha", ops, &op_a, err))
+        return false;
+    if (j.count("blend_src") || j.count("blend_dst") || j.count("blend_src_alpha") || j.count("blend_dst_alpha") ||
+        j.count("blend_op") || j.count("blend_op_alpha")) {
+        if (!b.on) {
+            *err = "blend none takes no blend factors or operations";
+            return false;
+        }
+        b.src = (BlendFactor)src;
+        b.dst = (BlendFactor)dst;
+        b.src_alpha = (BlendFactor)src_a;
+        b.dst_alpha = (BlendFactor)dst_a;
+        b.op = (BlendOp)op;
+        b.op_alpha = (BlendOp)op_a;
+        look->custom = b;
+        look->has_custom = true;
+    }
+    if (j.count("color_mask")) {
+        const std::string m = str(j, "color_mask");
+        uint8_t bits = 0;
+        bool good = !m.empty() && m.size() <= 4;
+        for (char ch : m == "none" ? std::string() : m) {
+            const uint8_t bit = ch == 'r' ? kMaskR : ch == 'g' ? kMaskG : ch == 'b' ? kMaskB : ch == 'a' ? kMaskA : 0;
+            good = good && bit && !(bits & bit);
+            bits |= bit;
+        }
+        if (!good) {
+            *err = "color_mask must be none or some of r, g, b and a, each once (rgba: all)";
+            return false;
+        }
+        look->color_mask = bits;
+    }
+    if (quad)
+        return true;
+    double depth = look->depth ? 1 : 0, write = look->depth_write ? 1 : 0;
+    int func = (int)look->depth_func - 1, cull = look->cull == Cull::Back ? 0 : look->cull == Cull::Front ? 1 : 2;
+    if (!num(j, "depth", 0, 1, &depth, err) || !choice(j, "depth_func", funcs, &func, err) ||
+        !num(j, "depth_write", 0, 1, &write, err) || !choice(j, "cull", {"back", "front", "none"}, &cull, err))
+        return false;
+    look->depth = depth != 0;
+    look->depth_func = (DepthFunc)(func + 1);
+    look->depth_write = write != 0;
+    look->cull = cull == 0 ? Cull::Back : cull == 1 ? Cull::Front : Cull::None;
+    if (!look->depth && (j.count("depth_func") || j.count("depth_write"))) {
+        *err = "depth 0 takes no depth_func or depth_write";
+        return false;
+    }
+    return true;
+}
+
+/* An asset's sampling, wrap and anisotropy fields (PROTOCOL.md "Client to
+ * service"). */
+bool sampler_fields(const cr::Json &j, Sampler *s, std::string *err)
+{
+    int sampling = 0, wrap = 0;
+    double aniso = 1;
+    if (!choice(j, "sampling",
+                {"nearest", "bilinear", "nearest_mips", "bilinear_mips", "trilinear", "min_linear_mag_nearest",
+                 "min_nearest_mag_linear"},
+                &sampling, err) ||
+        !choice(j, "wrap", {"clamp", "repeat", "mirror"}, &wrap, err) || !num(j, "anisotropy", 1, 16, &aniso, err))
+        return false;
+    int u = wrap, v = wrap;
+    if (!choice(j, "wrap_u", {"clamp", "repeat", "mirror"}, &u, err) ||
+        !choice(j, "wrap_v", {"clamp", "repeat", "mirror"}, &v, err))
+        return false;
+    if (aniso != (double)(uint32_t)aniso) {
+        *err = "anisotropy must be a whole number from 1 to 16";
+        return false;
+    }
+    s->sampling = (Sampling)sampling;
+    s->u = (Wrap)u;
+    s->v = (Wrap)v;
+    s->anisotropy = (uint32_t)aniso;
+    return true;
+}
+
 /* A mesh layer's projection and camera fields present in j, over *mp. */
 bool mesh_params(const cr::Json &j, MeshParams *mp, std::string *err)
 {
@@ -222,6 +322,13 @@ bool layer_params(const cr::Json &j, LayerParams *p, std::string *err)
     v = n.others_fps;
     if (!num(j, "others_fps", 0, 60, &v, err)) return false;
     n.others_fps = (uint32_t)v;
+    if (j.count("hosted")) {
+        if (j.at("hosted").size() > 32) {
+            *err = "hosted must be a target's name";
+            return false;
+        }
+        n.hosted = j.at("hosted");
+    }
     n.pivot_x = n.pivot_x || j.count("px");
     n.pivot_y = n.pivot_y || j.count("py");
     struct Flag { const char *key; bool *field; } flags[] = {
@@ -463,6 +570,12 @@ bool Server::apply(Layer *l, const cr::Json &j, std::string *err)
     LayerParams p = l->params;
     if (!layer_params(j, &p, err))
         return false;
+    /* An effect layer's render state; on other layers its fields are
+     * ignored (a mesh part's is set by its part message). */
+    EffectLayer *fx = std::string(l->kind()) == "effect" ? static_cast<EffectLayer *>(l) : nullptr;
+    PartLook look = fx ? fx->look() : PartLook();
+    if (fx && !look_fields(j, true, &look, err))
+        return false;
     MeshLayer *m = std::string(l->kind()) == "mesh" ? static_cast<MeshLayer *>(l) : nullptr;
     MeshParams mp;
     if (m) {
@@ -478,6 +591,8 @@ bool Server::apply(Layer *l, const cr::Json &j, std::string *err)
         return false;
     if (m)
         m->mesh = mp;
+    if (fx && look != fx->look())
+        fx->set_look(look);
     l->params = p;
     comp_->changed(l);
     return true;
@@ -565,9 +680,16 @@ void Server::op_layer(Client &c, const cr::Json &j, int64_t now_ms)
             error(c, "layer", ref, "fs (the fragment shader) missing");
             return;
         }
+        PartLook look = quad_look();
+        if (!look_fields(j, true, &look, &err)) {
+            error(c, "layer", ref, err);
+            return;
+        }
         id = comp_->add_effect(c.id, target, lp, str(j, "vs"), str(j, "fs"), (uint32_t)v, now_ms, &err);
         if (id && clock)
             static_cast<EffectLayer *>(comp_->layer(c.id, id))->cluster_time();
+        if (id && look != quad_look())
+            static_cast<EffectLayer *>(comp_->layer(c.id, id))->set_look(look);
     } else if (kind == "mesh") {
         MeshParams mp;
         if (!mesh_params(j, &mp, &err)) {
@@ -611,10 +733,14 @@ void Server::on_json(Client &c, const std::string &body, int64_t now_ms)
                                  {"always_packed", "1"},
                                  {"host_edge", "1"},
                                  {"preload", "1"},
-                                 {"others_fps", "1"}}));
+                                 {"others_fps", "1"},
+                                 {"render_state", "1"},
+                                 {"samplers", "1"},
+                                 {"host_layers", "1"}}));
         c.target_sent.clear();
         c.fps_cap_sent = 0;
         c.host_sent.clear();
+        c.hosting_sent.clear();
         c.host_gen = 0;
         log_info("client %llu: %s", (unsigned long long)c.id, c.app.c_str());
         return;
@@ -646,6 +772,10 @@ void Server::on_json(Client &c, const std::string &body, int64_t now_ms)
     }
     if (op == "host") {
         op_host(c, ref, j);
+        return;
+    }
+    if (op == "unhost") {
+        op_unhost(c, ref, j);
         return;
     }
     if (op == "drop" && it != c.refs.end() && comp_->edits(c.id, it->second)) {
@@ -718,11 +848,10 @@ void Server::op_asset(Client &c, const cr::Json &j)
         return;
     }
     AssetParams ap;
-    int format = 0, sampling = 0, wrap = 0;
+    int format = 0;
     if (!num(j, "w", 1, 2048, &w, &err) || !num(j, "h", 1, 2048, &h, &err) ||
         !choice(j, "format", {"rgba8", "r8", "etc2rgba", "etc2rgb"}, &format, &err) ||
-        !choice(j, "sampling", {"nearest", "bilinear"}, &sampling, &err) ||
-        !choice(j, "wrap", {"clamp", "repeat"}, &wrap, &err)) {
+        !sampler_fields(j, &ap.sampler, &err)) {
         error(c, "asset", ref, err);
         return;
     }
@@ -734,16 +863,14 @@ void Server::op_asset(Client &c, const cr::Json &j)
     ap.h = (uint32_t)h;
     static const TexFormat kFormats[] = {TexFormat::RGBA8, TexFormat::R8, TexFormat::ETC2RGBA, TexFormat::ETC2RGB};
     ap.format = kFormats[format];
-    ap.sampling = sampling ? Sampling::Bilinear : Sampling::Nearest;
-    ap.wrap = wrap ? Wrap::Repeat : Wrap::Clamp;
     const uint32_t id = comp_->add_asset(c.id, target, ap, &err);
     if (!id) {
         error(c, "asset", ref, err);
         return;
     }
     c.assets[ref] = id;
-    log_info("client %llu (%s): asset %u on %s (%s %ux%u)", (unsigned long long)c.id, c.app.c_str(), id,
-             slots_->targets()[target].name.c_str(), tex_format_name(ap.format), ap.w, ap.h);
+    log_info("client %llu (%s): asset %u on %s (%s %ux%u, %u levels)", (unsigned long long)c.id, c.app.c_str(), id,
+             slots_->targets()[target].name.c_str(), tex_format_name(ap.format), ap.w, ap.h, ap.levels());
 }
 
 void Server::op_scene(Client &c, const cr::Json &j)
@@ -805,22 +932,47 @@ void Server::op_scene(Client &c, const cr::Json &j)
 
 void Server::op_host(Client &c, uint32_t ref, const cr::Json &j)
 {
-    /* A refusal names the target, so a client forgets that host only. */
+    /* With into: the client's layers there host, no scene (PROTOCOL.md
+     * "Hosting from layers"). */
+    const bool from_layers = j.count("into") != 0;
+    const int hosted = slots_->index(str(j, "target"));
+    const bool known = hosted >= 0 && slots_->targets()[hosted].follows.empty();
+    uint32_t scene = 0;
+    if (!from_layers) {
+        auto it = c.refs.find(ref);
+        scene = it != c.refs.end() && comp_->edits(c.id, it->second) ? it->second : 0;
+    }
+    /* A refusal names the target (and into), and ends what this scene, or
+     * this client's layers from any into, hosted of it: the client forgets
+     * it too. */
     auto refuse = [&](const std::string &why) {
-        send(c, cr::json_object({{"ev", cr::json_quote("error")},
-                                 {"op", cr::json_quote("host")},
-                                 {"ref", std::to_string(ref)},
-                                 {"target", cr::json_quote(str(j, "target"))},
-                                 {"reason", cr::json_quote(why)}}));
+        if (known && from_layers)
+            comp_->unhost_layers(c.id, hosted);
+        else if (known && scene)
+            comp_->unhost(c.id, scene, hosted);
+        std::vector<std::pair<std::string, std::string>> kv = {{"ev", cr::json_quote("error")},
+                                                               {"op", cr::json_quote("host")},
+                                                               {"ref", std::to_string(ref)},
+                                                               {"target", cr::json_quote(str(j, "target"))}};
+        if (from_layers)
+            kv.push_back({"into", cr::json_quote(str(j, "into"))});
+        kv.push_back({"reason", cr::json_quote(why)});
+        send(c, cr::json_object(kv));
     };
-    auto it = c.refs.find(ref);
-    const uint32_t scene = it != c.refs.end() && comp_->edits(c.id, it->second) ? it->second : 0;
-    if (!scene) {
+    const int into = from_layers ? slots_->index(str(j, "into")) : -1;
+    if (from_layers && j.count("ref")) {
+        refuse("ref or into, not both");
+        return;
+    }
+    if (from_layers && (into < 0 || !slots_->targets()[into].follows.empty())) {
+        refuse("unknown target " + str(j, "into"));
+        return;
+    }
+    if (!from_layers && !scene) {
         refuse("no such scene");
         return;
     }
-    const int hosted = slots_->index(str(j, "target"));
-    if (hosted < 0 || !slots_->targets()[hosted].follows.empty()) {
+    if (!known) {
         refuse("unknown target " + str(j, "target"));
         return;
     }
@@ -830,13 +982,11 @@ void Server::op_host(Client &c, uint32_t ref, const cr::Json &j)
     std::string err;
     for (size_t i = 0; i < 9; i++)
         if (!num(j, keys[i], 0, i == 8 ? 1 : 65535, &v[i], &err)) {
-            comp_->unhost(c.id, scene, hosted);
             refuse(err);
             return;
         }
     const size_t src = j.count("src_x") + j.count("src_y") + j.count("src_w") + j.count("src_h");
     if (src && src != 4) {
-        comp_->unhost(c.id, scene, hosted);
         refuse("src_x, src_y, src_w, src_h go together (none: all of " + from.name + ")");
         return;
     }
@@ -846,7 +996,6 @@ void Server::op_host(Client &c, uint32_t ref, const cr::Json &j)
     double ev[5] = {0, 0, 0, 0, 0};
     for (size_t i = 0; i < 5; i++)
         if (!num(j, edge_keys[i], 0, edge_max[i], &ev[i], &err)) {
-            comp_->unhost(c.id, scene, hosted);
             refuse(err);
             return;
         }
@@ -859,12 +1008,56 @@ void Server::op_host(Client &c, uint32_t ref, const cr::Json &j)
     h.edge.fade = (uint32_t)ev[2];
     h.edge.dim = (uint32_t)ev[3];
     h.edge.blur = (uint32_t)ev[4];
-    if (!comp_->host(c.id, scene, hosted, h, &err)) {
+    if (from_layers ? !comp_->host_layers(c.id, into, hosted, h, &err) : !comp_->host(c.id, scene, hosted, h, &err)) {
         refuse(err);
         return;
     }
-    log_info("client %llu (%s): scene %u %s", (unsigned long long)c.id, c.app.c_str(), scene,
-             comp_->scene_text(scene).c_str());
+    if (from_layers)
+        log_info("client %llu (%s): %s", (unsigned long long)c.id, c.app.c_str(),
+                 layer_host_text(hosted, c.id).c_str());
+    else
+        log_info("client %llu (%s): scene %u %s", (unsigned long long)c.id, c.app.c_str(), scene,
+                 comp_->scene_text(scene).c_str());
+}
+
+void Server::op_unhost(Client &c, uint32_t ref, const cr::Json &j)
+{
+    const int hosted = slots_->index(str(j, "target"));
+    if (hosted < 0)
+        return;   /* nothing hosted there: nothing to end */
+    if (j.count("into")) {
+        comp_->unhost_layers(c.id, hosted);
+    } else {
+        auto it = c.refs.find(ref);
+        if (it != c.refs.end())
+            comp_->unhost(c.id, it->second, hosted);
+    }
+    log_info("client %llu (%s): ends its host of %s", (unsigned long long)c.id, c.app.c_str(),
+             str(j, "target").c_str());
+}
+
+std::string Server::layer_host_text(int hosted, uint64_t owner) const
+{
+    auto it = comp_->layer_hosts().find(std::make_pair(hosted, owner));
+    if (it == comp_->layer_hosts().end())
+        return std::string();
+    const Compositor::LayerHost &lh = it->second;
+    const Host &h = lh.host;
+    char b[320];
+    std::snprintf(b, sizeof b, "hosts %s from its layers on %s at %ux%u+%d+%d from %ux%u+%d+%d%s",
+                  slots_->targets()[hosted].name.c_str(), slots_->targets()[lh.into].name.c_str(), h.rect.w,
+                  h.rect.h, h.rect.x, h.rect.y, h.src.w, h.src.h, h.src.x, h.src.y, h.shown ? "" : ", not shown");
+    std::string text = b;
+    if (h.edge.on()) {
+        std::snprintf(b, sizeof b, ", its edge %u up and %u down (fade %u, dim %u, blur %u)", h.edge.top,
+                      h.edge.bottom, h.edge.fade, h.edge.dim, h.edge.blur);
+        text += b;
+    }
+    if (lh.live)
+        text += "; live";
+    else if (!lh.why.empty())
+        text += "; waiting: " + lh.why + (lh.by ? " (" + app_of(lh.by) + ")" : "");
+    return text;
 }
 
 void Server::op_edit(Client &c, uint32_t ref, const cr::Json &j)
@@ -907,21 +1100,14 @@ void Server::op_on_layer(Client &c, const std::string &op, uint32_t ref, Layer *
             error(c, op, ref, err);
     } else if (op == "part") {
         PartLook look;
-        double depth = 1;
-        int cull = 0, blend = 0;
         if (!mesh)
             err = "parts are for mesh layers";
         else if (part == 0)
             err = "parts are numbered from 1";
         else if (str(j, "vs").empty() || str(j, "fs").empty())
             err = "a part needs vs and fs";
-        else if (num(j, "depth", 0, 1, &depth, &err) && choice(j, "cull", {"back", "front", "none"}, &cull, &err) &&
-                 choice(j, "blend", {"alpha", "add", "none"}, &blend, &err)) {
-            look.depth = depth != 0;
-            look.cull = cull == 0 ? Cull::Back : cull == 1 ? Cull::Front : Cull::None;
-            look.blend = blend == 0 ? Blend::Alpha : blend == 1 ? Blend::Add : Blend::None;
+        else if (look_fields(j, false, &look, &err))
             comp_->add_part(c.id, l->id(), part, str(j, "vs"), str(j, "fs"), look, &err);
-        }
         if (!err.empty())
             error(c, op, ref, err);
     } else if (op == "transform") {
@@ -1201,6 +1387,29 @@ void Server::report(int64_t now_ms)
                 if (sent != kv.second)
                     send(c, sent = kv.second);
             }
+            /* Its hosts from layers: live, or waiting and why (PROTOCOL.md
+             * "Hosting from layers"); none before arrange() decided. One
+             * that ended is forgotten, so a new one is told from the start. */
+            for (auto it = c.hosting_sent.begin(); it != c.hosting_sent.end();)
+                if (comp_->layer_hosts().count(std::make_pair(slots_->index(it->first), c.id)))
+                    ++it;
+                else
+                    it = c.hosting_sent.erase(it);
+            for (const auto &kv : comp_->layer_hosts()) {
+                const Compositor::LayerHost &lh = kv.second;
+                if (lh.owner != c.id || (!lh.live && lh.why.empty()))
+                    continue;
+                const std::string &name = slots_->targets()[kv.first.first].name;
+                const std::string ev = cr::json_object({{"ev", cr::json_quote("hosting")},
+                                                        {"target", cr::json_quote(name)},
+                                                        {"into", cr::json_quote(slots_->targets()[lh.into].name)},
+                                                        {"state", cr::json_quote(lh.live ? "live" : "waiting")},
+                                                        {"reason", cr::json_quote(lh.why)},
+                                                        {"by", cr::json_quote(lh.by ? app_of(lh.by) : "")}});
+                std::string &sent = c.hosting_sent[name];
+                if (sent != ev)
+                    send(c, sent = ev);
+            }
         }
         for (size_t t = 0; t < slots_->targets().size(); t++) {
             if (!slots_->targets()[t].follows.empty())
@@ -1300,6 +1509,8 @@ std::string Server::status_text(int64_t now_ms) const
             s += line + cv->stats() + "\n";
         }
     }
+    for (const auto &kv : comp_->layer_hosts())
+        s += app_of(kv.second.owner) + " " + layer_host_text(kv.first.first, kv.first.second) + "\n";
     for (const std::string &d : drop_ins_)
         s += "drop-in " + d + "\n";
     s += slots_->renderer_text(now_ms);
@@ -1309,8 +1520,11 @@ std::string Server::status_text(int64_t now_ms) const
         for (const auto &kv : c.assets)
             for (const Asset *a : comp_->assets())
                 if (a->id() == kv.second) {
-                    std::snprintf(line, sizeof line, "asset %u %s %ux%u of %s on %s: %s\n", a->id(),
-                                  tex_format_name(a->params().format), a->params().w, a->params().h,
+                    const std::string levels = a->params().levels() > 1
+                                                   ? " (" + std::to_string(a->params().levels()) + " mip levels)"
+                                                   : "";
+                    std::snprintf(line, sizeof line, "asset %u %s %ux%u%s of %s on %s: %s\n", a->id(),
+                                  tex_format_name(a->params().format), a->params().w, a->params().h, levels.c_str(),
                                   c.app.c_str(), slots_->targets()[a->target()].name.c_str(), a->stats().c_str());
                     s += line;
                 }

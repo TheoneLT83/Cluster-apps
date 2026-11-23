@@ -282,7 +282,7 @@ ok('the shifted build moves every site', ['slot', 'sink', 'call', 'mm'].every(fu
     ok('not an ELF', loc.elf === false && loc.reason === 'not an ELF file' && !loc.ok, json(loc));
 })();
 
-/* The patcher on a build outside the proven list. */
+/* The patcher on a build of its own, which no list names. */
 var dir = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-locate-'));
 try {
     var tgt = path.join(dir, 'carplay'), orig = shifted.buf, at = shifted.at, r;
@@ -294,7 +294,7 @@ try {
         /variant:\s+ORIGINAL/.test(r.out) && /sink:\s+ORIGINAL/.test(r.out) && /selfstart:\s+ORIGINAL/.test(r.out) &&
         /res:\s+ORIGINAL \(IC_HIGH advertises 1600x800\)/.test(r.out), r.out);
     r = run(['probe', tgt]);
-    ok('probe: the sites, not proven, patchable', r.code === 0 && /proven:\s+no/.test(r.out) && /patchable:\s+yes/.test(r.out) &&
+    ok('probe: the sites, patchable, no list of builds named', r.code === 0 && !/proven:/.test(r.out) && /patchable:\s+yes/.test(r.out) &&
         r.out.indexOf('slot ' + hx(at.slot) + ' (table ' + hx(at.table) + ', 12 slots)') >= 0 && r.out.indexOf('slot ' + hx(at.sink) + ' (59 bytes)') >= 0 &&
         r.out.indexOf('call ' + hx(at.call) + ' in onSuggestUi ' + hx(at.onSuggestUi)) >= 0 &&
         r.out.indexOf('immediates ' + [at.mm, at.px, at.safe1, at.safe2].map(hx).join(' ')) >= 0 &&
@@ -523,23 +523,22 @@ try {
     ok('plan refuses it with the reason, no plan written', r.code !== 0 && /sink: URL slot found 2 times/.test(r.out) && !fs.existsSync(path.join(dir, 'amb.plan')) &&
         fs.readFileSync(tgt).equals(amb), r.out);
 
-    /* A file with carplay 21.27.4's build-id and every site stock, but not
-     * that build's shipped file: on the proven list, so a plan needs the
-     * shipped file, --unproven or not. */
+    /* A file with carplay 21.27.4's build-id whose sites are not where that
+     * build has them: the sites SHIPPED lists read as neither its shipped
+     * bytes nor our edit, so a plan is refused, --unproven or not. */
     var b2127 = Buffer.from(orig);
     Buffer.from('389c1d0536f8cc9283c156410f2f2634a9f952c0', 'hex').copy(b2127, b2127.indexOf(Buffer.from(at.buildId, 'hex')));
     fs.writeFileSync(tgt, b2127);
     r = run(['probe', tgt]);
-    ok('carplay 21.27.4 build-id: probe reads it proven and patchable', r.code === 0 && /proven:\s+yes, carplay 21\.27\.4/.test(r.out) &&
-        /patchable:\s+yes/.test(r.out), r.out);
+    ok('carplay 21.27.4 build-id: probe reads it patchable', r.code === 0 && /patchable:\s+yes/.test(r.out), r.out);
     r = run(['status', '--target', tgt]);
-    ok('carplay 21.27.4 build-id: status proven, a modified build, the map URL found by structure', /^proven:\s+yes$/m.test(r.out) && /known:\s+yes, modified build/.test(r.out) &&
+    ok('carplay 21.27.4 build-id: status a modified build, the map URL found by structure', /known:\s+yes, modified build/.test(r.out) &&
         /^mapurl:\s+ORIGINAL/m.test(r.out), r.out);
     [[], ['--unproven']].forEach(function (extra) {
         var out = path.join(dir, '2127.plan');
         r = run(['plan', '--target', tgt, '--panel', 'high', '--out', out].concat(extra));
         ok('carplay 21.27.4 build-id, not its shipped file: plan ' + (extra[0] ? extra[0] + ' ' : '') + 'refuses, no plan, no write', r.code !== 0 &&
-            /in memory needs the pristine build on disk: sha256 fb5d6b179ad4f62a968697d21e84dbb80adc1ad8e618a6f02c6a9a0467aca1ac, got /.test(r.out) &&
+            /in memory needs the pristine build on disk: neither the shipped bytes nor our edit at 0x29bb10, 0x1802dc, 0x20b484/.test(r.out) &&
             fs.readFileSync(tgt).equals(b2127) && !fs.existsSync(out), r.out);
     });
 
@@ -553,7 +552,7 @@ try {
  * sites: the log text at 0x2908a0 and, at 0x18188a, the call to the URL
  * getter at 0x1fe5e0, mov rdi,r12, mov rsi,[rax]. */
 (function () {
-    var p = require('../carplay_patch.js').PROVEN['5de62156575d737391ea42254e778a97dbbb51f8'];
+    var p = require('../carplay_patch.js').SHIPPED['5de62156575d737391ea42254e778a97dbbb51f8'];
     var lea = Buffer.from('488d3500000000', 'hex'); lea.writeInt32LE(0x294793 - (0x7b533 + 7), 3);
     var call = Buffer.from('e8000000004c89e7488b30', 'hex'); call.writeInt32LE(0x1fe5e0 - (0x18188a + 5), 1);
     ok('carplay 22.28.3: the map URL sites\' stock bytes on its stock list', p.stock.some(function (x) {
@@ -568,7 +567,7 @@ try {
  * sink slot, the call to setStreamStatus (0x1800d0) at 0x1802dc, and IC_HIGH
  * 1920x900 in the pixel-size immediate. */
 (function () {
-    var p = require('../carplay_patch.js').PROVEN['389c1d0536f8cc9283c156410f2f2634a9f952c0'];
+    var p = require('../carplay_patch.js').SHIPPED['389c1d0536f8cc9283c156410f2f2634a9f952c0'];
     var call = Buffer.alloc(5), px = Buffer.alloc(8);
     call[0] = 0xe8; call.writeInt32LE(0x1800d0 - (0x1802dc + 5), 1);
     px.writeUInt32LE(1920, 0); px.writeUInt32LE(900, 4);

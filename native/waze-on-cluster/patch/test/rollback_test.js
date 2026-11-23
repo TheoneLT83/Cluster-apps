@@ -39,13 +39,34 @@
  * none.
  *
  * With CARPLAY_BIN every release runs on a copy of carplay 22.28.3; without
- * it B-G (no E here) run on a synthetic build (synthetic_carplay.js), A not
- * at all.
+ * it B-G (no E here) run on a synthetic build (synthetic_carplay.js), A not at all.
+ * Unless the newest release ships this version's patch folder, this version
+ * also runs as the release it becomes (group I), so every check over the
+ * releases already holds for it before its tag exists.
  *
  * Android Auto (part 7, with AAPD_BIN and AAPD_CONF, aapd 22.39.3 and its
- * aapd.conf): every release from 0.8.0 to 0.11.0 (earlier_patcher.js AA_TAG)
- * writes its patch to aapd and aapd.conf. Each release over the files as
- * this version leaves them, and this version over each release's patch.
+ * aapd.conf): every release from 0.8.0 to 0.11.0 (earlier_patcher.js
+ * AA_TAG) writes its patch to aapd and aapd.conf; 0.13.0 on plans it in
+ * memory, as this version. Each release over the files as this version
+ * leaves them, and this version over each release's patch.
+ *
+ * The DLT capture (part 8): every release runs it in
+ * waze-on-cluster-capture.service, this version in patchd. Through an
+ * update, a downgrade or either cut short, the units on the unit may be any
+ * mix of a release's and this version's, with either version's files:
+ *   - each release's capture unit runs current/dlt_capture.js and restores
+ *     with `restore` in ExecStopPost, both of which this version's
+ *     dlt_capture.js keeps (an update cut short runs this version's files
+ *     under it);
+ *   - each release's patchd.js runs as the daemon with --dlt-capture (a
+ *     downgrade keeps this version's patchd unit until the next install);
+ *   - which units start the capture, for every step of the deploy tool's
+ *     update and downgrade cut short: one server or none, never two, and
+ *     none only while the release's files run under this version's units
+ *     before the deploy tool lays the release's units again;
+ *   - a capture left open by each release's service (SIGKILLed) is
+ *     restored by this version's, and one this version's left by each
+ *     release's, against a fake DLT daemon (fake_dlt.js).
  * The release tags come from the repository's git, fetched when missing.
  *
  *   [CARPLAY_BIN=<carplay 22.28.3>] [AAPD_BIN=<aapd> AAPD_CONF=<aapd.conf>] node rollback_test.js
@@ -59,6 +80,7 @@ var path = require('path');
 var cp = require('child_process');
 var synthetic = require('./synthetic_carplay.js');
 var earlier = require('./earlier_patcher.js');
+var releaseTags = require('./release_tags.js');
 var locator = require('../carplay_locate.js');
 
 var NEW = path.join(__dirname, '..');
@@ -70,7 +92,6 @@ function ok(name, cond, detail) {
     process.stdout.write((cond ? 'ok   ' : 'FAIL ') + name + (detail !== undefined && !cond ? '  — ' + detail : '') + '\n');
     if (!cond) fails++;
 }
-function git(args) { return cp.execFileSync('git', args, { cwd: REPO, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }); }
 
 /* ---- the releases ------------------------------------------------------- */
 
@@ -83,21 +104,15 @@ function group(v) {
     return cmp(v, '0.6.3') <= 0 ? 'A' : cmp(v, '0.7.6') <= 0 ? 'B' : cmp(v, '0.8.4') <= 0 ? 'C' : cmp(v, '0.9.15') <= 0 ? 'D' :
         cmp(v, '0.10.1') <= 0 ? 'F' : cmp(v, '0.10.3') <= 0 ? 'G' : cmp(v, '0.10.16') <= 0 ? 'H' : 'I';
 }
+/* The first release whose patchers decide a build they know by its edit
+ * sites alone, bytes elsewhere in the file left out (parts 6b and 7). */
+var SITES_DECIDE = '0.14.3';
 
-function tags() {
-    try { return git(['tag', '-l', 'waze-on-cluster@*']).split('\n').filter(Boolean); } catch (e) { return null; }
-}
-var list = tags();
+var list = releaseTags.list(), fetchWhy = '';
 if (list === null) { process.stdout.write('SKIP: not in a git checkout\n'); process.exit(0); }
-if (list.indexOf('waze-on-cluster@0.7.0') < 0) {
-    /* none, or only the one earlier_patcher.js fetched: a shallow checkout
-     * (CI) fetches them shallow; a full clone stays full */
-    var shallow = false;
-    try { shallow = git(['rev-parse', '--is-shallow-repository']).trim() === 'true'; } catch (e) {}
-    try { git(['fetch', '--no-tags'].concat(shallow ? ['--depth=1'] : [], ['origin', '+refs/tags/waze-on-cluster@*:refs/tags/waze-on-cluster@*'])); } catch (e) {}
-    list = tags() || [];
-}
-ok('the release tags are at hand', list.length > 0, 'no waze-on-cluster@* tag, and fetching them failed');
+/* none, or only those earlier_patcher.js fetched */
+if (list.indexOf('waze-on-cluster@0.5.0') < 0) { fetchWhy = releaseTags.fetch('waze-on-cluster@*'); list = releaseTags.list() || []; }
+ok('the release tags are at hand', list.indexOf('waze-on-cluster@0.5.0') >= 0, 'no waze-on-cluster@0.5.0 tag, and fetching the tags failed: ' + fetchWhy);
 if (!list.length) process.exit(1);
 
 var dir = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-rollback-'));
@@ -109,6 +124,28 @@ RELEASES.forEach(function (v) {
     fs.mkdirSync(d, { recursive: true });
     cp.execSync('git archive "waze-on-cluster@' + v + '" native/waze-on-cluster/patch | tar -x -C "' + d + '" --strip-components=3', { cwd: REPO });
 });
+
+/* This version as the release it becomes: unless the newest release ships
+ * this version's patch folder, it joins RELEASES as that release's version
+ * one patch level up, so every check over the releases runs over it before
+ * its tag exists. Its tests are left out of the comparison. */
+function shippedFiles(d, sub) {
+    var out = [];
+    fs.readdirSync(path.join(d, sub || '')).sort().forEach(function (n) {
+        var rel = path.join(sub || '', n), st = fs.statSync(path.join(d, rel));
+        if (st.isDirectory()) { if (rel !== 'test') out = out.concat(shippedFiles(d, rel)); }
+        else out.push(rel + ' ' + require('crypto').createHash('sha256').update(fs.readFileSync(path.join(d, rel))).digest('hex'));
+    });
+    return out;
+}
+var NEWEST = RELEASES[RELEASES.length - 1], NEXT = null;
+if (NEWEST && shippedFiles(path.join(dir, 'rel', NEWEST)).join('\n') !== shippedFiles(NEW).join('\n')) {
+    NEXT = semver(NEWEST).map(function (n, i) { return i === 2 ? n + 1 : n; }).join('.');
+    fs.mkdirSync(path.join(dir, 'rel', NEXT), { recursive: true });
+    cp.execFileSync('cp', ['-R', NEW + '/.', path.join(dir, 'rel', NEXT)]);
+    RELEASES.push(NEXT);
+}
+process.stdout.write('releases: ' + RELEASES[0] + ' to ' + NEWEST + (NEXT ? ', and this version as ' + NEXT : ', the newest this version') + '\n');
 
 /* ---- a world: carplay, its backup and the fakes the patchers and boot
  * recovery run against ---------------------------------------------------- */
@@ -365,7 +402,8 @@ function inMemRelease(v, d) {
  * memory; Q of A-H patch the file. */
 var REPS = [];
 ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'].forEach(function (g) {
-    var inG = RELEASES.filter(function (v) { return group(v) === g; });
+    /* NEXT is this version, a Q of its own */
+    var inG = RELEASES.filter(function (v) { return v !== NEXT && group(v) === g; });
     if (inG.length) REPS.push(inG[0]);
     if (inG.length > 1) REPS.push(inG[inG.length - 1]);
 });
@@ -546,6 +584,51 @@ REPS.forEach(function (p) {
         [live, rec, recH, recKind, rmH, rmKind, up].join(' '));
 })();
 
+/* 6b. carplay 22.28.3's build-id with other bytes than the shipped file,
+ * where no segment loads them (another firmware image's .gnu_debuglink):
+ * every release before SITES_DECIDE refuses to patch or plan it, and from
+ * it on plans it as this version does; none writes it, by its patch or
+ * plan, crash loop, Remove patch or removal. This version plans its patch
+ * in memory over it, on trial, and its crash loop, Remove patch and removal
+ * leave the file as it is. With this version's plan in place, each
+ * release leaves the file as it is too. */
+if (BIN) (function () {
+    var OTHER = Buffer.from(STOCK);
+    OTHER[0x352448] ^= 0x5a;
+    function same() { return fs.readFileSync(TGT).equals(OTHER); }
+    function start(plan) {
+        clear(); clearInmem(); fs.writeFileSync(TGT, OTHER, { mode: 0o755 });
+        return !plan || (makePlan() === 'OK' && inmemKind() !== 'null');
+    }
+    /* What version folder d with group g does to the file: its patch or
+     * plan, crash loop, Remove patch and removal, each from `planned`. */
+    function relOver(d, g, planned) {
+        var out = [], live = start(planned);
+        if (/^[IN]$/.test(g)) out.push('plan ' + (makePlan(d) === 'OK' ? 'made' : 'refused'));
+        else { r = apply(d); out.push('apply ' + (r.code === 0 ? 'patched' : 'refused')); }
+        out.push(same() ? 'same' : 'written');
+        live = start(planned) && live; out.push(recover(d, g)); out.push(same() ? 'same' : 'written');
+        live = start(planned) && live; removePatch(d); out.push(same() ? 'same' : 'written');
+        live = start(planned) && live; uninstall(d); out.push(same() ? 'same' : 'written');
+        return { live: live, out: out, written: out.indexOf('written') >= 0 };
+    }
+    RELEASES.forEach(function (v) {
+        var g = group(v), x = relOver(path.join(dir, 'rel', v), g, false), plans = cmp(v, SITES_DECIDE) >= 0;
+        ok(v + ' (' + g + ') over carplay 22.28.3 with another debuglink CRC: its ' + (g === 'I' ? 'plan' : 'patch') + (plans ? ' made' : ' refused') + ', the file never written',
+            x.live && !x.written && x.out[0] === (plans ? 'plan made' : g === 'I' ? 'plan refused' : 'apply refused'), x.out.join(' '));
+        var y = relOver(path.join(dir, 'rel', v), g, true);
+        ok(v + ' (' + g + ') over this version\'s plan of it: the file never written', y.live && !y.written, y.out.join(' '));
+    });
+    /* a first plan goes on trial */
+    start(false); makePlan();
+    var trial = null;
+    try { trial = JSON.parse(fs.readFileSync(path.join(SD, 'inmem-carplay.json'), 'utf8')).trial; } catch (e) {}
+    var n = relOver(NEW, 'N', false);
+    ok('this version over carplay 22.28.3 with another debuglink CRC: plans the patch in memory on trial, the file never written',
+        n.live && !n.written && n.out[0] === 'plan made' && trial === true, n.out.join(' ') + ' trial ' + trial);
+    clear(); clearInmem();
+})();
+
 /* 7. Android Auto: aapd and aapd.conf, every release from 0.8.0 (its own
  * aapd_patch.js and boot recovery) against this version. */
 var AAPD_BIN = process.env.AAPD_BIN || '', AAPD_CONF = process.env.AAPD_CONF || '';
@@ -582,35 +665,43 @@ var AAPD_BIN = process.env.AAPD_BIN || '', AAPD_CONF = process.env.AAPD_CONF || 
         var m = /^RESULT (.*)$/m.exec(r.stdout || '');
         return m ? m[1] : 'no result: ' + ((r.stdout || '') + (r.stderr || '')).slice(-200);
     }
-    function aInmem(fn) {
-        var r = cp.spawnSync(process.execPath, ['-e', fn, path.join(NEW, 'inmem.js'), car.CODING], { encoding: 'utf8', env: AENV, timeout: 120000 });
+    /* The in-memory Android Auto patch by the inmem.js in folder d (default
+     * this version's): its kind, and a plan over the files as they are. */
+    function aInmem(fn, d) {
+        var r = cp.spawnSync(process.execPath, ['-e', fn, path.join(d || NEW, 'inmem.js'), car.CODING], { encoding: 'utf8', env: AENV, timeout: 120000 });
         return (r.stdout || '').trim() || (r.stderr || '').trim().slice(-200);
     }
-    function aKind() { return aInmem('console.log(String(require(process.argv[1]).kind("aapd")))'); }
-    function aPlan() {
-        return aInmem('require(process.argv[1]).makePlan("aapd", ["--conf", process.env.WOC_AAPD_CONF, "--coding", process.argv[2]], 60000, function (e) { console.log(e ? "ERR " + e.message : "OK"); })');
+    function aKind(d) { return aInmem('console.log(String(require(process.argv[1]).kind("aapd")))', d); }
+    function aPlan(d) {
+        return aInmem('require(process.argv[1]).makePlan("aapd", ["--conf", process.env.WOC_AAPD_CONF, "--coding", process.argv[2]], 60000, function (e) { console.log(e ? "ERR " + e.message : "OK"); })', d);
     }
-    /* This version's activate, as patchd's inmemApply steps it: files with
+    /* The activate of this version or of a release that patches Android Auto
+     * in memory (folder d), as patchd's inmemApply steps it: files with
      * another change than ours, or ones the patcher cannot read, are left;
      * an earlier release's patch, or our backups, are put back to stock with
      * the backups dropped; then the plan is made from the stock files. */
-    function aActivate() {
-        var st = aPatcher(NEW, ['status']).out;
+    function aActivate(d) {
+        d = d || NEW;
+        var st = aPatcher(d, ['status']).out;
         if (/known:\s+NO/.test(st) || /^foreign:\s+yes$/m.test(st)) return 'left';
         if (/^restorable:\s+yes$/m.test(st) || fs.existsSync(A + '.woc-orig') || fs.existsSync(AC + '.woc-orig')) {
-            var rv = aPatcher(NEW, ['revert', '--yes', '--drop-backup']);
+            var rv = aPatcher(d, ['revert', '--yes', '--drop-backup']);
             if (rv.code !== 0) return 'revert failed: ' + rv.out.slice(-160);
         }
-        var mp = aPlan();
+        var mp = aPlan(d);
         if (mp !== 'OK') return 'plan: ' + mp;
-        return aHolds() === 'stock' && aKind() !== 'null' ? 'planned' : 'not stock: ' + aHolds();
+        return aHolds() === 'stock' && aKind(d) !== 'null' ? 'planned' : 'not stock: ' + aHolds();
     }
+    /* Stock files with the plan of the version in folder d (a record
+     * describes the files by their inodes, so each case plans afresh). */
+    function aPlannedBy(d) { aStock(); aClearInmem(); return aActivate(d); }
+    function aaInMem(v) { return cmp(v, '0.13.0') >= 0; }
     function aClearInmem() { fs.readdirSync(SD).filter(function (f) { return /aapd/.test(f); }).forEach(function (f) { try { fs.unlinkSync(path.join(SD, f)); } catch (e) {} }); }
 
     var AA_RELEASES = RELEASES.filter(function (v) { return fs.existsSync(path.join(dir, 'rel', v, 'aapd_patch.js')); });
     var AA_LAST = earlier.AA_TAG.split('@')[1];
-    ok('every release with an aapd patcher, 0.8.0 to ' + AA_LAST + ', is tested', AA_RELEASES[0] === '0.8.0' &&
-        AA_RELEASES.indexOf(AA_LAST) >= 0, AA_RELEASES.join(' '));
+    ok('every release with an aapd patcher is tested: 0.8.0 to ' + AA_LAST + ' on disk, 0.13.0 on in memory', AA_RELEASES[0] === '0.8.0' &&
+        AA_RELEASES.indexOf(AA_LAST) >= 0 && AA_RELEASES.indexOf('0.13.0') >= 0, AA_RELEASES.join(' '));
     aStock(); aClearInmem();
     var mp0 = aPlan();
     ok('this version plans Android Auto in memory over stock files, writing neither', mp0 === 'OK' && aHolds() === 'stock' && aKind() !== 'null', mp0);
@@ -619,6 +710,7 @@ var AAPD_BIN = process.env.AAPD_BIN || '', AAPD_CONF = process.env.AAPD_CONF || 
     aClearInmem();
     AA_RELEASES.forEach(function (v) {
         var d = path.join(dir, 'rel', v);
+        if (aaInMem(v)) { aaInMemRelease(v, d); return; }
         /* 1. After this version's deactivate (stock, no backup of ours):
          * the release's activate, a crash loop under it, its Remove patch
          * and its removal. */
@@ -653,7 +745,176 @@ var AAPD_BIN = process.env.AAPD_BIN || '', AAPD_CONF = process.env.AAPD_CONF || 
             [live, rec, lRec, lKind, lRm, lRmKind, lAp, lApKind, back, backH].join(' | '));
         aClearInmem();
     });
+
+    /* aapd 22.39.3's build-id with bytes no segment loads appended: every
+     * release before SITES_DECIDE refuses to patch or plan it, and from it
+     * on plans it as this version does; none writes aapd or aapd.conf, by
+     * its patch or plan, crash loop, Remove patch or removal, also over this
+     * version's plan; this version plans Android Auto in memory over it, on
+     * trial. */
+    (function () {
+        var AA_OTHER = Buffer.concat([AA_STOCK, Buffer.alloc(16)]);
+        function aSame() { return fs.readFileSync(A).equals(AA_OTHER) && fs.readFileSync(AC).equals(AA_CONF); }
+        function aStart(plan) {
+            aClear(); aClearInmem(); fs.writeFileSync(A, AA_OTHER, { mode: 0o755 }); fs.writeFileSync(AC, AA_CONF, { mode: 0o644 });
+            return !plan || (aPlan() === 'OK' && aKind() !== 'null');
+        }
+        function relOver(d, inMemory, planned) {
+            var out = [], live = aStart(planned);
+            if (inMemory) out.push('plan ' + (aPlan(d) === 'OK' ? 'made' : 'refused'));
+            else out.push('apply ' + (aPatcher(d, ['apply', '--yes']).code === 0 ? 'patched' : 'refused'));
+            out.push(aSame() ? 'same' : 'written');
+            live = aStart(planned) && live; out.push(aRecover(d)); out.push(aSame() ? 'same' : 'written');
+            live = aStart(planned) && live; aPatcher(d, ['revert', '--yes']); out.push(aSame() ? 'same' : 'written');
+            live = aStart(planned) && live; aPatcher(d, ['revert', '--yes', '--drop-backup']); out.push(aSame() ? 'same' : 'written');
+            return { live: live, out: out, written: out.indexOf('written') >= 0 };
+        }
+        AA_RELEASES.forEach(function (v) {
+            var d = path.join(dir, 'rel', v), x = relOver(d, aaInMem(v), false), y = relOver(d, aaInMem(v), true), plans = cmp(v, SITES_DECIDE) >= 0;
+            ok(v + ' over aapd 22.39.3 with bytes appended: its ' + (aaInMem(v) ? 'plan' : 'patch') + (plans ? ' made' : ' refused') + ', aapd and aapd.conf never written',
+                x.live && !x.written && (plans ? x.out[0] === 'plan made' : /refused$/.test(x.out[0])), x.out.join(' | '));
+            ok(v + ' over this version\'s Android Auto plan of it: aapd and aapd.conf never written', y.live && !y.written, y.out.join(' | '));
+        });
+        aStart(false); aPlan();
+        var trial = null;
+        try { trial = JSON.parse(fs.readFileSync(path.join(SD, 'inmem-aapd.json'), 'utf8')).trial; } catch (e) {}
+        var n = relOver(NEW, true, false);
+        ok('this version over aapd 22.39.3 with bytes appended: plans Android Auto in memory on trial, aapd and aapd.conf never written',
+            n.live && !n.written && n.out[0] === 'plan made' && trial === true, n.out.join(' | ') + ' | trial ' + trial);
+        aClear(); aClearInmem();
+    })();
+
+    /* A release that patches Android Auto in memory (0.13.0 on), as this
+     * version does. Its patcher's revert and boot recovery's file restore
+     * leave the plan alone (turning the plan off at Remove patch, a removal
+     * or a crash loop is patchd's and recovery_test.js's to test); the
+     * records are read across versions, the plans are not compared (this
+     * version's has its own edits). Neither writes the files. */
+    function aaInMemRelease(v, d) {
+        var up = aPlannedBy(d), relKind = aKind(d), newKind = aKind();
+        var rec = aRecover(d), recH = aHolds(), recKind = aKind(d);
+        var live = aPlannedBy(d) === 'planned'; var r = aPatcher(d, ['revert', '--yes']); var rmH = r.code === 0 ? aHolds() : 'refused-' + aHolds(), rmKind = aKind(d);
+        live = aPlannedBy(d) === 'planned' && live; r = aPatcher(d, ['revert', '--yes', '--drop-backup']); var unH = r.code === 0 ? aHolds() : 'refused-' + aHolds(), unKind = aKind(d);
+        ok(v + ' after this version\'s deactivate: its activate plans Android Auto in memory over stock files; its file restore and its revert, with and without the backups dropped, leave them stock and the plan in place',
+            up === 'planned' && live && relKind !== 'null' && recH === 'stock' && recKind !== 'null' && /stock$/.test(rmH) && rmKind !== 'null' && /stock$/.test(unH) && unKind !== 'null',
+            [up, live, relKind, rec, recH, recKind, rmH, rmKind, unH, unKind].join(' | '));
+        live = aPlannedBy(d) === 'planned'; rec = aRecover(NEW); var nRecH = aHolds(), nRecKind = aKind();
+        live = aPlannedBy(d) === 'planned' && live; r = aPatcher(NEW, ['revert', '--yes']); var nRmH = r.code === 0 ? aHolds() : 'refused-' + aHolds(), nRmKind = aKind();
+        live = aPlannedBy(d) === 'planned' && live; var nUp = aActivate();
+        ok(v + '\'s Android Auto patch in memory under this version: this version reads its record as the patch for the files; this version\'s file restore and revert leave them stock and the plan in place, its activate plans again',
+            live && newKind !== 'null' && nRecH === 'stock' && nRecKind !== 'null' && /stock$/.test(nRmH) && nRmKind !== 'null' && nUp === 'planned',
+            [live, newKind, rec, nRecH, nRecKind, nRmH, nRmKind, nUp].join(' | '));
+        live = fresh(); var backKind = aKind(d), lUp = aActivate(d), lKind = aKind();
+        ok(v + ' over this version\'s Android Auto patch in memory: it reads this version\'s record, its activate plans again over stock files, which this version reads as its patch',
+            live && backKind !== 'null' && lUp === 'planned' && lKind !== 'null', [live, backKind, lUp, lKind].join(' | '));
+        aClearInmem();
+    }
 })();
 
-process.stdout.write((BIN ? '' : '\n(group A needs CARPLAY_BIN)\n') + (fails ? ('\n' + fails + ' check(s) failed\n') : '\nall checks passed\n'));
-process.exit(fails ? 1 : 0);
+/* ---- 8. the DLT capture: a release's capture service, this version's in patchd */
+
+var NEW_PATCHD_UNIT = fs.readFileSync(path.join(NEW, '..', 'systemd', 'waze-on-cluster-patchd.service'), 'utf8');
+var NEW_COMPONENT = JSON.parse(fs.readFileSync(path.join(NEW, '..', 'component.json'), 'utf8'));
+/* A file of release v, or null when the release has none. */
+function relFile(v, f) {
+    var r = cp.spawnSync('git', ['show', 'waze-on-cluster@' + v + ':native/waze-on-cluster/' + f], { cwd: REPO, encoding: 'utf8', maxBuffer: 1 << 26 });
+    return r.status === 0 ? r.stdout : null;
+}
+function unitLine(text, key) { var m = new RegExp('^' + key + '=(.*)$', 'm').exec(text || ''); return m ? m[1] : null; }
+
+/* Each release's files as a downgrade lays them, and what the process model
+ * below runs of them: its capture unit runs current/dlt_capture.js with
+ * `restore` in ExecStopPost, which this version's dlt_capture.js keeps (an
+ * update cut short runs this version's files under it); its patchd unit
+ * runs current/patchd.js with no arguments and nothing in ExecStopPost; its
+ * patchd.js has no capture code and runs as its daemon with --dlt-capture
+ * (a downgrade keeps this version's patchd unit until the next install). */
+var ALL = list.map(function (t) { return t.slice('waze-on-cluster@'.length); }).filter(function (v) { return /^\d+\.\d+\.\d+$/.test(v); }).sort(cmp);
+var byBlob = {}, kinds = {};
+ALL.forEach(function (v) {
+    var cap = relFile(v, 'systemd/waze-on-cluster-capture.service'), pu = relFile(v, 'systemd/waze-on-cluster-patchd.service');
+    var pd = relFile(v, 'patch/patchd.js') || '', dc = relFile(v, 'patch/dlt_capture.js');
+    ok(v + '\'s capture unit runs current/dlt_capture.js, ExecStopPost `restore`, which this version\'s dlt_capture.js keeps',
+        unitLine(cap, 'ExecStart') === '/usr/bin/node /var/opt/waze-on-cluster/current/dlt_capture.js' &&
+        unitLine(cap, 'ExecStopPost') === '/usr/bin/node /var/opt/waze-on-cluster/current/dlt_capture.js restore' && dc !== null,
+        unitLine(cap, 'ExecStart') + ' | ' + unitLine(cap, 'ExecStopPost'));
+    ok(v + '\'s patchd unit runs current/patchd.js with no arguments, nothing in ExecStopPost',
+        unitLine(pu, 'ExecStart') === '/usr/bin/node /var/opt/waze-on-cluster/current/patchd.js' && unitLine(pu, 'ExecStopPost') === null,
+        unitLine(pu, 'ExecStart') + ' | ' + unitLine(pu, 'ExecStopPost'));
+    var argv = pd.match(/process\.argv[^\n]*/g) || [];
+    ok(v + '\'s patchd.js has no capture code and runs as the daemon with --dlt-capture', argv.length === 1 &&
+        /^process\.argv\[2\] === 'activate' \|\| process\.argv\[2\] === 'deactivate'\) oneShot\(process\.argv\[2\]\);$/.test(argv[0]) &&
+        /oneShot\(process\.argv\[2\]\);\s*\nelse main\(\);/.test(pd) && !/dlt_capture\.js|--dlt-capture/.test(pd), argv.join(' / '));
+    if (dc === null) return;
+    (byBlob[dc] = byBlob[dc] || []).push(v);
+    if (!kinds[dc]) kinds[dc] = { v: v, unit: pu };
+});
+ok('the releases\' capture scripts are at hand: the two dlt_capture.js the releases ship', Object.keys(byBlob).length >= 2, Object.keys(byBlob).length);
+ok('this version runs the capture in patchd, with no capture unit and its recmgr name kept',
+    /^ExecStart=\/usr\/bin\/node \/var\/opt\/waze-on-cluster\/current\/patchd\.js --dlt-capture$/m.test(NEW_PATCHD_UNIT) &&
+    !NEW_COMPONENT.units.some(function (u) { return u.name === 'waze-on-cluster-capture.service'; }) &&
+    NEW_COMPONENT.recmgr.indexOf('waze-on-cluster-capture') >= 0);
+
+(async function () {
+    /* The process model (capture_units_model.js), for each distinct
+     * dlt_capture.js the releases ship: every step of an update, an Undo
+     * update (also one that starts the capture unit before patchd
+     * restarts) and an install of the release, whole and cut short by a
+     * power cut after each step, counting the capture servers that run. */
+    if (process.platform !== 'linux') process.stdout.write('SKIP the capture\'s process model: Linux only (/proc/net/unix)\n');
+    else {
+        var blobs8 = Object.keys(byBlob);
+        for (var b = 0; b < blobs8.length; b++) {
+            var vs8 = byBlob[blobs8[b]], relDlt = path.join(dir, 'model-dlt-' + vs8[0] + '.js');
+            fs.writeFileSync(relDlt, blobs8[b]);
+            await require('./capture_units_model.js')({ dir: path.join(dir, 'model-' + vs8[0]), newDir: NEW, newUnit: NEW_PATCHD_UNIT,
+                relDlt: relDlt, relUnit: kinds[blobs8[b]].unit, name: vs8[0] + (vs8.length > 1 ? '-' + vs8[vs8.length - 1] : ''), ok: ok });
+        }
+    }
+
+    /* A capture each one left open (its process SIGKILLed) is restored by
+     * the other's: each distinct dlt_capture.js the releases ship. */
+    var dlt = await require('./fake_dlt.js')(path.join(dir, 'dlt'));
+    var CENV = Object.assign({}, process.env, dlt.env, { WOC_CAPTURE_MS: '60000', WOC_CAPTURE_RETRY_MS: '80' });
+    function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+    async function until(fn) { for (var t = 0; t < 5000; t += 20) { if (await fn()) return true; await sleep(20); } return false; }
+    function run(args) {
+        var c = cp.spawn(process.execPath, args, { env: CENV, stdio: ['ignore', 'pipe', 'pipe'] });
+        c.out = '';
+        c.stdout.on('data', function (d) { c.out += d; });
+        c.stderr.on('data', function (d) { c.out += d; });
+        c.done = new Promise(function (r) { c.on('exit', function (code) { r(code); }); });
+        return c;
+    }
+    async function leaveOpen(args) {
+        var c = run(args);
+        await until(async function () { return !!(await dlt.command('status')); });
+        dlt.trace(2);
+        await dlt.command('start');
+        var open = await until(function () { return dlt.state().state === 'open' && dlt.open(); });
+        c.kill('SIGKILL');
+        await c.done;
+        return open;
+    }
+    async function restoredBy(file) {
+        var code = await run([file, 'restore']).done;
+        return code === 0 && dlt.state().owned === false && dlt.state().state === 'closed' && !dlt.open() && dlt.modes[dlt.modes.length - 1] === 2;
+    }
+    var HOST = ['-e', 'require(' + JSON.stringify(path.join(NEW, 'dlt_capture.js')) + ').host(function () {});'];
+    var blobs = Object.keys(byBlob);
+    for (var i = 0; i < blobs.length; i++) {
+        var vs = byBlob[blobs[i]], f = path.join(dir, 'dlt_capture-' + vs[0] + '.js');
+        fs.writeFileSync(f, blobs[i]);
+        var name = vs[0] + (vs.length > 1 ? '-' + vs[vs.length - 1] : '');
+        var open = await leaveOpen([f]);
+        ok(name + '\'s capture service left a capture open: this version\'s restore puts DLT back', open && await restoredBy(path.join(NEW, 'dlt_capture.js')),
+            JSON.stringify(dlt.state()) + ' ' + dlt.modes.join());
+        open = await leaveOpen(HOST);
+        ok('this version\'s capture service in patchd left a capture open: ' + name + '\'s restore puts DLT back', open && await restoredBy(f),
+            JSON.stringify(dlt.state()) + ' ' + dlt.modes.join());
+    }
+    await dlt.close();
+})().catch(function (e) { ok('part 8 ran', false, e.stack || e); }).then(function () {
+    process.stdout.write((BIN ? '' : '\n(group A needs CARPLAY_BIN)\n') + (fails ? ('\n' + fails + ' check(s) failed\n') : '\nall checks passed\n'));
+    process.exit(fails ? 1 : 0);
+});

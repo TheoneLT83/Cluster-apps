@@ -8,7 +8,6 @@
   "words": {
     "Not supported on this car": "ไม่รองรับรถคันนี้",
     "Unavailable": "ไม่พร้อมใช้งาน",
-    "Untested version": "เวอร์ชันที่ยังไม่ได้ทดสอบ",
     "Changed by another tool": "ถูกเครื่องมืออื่นแก้ไข",
     "(after restart)": "(หลังรีสตาร์ท)",
     "Status: {0}": "สถานะ: {0}",

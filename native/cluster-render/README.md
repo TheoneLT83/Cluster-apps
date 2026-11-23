@@ -52,8 +52,19 @@ turns, plasma in an effect, labels in effects over a glyph-atlas asset, a
 needle, an alert and a video:
 
 ```sh
-node showcase.js [--socket PATH] [all|cube|text|needle|plasma|alert|video] \
+node showcase.js [--socket PATH] [all|cube|text|needle|plasma|alert|video|glow] \
     [--target panel|map|hud|guide|widget] [--size WxH]   # iDrive 8's map: --size 874x749
+```
+
+`js/example_gauges.js` is a small custom cluster built only from layers, to
+copy from: a background a shader draws, two dials sampling one mipmapped
+asset, two needles the renderer turns, and a seven-segment readout over an
+`r8` font. It prints the bytes it sends while idle (none), while the
+needles sweep (one message each, once) and while new values come 4 times a
+second (about 1.2 KB/s), and what the service wrote for it:
+
+```sh
+node example_gauges.js [--socket PATH] [--target panel] [--phase-ms 10000]
 ```
 
 ### Targets
@@ -216,8 +227,8 @@ why it is what it is, and the remembered ceiling.
 |---|---|---|
 | video | 4:2:0 atlases (`w*h*3/2` bytes) | one persistent buffer; only 64x64 tiles that changed past a noise filter are written, settled after `settle_ms`; packed 4x4 blocks for motion the budget cannot cover; newest frame only |
 | image | RGBA rectangles that changed | one persistent RGBA8 buffer, written in those rectangles at most `fps` a second |
-| effect | a GLSL ES 1.00 fragment shader, uniforms (arrays too), binds to assets | a quad drawn by it; `u_time` at `time_fps`, or from the renderer's own clock |
-| mesh | parts: shaders, geometry (`M`), transforms, uniforms, binds to assets | a render pass of its own over its rect, with its own perspective or orthographic camera; geometry replaced at most once a second within the budget; depth cleared, never colour |
+| effect | a GLSL ES 1.00 fragment shader, uniforms (arrays too), binds to assets, its blending and colour mask | a quad drawn by it; `u_time` at `time_fps`, or from the renderer's own clock |
+| mesh | parts: shaders, geometry (`M`), transforms, uniforms, binds to assets, each part's depth test, blending and colour mask | a render pass of its own over its rect, with its own perspective or orthographic camera; geometry replaced at most once a second within the budget; depth cleared, never colour |
 
 Beside the layers:
 
@@ -231,7 +242,17 @@ Beside the layers:
   been tried on a car. `tools/etc2_test/etc2_encode.py encode IN.rgba W H
   OUT.etc2 [etc2rgb]` encodes them. Which format to use: PROTOCOL.md
   "Choosing a pixel format"; artwork sent once animates with no more pixels
-  sent: PROTOCOL.md "Animating preloaded assets".
+  sent: PROTOCOL.md "Animating preloaded assets". An asset sampled with
+  mipmaps has its mip levels, made by the service for `rgba8` and `r8`
+  and sent with a compressed one; its sampler may mirror, wrap each axis
+  its own way and sample anisotropically (PROTOCOL.md "Mipmaps and
+  samplers").
+- **Render state:** an effect layer or mesh part blends by a preset
+  (`alpha`, `add`, `none`, `premultiplied`, `max`, `min`, `subtract`) or
+  by its own factors and operations, writes only the colour channels it
+  names, and a part tests depth its own way (PROTOCOL.md "Render state").
+  Every value and shader is checked before the display sees it; a shader is
+  at most 64 KB.
 - **Several videos:** clients have up to 8 video layers together, and the
   display holds the buffers of at most two. Past two, the videos on a
   target drawn unturned, at their frame's size and at even x and y are
@@ -253,6 +274,22 @@ Beside the layers:
   optional edge: the hosted picture's top and bottom rows drawn on past its
   rect, blurred and darkened, for a picture shorter than the shape it shows
   in.
+- **Hosting from layers** (PROTOCOL.md "Hosting from layers"): an app that
+  draws a target with layers only, a cluster theme on `panel` for example,
+  hosts another target there with no scene file (`host` with `into`): the
+  hosted picture (Waze's map, for example, which marks its layer `hosted`)
+  is drawn at the rect it names, just under the app's lowest drawn layer
+  (over it when that one is exclusive), so its frame and readouts sit over
+  it. The picture goes back to its own target while none of the app's
+  layers over the rect is drawn, the panel is not on screen, or a scene
+  hosts it, and when the app ends the host or exits. Of several apps
+  hosting the same target into one target the one drawn highest over the
+  picture wins, so a background app's early host loses to the visible
+  theme; across targets the one holding it keeps it while it can, so a
+  host on another target waits (the service cannot tell which screen the
+  driver wants: an app first on another screen keeps it there); the
+  `hosting` event tells each whether it is live and why not. Both
+  backends.
 
 Each target's changes are flushed together once a tick, so the cluster never
 shows a half-written frame: a video or exclusive image left half written
@@ -401,8 +438,8 @@ Releases: [release/README.md](../../release/README.md).
 ### License
 
 The service is GPL-3.0-or-later ([LICENSE](LICENSE)). What apps compile in
-or copy, `include/`, `client/`, `kit/`, `js/cluster_render_client.js` and
-[PROTOCOL.md](PROTOCOL.md), is MPL-2.0
+or copy, `include/`, `client/`, `kit/`, `js/cluster_render_client.js`,
+`js/example_gauges.js` and [PROTOCOL.md](PROTOCOL.md), is MPL-2.0
 ([LICENSES/MPL-2.0.txt](LICENSES/MPL-2.0.txt)), so apps under any license
 can use them; they reach the service over a socket. `abi/include/ramses19/`
 declares the API of RAMSES (BMW Car IT, MPL-2.0) and the symbol lists name

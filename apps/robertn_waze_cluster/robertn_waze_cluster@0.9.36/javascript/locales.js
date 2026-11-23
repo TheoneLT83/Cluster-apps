@@ -12,7 +12,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "غير مدعوم في هذه السيارة",
    "Unavailable": "غير متاح",
-   "Untested version": "إصدار غير مُختبَر",
    "Changed by another tool": "عدّلته أداة أخرى",
    "(after restart)": "(بعد إعادة التشغيل)",
    "Status: {0}": "الحالة: {0}",
@@ -167,7 +166,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "V tomto voze nepodporováno",
    "Unavailable": "Nedostupné",
-   "Untested version": "Netestovaná verze",
    "Changed by another tool": "Změněno jiným nástrojem",
    "(after restart)": "(po restartu)",
    "Status: {0}": "Stav: {0}",
@@ -322,7 +320,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Understøttes ikke i denne bil",
    "Unavailable": "Ikke tilgængelig",
-   "Untested version": "Utestet version",
    "Changed by another tool": "Ændret af et andet værktøj",
    "(after restart)": "(efter genstart)",
    "Status: {0}": "Status: {0}",
@@ -477,7 +474,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "In diesem Fahrzeug nicht unterstützt",
    "Unavailable": "Nicht verfügbar",
-   "Untested version": "Ungetestete Version",
    "Changed by another tool": "Von anderem Tool geändert",
    "(after restart)": "(nach Neustart)",
    "Status: {0}": "Status: {0}",
@@ -632,7 +628,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Δεν υποστηρίζεται σε αυτό το όχημα",
    "Unavailable": "Μη διαθέσιμο",
-   "Untested version": "Μη δοκιμασμένη έκδοση",
    "Changed by another tool": "Τροποποιήθηκε από άλλο εργαλείο",
    "(after restart)": "(μετά την επανεκκίνηση)",
    "Status: {0}": "Κατάσταση: {0}",
@@ -787,7 +782,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "No compatible con este auto",
    "Unavailable": "No disponible",
-   "Untested version": "Versión no probada",
    "Changed by another tool": "Modificado por otra herramienta",
    "(after restart)": "(al reiniciar)",
    "Status: {0}": "Estado: {0}",
@@ -942,7 +936,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "No compatible con este coche",
    "Unavailable": "No disponible",
-   "Untested version": "Versión no probada",
    "Changed by another tool": "Modificado por otra herramienta",
    "(after restart)": "(al reiniciar)",
    "Status: {0}": "Estado: {0}",
@@ -1097,7 +1090,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Ei tuettu tässä autossa",
    "Unavailable": "Ei saatavilla",
-   "Untested version": "Testaamaton versio",
    "Changed by another tool": "Toisen työkalun muuttama",
    "(after restart)": "(uudelleenkäynnistyksen jälkeen)",
    "Status: {0}": "Tila: {0}",
@@ -1252,7 +1244,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Non pris en charge sur ce véhicule",
    "Unavailable": "Indisponible",
-   "Untested version": "Version non testée",
    "Changed by another tool": "Modifié par un autre outil",
    "(after restart)": "(après redémarrage)",
    "Status: {0}": "État : {0}",
@@ -1407,7 +1398,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Non pris en charge sur ce véhicule",
    "Unavailable": "Indisponible",
-   "Untested version": "Version non testée",
    "Changed by another tool": "Modifié par un autre outil",
    "(after restart)": "(après redémarrage)",
    "Status: {0}": "État : {0}",
@@ -1562,7 +1552,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "לא נתמך ברכב זה",
    "Unavailable": "לא זמין",
-   "Untested version": "גרסה שלא נבדקה",
    "Changed by another tool": "שונה על ידי כלי אחר",
    "(after restart)": "(לאחר הפעלה מחדש)",
    "Status: {0}": "מצב: {0}",
@@ -1717,7 +1706,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Ebben az autóban nem támogatott",
    "Unavailable": "Nem elérhető",
-   "Untested version": "Nem tesztelt verzió",
    "Changed by another tool": "Másik eszköz módosította",
    "(after restart)": "(újraindítás után)",
    "Status: {0}": "Állapot: {0}",
@@ -1872,7 +1860,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Tidak didukung di mobil ini",
    "Unavailable": "Tidak tersedia",
-   "Untested version": "Versi belum diuji",
    "Changed by another tool": "Diubah oleh alat lain",
    "(after restart)": "(setelah mulai ulang)",
    "Status: {0}": "Status: {0}",
@@ -2027,7 +2014,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Non supportato su questa vettura",
    "Unavailable": "Non disponibile",
-   "Untested version": "Versione non testata",
    "Changed by another tool": "Modificato da un altro strumento",
    "(after restart)": "(dopo il riavvio)",
    "Status: {0}": "Stato: {0}",
@@ -2182,7 +2168,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "この車両は非対応",
    "Unavailable": "利用不可",
-   "Untested version": "未検証のバージョン",
    "Changed by another tool": "他のツールが変更",
    "(after restart)": "（再起動後）",
    "Status: {0}": "状態：{0}",
@@ -2337,7 +2322,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "이 차량에서 지원 안 됨",
    "Unavailable": "사용 불가",
-   "Untested version": "미검증 버전",
    "Changed by another tool": "다른 도구가 변경함",
    "(after restart)": "(재시작 후)",
    "Status: {0}": "상태: {0}",
@@ -2492,7 +2476,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Støttes ikke i denne bilen",
    "Unavailable": "Utilgjengelig",
-   "Untested version": "Utestet versjon",
    "Changed by another tool": "Endret av et annet verktøy",
    "(after restart)": "(etter omstart)",
    "Status: {0}": "Status: {0}",
@@ -2649,7 +2632,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Niet ondersteund in deze auto",
    "Unavailable": "Niet beschikbaar",
-   "Untested version": "Niet-geteste versie",
    "Changed by another tool": "Gewijzigd door andere tool",
    "(after restart)": "(na herstart)",
    "Status: {0}": "Status: {0}",
@@ -2804,7 +2786,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Nieobsługiwane w tym samochodzie",
    "Unavailable": "Niedostępne",
-   "Untested version": "Nieprzetestowana wersja",
    "Changed by another tool": "Zmienione przez inne narzędzie",
    "(after restart)": "(po restarcie)",
    "Status: {0}": "Stan: {0}",
@@ -2959,7 +2940,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Não compatível com este carro",
    "Unavailable": "Indisponível",
-   "Untested version": "Versão não testada",
    "Changed by another tool": "Alterado por outra ferramenta",
    "(after restart)": "(após reiniciar)",
    "Status: {0}": "Status: {0}",
@@ -3114,7 +3094,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Não compatível com este automóvel",
    "Unavailable": "Indisponível",
-   "Untested version": "Versão não testada",
    "Changed by another tool": "Alterado por outra ferramenta",
    "(after restart)": "(após reiniciar)",
    "Status: {0}": "Estado: {0}",
@@ -3269,7 +3248,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Neacceptat pe această mașină",
    "Unavailable": "Indisponibil",
-   "Untested version": "Versiune netestată",
    "Changed by another tool": "Modificat de alt instrument",
    "(after restart)": "(după repornire)",
    "Status: {0}": "Stare: {0}",
@@ -3424,7 +3402,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Не поддерживается в этом авто",
    "Unavailable": "Недоступно",
-   "Untested version": "Непроверенная версия",
    "Changed by another tool": "Изменено другим инструментом",
    "(after restart)": "(после перезапуска)",
    "Status: {0}": "Состояние: {0}",
@@ -3579,7 +3556,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Toto vozidlo nie je podporované",
    "Unavailable": "Nedostupné",
-   "Untested version": "Neotestovaná verzia",
    "Changed by another tool": "Zmenené iným nástrojom",
    "(after restart)": "(po reštarte)",
    "Status: {0}": "Stav: {0}",
@@ -3734,7 +3710,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "V tem vozilu ni podprto",
    "Unavailable": "Ni na voljo",
-   "Untested version": "Nepreizkušena različica",
    "Changed by another tool": "Spremenilo drugo orodje",
    "(after restart)": "(po ponovnem zagonu)",
    "Status: {0}": "Stanje: {0}",
@@ -3889,7 +3864,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Stöds inte i den här bilen",
    "Unavailable": "Inte tillgänglig",
-   "Untested version": "Otestad version",
    "Changed by another tool": "Ändrad av ett annat verktyg",
    "(after restart)": "(efter omstart)",
    "Status: {0}": "Status: {0}",
@@ -4044,7 +4018,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "ไม่รองรับรถคันนี้",
    "Unavailable": "ไม่พร้อมใช้งาน",
-   "Untested version": "เวอร์ชันที่ยังไม่ได้ทดสอบ",
    "Changed by another tool": "ถูกเครื่องมืออื่นแก้ไข",
    "(after restart)": "(หลังรีสตาร์ท)",
    "Status: {0}": "สถานะ: {0}",
@@ -4199,7 +4172,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Bu araçta desteklenmiyor",
    "Unavailable": "Kullanılamıyor",
-   "Untested version": "Test edilmemiş sürüm",
    "Changed by another tool": "Başka bir araç değiştirdi",
    "(after restart)": "(yeniden başlatınca)",
    "Status: {0}": "Durum: {0}",
@@ -4354,7 +4326,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Не підтримується в цьому авто",
    "Unavailable": "Недоступно",
-   "Untested version": "Неперевірена версія",
    "Changed by another tool": "Змінено іншим інструментом",
    "(after restart)": "(після перезапуску)",
    "Status: {0}": "Стан: {0}",
@@ -4509,7 +4480,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "Không hỗ trợ trên xe này",
    "Unavailable": "Không khả dụng",
-   "Untested version": "Phiên bản chưa thử nghiệm",
    "Changed by another tool": "Đã bị công cụ khác thay đổi",
    "(after restart)": "(sau khi khởi động lại)",
    "Status: {0}": "Trạng thái: {0}",
@@ -4666,7 +4636,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "本车不支持",
    "Unavailable": "不可用",
-   "Untested version": "未经测试的版本",
    "Changed by another tool": "已被其他工具更改",
    "(after restart)": "（重启后）",
    "Status: {0}": "状态：{0}",
@@ -4823,7 +4792,6 @@ module.exports = [
   "words": {
    "Not supported on this car": "此車輛不支援",
    "Unavailable": "無法使用",
-   "Untested version": "未經測試的版本",
    "Changed by another tool": "已被其他工具變更",
    "(after restart)": "（重新啟動後）",
    "Status: {0}": "狀態：{0}",

@@ -2,6 +2,55 @@
 
 ## Unreleased
 
+## 0.14.6
+
+Uses about 10 MB less of the head unit's memory: the diagnostic DLT
+capture now runs inside the patch service instead of a service of its own.
+Boot recovery and the journal keeper stay separate.
+
+## 0.14.5
+
+A cluster theme app that draws with layers only can show the map inside its
+theme, under its frame and readouts, with a cluster-render release after 0.8.1. The
+map goes back to its own place when the theme hides, ends it or exits.
+The map's layer says it is the hosted map, so the theme's frame stays over
+it. A host whose place the map cannot be drawn in leaves the map in its
+own place. Nothing else changes.
+
+## 0.14.4
+
+The rollback and Android Auto tests pass when run side by side or on a busy
+machine, and the rollback test also checks this version as the release it
+becomes.
+
+## 0.14.3
+
+The patch checks the places it edits, not the whole file: a carplay or
+aapd of a known version whose file differs only elsewhere, as on another
+firmware image, gets the cluster map like any other. Save logs shows which
+part of such a file differs.
+A patch you removed with Remove patch stays removed after a car software
+update too, until you press Patch. A version whose patch fails its own
+check is not tried again at each head-unit start.
+
+## 0.14.2
+
+Installing or updating turns the CarPlay and Android Auto map patches on
+by itself for every car software version it can check, with no Patch press
+and no more `Untested version`; a version new to your car is removed again
+by itself if the head unit then fails to start. A patch you removed stays
+removed.
+
+## 0.14.1
+
+The Wi-Fi band test waits for each sample to finish, so it passes on a
+busy machine too.
+
+## 0.14.0
+
+Android Auto: the cluster map starts at every connection, also after you
+leave the car and get back in, without a route planned.
+
 ## 0.13.0
 
 Android Auto's cluster map patch is applied in aapd's memory each time it

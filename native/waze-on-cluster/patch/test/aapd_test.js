@@ -5,15 +5,16 @@
 /* The Android Auto patch end to end on temporary copies of the unit's aapd
  * (AAPD_BIN, aapd 22.39.3) and aapd.conf (AAPD_CONF). This version applies
  * it in aapd's memory (PATCH.md "In memory"): the plan's refusals (the
- * coding, a site not found, a modified proven build, a build outside the
- * proven list without --unproven, an aapd.conf without what the geometry
- * needs), the plan and the copy of aapd.conf it points aapd at, the byte-exact
+ * coding, a site not found, a site of a build whose shipped file is known
+ * holding neither its shipped bytes nor the edit,
+ * an aapd.conf without what the geometry needs; any other build is
+ * planned), the plan and the copy of aapd.conf it points aapd at, the byte-exact
  * undo of a patch an earlier release wrote to the files (waze-on-cluster
  * 0.12.1's patcher, earlier_patcher.js), patchd's hooks and socket next to
  * carplay's (CARPLAY_BIN, optional) with aapd's process in a fake /proc
  * (carplay_proc.js), the head-unit restart guard, and boot recovery for aapd
- * with /, /proc, mount and systemctl faked. The build outside the proven
- * list is the reference with its GNU build-id changed. Firmware is never in
+ * with /, /proc, mount and systemctl faked. Another build is the reference
+ * with its GNU build-id changed. Firmware is never in
  * this repository; without AAPD_BIN and AAPD_CONF the test skips.
  *
  *   AAPD_BIN=<aapd> AAPD_CONF=<aapd.conf> [CARPLAY_BIN=<carplay>] node aapd_test.js
@@ -46,8 +47,8 @@ var SRC = fs.readFileSync(BIN), SRCCONF = fs.readFileSync(CONF);
 var LOC = locator.locate(SRC);
 if (!LOC.ok) { process.stdout.write('FAIL AAPD_BIN is not located: ' + LOC.reason + '\n'); process.exit(1); }
 var REGIONS = locator.EDITS.map(function (e) { return [LOC[e].offset, LOC[e].len]; });
-/* The reference with its GNU build-id changed: a build outside the proven
- * list whose sites the locator finds. */
+/* The reference with its GNU build-id changed: a build no list names
+ * whose sites the locator finds. */
 var UNPROVEN = (function () {
     var b = Buffer.from(SRC), id = require('../carplay_locate.js').buildId(SRC), at = b.indexOf(Buffer.from(id, 'hex'));
     b[at] ^= 0xff;
@@ -63,7 +64,24 @@ process.on('exit', function () {
     dirs.forEach(function (d) { try { cp.execFileSync('rm', ['-rf', d]); } catch (e) {} });
 });
 function sha(x) { return crypto.createHash('sha256').update(Buffer.isBuffer(x) ? x : fs.readFileSync(x)).digest('hex'); }
-function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+/* The waits below are for a condition, each bounded by HANG_MS only so that
+ * a hang ends the run: no wait depends on how fast the host is. */
+var HANG_MS = 180000;
+/* true once cond() holds, false if it never did within HANG_MS. */
+function until(cond) {
+    var end = Date.now() + HANG_MS;
+    return new Promise(function (r) {
+        (function check() { if (cond()) r(true); else if (Date.now() > end) r(false); else setTimeout(check, 20); })();
+    });
+}
+/* What promise p resolves to, or undefined if it did not within HANG_MS. */
+function within(p) {
+    var tm;
+    return Promise.race([p, new Promise(function (r) { tm = setTimeout(r, HANG_MS); })]).then(function (v) { clearTimeout(tm); return v; });
+}
+function exited(c) {
+    return c.exitCode !== null || c.signalCode !== null ? Promise.resolve() : new Promise(function (r) { c.once('exit', function () { r(); }); });
+}
 
 /* A coding image with KI_KOMBI_VARIANT v (flags 0x09: valid). */
 function coding(v, flags) {
@@ -106,17 +124,21 @@ function plan(t, args) {
 }
 function untouchedAs(t, bin) { return sha(t.bin) === sha(bin) && sha(t.conf) === sha(SRCCONF) && !fs.existsSync(t.bin + '.woc-orig') && !fs.existsSync(t.conf + '.woc-orig'); }
 function untouched(t) { return untouchedAs(t, SRC); }
-/* An untested aapd that aapd.service does not start. */
+/* Another aapd build that aapd.service does not start. */
 function foreignAapd(u) {
     fs.writeFileSync(u.bin, UNPROVEN);
     fs.mkdirSync(path.join(u.d, 'units', 'aapd.service.d'), { recursive: true });
     fs.writeFileSync(path.join(u.d, 'units', 'aapd.service.d', 'x.conf'), '[Service]\nExecStart=\nExecStart=/opt/other/aapd\n');
 }
-/* aapd_patch.js status slowed to 3 s in the patchd of unit u. */
+/* aapd_patch.js status held from its start until the test lets it go: a
+ * connect-time read still running when a command arrives. started() once
+ * one is held; release() lets it, and every later one, run. */
 function slowStatus(u) {
-    var js = path.join(u.d, 'slow-status.js');
-    fs.writeFileSync(js, 'if (/aapd_patch\\.js$/.test(process.argv[1] || "") && process.argv[2] === "status") { var t = Date.now() + 3000; while (Date.now() < t); }\n');
+    var js = path.join(u.d, 'slow-status.js'), started = path.join(u.d, 'status-started'), go = path.join(u.d, 'status-go');
+    fs.writeFileSync(js, 'if (/aapd_patch\\.js$/.test(process.argv[1] || "") && process.argv[2] === "status") { var fs = require("fs"); ' +
+        'fs.writeFileSync(' + JSON.stringify(started) + ', ""); var t = Date.now() + ' + HANG_MS + '; while (!fs.existsSync(' + JSON.stringify(go) + ') && Date.now() < t); }\n');
     u.env.NODE_OPTIONS = '--require=' + js;
+    return { started: function () { return fs.existsSync(started); }, release: function () { fs.writeFileSync(go, ''); } };
 }
 function onlyEdits(a, b) {
     for (var i = 0; i < a.length; i++) {
@@ -158,10 +180,10 @@ function density(text) { return JSON.parse(text).SCREENS.KOMBI_DISPLAY.CODEC_DEF
 (function patcherTests() {
     var t = unit();
     var s = status(t);
-    ok('status: the pristine proven build, coding 7, nothing to restore, planable, nothing foreign', /known:\s+yes, pristine aapd 22\.39\.3/.test(s) && /coding:\s+KI_KOMBI_VARIANT 7/.test(s) &&
+    ok('status: the pristine build, coding 7, nothing to restore, planable, nothing foreign, no list of builds named', /known:\s+yes, pristine build 2dfb9881/.test(s) && !/^proven:/m.test(s) && /coding:\s+KI_KOMBI_VARIANT 7/.test(s) &&
         /restorable:\s+no/.test(s) && /geometry:\s+ORIGINAL/.test(s) && /^confpath:\s+ORIGINAL$/m.test(s) && /^planable:\s+yes$/m.test(s) && /^foreign:\s+no$/m.test(s), s);
 
-    [[coding(9), 'KI_KOMBI_VARIANT 9 is not the proven'], [coding(2), 'KI_KOMBI_VARIANT 2 is not the proven'], [coding(7, 0x0b), 'coding not valid'],
+    [[coding(9), 'KI_KOMBI_VARIANT 9 is not the supported'], [coding(2), 'KI_KOMBI_VARIANT 2 is not the supported'], [coding(7, 0x0b), 'coding not valid'],
      [Buffer.alloc(16), 'is 16 bytes']].forEach(function (c) {
         var u = unit();
         fs.writeFileSync(u.coding, c[0]);
@@ -190,12 +212,24 @@ function density(text) { return JSON.parse(text).SCREENS.KOMBI_DISPLAY.CODEC_DEF
     s = status(ncp);
     ok('the config path not found: the plan refused, status not planable, the four edits still known', r.code === 1 && /refusing: config path: the path string not found/.test(r.out) &&
         /^planable:\s+no \(config path/m.test(s) && /^confpath:\s+UNKNOWN/m.test(s) && !/known:\s+NO/.test(s), r.out + s);
-    [['bytes appended', Buffer.concat([SRC, Buffer.alloc(16)])], ['a byte changed outside the sites', (function () { var b = Buffer.from(SRC); b[0x1000] ^= 1; return b; })()]].forEach(function (m) {
-        var u = unit(m[1]), x = plan(u, ['--unproven']);
-        ok('the proven build with ' + m[0] + ': the plan refused (in memory needs the pristine build), also with --unproven', x.code === 1 && /pristine build on disk: sha256/.test(x.out) &&
-            !fs.existsSync(x.plan), x.out);
-        ok('the proven build with ' + m[0] + ': status reads modified, nothing restorable', /known:\s+yes, modified build/.test(status(u)) && /restorable:\s+no/.test(status(u)));
+    /* aapd 22.39.3's build-id with other bytes away from the sites: the
+     * locator's checks decide; probe names the part that differs */
+    [['bytes appended', Buffer.concat([SRC, Buffer.alloc(16)]), /^differs:\s+the bytes no segment loads$/m],
+     ['a code byte away from the sites', (function () { var b = Buffer.from(SRC); b[0x1000] ^= 1; return b; })(), /^differs:\s+loaded segment 1 \(r-x, file 0x0-0x[0-9a-f]+\)$/m]].forEach(function (m) {
+        var u = unit(m[1]), x = plan(u), s = status(u), pr = patcher(u, ['probe']).out;
+        ok('aapd 22.39.3 with ' + m[0] + ': status pristine, planned, aapd untouched', /known:\s+yes, pristine/.test(s) && x.code === 0 && fs.existsSync(x.plan) &&
+            sha(u.bin) === sha(m[1]), x.out + s);
+        ok('aapd 22.39.3 with ' + m[0] + ': probe names the part that differs', m[2].test(pr), pr);
     });
+    /* a gate byte the locator still reads as stock, so only the shipped
+     * bytes tell it from aapd 22.39.3's */
+    var fb = Buffer.from(SRC);
+    fb[0x998be] ^= 1;
+    var fu = unit(fb), fx = plan(fu, ['--unproven']), fs2 = status(fu);
+    ok('a site holding neither the shipped bytes nor the edit: status a modified build naming it, the plan refused, also with --unproven, aapd untouched',
+        /known:\s+yes, modified build \(neither the shipped bytes nor our edit at 0x998bd\)/.test(fs2) && /^gate:\s+ORIGINAL$/m.test(fs2) &&
+        fx.code === 1 && /in memory needs the pristine build on disk: neither the shipped bytes nor our edit at 0x998bd/.test(fx.out) &&
+        !fs.existsSync(fx.plan) && sha(fu.bin) === sha(fb), fx.out + fs2);
     var text = SRCCONF.toString('utf8');
     [['not JSON', text.slice(0, -10), /not JSON/],
      ['a number the edit sets missing', text.replace(/"SA_WIDTHPIXELS": 612/, '"SA_WIDTHPIXELS": "612"'), /no number SCREENS\/KOMBI_DISPLAY\/DIMENSIONS\/12\.3\/SA_WIDTHPIXELS/],
@@ -217,33 +251,36 @@ function density(text) { return JSON.parse(text).SCREENS.KOMBI_DISPLAY.CODEC_DEF
     ok('dpi: a density off the steps is refused', plan(unit(), ['--dpi', '155']).code === 1);
     ok('card: a turn-card setting other than shown or hidden is refused', plan(unit(), ['--card', 'off']).code === 1);
 
-    /* The plan: the five sites, stock to patched, and the copy of aapd.conf
+    /* The plan: the six sites, stock to patched, and the copy of aapd.conf
      * at 180 dpi with the card shown; neither file written. */
     var st0 = fs.statSync(t.bin), cst0 = fs.statSync(t.conf);
     var p = plan(t);
     var lines = fs.readFileSync(p.plan, 'utf8');
-    var want = ['wocplan 1', 'build-id 2dfb9881706bff435b05f621486e8eb8b6c55984'].concat(['gate', 'call', 'guard', 'screen', 'confpath'].map(function (e, i) {
-        return ['edit', ['gate', 'selfstart-call', 'selfstart-guard', 'screen', 'confpath'][i], LOC[e].offset.toString(16), LOC[e].stock, LOC[e].patched].join(' ');
-    }), ['end 5']).join('\n') + '\n';
-    ok('plan: the five sites of the proven build at their addresses, stock to patched', p.code === 0 && lines === want, lines);
+    var want = ['wocplan 1', 'build-id 2dfb9881706bff435b05f621486e8eb8b6c55984'].concat(['gate', 'call', 'guard', 'screen', 'confpath', 'readystart'].map(function (e, i) {
+        return ['edit', ['gate', 'selfstart-call', 'selfstart-guard', 'screen', 'confpath', 'readystart'][i], LOC[e].offset.toString(16), LOC[e].stock, LOC[e].patched].join(' ');
+    }), ['end 6']).join('\n') + '\n';
+    ok('plan: the six sites of the proven build at their addresses, stock to patched', p.code === 0 && lines === want, lines);
+    ok('plan: onAlternateVideoReady ends with a tail jump to requestStream', /\nedit readystart 1d3bbf 488b44240864483304252800000075074883c4185b5dc3 4889ef4883c4185b5de9630300000f1f80000000006690\n/.test(lines));
     ok('plan: the config path made /run/aapd.conf', /\nedit confpath 5008ec 2f6574632f616170642e636f6e6600 2f72756e2f616170642e636f6e6600\n/.test(lines));
     ok('plan: aapd and aapd.conf not written, not even their times', sha(t.bin) === sha(SRC) && sha(t.conf) === sha(SRCCONF) &&
         fs.statSync(t.bin).mtime.getTime() === st0.mtime.getTime() && fs.statSync(t.conf).mtime.getTime() === cst0.mtime.getTime() && !fs.existsSync(t.bin + '.woc-orig'));
-    ok('plan: its summary names the build, the edits, the geometry, the revision and the SHA-256 of the plan, the copy and aapd.conf', !!p.sum && p.sum.provenBuild === true &&
-        p.sum.edits.join() === 'gate,selfstart-call,selfstart-guard,screen,confpath' && p.sum.writes.dpi === 180 && p.sum.writes.card === 'shown' &&
+    ok('plan: its summary names the build, the edits, the geometry, the revision and the SHA-256 of the plan, the copy and aapd.conf', !!p.sum && !('provenBuild' in p.sum) &&
+        p.sum.build === '2dfb9881706bff435b05f621486e8eb8b6c55984' && p.sum.version === 'aapd 22.39.3' && p.sum.coding === 'ok' &&
+        p.sum.edits.join() === 'gate,selfstart-call,selfstart-guard,screen,confpath,readystart' && p.sum.writes.dpi === 180 && p.sum.writes.card === 'shown' &&
         p.sum.writes.crop === '1280x720:0,0,1280,564' && p.sum.rev === ap.PATCH_REV && p.sum.planSha256 === sha(p.plan) && p.sum.copies.conf === sha(p.copy) &&
         p.sum.inputs.conf === sha(SRCCONF), JSON.stringify(p.sum));
-    var laid = require('../carplay_patch.js').overlay(SRC, lines);
-    ok('plan: laid over aapd, the four edits an earlier release wrote and the config path, nothing else', !laid.err && onlyEdits(SRC, Buffer.concat([laid.buf.slice(0, LOC.confpath.offset),
-        SRC.slice(LOC.confpath.offset, LOC.confpath.offset + LOC.confpath.len), laid.buf.slice(LOC.confpath.offset + LOC.confpath.len)])) &&
-        laid.buf.toString('latin1', LOC.confpath.offset, LOC.confpath.offset + 15) === '/run/aapd.conf\0', laid.err);
+    var laid = require('../carplay_patch.js').overlay(SRC, lines), rest = laid.buf ? Buffer.from(laid.buf) : null;
+    if (rest) ['confpath', 'readystart'].forEach(function (k) { SRC.copy(rest, LOC[k].offset, LOC[k].offset, LOC[k].offset + LOC[k].len); });
+    ok('plan: laid over aapd, the four edits an earlier release wrote, the config path and the ready start, nothing else', !laid.err && onlyEdits(SRC, rest) &&
+        laid.buf.toString('latin1', LOC.confpath.offset, LOC.confpath.offset + 15) === '/run/aapd.conf\0' &&
+        laid.buf.toString('hex', LOC.readystart.offset, LOC.readystart.offset + 23) === LOC.readystart.patched, laid.err);
     var k = JSON.parse(fs.readFileSync(p.copy, 'utf8')).SCREENS.KOMBI_DISPLAY, c = k.CODEC_DEFINITION.HIGH_1080P, sa = k.DIMENSIONS['12.3'];
     var g = conf.GEOMETRY.shown;
     ok('plan: the copy asks for the geometry at 180 dpi; 10.25" and MID left stock', c.CODEC_WIDTH === g.codec.w && c.CODEC_HEIGHT === g.codec.h &&
         c.REPORTED_SCREEN_DENSITY === 180 && c.WIDTH_TARGET_VIEWPORT === g.ui.w && c.HEIGHT_TARGET_VIEWPORT === g.ui.h && sa.SA_WIDTHPIXELS === g.safe.w &&
         sa.SA_OFFSET_TOPPIXELS === g.safe.y && JSON.stringify(k.CODEC_DEFINITION.MID_1080P) === JSON.stringify(JSON.parse(SRCCONF).SCREENS.KOMBI_DISPLAY.CODEC_DEFINITION.MID_1080P));
     var o = patcher(t, ['overlay', '--plan', p.plan, '--conf-copy', p.copy]).out;
-    ok('overlay: every site patched, the copy\'s geometry, ok', ['gate', 'selfstart-call', 'selfstart-guard', 'screen', 'confpath'].every(function (e) {
+    ok('overlay: every site patched, the copy\'s geometry, ok', ['gate', 'selfstart-call', 'selfstart-guard', 'screen', 'confpath', 'readystart'].every(function (e) {
         return new RegExp('^' + e + ':\\s+PATCHED$', 'm').test(o); }) && /^geometry:\s+PATCHED \(180 dpi, card shown, crop 1280x720:0,0,1280,564\)$/m.test(o) && /^overlay:\s+ok$/m.test(o), o);
     s = status(t);
     ok('status after a plan: the files as they ship', /^gate:\s+ORIGINAL$/m.test(s) && /^geometry:\s+ORIGINAL$/m.test(s) && /restorable:\s+no/.test(s), s);
@@ -283,16 +320,13 @@ function density(text) { return JSON.parse(text).SCREENS.KOMBI_DISPLAY.CODEC_DEF
     });
     ok('every density and card is recognised and is the original\'s file', every);
 
-    /* A build outside the proven list: planned only with --unproven. */
+    /* A build no list names: planned as any other. */
     var u = unit(UNPROVEN);
     s = status(u);
-    ok('unproven build: pristine by its sites, not proven, its build-id and version', /known:\s+yes, pristine build [0-9a-f]{40}/.test(s) && /proven:\s+no/.test(s) &&
+    ok('another build: pristine by its sites, its build-id and version', /known:\s+yes, pristine build [0-9a-f]{40}/.test(s) && !/^proven:/m.test(s) &&
         /version:\s+22\.39\.3/.test(s) && /geometry:\s+ORIGINAL/.test(s), s);
     r = plan(u);
-    ok('unproven build: the plan without --unproven refused, nothing written', r.code === 1 && /is not a proven build; pass --unproven/.test(r.out) && untouchedAs(u, UNPROVEN) &&
-        !fs.existsSync(r.plan), r.out);
-    r = plan(u, ['--unproven']);
-    ok('unproven build: --unproven plans the proven build\'s edits for its build-id, not proven', r.code === 0 && r.sum.provenBuild === false &&
+    ok('another build: planned, the reference\'s edits for its build-id, nothing written', r.code === 0 && !('provenBuild' in r.sum) &&
         fs.readFileSync(r.plan, 'utf8').split('\n').slice(2).join('\n') === want.split('\n').slice(2).join('\n') && untouchedAs(u, UNPROVEN), r.out);
 
     /* An earlier release's patch on disk, and what this version's revert
@@ -348,7 +382,7 @@ function density(text) { return JSON.parse(text).SCREENS.KOMBI_DISPLAY.CODEC_DEF
     ok('backup not its record\'s, on the proven build: restorable from its shipped bytes', /^restorable:\s+yes$/m.test(s) && /^undo:\s+aapd restorable, aapd\.conf restorable$/m.test(s), s);
     r = patcher(pt, ['revert', '--yes']);
     ok('backup not its record\'s, on the proven build: revert writes the shipped bytes, never the backup; both files byte-exact', r.code === 0 &&
-        /restored .*aapd from the proven file's shipped content/.test(r.out) && sha(pt.bin) === sha(SRC) && sha(pt.conf) === sha(SRCCONF), r.out);
+        /restored .*aapd from the file's shipped content/.test(r.out) && sha(pt.bin) === sha(SRC) && sha(pt.conf) === sha(SRCCONF), r.out);
 
     /* A firmware update: another aapd over the backup is left, aapd.conf
      * still restored; --force writes the backup over it. */
@@ -364,14 +398,14 @@ function density(text) { return JSON.parse(text).SCREENS.KOMBI_DISPLAY.CODEC_DEF
     ok('another build: --force writes the backup, --drop-backup drops both', r.code === 0 && sha(fw.bin) === sha(SRC) && !fs.existsSync(fw.bin + '.woc-orig') &&
         !fs.existsSync(fw.conf + '.woc-orig') && !fs.existsSync(fw.bin + '.woc-orig.json'), r.out);
 
-    /* A build outside the proven list an earlier release patched: undone
+    /* A build no list names that an earlier release patched: undone
      * byte-exact. */
     var uu = unit(UNPROVEN);
     patcher(uu, ['apply', '--unproven', '--yes']);
     s = status(uu);
-    ok('unproven build, patched by an earlier release: status patched, restorable', (s.match(/^\S+:\s+PATCHED/gm) || []).length === 5 && /restorable:\s+yes/.test(s) && /known:\s+yes, modified build/.test(s), s);
+    ok('another build, patched by an earlier release: status patched, restorable', (s.match(/^\S+:\s+PATCHED/gm) || []).length === 5 && /restorable:\s+yes/.test(s) && /known:\s+yes, modified build/.test(s), s);
     r = patcher(uu, ['revert', '--yes', '--drop-backup']);
-    ok('unproven build: revert restores both byte-exact and drops the backups', r.code === 0 && untouchedAs(uu, UNPROVEN), r.out);
+    ok('another build: revert restores both byte-exact and drops the backups', r.code === 0 && untouchedAs(uu, UNPROVEN), r.out);
 
     /* A locator that throws: status still prints every line, and revert
      * restores both files without it. */
@@ -386,7 +420,7 @@ function density(text) { return JSON.parse(text).SCREENS.KOMBI_DISPLAY.CODEC_DEF
     }
     r = throwing(['status']);
     ok('a throwing locator: status prints every line, restorable, the backup named', r.code === 0 &&
-        ['target', 'size', 'sha256', 'build-id', 'version', 'conf', 'coding', 'restorable', 'undo', 'known', 'proven', 'gate', 'selfstart-call', 'selfstart-guard', 'screen', 'confpath', 'geometry', 'foreign', 'planable', 'backup']
+        ['target', 'size', 'sha256', 'build-id', 'version', 'conf', 'coding', 'restorable', 'undo', 'known', 'gate', 'selfstart-call', 'selfstart-guard', 'screen', 'confpath', 'readystart', 'geometry', 'foreign', 'planable', 'backup']
             .every(function (k2) { return new RegExp('^' + k2 + ':', 'm').test(r.out); }) &&
         /^restorable:\s+yes$/m.test(r.out) && /^known:\s+NO — locator failed: boom$/m.test(r.out) && /^gate:\s+UNKNOWN \(locator failed: boom\)$/m.test(r.out) &&
         r.out.split('\n').some(function (l) { return /^backup:/.test(l) && l.indexOf(th.bin + '.woc-orig') > 0; }), r.out);
@@ -567,7 +601,7 @@ function patchdUnit(opts) {
     return t;
 }
 function hook(t, which) {
-    var r = cp.spawnSync(process.execPath, [path.join(PATCH, 'patchd.js'), which], { env: t.env, encoding: 'utf8', timeout: 90000 });
+    var r = cp.spawnSync(process.execPath, [path.join(PATCH, 'patchd.js'), which], { env: t.env, encoding: 'utf8', timeout: HANG_MS });
     var lines = (r.stdout || '').trim().split('\n'), last = {};
     try { last = JSON.parse(lines[lines.length - 1]); } catch (e) {}
     return { code: r.status, result: last, out: r.stdout + r.stderr };
@@ -587,7 +621,7 @@ function aapdStarts(t, pid) {
 /* The next head-unit start: /dev/shm emptied, the boot step arms, aapd starts. */
 function nextStart(t, pid) {
     ['aa-pending', 'activation-pending'].forEach(function (n) { try { fs.unlinkSync(path.join(t.shm, n)); } catch (e) {} });
-    cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: t.env, encoding: 'utf8', timeout: 60000 });
+    cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: t.env, encoding: 'utf8', timeout: HANG_MS });
     return aapdStarts(t, pid);
 }
 
@@ -657,21 +691,19 @@ function nextStart(t, pid) {
         /another change besides our earlier patch/.test(JSON.stringify(r.result.aa)) && fs.readFileSync(fo.bin).equals(fob) && sha(fo.conf) === foConf &&
         noAaInmem(fo) && !marker(fo, 'aa-pending'), r.out);
 
-    /* Not supported, untested, absent: CarPlay is patched in memory as ever, except
-     * on a car not coded 7, where CarPlay's patch is left too, with the
-     * same conflict. */
+    /* Not supported, not patchable, absent: CarPlay is patched in memory as
+     * ever, except on a car not coded 7, where CarPlay's patch is left too,
+     * with the same conflict. */
     [['coding 9', function (u) { fs.writeFileSync(u.coding, coding(9)); }, /not supported on this car \(KI_KOMBI_VARIANT 9\)/],
-     ['an untested aapd', function (u) { fs.writeFileSync(u.bin, UNPROVEN); }, /"conflict":"untested aapd build"/],
      ['an aapd the locator refuses', function (u) { var b = Buffer.from(SRC); b[LOC.gate.offset + 6] = 3; fs.writeFileSync(u.bin, b); }, /not patchable: gate: variant check not found/],
      ['an aapd without the config path', function (u) { var b = Buffer.from(SRC); b.write('/etc/aapd.cfg', LOC.confpath.offset, 'latin1'); fs.writeFileSync(u.bin, b); }, /not patchable: config path/],
-     ['the proven aapd modified', function (u) { fs.writeFileSync(u.bin, Buffer.concat([SRC, Buffer.alloc(8)])); }, /aapd was modified by something else/],
      ['an aapd.conf without the 12.3" codec', function (u) { fs.writeFileSync(u.conf, SRCCONF.toString('utf8').replace(/"HIGH_1080P"\s*\]/, '"NONE"]')); }, /aapd\.conf not usable: no number/],
-     /* an untested build is the conflict only when nothing else stands */
-     ['an untested aapd and an aapd.conf without the 12.3" codec', function (u) {
+     /* another build has the real reason of its own */
+     ['another aapd build and an aapd.conf without the 12.3" codec', function (u) {
          fs.writeFileSync(u.bin, UNPROVEN);
          fs.writeFileSync(u.conf, SRCCONF.toString('utf8').replace(/"HIGH_1080P"\s*\]/, '"NONE"]'));
      }, /"conflict":"aapd\.conf not usable: no number/],
-     ['an untested aapd that aapd.service does not start', foreignAapd, /"conflict":"aapd\.service starts \/opt\/other\/aapd/],
+     ['another aapd build that aapd.service does not start', foreignAapd, /"conflict":"aapd\.service starts \/opt\/other\/aapd/],
      ['no aapd', function (u) { fs.unlinkSync(u.bin); }, /no Android Auto/]].forEach(function (c) {
         var u = patchdUnit();
         c[1](u);
@@ -695,7 +727,7 @@ function nextStart(t, pid) {
     ok('a plan that cannot be made: aapd runs as it ships, the record a plan still to make, the reason said, exit 0', r.code === 0 &&
         /could not be planned \(an injected failure\)/.test(r.result.aa.status) && !!rec && rec.needsPlan === true && !armedAa(pf) && untouched(pf), r.out);
     delete pf.env.NODE_OPTIONS;
-    var bs = cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: pf.env, encoding: 'utf8', timeout: 60000 });
+    var bs = cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: pf.env, encoding: 'utf8', timeout: HANG_MS });
     ok('... the next head-unit start\'s boot step plans it and arms that start', /planning the patch in memory again/.test(bs.stdout) && /aapd boot check: armed/.test(bs.stdout) &&
         aaRecord(pf).enabled === true && !aaRecord(pf).needsPlan && armedAa(pf) && untouched(pf), bs.stdout + bs.stderr);
 
@@ -734,7 +766,7 @@ function nextStart(t, pid) {
         "var m = /(aapd|carplay)_patch\\.js$/.exec(process.argv[1] || '');",
         "if (m && process.argv[2] === 'status' && process.env.WOC_CUT === m[1]) {",
         "    var w = process.stdout.write.bind(process.stdout), cut = false;",
-        "    process.stdout.write = function (s) { if (cut) return true; if (/^proven:/.test(s)) { cut = true; if (process.env.WOC_CUT_EXIT) process.exitCode = 1; } return w(s); };",
+        "    process.stdout.write = function (s) { if (cut) return true; if (/^known:/.test(s)) { cut = true; if (process.env.WOC_CUT_EXIT) process.exitCode = 1; } return w(s); };",
         "}"].join('\n') + '\n');
     cs.env.NODE_OPTIONS = '--require=' + cutJs;
     cs.env.WOC_CUT = 'aapd';
@@ -816,15 +848,16 @@ function daemon(t) {
     var log = '';
     c.stdout.on('data', function (b) { log += b; });
     c.stderr.on('data', function (b) { log += b; });
-    return new Promise(function (resolve) {
-        (function wait(n) {
+    var end = Date.now() + HANG_MS;
+    return new Promise(function (resolve, reject) {
+        (function wait() {
             if (fs.existsSync(t.env.WOC_PATCH_SOCK)) {
                 var s = net.connect(t.env.WOC_PATCH_SOCK), buf = '', waiters = [];
                 var api = { msgs: [], log: function () { return log; }, proc: c,
                     send: function (o) { s.write(JSON.stringify(o) + '\n'); },
-                    next: function (pred, ms) {
+                    next: function (pred) {
                         return new Promise(function (res, rej) {
-                            var tm = setTimeout(function () { rej(new Error('timeout; log: ' + log.slice(-800))); }, ms || 20000);
+                            var tm = setTimeout(function () { rej(new Error('no such message from patchd in ' + HANG_MS + ' ms; log: ' + log.slice(-800))); }, HANG_MS);
                             waiters.push({ pred: pred, res: function (m) { clearTimeout(tm); res(m); } });
                         });
                     } };
@@ -842,9 +875,9 @@ function daemon(t) {
                 s.on('connect', function () { resolve(api); });
                 return;
             }
-            if (n > 200) throw new Error('patchd did not listen: ' + log);
-            setTimeout(function () { wait(n + 1); }, 50);
-        })(0);
+            if (c.exitCode !== null || c.signalCode !== null || Date.now() > end) { reject(new Error('patchd did not listen: ' + log)); return; }
+            setTimeout(wait, 20);
+        })();
     });
 }
 function cropEnv(t) { try { return fs.readFileSync(path.join(t.d, 'var', 'aa-crop.env'), 'utf8'); } catch (e) { return null; } }
@@ -902,14 +935,14 @@ async function socketTests() {
     fs.writeFileSync(t.env.WOC_BOOT_ID, 'boot-R\n');
     p.send({ cmd: 'reboot' });
     var rb = await p.next(function (m) { return m.ev === 'reboot-reply'; });
-    for (var i = 0; i < 250 && calls(t).indexOf('reboot') < 0; i++) await sleep(20);
+    await until(function () { return calls(t).indexOf('reboot') >= 0; });
     ok('reboot: a pending Android Auto change is enough; one reboot', rb.ok === true && calls(t).filter(function (l) { return l === 'reboot'; }).length === 1, JSON.stringify(rb));
     ok('reboot: the boot it was asked in is recorded for boot recovery', fs.readFileSync(path.join(t.d, 'var', 'restart-requested'), 'utf8') === 'boot-R\n');
     p.send({ cmd: 'reboot' });
     rb = await p.next(function (m) { return m.ev === 'reboot-reply'; });
     ok('reboot: a second request is refused while the first runs', rb.ok === false && /already in progress/.test(rb.reason), JSON.stringify(rb));
     p.proc.kill('SIGKILL');
-    await sleep(100);
+    await exited(p.proc);
     var p2 = await daemon(t);
     p2.send({ cmd: 'reboot' });
     rb = await p2.next(function (m) { return m.ev === 'reboot-reply'; });
@@ -942,7 +975,7 @@ async function socketTests() {
     await pr.next(function (m) { return m.ev === 'status'; });
     pr.send({ cmd: 'aa-apply' });
     st = await pr.next(function (m) { return aaDone(m) && m.aa.aapd; });
-    var sig = await Promise.race([victim.died, sleep(3000)]);
+    var sig = await within(victim.died);
     ok('aa-apply with recmgr\'s aapd entry: aapd SIGKILLed and started armed, nothing pending, the files as they ship', st.aa.aapd === 'restarted' && sig === 'SIGKILL' &&
         calls(r).indexOf('systemctl start aapd.service') >= 0 && !marker(r, 'aa-pending') && ro(r) && untouched(r), JSON.stringify(st.aa) + calls(r).join(';'));
     pr.send({ cmd: 'status' });
@@ -968,32 +1001,46 @@ async function socketTests() {
     var v2 = dummyAapd(r);
     pr.send({ cmd: 'aa-revert' });
     st = await pr.next(function (m) { return aaDone(m) && (m.aa.state === 'original' || m.aa.pending === 'revert'); });
-    var sig2 = await Promise.race([v2.died, sleep(3000)]);
+    var sig2 = await within(v2.died);
     ok('aa-revert: aapd restarted stock, the files as they ship, the crop override gone', st.aa.state === 'original' && st.aa.aapd === 'restarted' && sig2 === 'SIGKILL' &&
         untouched(r) && cropEnv(r) === null && !armedAa(r), JSON.stringify(st.aa));
     pr.proc.kill('SIGKILL');
 
-    /* Android Auto's Patch button patches a build outside the proven list,
-     * which an install leaves. */
+    /* A build no list names: an install arms it as any other, on trial,
+     * with no conflict; Remove patch keeps it off across an install; Patch
+     * plans it again; a removal removes the plan. */
     var un = patchdUnit();
     fs.writeFileSync(un.bin, UNPROVEN);
+    var ua = hook(un, 'activate');
+    ok('another aapd build: an install arms it on trial, no conflict, the file as it is', ua.code === 0 && !ua.result.aa.conflict &&
+        /Android Auto patch armed in memory/.test(ua.result.aa.status) && aaRecord(un).enabled === true && aaRecord(un).trial === true && aaRecord(un).proven === false &&
+        aaRecord(un).args.indexOf('--unproven') < 0 && armedAa(un) && sha(un.bin) === sha(UNPROVEN) && sha(un.conf) === sha(SRCCONF), ua.out);
+    try { fs.unlinkSync(path.join(un.shm, 'aa-pending')); } catch (e) {}
     var pu = await daemon(un);
     st = await pu.next(function (m) { return m.ev === 'status'; });
-    ok('untested aapd: status original with the conflict', st.aa.state === 'original' && st.aa.conflict === 'untested aapd build', JSON.stringify(st.aa));
+    ok('another aapd build: no conflict in the status', !st.aa.conflict, JSON.stringify(st.aa));
+    pu.send({ cmd: 'aa-revert' });
+    st = await pu.next(function (m) { return aaDone(m); });
+    ok('another aapd build: Remove patch turns it off', aaRecord(un).enabled === false && aaRecord(un).by === 'user' && !armedAa(un), JSON.stringify(st.aa));
+    pu.proc.kill('SIGKILL');
+    try { fs.unlinkSync(path.join(un.shm, 'aa-pending')); } catch (e) {}
+    ua = hook(un, 'activate');
+    ok('another aapd build: an install keeps a patch the user turned off off', ua.code === 0 && /the patch was turned off/.test(ua.result.aa.status) &&
+        aaRecord(un).enabled === false && !armedAa(un), ua.out);
+    pu = await daemon(un);
+    st = await pu.next(function (m) { return m.ev === 'status'; });
     pu.send({ cmd: 'aa-apply' });
     st = await pu.next(function (m) { return aaDone(m) && m.aa.aapd; });
-    ok('untested aapd: Patch plans it (--unproven), the conflict gone, the file as it is', st.aa.pending === 'apply' && !st.aa.conflict && sha(un.bin) === sha(UNPROVEN) &&
-        aaRecord(un).args.indexOf('--unproven') >= 0 && aaRecord(un).proven === false && aaRecord(un).trial === false, JSON.stringify(st.aa));
+    ok('another aapd build: Patch plans it again, the file as it is', st.aa.pending === 'apply' && !st.aa.conflict && sha(un.bin) === sha(UNPROVEN) &&
+        aaRecord(un).enabled === true && aaRecord(un).proven === false, JSON.stringify(st.aa));
     pu.proc.kill('SIGKILL');
     fs.unlinkSync(path.join(un.shm, 'aa-pending'));
-    var ua = hook(un, 'activate');
-    ok('untested aapd once enabled: an install keeps it planned like a proven one', ua.code === 0 && !ua.result.aa.conflict && aaRecord(un).enabled === true, ua.out);
     ua = hook(un, 'deactivate');
-    ok('untested aapd: a removal removes the plan, the file as it is', ua.code === 0 && sha(un.bin) === sha(UNPROVEN) && sha(un.conf) === sha(SRCCONF) && noAaInmem(un), ua.out);
+    ok('another aapd build: a removal removes the plan, the file as it is', ua.code === 0 && sha(un.bin) === sha(UNPROVEN) && sha(un.conf) === sha(SRCCONF) && noAaInmem(un), ua.out);
 
-    /* Patch refuses what the app does not offer it for: an untested aapd
-     * that aapd.service does not start, an unusable aapd.conf. */
-    var refused = [['an untested aapd that aapd.service does not start', foreignAapd, /aapd\.service starts \/opt\/other\/aapd/], ['an aapd.conf without the 12.3" codec', function (u) {
+    /* Patch refuses what the app does not offer it for: an aapd that
+     * aapd.service does not start, an unusable aapd.conf. */
+    var refused = [['another aapd build that aapd.service does not start', foreignAapd, /aapd\.service starts \/opt\/other\/aapd/], ['an aapd.conf without the 12.3" codec', function (u) {
         fs.writeFileSync(u.conf, SRCCONF.toString('utf8').replace(/"HIGH_1080P"\s*\]/, '"NONE"]'));
     }, /aapd\.conf not usable/]];
     for (var ri = 0; ri < refused.length; ri++) {
@@ -1010,15 +1057,16 @@ async function socketTests() {
     }
 
     /* Patch while the connect-time read is still running (aapd_patch.js
-     * status slowed to 3 s) checks a read made after it arrived, not the
-     * daemon's placeholder state. */
+     * status held until the command is sent) checks a read made after it
+     * arrived, not the daemon's placeholder state. */
     var slow = patchdUnit();
     foreignAapd(slow);
-    slowStatus(slow);
+    var held = slowStatus(slow);
     var ps = await daemon(slow);
-    await sleep(1000);
+    await until(held.started);
     ps.send({ cmd: 'aa-apply' });
-    st = await ps.next(function (m) { return m.ev === 'status' && m.aa && m.aa.state === 'error'; }, 30000);
+    held.release();
+    st = await ps.next(function (m) { return m.ev === 'status' && m.aa && m.aa.state === 'error'; });
     ok('Patch during the connect-time read: refused with the foreign start, nothing written', /aapd\.service starts \/opt\/other\/aapd/.test(st.aa.reason) &&
         sha(slow.bin) === sha(UNPROVEN) && sha(slow.conf) === sha(SRCCONF) && noAaInmem(slow), JSON.stringify(st.aa));
     ps.proc.kill('SIGKILL');
@@ -1027,16 +1075,17 @@ async function socketTests() {
      * applies it, whatever the daemon's placeholder state says. */
     var sd = patchdUnit();
     hook(sd, 'activate');
-    slowStatus(sd);
+    var heldD = slowStatus(sd);
     var psd = await daemon(sd);
-    await sleep(1000);
+    await until(heldD.started);
     psd.send({ cmd: 'aa-density', value: 200 });
-    st = await psd.next(function (m) { return aaDone(m) && m.aa.dpi === 200; }, 40000);
+    heldD.release();
+    st = await psd.next(function (m) { return aaDone(m) && m.aa.dpi === 200; });
     ok('a density change during the connect-time read: planned at 200 dpi', aaRecord(sd).writes.dpi === 200 && density(fs.readFileSync(sd.runConf, 'utf8')) === 200, JSON.stringify(st.aa));
     psd.proc.kill('SIGKILL');
 
-    /* Zoom and the turn card under a conflict other than an untested build
-     * (aapd.service starting another program): each refused with the
+    /* Zoom and the turn card under a conflict (aapd.service starting
+     * another program): each refused with the
      * conflict, neither the choice nor the plan written. */
     var zc = patchdUnit();
     hook(zc, 'activate');
@@ -1302,7 +1351,7 @@ async function recoveryTests() {
         'x.startBoot(function () {',
         '  info = { state: "failed", result: "core-dump", code: "3", status: "11", run: "a1", pid: 0 }; now += 6000;',
         '  x.tick(function (res) { var n = 0; (function loop() { if (n++ > 10) { console.log(JSON.stringify({ res: res, ev: ev })); return; } now += 3000; x.tick(loop); })(); });',
-        '});'].join('\n'), path.join(PATCH, 'recovery.js')], { env: iEnv, encoding: 'utf8', timeout: 60000 });
+        '});'].join('\n'), path.join(PATCH, 'recovery.js')], { env: iEnv, encoding: 'utf8', timeout: HANG_MS });
     var wres = {};
     try { wres = JSON.parse(watcher.stdout.trim().split('\n').pop()); } catch (e) {}
     var irec = aaRecord(im);
@@ -1340,7 +1389,7 @@ async function recoveryTests() {
     fs.writeFileSync(path.join(t.d, 'var', 'aa-boot-recovery.json'), JSON.stringify({ fails: 0, unknown: 0, arm: null }));
     fs.writeFileSync(path.join(t.d, 'bootid'), 'new\n');
     var env = Object.assign({}, t.env, { WOC_BOOT_ID: path.join(t.d, 'bootid') });
-    var res = cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: env, encoding: 'utf8', timeout: 60000 });
+    var res = cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: env, encoding: 'utf8', timeout: HANG_MS });
     ok('real boot step over an earlier release\'s patch: put back byte-exact, no backup left, / read-only, then armed in memory, exit 0', res.status === 0 && untouched(t) && ro(t) &&
         /restored the original aapd in/.test(res.stdout) && /aapd boot check: armed/.test(res.stdout) && armedAa(t) && aaRecord(t).enabled === true, res.stdout + res.stderr);
     ok('real boot step: carplay\'s counter untouched', !fs.existsSync(path.join(t.d, 'var', 'boot-recovery.json')));
@@ -1350,7 +1399,7 @@ async function recoveryTests() {
     fs.writeFileSync(path.join(t.d, 'var', 'shutdown-aapd'), 'new failed crash\n');
     fs.writeFileSync(path.join(t.d, 'bootid'), 'newer\n');
     var mountsBefore = fs.readFileSync(t.mounts, 'utf8');
-    res = cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: env, encoding: 'utf8', timeout: 60000 });
+    res = cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: env, encoding: 'utf8', timeout: HANG_MS });
     ok('real boot step at the threshold of a patch in memory: turned off, the start stock, / not remounted', res.status === 0 && aaRecord(t).enabled === false &&
         aaRecord(t).by === 'recovery' && !armedAa(t) && untouched(t) && fs.readFileSync(t.mounts, 'utf8') === mountsBefore && /aapd boot check: restored/.test(res.stdout),
         res.stdout + res.stderr);
@@ -1364,6 +1413,8 @@ async function recoveryTests() {
     var qr = cp.spawnSync(process.execPath, ['-e', 'var r = require(process.argv[1]); r.restoreTarget(r.TARGETS.aapd, true, 2, function (e, o) { process.stdout.write(String(e || o)); });',
         path.join(PATCH, 'recovery.js')], { env: q.env, encoding: 'utf8' });
     fs.writeFileSync(q.conf, patchedConf);
+    /* the restore of a patch of this revision */
+    record.write(q.bin, Object.assign(record.current(q.bin), { rev: ap.PATCH_REV }));
     var qh = hook(q, 'activate');
     ok('a restore that left aapd.conf patched: an install leaves Android Auto off, says why and puts the leftover back', qr.stdout === 'restored' && sha(q.bin) === sha(SRC) &&
         sha(q.conf) === sha(SRCCONF) && noAaInmem(q) && /boot recovery removed the patch after 2 failed head-unit starts/.test((qh.result.aa || {}).status || ''),
@@ -1376,9 +1427,13 @@ async function recoveryTests() {
     patcher(cr, ['apply', '--yes']);
     var crr = cp.spawnSync(process.execPath, ['-e', 'var r = require(process.argv[1]); r.restoreTarget(r.TARGETS.aapd, true, 1, function (e, o) { process.stdout.write(String(e || o)); }, 0, "crash");',
         path.join(PATCH, 'recovery.js')], { env: cr.env, encoding: 'utf8' });
-    var crRec = record.current(cr.bin), crh = hook(cr, 'activate');
+    var crRec = record.current(cr.bin);
+    /* 0.11.0's patch is revision 2 */
+    var crRev = crRec.rev;
+    record.write(cr.bin, Object.assign({}, crRec, { rev: ap.PATCH_REV }));
+    var crh = hook(cr, 'activate');
     ok('a restore after a crash: recorded with why and the revision; an install of that revision leaves Android Auto off and says why',
-        crr.stdout === 'restored' && crRec.why === 'crash' && crRec.rev === ap.PATCH_REV && sha(cr.bin) === sha(SRC) && noAaInmem(cr) &&
+        crr.stdout === 'restored' && crRec.why === 'crash' && crRev === 2 && sha(cr.bin) === sha(SRC) && noAaInmem(cr) &&
         /removed the patch after the patched aapd crashed/.test((crh.result.aa || {}).status || ''), crr.stdout + crr.stderr + ' ' + JSON.stringify(crh.result));
     record.write(cr.bin, { patched: false, by: 'recovery', at: crRec.at, fails: 1, why: 'crash' });
     crh = hook(cr, 'activate');
@@ -1397,7 +1452,7 @@ async function recoveryTests() {
     var chOut = '';
     ch.stdout.on('data', function (d) { chOut += d; });
     ch.stderr.on('data', function (d) { chOut += d; });
-    for (var wait = 0; wait < 300 && !fs.existsSync(remounting); wait++) await sleep(50);
+    await until(function () { return fs.existsSync(remounting); });
     ch.kill('SIGTERM');
     await new Promise(function (res2) { ch.on('exit', res2); });
     ok('boot step: SIGTERM mid-put-back lets it finish, / read-only', fs.existsSync(remounting) && sha(u.bin) === sha(SRC) && ro(u), chOut);
@@ -1438,7 +1493,7 @@ async function recoveryTests() {
         fs.writeFileSync(path.join(vs, 'aa-boot-recovery.json'), JSON.stringify({ fails: 0, unknown: 0, prev: null, arm: { boot: 'old', crashes: c[0] } }));
         fs.writeFileSync(path.join(xu.d, 'bootid'), 'new\n');
         var e = Object.assign({}, xu.env, { WOC_BOOT_ID: path.join(xu.d, 'bootid') });
-        cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'carplay'], { env: e, encoding: 'utf8', timeout: 30000 });
+        cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'carplay'], { env: e, encoding: 'utf8', timeout: HANG_MS });
         var cst = JSON.parse(fs.readFileSync(path.join(vs, 'boot-recovery.json'), 'utf8'));
         ok(c[0] ? 'an unrecorded end after aapd crashed in that boot is not carplay\'s failure'
             : c[3] ? 'a second unrecorded end in a row with no aapd crash counts one for carplay' : 'a first unrecorded end with no aapd crash is unknown for carplay (power lost)',
@@ -1516,7 +1571,7 @@ function headUnitTests() {
     headUnit.set(headUnit.NONE);
     fs.writeFileSync(path.join(b.d, 'bootid'), 'new\n');
     var env = Object.assign({}, b.env, { WOC_BOOT_ID: path.join(b.d, 'bootid') });
-    r = cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: env, encoding: 'utf8', timeout: 60000 });
+    r = cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: env, encoding: 'utf8', timeout: HANG_MS });
     ok('no hwvariant=: the boot step restores aapd and aapd.conf before aapd starts, below the threshold, / read-only, nothing armed', r.status === 0 &&
         sha(b.bin) === sha(SRC) && sha(b.conf) === sha(SRCCONF) && ro(b) && /aapd boot check: restored/.test(r.stdout) && !armedAa(b), r.stdout + r.stderr);
 
@@ -1533,7 +1588,7 @@ function headUnitTests() {
     function boot(id) {
         fs.writeFileSync(path.join(c.d, 'bootid'), id + '\n');
         try { fs.unlinkSync(mcalls); } catch (e) {}
-        return cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: bootEnv, encoding: 'utf8', timeout: 60000 });
+        return cp.spawnSync(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: bootEnv, encoding: 'utf8', timeout: HANG_MS });
     }
     r = boot('b1');
     ok('no hwvariant=, aapd.conf changed by another tool: aapd restored, the conf left', r.status === 0 && sha(c.bin) === sha(SRC) && sha(c.conf) === conf2 &&
@@ -1572,6 +1627,29 @@ function headUnitTests() {
     try { zMark = JSON.parse(fs.readFileSync(path.join(z.d, 'var', 'highf-repatched'), 'utf8')); } catch (e) {}
     ok('HIGH F, untrusted aapd backup: Android Auto stays off, left for the next install', r.code === 0 && sha(z.bin) === sha(SRC) &&
         !marker(z, 'aa-pending') && !zMark.aa && !aaRecord(z), JSON.stringify(r.result));
+
+    /* A firmware update replaces aapd or aapd.conf (another inode and
+     * modification time) after the patch was turned off: Remove patch's
+     * choice holds for the new files too; boot recovery's held only for the
+     * files it turned off, so the new ones are planned again, on trial. */
+    headUnit.set(headUnit.HIGH);
+    [['user', 'aapd'], ['user', 'aapd.conf'], ['recovery', 'aapd'], ['recovery', 'aapd.conf']].forEach(function (c) {
+        var w = patchdUnit();
+        hook(w, 'activate');
+        var on = aaRecord(w), f = c[1] === 'aapd' ? w.bin : w.conf, oldIno = fs.statSync(f).ino;
+        var off = Object.assign({}, on, { enabled: false, by: c[0] }, c[0] === 'recovery' ? { fails: 1, why: 'boot', rev: ap.PATCH_REV } : {});
+        fs.writeFileSync(path.join(w.d, 'var', 'inmem-aapd.json'), JSON.stringify(off) + '\n');
+        fs.writeFileSync(f + '.fw', fs.readFileSync(f), { mode: fs.statSync(f).mode & 0o777 });
+        var t = new Date(Date.now() + 3600000);
+        fs.utimesSync(f + '.fw', t, t);
+        fs.renameSync(f + '.fw', f);
+        r = hook(w, 'activate');
+        var now = aaRecord(w);
+        ok('Android Auto turned off by ' + c[0] + ', then a firmware update replaced ' + c[1] + ': an install ' + (c[0] === 'user' ? 'leaves it off' : 'plans it again on trial'),
+            !!on && on.enabled === true && fs.statSync(f).ino !== oldIno && r.code === 0 && !!now &&
+            (c[0] === 'user' ? now.enabled === false && now.by === 'user' && /turned off/.test(r.result.aa.status)
+                : now.enabled === true && now.trial === true && !r.result.aa.conflict), JSON.stringify([r.result, now]));
+    });
     headUnit.set(headUnit.HIGH);
 }
 

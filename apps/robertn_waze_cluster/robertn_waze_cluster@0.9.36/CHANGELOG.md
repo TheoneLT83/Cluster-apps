@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.36
+
+robertnisipeanu/idrive-apps' Maps on cluster 0.6.13 and 0.6.14: CarPlay's and Android Auto's Status says why a patch
+failed, in the words the conflict uses, and a build waze-on-cluster cannot patch shows its reason instead of
+"Untested version". Requires waze-on-cluster 0.14.6.
+
 ## 0.9.35
 
 The cluster renderer's client from cluster-render 0.6.13, which knows its `preload` and `others_fps` layer
