@@ -148,6 +148,9 @@
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
     "Real speed on cluster": "Real speed on cluster",
-    "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups BMW"
+    "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups BMW",
+    "Phone maps": "Mapas do telemóvel",
+    "Picks the readings for what the car is doing": "Escolhe os dados conforme o que o carro está a fazer",
+    "As the HUD's, with the cluster's items": "Como no HUD, com os itens do quadrante"
   }
 }

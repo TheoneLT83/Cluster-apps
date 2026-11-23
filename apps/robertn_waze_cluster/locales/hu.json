@@ -148,6 +148,9 @@
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
     "Real speed on cluster": "Real speed on cluster",
-    "Keep HUD map over BMW's pop-ups": "Térkép megtartása a HUD-on a BMW felugró ablakai felett"
+    "Keep HUD map over BMW's pop-ups": "Térkép megtartása a HUD-on a BMW felugró ablakai felett",
+    "Phone maps": "Telefonos térképek",
+    "Picks the readings for what the car is doing": "Az értékeket az autó éppen végzett dolga szerint választja",
+    "As the HUD's, with the cluster's items": "Mint a HUD-nál, a műszerfal elemeivel"
   }
 }

@@ -152,7 +152,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "إبقاء خريطة HUD فوق النوافذ المنبثقة من BMW"
+   "Keep HUD map over BMW's pop-ups": "إبقاء خريطة HUD فوق النوافذ المنبثقة من BMW",
+   "Phone maps": "خرائط الهاتف",
+   "Picks the readings for what the car is doing": "يختار القراءات حسب ما تفعله السيارة",
+   "As the HUD's, with the cluster's items": "مثل شاشة HUD، بعناصر لوحة العدادات"
   }
  },
  {
@@ -306,7 +309,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Ponechat mapu na HUD přes vyskakovací okna BMW"
+   "Keep HUD map over BMW's pop-ups": "Ponechat mapu na HUD přes vyskakovací okna BMW",
+   "Phone maps": "Mapy z telefonu",
+   "Picks the readings for what the car is doing": "Vybírá údaje podle toho, co auto dělá",
+   "As the HUD's, with the cluster's items": "Jako u HUD, s položkami přístrojového štítu"
   }
  },
  {
@@ -460,7 +466,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Behold kort i HUD over BMW's pop-ups"
+   "Keep HUD map over BMW's pop-ups": "Behold kort i HUD over BMW's pop-ups",
+   "Phone maps": "Telefonens kort",
+   "Picks the readings for what the car is doing": "Vælger visningerne efter, hvad bilen gør",
+   "As the HUD's, with the cluster's items": "Som HUD'ens, med instrumentpanelets punkter"
   }
  },
  {
@@ -614,7 +623,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Karte im HUD vor BMW-Pop-ups behalten"
+   "Keep HUD map over BMW's pop-ups": "Karte im HUD vor BMW-Pop-ups behalten",
+   "Phone maps": "Handy-Karten",
+   "Picks the readings for what the car is doing": "Wählt die Werte danach, was das Auto gerade tut",
+   "As the HUD's, with the cluster's items": "Wie beim HUD, mit den Werten des Kombiinstruments"
   }
  },
  {
@@ -768,7 +780,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Διατήρηση χάρτη στο HUD πάνω από τα αναδυόμενα της BMW"
+   "Keep HUD map over BMW's pop-ups": "Διατήρηση χάρτη στο HUD πάνω από τα αναδυόμενα της BMW",
+   "Phone maps": "Χάρτες τηλεφώνου",
+   "Picks the readings for what the car is doing": "Επιλέγει τις ενδείξεις ανάλογα με το τι κάνει το αυτοκίνητο",
+   "As the HUD's, with the cluster's items": "Όπως στο HUD, με τα στοιχεία του πίνακα οργάνων"
   }
  },
  {
@@ -922,7 +937,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Mantener mapa en el HUD sobre ventanas emergentes de BMW"
+   "Keep HUD map over BMW's pop-ups": "Mantener mapa en el HUD sobre ventanas emergentes de BMW",
+   "Phone maps": "Mapas del teléfono",
+   "Picks the readings for what the car is doing": "Elige los datos según lo que hace el auto",
+   "As the HUD's, with the cluster's items": "Como en el HUD, con los datos del tablero"
   }
  },
  {
@@ -1076,7 +1094,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Mantener mapa en el HUD sobre ventanas emergentes de BMW"
+   "Keep HUD map over BMW's pop-ups": "Mantener mapa en el HUD sobre ventanas emergentes de BMW",
+   "Phone maps": "Mapas del móvil",
+   "Picks the readings for what the car is doing": "Elige los datos según lo que hace el coche",
+   "As the HUD's, with the cluster's items": "Como en el HUD, con los datos del cuadro"
   }
  },
  {
@@ -1230,7 +1251,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Pidä HUD-kartta BMW:n ponnahdusikkunoiden päällä"
+   "Keep HUD map over BMW's pop-ups": "Pidä HUD-kartta BMW:n ponnahdusikkunoiden päällä",
+   "Phone maps": "Puhelimen kartat",
+   "Picks the readings for what the car is doing": "Valitsee lukemat sen mukaan, mitä auto tekee",
+   "As the HUD's, with the cluster's items": "Kuten HUD:ssa, mittariston tiedoilla"
   }
  },
  {
@@ -1384,7 +1408,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les fenêtres contextuelles BMW"
+   "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les fenêtres contextuelles BMW",
+   "Phone maps": "Cartes du téléphone",
+   "Picks the readings for what the car is doing": "Choisit les valeurs selon ce que fait la voiture",
+   "As the HUD's, with the cluster's items": "Comme pour le HUD, avec les valeurs du tableau de bord"
   }
  },
  {
@@ -1538,7 +1565,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les pop-up BMW"
+   "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les pop-up BMW",
+   "Phone maps": "Cartes du téléphone",
+   "Picks the readings for what the car is doing": "Choisit les valeurs selon ce que fait la voiture",
+   "As the HUD's, with the cluster's items": "Comme pour le HUD, avec les valeurs du combiné"
   }
  },
  {
@@ -1692,7 +1722,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "השארת המפה ב-HUD מעל החלונות הקופצים של BMW"
+   "Keep HUD map over BMW's pop-ups": "השארת המפה ב-HUD מעל החלונות הקופצים של BMW",
+   "Phone maps": "מפות הטלפון",
+   "Picks the readings for what the car is doing": "בוחר את הנתונים לפי מה שהרכב עושה",
+   "As the HUD's, with the cluster's items": "כמו ב-HUD, עם פריטי לוח המחוונים"
   }
  },
  {
@@ -1846,7 +1879,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Térkép megtartása a HUD-on a BMW felugró ablakai felett"
+   "Keep HUD map over BMW's pop-ups": "Térkép megtartása a HUD-on a BMW felugró ablakai felett",
+   "Phone maps": "Telefonos térképek",
+   "Picks the readings for what the car is doing": "Az értékeket az autó éppen végzett dolga szerint választja",
+   "As the HUD's, with the cluster's items": "Mint a HUD-nál, a műszerfal elemeivel"
   }
  },
  {
@@ -2000,7 +2036,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Pertahankan peta di HUD di atas pop-up BMW"
+   "Keep HUD map over BMW's pop-ups": "Pertahankan peta di HUD di atas pop-up BMW",
+   "Phone maps": "Peta ponsel",
+   "Picks the readings for what the car is doing": "Memilih data sesuai apa yang dilakukan mobil",
+   "As the HUD's, with the cluster's items": "Seperti HUD, dengan item panel instrumen"
   }
  },
  {
@@ -2154,7 +2193,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Mantieni la mappa sull'HUD sopra i pop-up BMW"
+   "Keep HUD map over BMW's pop-ups": "Mantieni la mappa sull'HUD sopra i pop-up BMW",
+   "Phone maps": "Mappe del telefono",
+   "Picks the readings for what the car is doing": "Sceglie i valori in base a cosa fa l'auto",
+   "As the HUD's, with the cluster's items": "Come per l'HUD, con le voci del quadro strumenti"
   }
  },
  {
@@ -2308,7 +2350,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "HUDの地図をBMWのポップアップより優先"
+   "Keep HUD map over BMW's pop-ups": "HUDの地図をBMWのポップアップより優先",
+   "Phone maps": "スマホの地図",
+   "Picks the readings for what the car is doing": "車の状況に合わせて表示を選びます",
+   "As the HUD's, with the cluster's items": "HUDと同じ、メーターの項目で"
   }
  },
  {
@@ -2462,7 +2507,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "BMW 팝업 위에 HUD 지도 유지"
+   "Keep HUD map over BMW's pop-ups": "BMW 팝업 위에 HUD 지도 유지",
+   "Phone maps": "휴대폰 지도",
+   "Picks the readings for what the car is doing": "차의 상태에 맞춰 표시를 고릅니다",
+   "As the HUD's, with the cluster's items": "HUD와 같게, 계기판 항목으로"
   }
  },
  {
@@ -2616,7 +2664,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Behold kart i HUD over BMWs popup-vinduer"
+   "Keep HUD map over BMW's pop-ups": "Behold kart i HUD over BMWs popup-vinduer",
+   "Phone maps": "Telefonens kart",
+   "Picks the readings for what the car is doing": "Velger visningene etter hva bilen gjør",
+   "As the HUD's, with the cluster's items": "Som HUD-en, med instrumentpanelets punkter"
   }
  },
  {
@@ -2772,7 +2823,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Kaart in HUD boven BMW-pop-ups houden"
+   "Keep HUD map over BMW's pop-ups": "Kaart in HUD boven BMW-pop-ups houden",
+   "Phone maps": "Kaarten van de telefoon",
+   "Picks the readings for what the car is doing": "Kiest de waarden naar wat de auto doet",
+   "As the HUD's, with the cluster's items": "Zoals bij de HUD, met de items van het instrumentenpaneel"
   }
  },
  {
@@ -2926,7 +2980,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Zachowaj mapę na HUD nad wyskakującymi oknami BMW"
+   "Keep HUD map over BMW's pop-ups": "Zachowaj mapę na HUD nad wyskakującymi oknami BMW",
+   "Phone maps": "Mapy z telefonu",
+   "Picks the readings for what the car is doing": "Wybiera odczyty zależnie od tego, co robi auto",
+   "As the HUD's, with the cluster's items": "Jak w HUD, z pozycjami zestawu wskaźników"
   }
  },
  {
@@ -3080,7 +3137,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups da BMW"
+   "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups da BMW",
+   "Phone maps": "Mapas do celular",
+   "Picks the readings for what the car is doing": "Escolhe os dados conforme o que o carro está fazendo",
+   "As the HUD's, with the cluster's items": "Como no HUD, com os itens do painel"
   }
  },
  {
@@ -3234,7 +3294,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups BMW"
+   "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups BMW",
+   "Phone maps": "Mapas do telemóvel",
+   "Picks the readings for what the car is doing": "Escolhe os dados conforme o que o carro está a fazer",
+   "As the HUD's, with the cluster's items": "Como no HUD, com os itens do quadrante"
   }
  },
  {
@@ -3388,7 +3451,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Păstrare hartă pe HUD peste ferestrele pop-up BMW"
+   "Keep HUD map over BMW's pop-ups": "Păstrare hartă pe HUD peste ferestrele pop-up BMW",
+   "Phone maps": "Hărți din telefon",
+   "Picks the readings for what the car is doing": "Alege valorile după ce face mașina",
+   "As the HUD's, with the cluster's items": "Ca la HUD, cu elementele bordului"
   }
  },
  {
@@ -3542,7 +3608,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Оставлять карту на HUD поверх всплывающих окон BMW"
+   "Keep HUD map over BMW's pop-ups": "Оставлять карту на HUD поверх всплывающих окон BMW",
+   "Phone maps": "Карты телефона",
+   "Picks the readings for what the car is doing": "Выбирает показания по тому, что делает машина",
+   "As the HUD's, with the cluster's items": "Как у HUD, с пунктами приборной панели"
   }
  },
  {
@@ -3696,7 +3765,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Ponechať mapu na HUD nad kontextovými oknami BMW"
+   "Keep HUD map over BMW's pop-ups": "Ponechať mapu na HUD nad kontextovými oknami BMW",
+   "Phone maps": "Mapy z telefónu",
+   "Picks the readings for what the car is doing": "Vyberá údaje podľa toho, čo auto robí",
+   "As the HUD's, with the cluster's items": "Ako pri HUD, s položkami prístrojového štítu"
   }
  },
  {
@@ -3850,7 +3922,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Ohrani zemljevid na HUD nad pojavnimi okni BMW"
+   "Keep HUD map over BMW's pop-ups": "Ohrani zemljevid na HUD nad pojavnimi okni BMW",
+   "Phone maps": "Zemljevidi telefona",
+   "Picks the readings for what the car is doing": "Izbere podatke glede na to, kaj počne avto",
+   "As the HUD's, with the cluster's items": "Kot pri HUD, s postavkami armaturne plošče"
   }
  },
  {
@@ -4004,7 +4079,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Behåll karta i HUD över BMW:s popup-fönster"
+   "Keep HUD map over BMW's pop-ups": "Behåll karta i HUD över BMW:s popup-fönster",
+   "Phone maps": "Telefonens kartor",
+   "Picks the readings for what the car is doing": "Väljer värdena efter vad bilen gör",
+   "As the HUD's, with the cluster's items": "Som HUD:ens, med instrumentpanelens punkter"
   }
  },
  {
@@ -4158,7 +4236,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "คงแผนที่บน HUD ไว้เหนือป๊อปอัปของ BMW"
+   "Keep HUD map over BMW's pop-ups": "คงแผนที่บน HUD ไว้เหนือป๊อปอัปของ BMW",
+   "Phone maps": "แผนที่โทรศัพท์",
+   "Picks the readings for what the car is doing": "เลือกค่าที่แสดงตามสิ่งที่รถกำลังทำ",
+   "As the HUD's, with the cluster's items": "เหมือน HUD ด้วยรายการของหน้าปัด"
   }
  },
  {
@@ -4312,7 +4393,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "HUD haritasını BMW açılır pencerelerinin üstünde tut"
+   "Keep HUD map over BMW's pop-ups": "HUD haritasını BMW açılır pencerelerinin üstünde tut",
+   "Phone maps": "Telefon haritaları",
+   "Picks the readings for what the car is doing": "Değerleri aracın yaptığına göre seçer",
+   "As the HUD's, with the cluster's items": "HUD'daki gibi, gösterge panelinin öğeleriyle"
   }
  },
  {
@@ -4466,7 +4550,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Залишати карту на HUD поверх спливних вікон BMW"
+   "Keep HUD map over BMW's pop-ups": "Залишати карту на HUD поверх спливних вікон BMW",
+   "Phone maps": "Карти телефону",
+   "Picks the readings for what the car is doing": "Обирає показники за тим, що робить авто",
+   "As the HUD's, with the cluster's items": "Як у HUD, з пунктами приладової панелі"
   }
  },
  {
@@ -4620,7 +4707,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "Giữ bản đồ trên HUD phía trên cửa sổ bật lên của BMW"
+   "Keep HUD map over BMW's pop-ups": "Giữ bản đồ trên HUD phía trên cửa sổ bật lên của BMW",
+   "Phone maps": "Bản đồ điện thoại",
+   "Picks the readings for what the car is doing": "Chọn thông số theo việc xe đang làm",
+   "As the HUD's, with the cluster's items": "Như HUD, với các mục của cụm đồng hồ"
   }
  },
  {
@@ -4776,7 +4866,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "HUD 地图保持在 BMW 弹窗之上"
+   "Keep HUD map over BMW's pop-ups": "HUD 地图保持在 BMW 弹窗之上",
+   "Phone maps": "手机地图",
+   "Picks the readings for what the car is doing": "根据车辆当前状态选择显示内容",
+   "As the HUD's, with the cluster's items": "与 HUD 相同，使用仪表盘的项目"
   }
  },
  {
@@ -4932,7 +5025,10 @@ module.exports = [
    "Battery kW usage": "Battery kW usage",
    "Real speed": "Real speed",
    "Real speed on cluster": "Real speed on cluster",
-   "Keep HUD map over BMW's pop-ups": "HUD 地圖保持在 BMW 彈出視窗之上"
+   "Keep HUD map over BMW's pop-ups": "HUD 地圖保持在 BMW 彈出視窗之上",
+   "Phone maps": "手機地圖",
+   "Picks the readings for what the car is doing": "依車輛目前狀態選擇顯示內容",
+   "As the HUD's, with the cluster's items": "與 HUD 相同，使用儀表板的項目"
   }
  }
 ];

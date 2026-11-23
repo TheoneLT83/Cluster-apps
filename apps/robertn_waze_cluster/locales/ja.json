@@ -148,6 +148,9 @@
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
     "Real speed on cluster": "Real speed on cluster",
-    "Keep HUD map over BMW's pop-ups": "HUDの地図をBMWのポップアップより優先"
+    "Keep HUD map over BMW's pop-ups": "HUDの地図をBMWのポップアップより優先",
+    "Phone maps": "スマホの地図",
+    "Picks the readings for what the car is doing": "車の状況に合わせて表示を選びます",
+    "As the HUD's, with the cluster's items": "HUDと同じ、メーターの項目で"
   }
 }

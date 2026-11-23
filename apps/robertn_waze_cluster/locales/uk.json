@@ -148,6 +148,9 @@
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
     "Real speed on cluster": "Real speed on cluster",
-    "Keep HUD map over BMW's pop-ups": "Залишати карту на HUD поверх спливних вікон BMW"
+    "Keep HUD map over BMW's pop-ups": "Залишати карту на HUD поверх спливних вікон BMW",
+    "Phone maps": "Карти телефону",
+    "Picks the readings for what the car is doing": "Обирає показники за тим, що робить авто",
+    "As the HUD's, with the cluster's items": "Як у HUD, з пунктами приладової панелі"
   }
 }

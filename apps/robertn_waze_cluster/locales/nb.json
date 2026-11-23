@@ -148,6 +148,9 @@
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
     "Real speed on cluster": "Real speed on cluster",
-    "Keep HUD map over BMW's pop-ups": "Behold kart i HUD over BMWs popup-vinduer"
+    "Keep HUD map over BMW's pop-ups": "Behold kart i HUD over BMWs popup-vinduer",
+    "Phone maps": "Telefonens kart",
+    "Picks the readings for what the car is doing": "Velger visningene etter hva bilen gjør",
+    "As the HUD's, with the cluster's items": "Som HUD-en, med instrumentpanelets punkter"
   }
 }

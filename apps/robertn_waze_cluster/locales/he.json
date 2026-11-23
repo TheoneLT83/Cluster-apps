@@ -148,6 +148,9 @@
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
     "Real speed on cluster": "Real speed on cluster",
-    "Keep HUD map over BMW's pop-ups": "השארת המפה ב-HUD מעל החלונות הקופצים של BMW"
+    "Keep HUD map over BMW's pop-ups": "השארת המפה ב-HUD מעל החלונות הקופצים של BMW",
+    "Phone maps": "מפות הטלפון",
+    "Picks the readings for what the car is doing": "בוחר את הנתונים לפי מה שהרכב עושה",
+    "As the HUD's, with the cluster's items": "כמו ב-HUD, עם פריטי לוח המחוונים"
   }
 }

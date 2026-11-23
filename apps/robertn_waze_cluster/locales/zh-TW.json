@@ -150,6 +150,9 @@
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
     "Real speed on cluster": "Real speed on cluster",
-    "Keep HUD map over BMW's pop-ups": "HUD 地圖保持在 BMW 彈出視窗之上"
+    "Keep HUD map over BMW's pop-ups": "HUD 地圖保持在 BMW 彈出視窗之上",
+    "Phone maps": "手機地圖",
+    "Picks the readings for what the car is doing": "依車輛目前狀態選擇顯示內容",
+    "As the HUD's, with the cluster's items": "與 HUD 相同，使用儀表板的項目"
   }
 }

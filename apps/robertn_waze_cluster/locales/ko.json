@@ -148,6 +148,9 @@
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
     "Real speed on cluster": "Real speed on cluster",
-    "Keep HUD map over BMW's pop-ups": "BMW 팝업 위에 HUD 지도 유지"
+    "Keep HUD map over BMW's pop-ups": "BMW 팝업 위에 HUD 지도 유지",
+    "Phone maps": "휴대폰 지도",
+    "Picks the readings for what the car is doing": "차의 상태에 맞춰 표시를 고릅니다",
+    "As the HUD's, with the cluster's items": "HUD와 같게, 계기판 항목으로"
   }
 }

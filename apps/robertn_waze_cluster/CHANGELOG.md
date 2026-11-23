@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.41
+
+New look, the same functions: the selected page has a short line under its name; buttons with round corners, filled
+in the theme's colour when chosen, with dark words on Ice White and Night Amber; Cluster / HUD, Show on and Turn
+View's Near a turn / Always as one bar each. The Display page's switches have an icon each and a thin line under them,
+across the whole panel; the readings to pick are numbered in the order they show, the lines after their heading say
+how many are picked, and Auto is a switch next to it with what it does. Maps lists CarPlay and Android Auto with
+their patch's state (a tap picks one for the buttons under them). The pictures' map is a dark one with grey roads.
+
 ## 0.9.40
 
 The cluster's info bar has Auto too (its last button on the Display page's Cluster tab): engine speed and boost while

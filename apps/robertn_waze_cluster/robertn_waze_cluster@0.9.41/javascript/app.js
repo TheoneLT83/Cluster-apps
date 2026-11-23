@@ -46,6 +46,7 @@ const { Units } = require('./units.js');
 const { TurnSignals } = require('./turn_signals.js');
 const { ProfileSync, sessionReader } = require('./profile_sync.js');
 const qrcodegen = require('./qrcodegen.js');
+const icons = require('./icons.js');
 
 const { t } = i18n;
 const W = 1600, H = 520;
@@ -54,6 +55,9 @@ const PAGES = ['Maps', 'Display', 'Turn View', 'Log'];
 const HUD_ITEMS = [['hudOn', 'Displays on HUD'], ['hudTurn', 'Turn signals'], ['hudGear', 'Gear'], ['realSpeed', 'Real speed on HUD'],
     ['greenLightHud', 'Green light alert'], ['hudNight', 'Dimmer at night']];
 const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert'], ['clusterPanel', 'Info bar'], ['sideView', 'Side view']];
+/* The icon in front of each switch (icons.js), by its setting. */
+const ICON = { hudOn: 'hud', hudTurn: 'turn', hudGear: 'gear', realSpeed: 'speed', greenLightHud: 'light', hudNight: 'night', hudKeep: 'layers',
+    map: 'map', guide: 'guide', greenLightCluster: 'light', clusterPanel: 'bar', sideView: 'camera', own: 'person' };
 /* Side view: the side signalled, its camera on the cluster (waze-on-cluster's Side view copy) while Turn View is off; kept SIDE_HOLD_MS after
  * the signal (its blink and a lane change's short taps). Hazards: nothing. */
 const SIDE_HOLD_MS = 1500;
@@ -499,9 +503,62 @@ mgu.run({
         const line = (cv, th, s, x, y, w, color) => { if (s) cv.text(fit(cv, s, 24, w, 'label'), x, y, 24, color || th.text, { font: 'label' }); };
         const toggle = (cv, th, x, y, on, run, key, off) => {
             const S = th.sel || th.accent;
-            cv.roundRect(x, y, 76, 38, 19, on ? withAlpha(S, off ? 0.4 : 1) : withAlpha('#ffffff', off ? 0.06 : 0.16));
-            cv.circle(on ? x + 57 : x + 19, y + 19, 14, off ? withAlpha('#ffffff', 0.4) : '#ffffff');
-            if (!off && cv.own) cv.target(x - 8, y - 6, 92, 50, run, key, 19);
+            cv.roundRect(x, y, 56, 30, 15, on ? withAlpha(S, off ? 0.4 : 1) : withAlpha('#ffffff', off ? 0.08 : 0.2));
+            cv.circle(on ? x + 41 : x + 15, y + 15, 11, off ? withAlpha('#ffffff', 0.4) : on ? G.onColour(S) : '#d6d7da');
+            if (!off && cv.own) cv.target(x - 8, y - 10, 72, 50, run, key, 19);
+        };
+        /* A switch's row, w wide from x, h high from y: its icon, its words (a smaller second line under them: note
+         * { text, color }), the switch on the right and a thin line under the row. */
+        const switchRow = (cv, th, x, y, w, h, icon, text, on, run, key, off, note) => {
+            icons.draw(cv, icon, x + 14, y + h / 2, off ? withAlpha(th.dim, 0.6) : th.dim);
+            const tx = x + 42, tw = w - 42 - 72;
+            if (note) {
+                cv.text(fit(cv, text, 22, tw, 'label'), tx, y + h / 2 - 2, 22, off ? th.dim : th.text, { font: 'label' });
+                cv.text(fit(cv, note.text, 15, tw, 'label'), tx, y + h / 2 + 17, 15, note.color, { font: 'label' });
+            } else cv.text(fit(cv, text, 22, tw, 'label'), tx, y + h / 2 + 8, 22, off ? th.dim : th.text, { font: 'label' });
+            toggle(cv, th, x + w - 56, y + (h - 30) / 2, on, run, key, off);
+            cv.fillRect(x, y + h - 1, w, 1, withAlpha('#ffffff', 0.08));
+        };
+        /* A section's heading: its words in capitals; returns the x after them. */
+        const heading = (cv, th, s, x, y) => {
+            const s2 = String(s).toUpperCase(), opt = { font: 'bold', spacing: 2.5 };
+            cv.text(s2, x, y, 17, th.dim, opt);
+            return x + cv.textWidth(s2, 17, opt);
+        };
+        /* How many of the most are on: a short line each, the ones on in the theme's colour, then "n/max". */
+        const countLines = (cv, th, x, y, n, max) => {
+            for (let i = 0; i < max; i++) cv.roundRect(x + i * 19, y - 7, 15, 3, 1.5, i < n ? th.sel || th.accent : withAlpha('#ffffff', 0.2));
+            const tx = x + max * 19 + 6;
+            cv.text(n + '/' + max, tx, y, 17, th.dim, { font: 'label' });
+            return tx + cv.textWidth(n + '/' + max, 17, { font: 'label' });
+        };
+        /* Auto as a small switch in a pill, its words after it; returns the x after them. */
+        const autoPill = (cv, th, x, y, on, run, key, off, words) => {
+            const S = th.sel || th.accent, opt = { font: 'bold', spacing: 1.5 }, label = t('Auto').toUpperCase();
+            const lw = cv.textWidth(label, 14, opt), w = lw + 30 + 46;
+            if (cv.own) {
+                cv.roundRect(x, y - 16, w, 32, 16, withAlpha('#ffffff', 0.09));
+                cv.strokeRoundRect(x, y - 16, w, 32, 16, 1.5, on && !off ? S : withAlpha('#ffffff', 0.2));
+                cv.text(label, x + 14, y + 5, 14, off ? th.dim : th.text, opt);
+                const sx = x + w - 46;
+                cv.roundRect(sx, y - 11, 40, 22, 11, on ? withAlpha(S, off ? 0.4 : 1) : withAlpha('#ffffff', off ? 0.08 : 0.2));
+                cv.circle(on ? sx + 29 : sx + 11, y, 8, off ? withAlpha('#ffffff', 0.4) : on ? G.onColour(S) : '#d6d7da');
+                if (!off) cv.target(x, y - 20, w, 40, run, key);
+            }
+            if (words) cv.text(words, x + w + 14, y + 5, 15, th.dim, { font: 'label' });
+            return x + w;
+        };
+        /* The pictures' map, in x, y, w, h: dark ground, grey roads, the route in the theme's second colour and the car's arrow;
+         * a(alpha) dims it (the HUD's brightness). */
+        const drawMap = (cv, th, x, y, w, h, a) => {
+            cv.roundRect(x, y, w, h, 8, withAlpha('#0d1014', a(1)));
+            const road = (x0, y0, x1, y1, lw, c) => cv.line(x + x0 * w, y + y0 * h, x + x1 * w, y + y1 * h, lw, withAlpha(c, a(1)));
+            const s = Math.max(1, Math.min(w, h) / 60);
+            [[0, 0.2, 1, 0.33, 3], [0, 0.74, 1, 0.6, 3], [0.23, 0, 0.32, 1, 3], [0.77, 0, 0.63, 1, 3]].forEach(([x0, y0, x1, y1, lw]) => road(x0, y0, x1, y1, lw * s, '#2b2f36'));
+            road(0, 0.48, 1, 0.52, 5 * s, '#3a3f47');
+            road(0.5, 0, 0.47, 1, 5 * s, '#3a3f47');
+            cv.polyline([[x + 0.48 * w, y + h * 0.98], [x + 0.49 * w, y + h * 0.5], [x + 0.72 * w, y + h * 0.33]], 4 * s, withAlpha(th.accent2 || '#81c4ff', a(1)));
+            cv.quad([[x + 0.48 * w, y + h * 0.8], [x + 0.48 * w - 4 * s, y + h * 0.8 + 9 * s], [x + 0.48 * w + 4 * s, y + h * 0.8 + 9 * s], [x + 0.48 * w, y + h * 0.8]], withAlpha('#ffffff', a(1)));
         };
         // drawArrow at an offset: hud_overlay draws from 0,0
         const drawArrowAt = (cv, x, y, w, h, dir, c) => drawArrow({
@@ -540,13 +597,7 @@ mgu.run({
             const m = mapNow(), mx = x + m.x * k, my = y + m.y * k, mw = m.w * k, mh = m.h * k;
             const on = ctl.hudOn() === true, br = (ctl.hudBrightness() || 100) / 100;
             const a = (v) => (on ? v * (0.25 + 0.75 * br) : v * 0.25);
-            cv.roundRect(mx, my, mw, mh, 8, withAlpha('#1c3a2c', a(1)));
-            [[0.1, 0.25, 0.9, 0.35], [0.0, 0.7, 1.0, 0.62], [0.3, 0.0, 0.42, 1.0], [0.72, 0.0, 0.6, 1.0]].forEach(([x0, y0, x1, y1]) =>
-                cv.line(mx + x0 * mw, my + y0 * mh, mx + x1 * mw, my + y1 * mh, 3, withAlpha('#7d8b92', a(0.9))));
-            cv.polyline([[mx + 0.5 * mw, my + mh * 0.95], [mx + 0.5 * mw, my + mh * 0.55], [mx + 0.39 * mw, my + mh * 0.5],
-                [mx + 0.36 * mw, my + mh * 0.1]], 6, withAlpha('#7ee05a', a(1)));
-            cv.quad([[mx + 0.5 * mw, my + mh * 0.78], [mx + 0.47 * mw, my + mh * 0.9], [mx + 0.53 * mw, my + mh * 0.9], [mx + 0.5 * mw, my + mh * 0.78]],
-                withAlpha('#ff4040', a(1)));
+            drawMap(cv, th, mx, my, mw, mh, a);
             // on the Display page, the arrows blink one side then the other while the car's are off
             const real = turns.state(), cyc = Date.now() % 3000;
             const st = demoTurns && !real.left && !real.right ? { left: cyc < 1500, right: cyc >= 1500 } : real;
@@ -578,37 +629,56 @@ mgu.run({
         let dispTab = 'cluster';
         let demoTurns = false;         // hudPicture's arrows blink by themselves (the Display page)           // the Display page's tab: 'hud' or 'cluster' (the HUD's only with one)
         function drawMaps(cv, th) {
-            const ex = G.pageBottom(cv) - G.BOTTOM;
+            const ex = G.pageBottom(cv) - G.BOTTOM, S = th.sel || th.accent;
             G.panel(cv, th, 24, 44, 760, 468, t('Map'));
-            label(cv, th, t('Show on'), 48, 120);
+            heading(cv, th, t('Show on'), 48, 120);
             const on = ctl.shownOn(), can = ctl.canChooseShownOn();
-            let x = 48;
-            [['cluster', 'Cluster'], ['hud', 'HUD'], ['both', 'Cluster + HUD']].filter(([v]) => v === 'cluster' || hudOk()).forEach(([v, text]) => {
-                x += G.button(cv, th, x, 130, 0, 44, t(text), () => ctl.showOn(v), { primary: on === v, busy: !can, key: 'show-' + v }) + 10;
-            });
-            small(cv, th, ctl.mapText(), 48, 204, 712);
-            if (hudOk()) small(cv, th, ctl.hudText(), 48, 230, 712, ctl.hudDisabled() ? th.warn : null);
+            G.segment(cv, th, 48, 132, 712, 48, [['cluster', 'Cluster'], ['hud', 'HUD'], ['both', 'Cluster + HUD']].filter(([v]) => v === 'cluster' || hudOk())
+                .map(([v, text]) => ({ label: t(text), run: () => ctl.showOn(v), on: on === v, busy: !can, key: 'show-' + v })));
+            small(cv, th, ctl.mapText(), 48, 206, 340, th.dim);
+            if (hudOk()) small(cv, th, ctl.hudText(), 400, 206, 360, ctl.hudDisabled() ? th.warn : th.dim);
             // the map settings of this driver profile, its own or the shared ones (greyed while no profile is known)
             // (BMW's logo on the cluster: the Display page, Cluster)
             const po = profiles.canChooseOwn();
-            cv.text(fit(cv, t('Own settings for this driver'), 22, 258, 'label'), 48, 276, 22, po ? th.text : th.dim, { font: 'label' });
-            toggle(cv, th, 314, 252, profiles.ownShown(), () => profiles.setOwn(!profiles.ownShown()), 'profile-own', !po);
+            switchRow(cv, th, 48, 216, 712, 46, ICON.own, t('Own settings for this driver'), profiles.ownShown(), () => profiles.setOwn(!profiles.ownShown()), 'profile-own', !po);
 
-            // the phone: CarPlay or Android Auto, its patch and its own settings
-            cv.fillRect(48, 300 + ex / 4, 712, 1, withAlpha('#ffffff', 0.12));
-            const py = 312 + ex / 4;
-            x = 48;
-            [['carplay', 'CarPlay'], ['aa', 'Android Auto']].forEach(([v, name]) => {
-                x += G.button(cv, th, x, py, 0, 42, name, () => { phone = v; changed(); }, { primary: phone === v, key: 'phone-' + v }) + 10;
-            });
+            // the phones: a row each with its patch's state (a tap picks it), under them the picked one's details and buttons
+            const py = 300 + ex / 4;
+            heading(cv, th, t('Phone maps'), 48, py);
+            const ps = ctl.patchStatus, aa = ctl.aa();
+            [['carplay', 'CarPlay', ctl._carplayState(), ps && ps.state, ctl.pending()], ['aa', 'Android Auto', ctl._aaState(), aa && aa.state, aa && aa.pending]]
+                .forEach(([v, name, state, st, pending], i) => {
+                    const ry = py + 12 + i * 44, picked = phone === v;
+                    if (picked) {
+                        cv.roundRect(48, ry + 2, 712, 40, 8, withAlpha(S, 0.12));
+                        cv.roundRect(48, ry + 8, 3, 28, 1.5, S);
+                    }
+                    const dot = pending ? th.warn : st === 'patched' ? '#25e05a' : withAlpha('#ffffff', 0.3);
+                    cv.circle(66, ry + 22, 5, dot);
+                    cv.text(name, 84, ry + 30, 22, th.text, { font: 'label' });
+                    const sopt = { font: 'bold', spacing: 1 }, stxt = fit(cv, String(state).toUpperCase(), 13, 440, 'bold'), sw = cv.textWidth(stxt, 13, sopt) + 20;
+                    cv.roundRect(752 - sw, ry + 10, sw, 24, 8, withAlpha('#ffffff', 0.08));
+                    cv.text(stxt, 752 - sw / 2, ry + 27, 13, th.text, { font: 'bold', spacing: 1, align: 'center' });
+                    if (i === 0) cv.fillRect(48, ry + 43, 712, 1, withAlpha('#ffffff', 0.08));
+                    if (cv.own) cv.target(48, ry, 712, 44, () => { phone = v; changed(); }, 'phone-' + v);
+                });
             const cp = phone === 'carplay';
-            small(cv, th, (cp ? ctl.statusText() : ctl.aaStatusText()) + (ctl.restartText() ? '  \u00b7  ' + ctl.restartText() : ''), 48, py + 70, 712);
-            // why the patch cannot be applied (patchd's own words), else the Wi-Fi band or the zoom
+            // why the patch cannot be applied (patchd's own words), else the Wi-Fi band or the zoom, and the restart's
             const why = ctl.conflictDetail(!cp).replace(/^not supported on this car \((.*)\)$/, '$1');
-            small(cv, th, why || (cp ? ctl.wifiText() : ctl.zoomText()), 48, py + 98, cp ? 712 : 300, th.dim);
+            const dy = py + 126;
+            small(cv, th, [why || (cp ? ctl.wifiText() : ctl.zoomText()), ctl.restartText()].filter(Boolean).join('  ·  '), 48, dy, cp ? 712 : 230, why ? th.warn : th.dim);
+            if (!cp) {
+                G.button(cv, th, 286, dy - 26, 44, 36, '-', () => ctl.zoom(-ZOOM_STEP), { busy: !ctl.canZoom(-ZOOM_STEP), key: 'zoom-', glyph: 'minus', round: true });
+                G.button(cv, th, 338, dy - 26, 44, 36, '+', () => ctl.zoom(ZOOM_STEP), { busy: !ctl.canZoom(ZOOM_STEP), key: 'zoom+', glyph: 'plus', round: true });
+                cv.text(fit(cv, ctl.cardText(), 19, 290, 'label'), 400, dy, 19, ctl.canToggleCard() ? th.text : th.dim, { font: 'label' });
+                toggle(cv, th, 704, dy - 22, ctl.cardHidden(), () => ctl.toggleCard(), 'card', !ctl.canToggleCard());
+            }
             let bx = 48;
-            const by = py + 112;
-            const btn = (text, run, opts) => { bx += G.button(cv, th, bx, by, 0, 42, text, run, opts) + 10; };
+            const by = dy + 20;
+            const btn = (text, run, opts) => { bx += G.button(cv, th, bx, by, 0, 44, text, run, opts) + 10; };
+            if (ctl.restartNeeded() || ctl.restartOffered()) {
+                btn(t('Restart head unit'), () => ctl.requestRestart(), { confirm: true, primary: ctl.canRestart(), busy: !ctl.canRestart(), key: 'restart' });
+            }
             if (cp) {
                 if (ctl.reinstallWanted()) btn(t('Reinstall patch'), () => ctl.reinstallMap(), { primary: true, busy: !ctl.canReinstall(), key: 'cp-reinstall' });
                 else btn(t('Patch'), () => ctl.enableMap(), { primary: ctl.canEnable(), busy: !ctl.canEnable(), key: 'cp-patch' });
@@ -616,13 +686,6 @@ mgu.run({
             } else {
                 btn(t('Patch'), () => ctl.enableAa(), { primary: ctl.canEnableAa(), busy: !ctl.canEnableAa(), key: 'aa-patch' });
                 btn(t('Remove patch'), () => ctl.disableAa(), { confirm: true, busy: !ctl.canDisableAa(), key: 'aa-unpatch' });
-                G.button(cv, th, 360, py + 74, 56, 36, '-', () => ctl.zoom(-ZOOM_STEP), { busy: !ctl.canZoom(-ZOOM_STEP), key: 'zoom-' });
-                G.button(cv, th, 424, py + 74, 56, 36, '+', () => ctl.zoom(ZOOM_STEP), { busy: !ctl.canZoom(ZOOM_STEP), key: 'zoom+' });
-                cv.text(fit(cv, ctl.cardText(), 20, 180, 'label'), 500, py + 98, 20, ctl.canToggleCard() ? th.text : th.dim, { font: 'label' });
-                toggle(cv, th, 684, py + 72, ctl.cardHidden(), () => ctl.toggleCard(), 'card', !ctl.canToggleCard());
-            }
-            if (ctl.restartNeeded() || ctl.restartOffered()) {
-                btn(t('Restart head unit'), () => ctl.requestRestart(), { confirm: true, primary: ctl.canRestart(), busy: !ctl.canRestart(), key: 'restart' });
             }
 
             if (!hudOk()) return;          // no head-up display: no HUD map panel
@@ -634,8 +697,8 @@ mgu.run({
             const row = (y, title, value, minus, plus, canMinus, canPlus, key) => {
                 label(cv, th, title, 1256, y);
                 cv.text(value, 1256, y + 40, 28, th.text, { font: 'bold' });
-                G.button(cv, th, 1408, y + 6, 60, 48, '-', minus, { busy: !canMinus, key: key + '-' });
-                G.button(cv, th, 1480, y + 6, 60, 48, '+', plus, { busy: !canPlus, key: key + '+' });
+                G.button(cv, th, 1408, y + 6, 60, 48, '-', minus, { busy: !canMinus, key: key + '-', glyph: 'minus', round: true });
+                G.button(cv, th, 1480, y + 6, 60, 48, '+', plus, { busy: !canPlus, key: key + '+', glyph: 'plus', round: true });
             };
             const w = ctl.hudWidth();
             row(128, t('Size'), w == null ? '--' : w === 0 ? t('Standard') : t('{0} %', w), () => ctl.setHudSizeStep(step - 1),
@@ -645,8 +708,8 @@ mgu.run({
                 ctl.canChangeHudBrightness(-1), ctl.canChangeHudBrightness(1), 'bright');
             label(cv, th, t('Position'), 1256, 308);
             [['up', 1376, 320, '^'], ['left', 1304, 376, '<'], ['right', 1448, 376, '>'], ['down', 1376, 432, 'v']].forEach(([dir, px, py, glyph]) =>
-                G.button(cv, th, px, py, 60, 48, glyph, () => ctl.moveHud(dir), { busy: !can2, key: 'move-' + dir }));
-            G.button(cv, th, 1376, 376, 60, 48, 'o', () => ctl.centreHud(), { busy: !ctl.canCentreHud(), key: 'centre' });
+                G.button(cv, th, px, py, 60, 48, glyph, () => ctl.moveHud(dir), { busy: !can2, key: 'move-' + dir, glyph: dir, round: true }));
+            G.button(cv, th, 1376, 376, 60, 48, 'o', () => ctl.centreHud(), { busy: !ctl.canCentreHud(), key: 'centre', glyph: 'centre', round: true });
         }
 
         /* A picture of the cluster: its two dials, the map in the middle while it shows there, "GO" over it. */
@@ -657,13 +720,11 @@ mgu.run({
             [x + w * 0.16, x + w * 0.84].forEach((cx) => {
                 cv.arc(cx, y + h * 0.55, r - 4, r, -130, 130, withAlpha('#ffffff', 0.35));
                 const ang = (blink ? -40 : 25) * Math.PI / 180;      // the needle swings with the blink
-                cv.line(cx, y + h * 0.55, cx + r * 0.6 * Math.sin(ang), y + h * 0.55 - r * 0.6 * Math.cos(ang), 3, '#ff4040');
+                cv.line(cx, y + h * 0.55, cx + r * 0.6 * Math.sin(ang), y + h * 0.55 - r * 0.6 * Math.cos(ang), 3, th.sel || th.accent);
             });
             const mx = x + w * 0.33, my = y + h * 0.18, mw = w * 0.34, mh = h * 0.64;
-            if (ctl.clusterOn() === true) {
-                cv.roundRect(mx, my, mw, mh, 8, '#1c3a2c');
-                cv.polyline([[mx + mw * 0.5, my + mh * 0.92], [mx + mw * 0.5, my + mh * 0.5], [mx + mw * 0.38, my + mh * 0.42], [mx + mw * 0.35, my + mh * 0.08]], 4, '#7ee05a');
-            } else cv.strokeRoundRect(mx, my, mw, mh, 8, 1, withAlpha('#ffffff', 0.15));
+            if (ctl.clusterOn() === true) drawMap(cv, th, mx, my, mw, mh, (v) => v);
+            else cv.strokeRoundRect(mx, my, mw, mh, 8, 1, withAlpha('#ffffff', 0.15));
             // the maker's logo at the top of the middle while it is not hidden
             if (!ctl.hideGuidance()) {
                 const lr = h * 0.06;
@@ -696,7 +757,7 @@ mgu.run({
             text: (s, a, b, sz, c, o) => cv.text(s, x + a * k, y + b * k, sz * k, c, o),
         });
         /* The Display page: the switches and the info bar's choices on the left (DL wide), the pictures on the right. */
-        const DL = 1056, DCOL = 504, DCOLS = 4, DBTN = 243;
+        const DL = 1056, DCOL = 524, DCOLS = 4, DBTN = 243, DTOP = 106, DROW = 44;
         function drawDisplay(cv, th) {
             const hasHud = hudOk();
             if (!hasHud) dispTab = 'cluster';
@@ -704,47 +765,42 @@ mgu.run({
 
             // the switches on the left: a tab for the HUD, one for the cluster
             G.panel(cv, th, 24, 44, DL, 468, null);
-            let tx = 48;
-            (hasHud ? [['cluster', 'Cluster'], ['hud', 'HUD']] : [['cluster', 'Cluster']]).forEach(([id, text]) => {
-                tx += G.button(cv, th, tx, 60, 200, 46, t(text), () => { dispTab = id; changed(); }, { primary: dispTab === id, key: 'tab-' + id }) + 12;
-            });
-            // note: a smaller second line under the label (the green light alert's camera)
-            const row = (i, key, text, on, run, off, note) => {
-                const x = 48 + (i % 2) * DCOL, y = 118 + Math.floor(i / 2) * 54;
-                line(cv, th, text, x, y + (note ? 18 : 28), DCOL - 112, off ? th.dim : null);
-                if (note) cv.text(fit(cv, note.text, 16, DCOL - 112, 'label'), x, y + 40, 16, note.color, { font: 'label' });
-                toggle(cv, th, x + DCOL - 100, y + 2, on, run, 'disp-' + key, off);
-            };
+            G.segment(cv, th, 48, 58, DL - 48, 40, (hasHud ? [['cluster', 'Cluster'], ['hud', 'HUD']] : [['cluster', 'Cluster']])
+                .map(([id, text]) => ({ label: t(text), run: () => { dispTab = id; changed(); }, on: dispTab === id, key: 'tab-' + id })));
+            // two columns of switches, DROW high; note: a smaller second line under the words (the green light alert's camera)
+            const row = (i, key, text, on, run, off, note) =>
+                switchRow(cv, th, 48 + (i % 2) * DCOL, DTOP + Math.floor(i / 2) * DROW, DCOL - 40, DROW, ICON[key], text, on, run, 'disp-' + key, off, note);
             const flip = (key) => () => settings.set(key, settings.get(key) === false ? true : !settings.get(key));
             // under the green light alert's label: whether the car's traffic-light camera answers
             const camera = (key) => {
                 const f = /^greenLight/.test(key) ? green.found() : null;
                 return f === null ? null : { text: f ? t('Traffic-light camera found') : t('Traffic-light camera not found'), color: f ? th.dim : th.warn };
             };
+            // the readings to pick, DCOLS a row from y: a chip each, numbered in the order they show
+            const chips = (y, items, prefix, max, off) => {
+                const picked = items.filter(([, key]) => settings.get(key));
+                items.forEach(([v, key, text], i) => {
+                    const lit = !!settings.get(key), n = lit ? picked.findIndex(([v2]) => v2 === v) + 1 : 0;
+                    G.chip(cv, th, 48 + (i % DCOLS) * (DBTN + 12), y + Math.floor(i / DCOLS) * 46, DBTN, 38, t(text), n, () => settings.set(key, !lit),
+                        { key: prefix + v, busy: off || (!lit && picked.length >= max) });
+                });
+                return picked.length;
+            };
             if (dispTab === 'hud') {
                 const hudOnNow = settings.get('hudOn') !== false;
                 HUD_ITEMS.forEach(([key, text], i) => row(i, key, t(text), settings.get(key) !== false && !!settings.get(key), flip(key), key !== 'hudOn' && !hudOnNow, camera(key)));
                 // BMW's HUD pop-ups (calls, media, lists): the map gives way to them, or stays over them
-                {   // its own line, across both columns (a long label)
-                    const y = 118 + Math.ceil(HUD_ITEMS.length / 2) * 54, off = !hudOnNow || !ctl.canKeepHud();
-                    line(cv, th, t("Keep HUD map over BMW's pop-ups"), 48, y + 28, DCOL - 112, off ? th.dim : null);
-                    toggle(cv, th, 48 + DCOL - 100, y + 2, ctl.hudKeepShown() === true, () => ctl.toggleHudKeep(), 'disp-hudKeep', off);
-                }
-                // the readings, as the info bar's: a button each, lit while on (up to HUD_DATA_MAX)
+                row(HUD_ITEMS.length, 'hudKeep', t("Keep HUD map over BMW's pop-ups"), ctl.hudKeepShown() === true, () => ctl.toggleHudKeep(), !hudOnNow || !ctl.canKeepHud());
+                // the readings, as the info bar's: a chip each, lit while on (up to HUD_DATA_MAX)
                 const offered = HUD_DATA.filter(([v]) => (v !== 'ev' && v !== 'soc') || hv.installed());
+                const hy = DTOP + Math.ceil((HUD_ITEMS.length + 1) / 2) * DROW + 32;
                 const count = offered.filter(([, key]) => settings.get(key)).length;
-                label(cv, th, t('Info bar') + '  ' + (settings.get('hudAuto') === true ? t('Auto') : count + '/' + HUD_DATA_MAX), 48, 356);
-                const at = (i) => [48 + (i % DCOLS) * (DBTN + 12), 366 + Math.floor(i / DCOLS) * 46];
                 // Auto: the readings for what the car is doing; the ones chosen by hand otherwise
                 const auto = settings.get('hudAuto') === true;
-                offered.forEach(([v, key, text], i) => {
-                    const lit = !!settings.get(key);
-                    G.button(cv, th, at(i)[0], at(i)[1], DBTN, 40, t(text), () => settings.set(key, !lit),
-                        { primary: lit, key: 'data-' + v, busy: !hudOnNow || (!lit && count >= HUD_DATA_MAX) });
-                });
-                const ai = offered.length;
-                G.button(cv, th, at(ai)[0], at(ai)[1], DBTN, 40, t('Auto'), () => settings.set('hudAuto', !auto),
-                    { primary: auto, key: 'data-auto', busy: !hudOnNow });
+                let hx = heading(cv, th, t('Between the turn signals'), 48, hy) + 16;
+                hx = countLines(cv, th, hx, hy, Math.min(count, HUD_DATA_MAX), HUD_DATA_MAX) + 18;
+                autoPill(cv, th, hx, hy - 6, auto, () => settings.set('hudAuto', !auto), 'data-auto', !hudOnNow, t('Picks the readings for what the car is doing'));
+                chips(hy + 18, offered, 'data-', HUD_DATA_MAX, !hudOnNow);
             } else {
                 // the map on the cluster: on or off with the HUD's as it is (never on neither)
                 const shown = ctl.shownOn(), clusterNow = ctl.clusterOn() === true, hudMap = ctl.hudOn() === true;
@@ -760,24 +816,17 @@ mgu.run({
                     : tv.enabled() ? { text: t('Off while Turn View is on'), color: th.dim } : null);
                 CLUSTER_ITEMS.forEach(([key, text], i) => row(2 + i, key, t(text), (key === 'sideView' ? settings.get(key) === true && !tv.enabled() : settings.get(key) !== false) && !noBar(key),
                     flip(key), noBar(key) || sideOff(key), camera(key) || sideNote(key)));
-                // the info bar's items, as the HUD's reading: a button each, lit while on (up to PANEL_MAX)
+                // the info bar's items, as the HUD's reading: a chip each, lit while on (up to PANEL_MAX)
                 const barOn = settings.get('clusterPanel') !== false && clusterNow;
                 const offered = PANEL_ITEMS.filter(([k]) => offers(k, hv, settings));
                 const count = offered.filter(([, key]) => settings.get(key)).length;
-                // how many are on, of the most; right under the switches (two rows here)
-                const ly = 118 + Math.ceil((2 + CLUSTER_ITEMS.length) / 2) * 54 + 34;
-                const cauto = settings.get('clusterAuto') === true;
-                label(cv, th, t('Info bar') + '  ' + (cauto ? t('Auto') : count + '/' + PANEL_MAX), 48, ly);
-                const at = (i) => [48 + (i % DCOLS) * (DBTN + 12), ly + 10 + Math.floor(i / DCOLS) * 46];
-                offered.forEach(([k, key, text], i) => {
-                    const lit = !!settings.get(key);
-                    G.button(cv, th, at(i)[0], at(i)[1], DBTN, 40, t(text), () => settings.set(key, !lit),
-                        { primary: lit, key: 'item-' + k, busy: !barOn || (!lit && count >= PANEL_MAX) });
-                });
+                const ly = DTOP + Math.ceil((2 + CLUSTER_ITEMS.length) / 2) * DROW + 32;
                 // Auto: the items for what the car is doing (as the HUD's); the ones chosen by hand otherwise
-                const ci = offered.length;
-                G.button(cv, th, at(ci)[0], at(ci)[1], DBTN, 40, t('Auto'), () => settings.set('clusterAuto', !cauto),
-                    { primary: cauto, key: 'item-auto', busy: !barOn });
+                const cauto = settings.get('clusterAuto') === true;
+                let lx = heading(cv, th, t('Info bar'), 48, ly) + 16;
+                lx = countLines(cv, th, lx, ly, Math.min(count, PANEL_MAX), PANEL_MAX) + 18;
+                autoPill(cv, th, lx, ly - 6, cauto, () => settings.set('clusterAuto', !cauto), 'item-auto', !barOn, t("As the HUD's, with the cluster's items"));
+                chips(ly + 18, offered, 'item-', PANEL_MAX, !barOn);
             }
 
             // the pictures on the right: the cluster on top, the HUD under it, each showing what of ours is on there
@@ -809,15 +858,13 @@ mgu.run({
             const col = (k) => (k === 'ok' ? th.ok || th.text : k === 'warn' ? th.warn : k === 'crit' ? th.crit || th.warn : th.text);
             G.panel(cv, th, 24, 44, 900, 468, 'Turn View');
             // the switch: one button, lit while Turn View is on
-            G.button(cv, th, 48, 106, 296, 56, on ? 'Turn View: On' : 'Turn View: Off', () => tv.enable(!on),
+            G.button(cv, th, 48, 106, 296, 52, on ? 'Turn View: On' : 'Turn View: Off', () => tv.enable(!on),
                 { primary: on, key: 'tv-on', busy: !st });
             // when it shows in Map view
-            let sx = 364;
-            [['near', 'Near a turn'], ['always', 'Always']].forEach(([v, text]) => {
-                sx += G.button(cv, th, sx, 112, 0, 44, text, () => tv.setShow(v), { primary: tv.show() === v, busy: !st, key: 'tv-show-' + v }) + 10;
-            });
+            G.segment(cv, th, 364, 108, 340, 48, [['near', 'Near a turn'], ['always', 'Always']]
+                .map(([v, text]) => ({ label: text, run: () => tv.setShow(v), on: tv.show() === v, busy: !st, key: 'tv-show-' + v })));
             if (!st) {
-                small(cv, th, 'The Turn View tool is not running: install Turn View in the Store (Head-unit tools), then restart the head unit.', 48, 176, 850, th.warn);
+                small(cv, th, 'The Turn View tool is not running: install Turn View in the Store (Head-unit tools), then restart the head unit.', 48, 190, 850, th.warn);
             } else {
                 const cam = s && s.state === 'off' && !on ? ['Off', ''] : (s && TV_CAMERA[s.camera]) || [(s && s.camera) || '--', ''];
                 const nav = s && s.nav === 'no navigation data' ? ['No guidance: is navigation on?', 'warn'] : [(s && TV_ROUTE[s.route]) || (s && s.route) || '--', s && s.route === 'active' ? 'ok' : ''];
@@ -847,8 +894,8 @@ mgu.run({
                 const c = TV_CAL[k], y = 104 + i * 62, v = typeof d[k] === 'number' ? d[k].toFixed(c.decimals) + c.unit : '--';
                 small(cv, th, c.label, 968, y + 30, 260, th.text);
                 small(cv, th, v, 1236, y + 30, 120, th.text);
-                G.button(cv, th, 1380, y, 80, 44, '-', () => tv.nudge(k, -1), { key: 'tv-' + k + '-' });
-                G.button(cv, th, 1472, y, 80, 44, '+', () => tv.nudge(k, 1), { key: 'tv-' + k + '+' });
+                G.button(cv, th, 1380, y, 80, 44, '-', () => tv.nudge(k, -1), { key: 'tv-' + k + '-', glyph: 'minus', round: true });
+                G.button(cv, th, 1472, y, 80, 44, '+', () => tv.nudge(k, 1), { key: 'tv-' + k + '+', glyph: 'plus', round: true });
             });
             G.button(cv, th, 968, 424, 170, 48, tv.saved ? 'Saved' : 'Save', () => tv.save(), { primary: !tv.saved, key: 'tv-save' });
             G.button(cv, th, 1150, 424, 170, 48, 'Reset', () => tv.reset(), { key: 'tv-reset', confirm: true });

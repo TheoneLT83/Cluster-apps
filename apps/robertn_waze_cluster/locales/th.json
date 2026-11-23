@@ -148,6 +148,9 @@
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
     "Real speed on cluster": "Real speed on cluster",
-    "Keep HUD map over BMW's pop-ups": "คงแผนที่บน HUD ไว้เหนือป๊อปอัปของ BMW"
+    "Keep HUD map over BMW's pop-ups": "คงแผนที่บน HUD ไว้เหนือป๊อปอัปของ BMW",
+    "Phone maps": "แผนที่โทรศัพท์",
+    "Picks the readings for what the car is doing": "เลือกค่าที่แสดงตามสิ่งที่รถกำลังทำ",
+    "As the HUD's, with the cluster's items": "เหมือน HUD ด้วยรายการของหน้าปัด"
   }
 }

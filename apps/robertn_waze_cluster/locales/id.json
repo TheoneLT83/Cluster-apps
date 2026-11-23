@@ -148,6 +148,9 @@
     "Battery kW usage": "Battery kW usage",
     "Real speed": "Real speed",
     "Real speed on cluster": "Real speed on cluster",
-    "Keep HUD map over BMW's pop-ups": "Pertahankan peta di HUD di atas pop-up BMW"
+    "Keep HUD map over BMW's pop-ups": "Pertahankan peta di HUD di atas pop-up BMW",
+    "Phone maps": "Peta ponsel",
+    "Picks the readings for what the car is doing": "Memilih data sesuai apa yang dilakukan mobil",
+    "As the HUD's, with the cluster's items": "Seperti HUD, dengan item panel instrumen"
   }
 }
