@@ -52,8 +52,8 @@ HUD has no room under it, within its sides), following the map's size and place:
   torque** (FES `statusActualValueTorque2` and torque x rpm) or **Engine speed** (a slider to 8000 rpm petrol, 6000 diesel: white, yellow, then red from 700 rpm under the redline, the red lower while the oil is cold, from 4500 rpm petrol and 3000 diesel at 20 °C to the warm point at 90 °C; the gear turns red with it, and both flash from 300 rpm under the redline);
 - **Auto** (the info bar's last button) picks the reading for what the car is doing, the first that holds: revving
   into the yellow zone, **Engine speed** (and **Boost** where the car gives it); oil or coolant under 50 °C, **Oil
-  and coolant**; driving on the battery, **Electric range**; else **Fuel range**. One higher in that list takes over
-  at once, a lower one after 8 s. The readings chosen by hand stay for when Auto is off;
+  and coolant**; driving on the battery, **Electric range**; else the readings chosen by hand (none chosen: nothing). One
+  higher in that list takes over at once, a lower one after 8 s;
 - a warning takes the info bar over for 20 s when it starts, in red, with Auto or without: a low tyre, oil from
   130 °C, coolant from 115 °C, gearbox oil from 120 °C; it shows again if it clears and comes back;
 - with **Real speed on HUD**, the car's own speed (`Vehicle2` `statusCarSpeed2`, which a mileage blocker leaves

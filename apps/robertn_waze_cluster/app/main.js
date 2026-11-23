@@ -191,26 +191,27 @@ async function background(bg) {
     // an earlier version's one reading (hudData) becomes its switch, once
     { const was = settings.get('hudData'), it = HUD_DATA.find(([v]) => v === was); if (it) { settings.set(it[1], true); settings.set('hudData', 'off'); } }
     /* The HUD's readings switched on that this car has (the battery's with eDrive), up to HUD_DATA_MAX. */
-    const dataChoices = () => (settings.get('hudAuto') === true ? autoChoices() : HUD_DATA.filter(([v, key]) => settings.get(key) &&
-        ((v !== 'ev' && v !== 'soc') || hv.installed())).map(([v]) => v).slice(0, HUD_DATA_MAX));
+    const manualChoices = () => HUD_DATA.filter(([v, key]) => settings.get(key) && ((v !== 'ev' && v !== 'soc') || hv.installed()))
+        .map(([v]) => v).slice(0, HUD_DATA_MAX);
+    const dataChoices = () => (settings.get('hudAuto') === true ? autoChoices() : manualChoices());
     /* Auto (setting hudAuto): the readings for what the car is doing, the first that holds -
      *   revving (from the yellow zone): engine speed, and boost where the car gives it;
      *   oil or coolant under PANEL.COLD_C: oil and coolant;
      *   driving on the battery (eDrive, the engine stopped): the electric range;
-     *   else the fuel range.
+     *   else the readings chosen by hand (none: nothing).
      * A choice higher in the list takes over at once; a lower one only after AUTO_HOLD_MS, so it doesn't flicker. */
     let autoNow = null, autoSince = 0;
-    const AUTO_ORDER = ['rev', 'cold', 'ev', 'cruise'];
+    const AUTO_ORDER = ['rev', 'cold', 'ev', 'manual'];
     function autoChoices() {
         const d = car.data(), real = d && !d.demo ? d : {}, now = Date.now();
         const st = G.isNum(real.rpm) ? revs.stage(real.rpm, revZones(real)) : 'white';
         const pick = st !== 'white' ? 'rev'
             : (G.isNum(real.oil) && real.oil < PANEL.COLD_C) || (G.isNum(real.coolant) && real.coolant < PANEL.COLD_C) ? 'cold'
-            : hv.installed() && (!G.isNum(real.rpm) || real.rpm < 300) ? 'ev' : 'cruise';
+            : hv.installed() && (!G.isNum(real.rpm) || real.rpm < 300) ? 'ev' : 'manual';
         if (autoNow === null || (pick !== autoNow && (AUTO_ORDER.indexOf(pick) < AUTO_ORDER.indexOf(autoNow) || now - autoSince >= AUTO_HOLD_MS))) {
             if (pick !== autoNow) { autoNow = pick; autoSince = now; }
         } else if (pick === autoNow) autoSince = now;
-        return autoNow === 'rev' ? (G.isNum(boost) ? ['rpm', 'boost'] : ['rpm']) : autoNow === 'cold' ? ['temps'] : autoNow === 'ev' ? ['ev'] : ['fuel'];
+        return autoNow === 'rev' ? (G.isNum(boost) ? ['rpm', 'boost'] : ['rpm']) : autoNow === 'cold' ? ['temps'] : autoNow === 'ev' ? ['ev'] : manualChoices();
     }
     /* A warning takes the info bar over for WARN_SHOW_MS when it starts (a low tyre, oil, coolant or gearbox oil too hot),
      * with Auto or the owner's readings; it shows again if it clears and comes back. */
@@ -721,12 +722,12 @@ mgu.run({
                 const count = offered.filter(([, key]) => settings.get(key)).length;
                 label(cv, th, t('Info bar') + '  ' + (settings.get('hudAuto') === true ? t('Auto') : count + '/' + HUD_DATA_MAX), 48, 356);
                 const at = (i) => [48 + (i % DCOLS) * (DBTN + 12), 366 + Math.floor(i / DCOLS) * 46];
-                // Auto: the readings for what the car is doing; the owner's choice stays for when it is off
+                // Auto: the readings for what the car is doing; the ones chosen by hand otherwise
                 const auto = settings.get('hudAuto') === true;
                 offered.forEach(([v, key, text], i) => {
                     const lit = !!settings.get(key);
                     G.button(cv, th, at(i)[0], at(i)[1], DBTN, 40, t(text), () => settings.set(key, !lit),
-                        { primary: lit && !auto, key: 'data-' + v, busy: !hudOnNow || auto || (!lit && count >= HUD_DATA_MAX) });
+                        { primary: lit, key: 'data-' + v, busy: !hudOnNow || (!lit && count >= HUD_DATA_MAX) });
                 });
                 const ai = offered.length;
                 G.button(cv, th, at(ai)[0], at(ai)[1], DBTN, 40, t('Auto'), () => settings.set('hudAuto', !auto),
