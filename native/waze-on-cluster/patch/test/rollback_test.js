@@ -111,8 +111,8 @@ var SITES_DECIDE = '0.14.3';
 var list = releaseTags.list(), fetchWhy = '';
 if (list === null) { process.stdout.write('SKIP: not in a git checkout\n'); process.exit(0); }
 /* none, or only those earlier_patcher.js fetched */
-if (list.indexOf('waze-on-cluster@0.5.0') < 0) { fetchWhy = releaseTags.fetch('waze-on-cluster@*'); list = releaseTags.list() || []; }
-ok('the release tags are at hand', list.indexOf('waze-on-cluster@0.5.0') >= 0, 'no waze-on-cluster@0.5.0 tag, and fetching the tags failed: ' + fetchWhy);
+if (list.indexOf('waze-on-cluster@0.9.2') < 0) { fetchWhy = releaseTags.fetch('waze-on-cluster@*'); list = releaseTags.list() || []; }
+ok('the release tags are at hand', list.indexOf('waze-on-cluster@0.9.2') >= 0, 'no waze-on-cluster@0.9.2 tag, and fetching the tags failed: ' + fetchWhy);
 if (!list.length) process.exit(1);
 
 var dir = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-rollback-'));
