@@ -152,7 +152,7 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Kaart in HUD boven BMW-pop-ups houden",
     "Phone maps": "Kaarten van de telefoon",
-    "Picks the readings for what the car is doing": "Kiest de waarden naar wat de auto doet",
-    "As the HUD's, with the cluster's items": "Zoals bij de HUD, met de items van het instrumentenpaneel"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Hoog toerental: toerental, laaddruk · Koud: olie, koelvloeistof · Elektrisch: actieradius",
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Hoog toerental: toerental, laaddruk · Koud: olie, koelvloeistof · Elektrisch: kW, lading"
   }
 }

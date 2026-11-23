@@ -150,7 +150,7 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "คงแผนที่บน HUD ไว้เหนือป๊อปอัปของ BMW",
     "Phone maps": "แผนที่โทรศัพท์",
-    "Picks the readings for what the car is doing": "เลือกค่าที่แสดงตามสิ่งที่รถกำลังทำ",
-    "As the HUD's, with the cluster's items": "เหมือน HUD ด้วยรายการของหน้าปัด"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "รอบสูง: รอบเครื่อง, บูสต์ · เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น · ไฟฟ้า: ระยะทาง",
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "รอบสูง: รอบเครื่อง, บูสต์ · เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น · ไฟฟ้า: kW, ประจุ"
   }
 }

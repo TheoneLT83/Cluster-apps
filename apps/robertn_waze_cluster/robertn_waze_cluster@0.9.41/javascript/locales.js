@@ -154,8 +154,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "إبقاء خريطة HUD فوق النوافذ المنبثقة من BMW",
    "Phone maps": "خرائط الهاتف",
-   "Picks the readings for what the car is doing": "يختار القراءات حسب ما تفعله السيارة",
-   "As the HUD's, with the cluster's items": "مثل شاشة HUD، بعناصر لوحة العدادات"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "التسارع: سرعة المحرك، الشاحن · بارد: الزيت، سائل التبريد · كهربائي: المدى",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "التسارع: سرعة المحرك، الشاحن · بارد: الزيت، سائل التبريد · كهربائي: كيلوواط، الشحن"
   }
  },
  {
@@ -311,8 +311,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Ponechat mapu na HUD přes vyskakovací okna BMW",
    "Phone maps": "Mapy z telefonu",
-   "Picks the readings for what the car is doing": "Vybírá údaje podle toho, co auto dělá",
-   "As the HUD's, with the cluster's items": "Jako u HUD, s položkami přístrojového štítu"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Vytáčení: otáčky, plnicí tlak · Studený: olej, chladicí kapalina · Elektricky: dojezd",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vytáčení: otáčky, plnicí tlak · Studený: olej, chladicí kapalina · Elektricky: kW, nabití"
   }
  },
  {
@@ -468,8 +468,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Behold kort i HUD over BMW's pop-ups",
    "Phone maps": "Telefonens kort",
-   "Picks the readings for what the car is doing": "Vælger visningerne efter, hvad bilen gør",
-   "As the HUD's, with the cluster's items": "Som HUD'ens, med instrumentpanelets punkter"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Høje omdrejninger: omdrejninger, ladetryk · Kold: olie, kølevæske · El: rækkevidde",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Høje omdrejninger: omdrejninger, ladetryk · Kold: olie, kølevæske · El: kW, opladning"
   }
  },
  {
@@ -625,8 +625,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Karte im HUD vor BMW-Pop-ups behalten",
    "Phone maps": "Handy-Karten",
-   "Picks the readings for what the car is doing": "Wählt die Werte danach, was das Auto gerade tut",
-   "As the HUD's, with the cluster's items": "Wie beim HUD, mit den Werten des Kombiinstruments"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Hochdrehen: Drehzahl, Ladedruck · Kalt: Öl, Kühlmittel · Elektrisch: Reichweite",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Hochdrehen: Drehzahl, Ladedruck · Kalt: Öl, Kühlmittel · Elektrisch: kW, Ladestand"
   }
  },
  {
@@ -782,8 +782,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Διατήρηση χάρτη στο HUD πάνω από τα αναδυόμενα της BMW",
    "Phone maps": "Χάρτες τηλεφώνου",
-   "Picks the readings for what the car is doing": "Επιλέγει τις ενδείξεις ανάλογα με το τι κάνει το αυτοκίνητο",
-   "As the HUD's, with the cluster's items": "Όπως στο HUD, με τα στοιχεία του πίνακα οργάνων"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Στροφές: στροφές κινητήρα, υπερπλήρωση · Κρύο: λάδι, ψυκτικό · Ηλεκτρικά: αυτονομία",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Στροφές: στροφές κινητήρα, υπερπλήρωση · Κρύο: λάδι, ψυκτικό · Ηλεκτρικά: kW, φόρτιση"
   }
  },
  {
@@ -939,8 +939,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Mantener mapa en el HUD sobre ventanas emergentes de BMW",
    "Phone maps": "Mapas del teléfono",
-   "Picks the readings for what the car is doing": "Elige los datos según lo que hace el auto",
-   "As the HUD's, with the cluster's items": "Como en el HUD, con los datos del tablero"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Revoluciones: rpm, presión del turbo · Frío: aceite, refrigerante · Eléctrico: autonomía",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Revoluciones: rpm, presión del turbo · Frío: aceite, refrigerante · Eléctrico: kW, carga"
   }
  },
  {
@@ -1096,8 +1096,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Mantener mapa en el HUD sobre ventanas emergentes de BMW",
    "Phone maps": "Mapas del móvil",
-   "Picks the readings for what the car is doing": "Elige los datos según lo que hace el coche",
-   "As the HUD's, with the cluster's items": "Como en el HUD, con los datos del cuadro"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Revoluciones: rpm, presión del turbo · Frío: aceite, refrigerante · Eléctrico: autonomía",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Revoluciones: rpm, presión del turbo · Frío: aceite, refrigerante · Eléctrico: kW, carga"
   }
  },
  {
@@ -1253,8 +1253,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Pidä HUD-kartta BMW:n ponnahdusikkunoiden päällä",
    "Phone maps": "Puhelimen kartat",
-   "Picks the readings for what the car is doing": "Valitsee lukemat sen mukaan, mitä auto tekee",
-   "As the HUD's, with the cluster's items": "Kuten HUD:ssa, mittariston tiedoilla"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Kierrokset: moottorin kierrokset, ahtopaine · Kylmä: öljy, jäähdytysneste · Sähkö: toimintamatka",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Kierrokset: moottorin kierrokset, ahtopaine · Kylmä: öljy, jäähdytysneste · Sähkö: kW, varaus"
   }
  },
  {
@@ -1410,8 +1410,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les fenêtres contextuelles BMW",
    "Phone maps": "Cartes du téléphone",
-   "Picks the readings for what the car is doing": "Choisit les valeurs selon ce que fait la voiture",
-   "As the HUD's, with the cluster's items": "Comme pour le HUD, avec les valeurs du tableau de bord"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : autonomie",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : kW, charge"
   }
  },
  {
@@ -1567,8 +1567,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les pop-up BMW",
    "Phone maps": "Cartes du téléphone",
-   "Picks the readings for what the car is doing": "Choisit les valeurs selon ce que fait la voiture",
-   "As the HUD's, with the cluster's items": "Comme pour le HUD, avec les valeurs du combiné"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : autonomie",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : kW, charge"
   }
  },
  {
@@ -1724,8 +1724,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "השארת המפה ב-HUD מעל החלונות הקופצים של BMW",
    "Phone maps": "מפות הטלפון",
-   "Picks the readings for what the car is doing": "בוחר את הנתונים לפי מה שהרכב עושה",
-   "As the HUD's, with the cluster's items": "כמו ב-HUD, עם פריטי לוח המחוונים"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "סיבובים: סל\"ד, טורבו · קר: שמן, נוזל קירור · חשמלי: טווח",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "סיבובים: סל\"ד, טורבו · קר: שמן, נוזל קירור · חשמלי: kW, טעינה"
   }
  },
  {
@@ -1881,8 +1881,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Térkép megtartása a HUD-on a BMW felugró ablakai felett",
    "Phone maps": "Telefonos térképek",
-   "Picks the readings for what the car is doing": "Az értékeket az autó éppen végzett dolga szerint választja",
-   "As the HUD's, with the cluster's items": "Mint a HUD-nál, a műszerfal elemeivel"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Pörgetés: fordulatszám, töltőnyomás · Hideg: olaj, hűtőfolyadék · Elektromos: hatótáv",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Pörgetés: fordulatszám, töltőnyomás · Hideg: olaj, hűtőfolyadék · Elektromos: kW, töltöttség"
   }
  },
  {
@@ -2038,8 +2038,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Pertahankan peta di HUD di atas pop-up BMW",
    "Phone maps": "Peta ponsel",
-   "Picks the readings for what the car is doing": "Memilih data sesuai apa yang dilakukan mobil",
-   "As the HUD's, with the cluster's items": "Seperti HUD, dengan item panel instrumen"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Putaran tinggi: putaran mesin, boost · Dingin: oli, cairan pendingin · Listrik: jarak tempuh",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Putaran tinggi: putaran mesin, boost · Dingin: oli, cairan pendingin · Listrik: kW, daya baterai"
   }
  },
  {
@@ -2195,8 +2195,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Mantieni la mappa sull'HUD sopra i pop-up BMW",
    "Phone maps": "Mappe del telefono",
-   "Picks the readings for what the car is doing": "Sceglie i valori in base a cosa fa l'auto",
-   "As the HUD's, with the cluster's items": "Come per l'HUD, con le voci del quadro strumenti"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Su di giri: giri motore, pressione turbo · Freddo: olio, liquido refrigerante · Elettrico: autonomia",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Su di giri: giri motore, pressione turbo · Freddo: olio, liquido refrigerante · Elettrico: kW, carica"
   }
  },
  {
@@ -2352,8 +2352,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "HUDの地図をBMWのポップアップより優先",
    "Phone maps": "スマホの地図",
-   "Picks the readings for what the car is doing": "車の状況に合わせて表示を選びます",
-   "As the HUD's, with the cluster's items": "HUDと同じ、メーターの項目で"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "高回転: エンジン回転数、過給圧 · 冷間: オイル、冷却水 · 電気: 航続距離",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高回転: エンジン回転数、過給圧 · 冷間: オイル、冷却水 · 電気: kW、充電量"
   }
  },
  {
@@ -2509,8 +2509,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "BMW 팝업 위에 HUD 지도 유지",
    "Phone maps": "휴대폰 지도",
-   "Picks the readings for what the car is doing": "차의 상태에 맞춰 표시를 고릅니다",
-   "As the HUD's, with the cluster's items": "HUD와 같게, 계기판 항목으로"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "고회전: 엔진 회전수, 부스트 · 냉간: 오일, 냉각수 · 전기: 주행 가능 거리",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "고회전: 엔진 회전수, 부스트 · 냉간: 오일, 냉각수 · 전기: kW, 충전량"
   }
  },
  {
@@ -2666,8 +2666,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Behold kart i HUD over BMWs popup-vinduer",
    "Phone maps": "Telefonens kart",
-   "Picks the readings for what the car is doing": "Velger visningene etter hva bilen gjør",
-   "As the HUD's, with the cluster's items": "Som HUD-en, med instrumentpanelets punkter"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Høyt turtall: turtall, ladetrykk · Kald: olje, kjølevæske · Elektrisk: rekkevidde",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Høyt turtall: turtall, ladetrykk · Kald: olje, kjølevæske · Elektrisk: kW, lading"
   }
  },
  {
@@ -2825,8 +2825,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Kaart in HUD boven BMW-pop-ups houden",
    "Phone maps": "Kaarten van de telefoon",
-   "Picks the readings for what the car is doing": "Kiest de waarden naar wat de auto doet",
-   "As the HUD's, with the cluster's items": "Zoals bij de HUD, met de items van het instrumentenpaneel"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Hoog toerental: toerental, laaddruk · Koud: olie, koelvloeistof · Elektrisch: actieradius",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Hoog toerental: toerental, laaddruk · Koud: olie, koelvloeistof · Elektrisch: kW, lading"
   }
  },
  {
@@ -2982,8 +2982,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Zachowaj mapę na HUD nad wyskakującymi oknami BMW",
    "Phone maps": "Mapy z telefonu",
-   "Picks the readings for what the car is doing": "Wybiera odczyty zależnie od tego, co robi auto",
-   "As the HUD's, with the cluster's items": "Jak w HUD, z pozycjami zestawu wskaźników"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Wysokie obroty: obroty, doładowanie · Zimny: olej, płyn chłodzący · Elektrycznie: zasięg",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Wysokie obroty: obroty, doładowanie · Zimny: olej, płyn chłodzący · Elektrycznie: kW, naładowanie"
   }
  },
  {
@@ -3139,8 +3139,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups da BMW",
    "Phone maps": "Mapas do celular",
-   "Picks the readings for what the car is doing": "Escolhe os dados conforme o que o carro está fazendo",
-   "As the HUD's, with the cluster's items": "Como no HUD, com os itens do painel"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Giro alto: rotação, pressão do turbo · Frio: óleo, arrefecimento · Elétrico: autonomia",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Giro alto: rotação, pressão do turbo · Frio: óleo, arrefecimento · Elétrico: kW, carga"
   }
  },
  {
@@ -3296,8 +3296,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups BMW",
    "Phone maps": "Mapas do telemóvel",
-   "Picks the readings for what the car is doing": "Escolhe os dados conforme o que o carro está a fazer",
-   "As the HUD's, with the cluster's items": "Como no HUD, com os itens do quadrante"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Rotação alta: rotação, pressão do turbo · Frio: óleo, refrigerante · Elétrico: autonomia",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Rotação alta: rotação, pressão do turbo · Frio: óleo, refrigerante · Elétrico: kW, carga"
   }
  },
  {
@@ -3453,8 +3453,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Păstrare hartă pe HUD peste ferestrele pop-up BMW",
    "Phone maps": "Hărți din telefon",
-   "Picks the readings for what the car is doing": "Alege valorile după ce face mașina",
-   "As the HUD's, with the cluster's items": "Ca la HUD, cu elementele bordului"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Turație mare: turație, presiune turbo · Rece: ulei, lichid de răcire · Electric: autonomie",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Turație mare: turație, presiune turbo · Rece: ulei, lichid de răcire · Electric: kW, încărcare"
   }
  },
  {
@@ -3610,8 +3610,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Оставлять карту на HUD поверх всплывающих окон BMW",
    "Phone maps": "Карты телефона",
-   "Picks the readings for what the car is doing": "Выбирает показания по тому, что делает машина",
-   "As the HUD's, with the cluster's items": "Как у HUD, с пунктами приборной панели"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Обороты: обороты двигателя, наддув · Холодный: масло, антифриз · Электро: запас хода",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Обороты: обороты двигателя, наддув · Холодный: масло, антифриз · Электро: кВт, заряд"
   }
  },
  {
@@ -3767,8 +3767,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Ponechať mapu na HUD nad kontextovými oknami BMW",
    "Phone maps": "Mapy z telefónu",
-   "Picks the readings for what the car is doing": "Vyberá údaje podľa toho, čo auto robí",
-   "As the HUD's, with the cluster's items": "Ako pri HUD, s položkami prístrojového štítu"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Vytáčanie: otáčky, plniaci tlak · Studený: olej, chladiaca kvapalina · Elektricky: dojazd",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vytáčanie: otáčky, plniaci tlak · Studený: olej, chladiaca kvapalina · Elektricky: kW, nabitie"
   }
  },
  {
@@ -3924,8 +3924,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Ohrani zemljevid na HUD nad pojavnimi okni BMW",
    "Phone maps": "Zemljevidi telefona",
-   "Picks the readings for what the car is doing": "Izbere podatke glede na to, kaj počne avto",
-   "As the HUD's, with the cluster's items": "Kot pri HUD, s postavkami armaturne plošče"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Visoki vrtljaji: vrtljaji, polnilni tlak · Hladen: olje, hladilna tekočina · Električno: doseg",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Visoki vrtljaji: vrtljaji, polnilni tlak · Hladen: olje, hladilna tekočina · Električno: kW, napolnjenost"
   }
  },
  {
@@ -4081,8 +4081,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Behåll karta i HUD över BMW:s popup-fönster",
    "Phone maps": "Telefonens kartor",
-   "Picks the readings for what the car is doing": "Väljer värdena efter vad bilen gör",
-   "As the HUD's, with the cluster's items": "Som HUD:ens, med instrumentpanelens punkter"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Högt varv: varvtal, laddtryck · Kall: olja, kylvätska · El: räckvidd",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Högt varv: varvtal, laddtryck · Kall: olja, kylvätska · El: kW, laddning"
   }
  },
  {
@@ -4238,8 +4238,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "คงแผนที่บน HUD ไว้เหนือป๊อปอัปของ BMW",
    "Phone maps": "แผนที่โทรศัพท์",
-   "Picks the readings for what the car is doing": "เลือกค่าที่แสดงตามสิ่งที่รถกำลังทำ",
-   "As the HUD's, with the cluster's items": "เหมือน HUD ด้วยรายการของหน้าปัด"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "รอบสูง: รอบเครื่อง, บูสต์ · เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น · ไฟฟ้า: ระยะทาง",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "รอบสูง: รอบเครื่อง, บูสต์ · เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น · ไฟฟ้า: kW, ประจุ"
   }
  },
  {
@@ -4395,8 +4395,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "HUD haritasını BMW açılır pencerelerinin üstünde tut",
    "Phone maps": "Telefon haritaları",
-   "Picks the readings for what the car is doing": "Değerleri aracın yaptığına göre seçer",
-   "As the HUD's, with the cluster's items": "HUD'daki gibi, gösterge panelinin öğeleriyle"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Yüksek devir: devir, turbo basıncı · Soğuk: yağ, soğutma suyu · Elektrikli: menzil",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Yüksek devir: devir, turbo basıncı · Soğuk: yağ, soğutma suyu · Elektrikli: kW, şarj"
   }
  },
  {
@@ -4552,8 +4552,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Залишати карту на HUD поверх спливних вікон BMW",
    "Phone maps": "Карти телефону",
-   "Picks the readings for what the car is doing": "Обирає показники за тим, що робить авто",
-   "As the HUD's, with the cluster's items": "Як у HUD, з пунктами приладової панелі"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Оберти: оберти двигуна, наддув · Холодний: олива, охолоджувальна рідина · Електро: запас ходу",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Оберти: оберти двигуна, наддув · Холодний: олива, охолоджувальна рідина · Електро: кВт, заряд"
   }
  },
  {
@@ -4709,8 +4709,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "Giữ bản đồ trên HUD phía trên cửa sổ bật lên của BMW",
    "Phone maps": "Bản đồ điện thoại",
-   "Picks the readings for what the car is doing": "Chọn thông số theo việc xe đang làm",
-   "As the HUD's, with the cluster's items": "Như HUD, với các mục của cụm đồng hồ"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Vòng tua cao: vòng tua, tăng áp · Lạnh: dầu, nước làm mát · Điện: quãng đường",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vòng tua cao: vòng tua, tăng áp · Lạnh: dầu, nước làm mát · Điện: kW, mức sạc"
   }
  },
  {
@@ -4868,8 +4868,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "HUD 地图保持在 BMW 弹窗之上",
    "Phone maps": "手机地图",
-   "Picks the readings for what the car is doing": "根据车辆当前状态选择显示内容",
-   "As the HUD's, with the cluster's items": "与 HUD 相同，使用仪表盘的项目"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "高转速：转速、增压 · 冷车：机油、冷却液 · 电动：续航",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高转速：转速、增压 · 冷车：机油、冷却液 · 电动：kW、电量"
   }
  },
  {
@@ -5027,8 +5027,8 @@ module.exports = [
    "Real speed on cluster": "Real speed on cluster",
    "Keep HUD map over BMW's pop-ups": "HUD 地圖保持在 BMW 彈出視窗之上",
    "Phone maps": "手機地圖",
-   "Picks the readings for what the car is doing": "依車輛目前狀態選擇顯示內容",
-   "As the HUD's, with the cluster's items": "與 HUD 相同，使用儀表板的項目"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "高轉速：轉速、增壓 · 冷車：機油、冷卻液 · 電動：續航",
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高轉速：轉速、增壓 · 冷車：機油、冷卻液 · 電動：kW、電量"
   }
  }
 ];

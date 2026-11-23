@@ -150,7 +150,7 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Behold kort i HUD over BMW's pop-ups",
     "Phone maps": "Telefonens kort",
-    "Picks the readings for what the car is doing": "Vælger visningerne efter, hvad bilen gør",
-    "As the HUD's, with the cluster's items": "Som HUD'ens, med instrumentpanelets punkter"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Høje omdrejninger: omdrejninger, ladetryk · Kold: olie, kølevæske · El: rækkevidde",
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Høje omdrejninger: omdrejninger, ladetryk · Kold: olie, kølevæske · El: kW, opladning"
   }
 }

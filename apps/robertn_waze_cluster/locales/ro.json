@@ -150,7 +150,7 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Păstrare hartă pe HUD peste ferestrele pop-up BMW",
     "Phone maps": "Hărți din telefon",
-    "Picks the readings for what the car is doing": "Alege valorile după ce face mașina",
-    "As the HUD's, with the cluster's items": "Ca la HUD, cu elementele bordului"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Turație mare: turație, presiune turbo · Rece: ulei, lichid de răcire · Electric: autonomie",
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Turație mare: turație, presiune turbo · Rece: ulei, lichid de răcire · Electric: kW, încărcare"
   }
 }

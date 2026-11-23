@@ -150,7 +150,7 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Pidä HUD-kartta BMW:n ponnahdusikkunoiden päällä",
     "Phone maps": "Puhelimen kartat",
-    "Picks the readings for what the car is doing": "Valitsee lukemat sen mukaan, mitä auto tekee",
-    "As the HUD's, with the cluster's items": "Kuten HUD:ssa, mittariston tiedoilla"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Kierrokset: moottorin kierrokset, ahtopaine · Kylmä: öljy, jäähdytysneste · Sähkö: toimintamatka",
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Kierrokset: moottorin kierrokset, ahtopaine · Kylmä: öljy, jäähdytysneste · Sähkö: kW, varaus"
   }
 }

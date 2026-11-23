@@ -150,7 +150,7 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Ohrani zemljevid na HUD nad pojavnimi okni BMW",
     "Phone maps": "Zemljevidi telefona",
-    "Picks the readings for what the car is doing": "Izbere podatke glede na to, kaj počne avto",
-    "As the HUD's, with the cluster's items": "Kot pri HUD, s postavkami armaturne plošče"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Visoki vrtljaji: vrtljaji, polnilni tlak · Hladen: olje, hladilna tekočina · Električno: doseg",
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Visoki vrtljaji: vrtljaji, polnilni tlak · Hladen: olje, hladilna tekočina · Električno: kW, napolnjenost"
   }
 }

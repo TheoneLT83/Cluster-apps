@@ -150,7 +150,7 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les pop-up BMW",
     "Phone maps": "Cartes du téléphone",
-    "Picks the readings for what the car is doing": "Choisit les valeurs selon ce que fait la voiture",
-    "As the HUD's, with the cluster's items": "Comme pour le HUD, avec les valeurs du combiné"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : autonomie",
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : kW, charge"
   }
 }

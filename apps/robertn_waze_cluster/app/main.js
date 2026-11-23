@@ -545,7 +545,7 @@ mgu.run({
                 cv.circle(on ? sx + 29 : sx + 11, y, 8, off ? withAlpha('#ffffff', 0.4) : on ? G.onColour(S) : '#d6d7da');
                 if (!off) cv.target(x, y - 20, w, 40, run, key);
             }
-            if (words) cv.text(words, x + w + 14, y + 5, 15, th.dim, { font: 'label' });
+            if (words) cv.text(fit(cv, words, 15, DL - (x + w + 14), 'label'), x + w + 14, y + 5, 15, th.dim, { font: 'label' });
             return x + w;
         };
         /* The pictures' map, in x, y, w, h: dark ground, grey roads, the route in the theme's second colour and the car's arrow;
@@ -797,9 +797,9 @@ mgu.run({
                 const count = offered.filter(([, key]) => settings.get(key)).length;
                 // Auto: the readings for what the car is doing; the ones chosen by hand otherwise
                 const auto = settings.get('hudAuto') === true;
-                let hx = heading(cv, th, t('Between the turn signals'), 48, hy) + 16;
+                let hx = heading(cv, th, t('Info bar'), 48, hy) + 16;
                 hx = countLines(cv, th, hx, hy, Math.min(count, HUD_DATA_MAX), HUD_DATA_MAX) + 18;
-                autoPill(cv, th, hx, hy - 6, auto, () => settings.set('hudAuto', !auto), 'data-auto', !hudOnNow, t('Picks the readings for what the car is doing'));
+                autoPill(cv, th, hx, hy - 6, auto, () => settings.set('hudAuto', !auto), 'data-auto', !hudOnNow, t('Revving: engine speed, boost · Cold: oil, coolant · Electric: range'));
                 chips(hy + 18, offered, 'data-', HUD_DATA_MAX, !hudOnNow);
             } else {
                 // the map on the cluster: on or off with the HUD's as it is (never on neither)
@@ -825,7 +825,7 @@ mgu.run({
                 const cauto = settings.get('clusterAuto') === true;
                 let lx = heading(cv, th, t('Info bar'), 48, ly) + 16;
                 lx = countLines(cv, th, lx, ly, Math.min(count, PANEL_MAX), PANEL_MAX) + 18;
-                autoPill(cv, th, lx, ly - 6, cauto, () => settings.set('clusterAuto', !cauto), 'item-auto', !barOn, t("As the HUD's, with the cluster's items"));
+                autoPill(cv, th, lx, ly - 6, cauto, () => settings.set('clusterAuto', !cauto), 'item-auto', !barOn, t('Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge'));
                 chips(ly + 18, offered, 'item-', PANEL_MAX, !barOn);
             }
 
