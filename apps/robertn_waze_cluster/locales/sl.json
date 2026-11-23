@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "Ohrani zemljevid na HUD nad pojavnimi okni BMW",
     "Phone maps": "Zemljevidi telefona",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Visoki vrtljaji: vrtljaji, polnilni tlak · Hladen: olje, hladilna tekočina · Električno: doseg",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Visoki vrtljaji: vrtljaji, polnilni tlak · Hladen: olje, hladilna tekočina · Električno: kW, napolnjenost"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Visoki vrtljaji: vrtljaji, polnilni tlak · Hladen: olje, hladilna tekočina · Električno: kW, napolnjenost",
+    "Warnings take over": "Opozorila imajo prednost"
   }
 }

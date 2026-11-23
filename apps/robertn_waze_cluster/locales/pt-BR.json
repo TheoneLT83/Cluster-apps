@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups da BMW",
     "Phone maps": "Mapas do celular",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Giro alto: rotação, pressão do turbo · Frio: óleo, arrefecimento · Elétrico: autonomia",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Giro alto: rotação, pressão do turbo · Frio: óleo, arrefecimento · Elétrico: kW, carga"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Giro alto: rotação, pressão do turbo · Frio: óleo, arrefecimento · Elétrico: kW, carga",
+    "Warnings take over": "Alertas têm prioridade"
   }
 }

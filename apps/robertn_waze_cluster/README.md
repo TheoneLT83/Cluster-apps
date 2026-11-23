@@ -57,7 +57,8 @@ HUD has no room under it, within its sides), following the map's size and place:
   the cluster's info bar (Display page, Cluster) has its own **Auto** for the same situations: **Engine speed** (and
   **Boost**), **OIL** and **COOLANT**, **Battery kW usage** and **Battery charge**, else its items chosen by hand;
 - a warning takes the info bar over for 20 s when it starts, in red, with Auto or without: a low tyre, oil from
-  130 °C, coolant from 115 °C, gearbox oil from 120 °C; it shows again if it clears and comes back;
+  130 °C, coolant from 115 °C, gearbox oil from 120 °C; it shows again if it clears and comes back (**Warnings take
+  over**, on unless switched off);
 - with **Real speed on HUD**, the car's own speed (`Vehicle2` `statusCarSpeed2`, which a mileage blocker leaves
   alone) left of BMW's speed reading, right of its speed-limit sign.
 

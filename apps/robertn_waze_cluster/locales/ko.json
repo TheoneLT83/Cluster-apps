@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "BMW 팝업 위에 HUD 지도 유지",
     "Phone maps": "휴대폰 지도",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "고회전: 엔진 회전수, 부스트 · 냉간: 오일, 냉각수 · 전기: 주행 가능 거리",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "고회전: 엔진 회전수, 부스트 · 냉간: 오일, 냉각수 · 전기: kW, 충전량"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "고회전: 엔진 회전수, 부스트 · 냉간: 오일, 냉각수 · 전기: kW, 충전량",
+    "Warnings take over": "경고 우선 표시"
   }
 }

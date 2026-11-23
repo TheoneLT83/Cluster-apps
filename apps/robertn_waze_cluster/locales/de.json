@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "Karte im HUD vor BMW-Pop-ups behalten",
     "Phone maps": "Handy-Karten",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Hochdrehen: Drehzahl, Ladedruck · Kalt: Öl, Kühlmittel · Elektrisch: Reichweite",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Hochdrehen: Drehzahl, Ladedruck · Kalt: Öl, Kühlmittel · Elektrisch: kW, Ladestand"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Hochdrehen: Drehzahl, Ladedruck · Kalt: Öl, Kühlmittel · Elektrisch: kW, Ladestand",
+    "Warnings take over": "Warnungen haben Vorrang"
   }
 }

@@ -208,6 +208,13 @@
    "hidden": true
   },
   {
+   "key": "hudWarn",
+   "label": "Warnings take over",
+   "type": "bool",
+   "default": true,
+   "hidden": true
+  },
+  {
    "key": "clusterPanel",
    "label": "Info bar",
    "type": "bool",

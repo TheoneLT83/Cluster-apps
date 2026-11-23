@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les pop-up BMW",
     "Phone maps": "Cartes du téléphone",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : autonomie",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : kW, charge"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : kW, charge",
+    "Warnings take over": "Les alertes passent en premier"
   }
 }

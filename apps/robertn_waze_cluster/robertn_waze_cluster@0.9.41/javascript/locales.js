@@ -155,7 +155,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "إبقاء خريطة HUD فوق النوافذ المنبثقة من BMW",
    "Phone maps": "خرائط الهاتف",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "التسارع: سرعة المحرك، الشاحن · بارد: الزيت، سائل التبريد · كهربائي: المدى",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "التسارع: سرعة المحرك، الشاحن · بارد: الزيت، سائل التبريد · كهربائي: كيلوواط، الشحن"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "التسارع: سرعة المحرك، الشاحن · بارد: الزيت، سائل التبريد · كهربائي: كيلوواط، الشحن",
+   "Warnings take over": "التحذيرات لها الأولوية"
   }
  },
  {
@@ -312,7 +313,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Ponechat mapu na HUD přes vyskakovací okna BMW",
    "Phone maps": "Mapy z telefonu",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Vytáčení: otáčky, plnicí tlak · Studený: olej, chladicí kapalina · Elektricky: dojezd",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vytáčení: otáčky, plnicí tlak · Studený: olej, chladicí kapalina · Elektricky: kW, nabití"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vytáčení: otáčky, plnicí tlak · Studený: olej, chladicí kapalina · Elektricky: kW, nabití",
+   "Warnings take over": "Varování mají přednost"
   }
  },
  {
@@ -469,7 +471,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Behold kort i HUD over BMW's pop-ups",
    "Phone maps": "Telefonens kort",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Høje omdrejninger: omdrejninger, ladetryk · Kold: olie, kølevæske · El: rækkevidde",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Høje omdrejninger: omdrejninger, ladetryk · Kold: olie, kølevæske · El: kW, opladning"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Høje omdrejninger: omdrejninger, ladetryk · Kold: olie, kølevæske · El: kW, opladning",
+   "Warnings take over": "Advarsler tager over"
   }
  },
  {
@@ -626,7 +629,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Karte im HUD vor BMW-Pop-ups behalten",
    "Phone maps": "Handy-Karten",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Hochdrehen: Drehzahl, Ladedruck · Kalt: Öl, Kühlmittel · Elektrisch: Reichweite",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Hochdrehen: Drehzahl, Ladedruck · Kalt: Öl, Kühlmittel · Elektrisch: kW, Ladestand"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Hochdrehen: Drehzahl, Ladedruck · Kalt: Öl, Kühlmittel · Elektrisch: kW, Ladestand",
+   "Warnings take over": "Warnungen haben Vorrang"
   }
  },
  {
@@ -783,7 +787,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Διατήρηση χάρτη στο HUD πάνω από τα αναδυόμενα της BMW",
    "Phone maps": "Χάρτες τηλεφώνου",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Στροφές: στροφές κινητήρα, υπερπλήρωση · Κρύο: λάδι, ψυκτικό · Ηλεκτρικά: αυτονομία",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Στροφές: στροφές κινητήρα, υπερπλήρωση · Κρύο: λάδι, ψυκτικό · Ηλεκτρικά: kW, φόρτιση"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Στροφές: στροφές κινητήρα, υπερπλήρωση · Κρύο: λάδι, ψυκτικό · Ηλεκτρικά: kW, φόρτιση",
+   "Warnings take over": "Οι προειδοποιήσεις έχουν προτεραιότητα"
   }
  },
  {
@@ -940,7 +945,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Mantener mapa en el HUD sobre ventanas emergentes de BMW",
    "Phone maps": "Mapas del teléfono",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Revoluciones: rpm, presión del turbo · Frío: aceite, refrigerante · Eléctrico: autonomía",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Revoluciones: rpm, presión del turbo · Frío: aceite, refrigerante · Eléctrico: kW, carga"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Revoluciones: rpm, presión del turbo · Frío: aceite, refrigerante · Eléctrico: kW, carga",
+   "Warnings take over": "Las alertas tienen prioridad"
   }
  },
  {
@@ -1097,7 +1103,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Mantener mapa en el HUD sobre ventanas emergentes de BMW",
    "Phone maps": "Mapas del móvil",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Revoluciones: rpm, presión del turbo · Frío: aceite, refrigerante · Eléctrico: autonomía",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Revoluciones: rpm, presión del turbo · Frío: aceite, refrigerante · Eléctrico: kW, carga"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Revoluciones: rpm, presión del turbo · Frío: aceite, refrigerante · Eléctrico: kW, carga",
+   "Warnings take over": "Los avisos tienen prioridad"
   }
  },
  {
@@ -1254,7 +1261,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Pidä HUD-kartta BMW:n ponnahdusikkunoiden päällä",
    "Phone maps": "Puhelimen kartat",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Kierrokset: moottorin kierrokset, ahtopaine · Kylmä: öljy, jäähdytysneste · Sähkö: toimintamatka",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Kierrokset: moottorin kierrokset, ahtopaine · Kylmä: öljy, jäähdytysneste · Sähkö: kW, varaus"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Kierrokset: moottorin kierrokset, ahtopaine · Kylmä: öljy, jäähdytysneste · Sähkö: kW, varaus",
+   "Warnings take over": "Varoitukset ensin"
   }
  },
  {
@@ -1411,7 +1419,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les fenêtres contextuelles BMW",
    "Phone maps": "Cartes du téléphone",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : autonomie",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : kW, charge"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : kW, charge",
+   "Warnings take over": "Les alertes passent en premier"
   }
  },
  {
@@ -1568,7 +1577,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Garder la carte sur le HUD devant les pop-up BMW",
    "Phone maps": "Cartes du téléphone",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : autonomie",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : kW, charge"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Régime élevé : régime, suralimentation · Froid : huile, liquide de refroidissement · Électrique : kW, charge",
+   "Warnings take over": "Les alertes passent en premier"
   }
  },
  {
@@ -1725,7 +1735,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "השארת המפה ב-HUD מעל החלונות הקופצים של BMW",
    "Phone maps": "מפות הטלפון",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "סיבובים: סל\"ד, טורבו · קר: שמן, נוזל קירור · חשמלי: טווח",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "סיבובים: סל\"ד, טורבו · קר: שמן, נוזל קירור · חשמלי: kW, טעינה"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "סיבובים: סל\"ד, טורבו · קר: שמן, נוזל קירור · חשמלי: kW, טעינה",
+   "Warnings take over": "אזהרות קודמות"
   }
  },
  {
@@ -1882,7 +1893,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Térkép megtartása a HUD-on a BMW felugró ablakai felett",
    "Phone maps": "Telefonos térképek",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Pörgetés: fordulatszám, töltőnyomás · Hideg: olaj, hűtőfolyadék · Elektromos: hatótáv",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Pörgetés: fordulatszám, töltőnyomás · Hideg: olaj, hűtőfolyadék · Elektromos: kW, töltöttség"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Pörgetés: fordulatszám, töltőnyomás · Hideg: olaj, hűtőfolyadék · Elektromos: kW, töltöttség",
+   "Warnings take over": "A figyelmeztetések elsőbbséget kapnak"
   }
  },
  {
@@ -2039,7 +2051,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Pertahankan peta di HUD di atas pop-up BMW",
    "Phone maps": "Peta ponsel",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Putaran tinggi: putaran mesin, boost · Dingin: oli, cairan pendingin · Listrik: jarak tempuh",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Putaran tinggi: putaran mesin, boost · Dingin: oli, cairan pendingin · Listrik: kW, daya baterai"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Putaran tinggi: putaran mesin, boost · Dingin: oli, cairan pendingin · Listrik: kW, daya baterai",
+   "Warnings take over": "Peringatan diutamakan"
   }
  },
  {
@@ -2196,7 +2209,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Mantieni la mappa sull'HUD sopra i pop-up BMW",
    "Phone maps": "Mappe del telefono",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Su di giri: giri motore, pressione turbo · Freddo: olio, liquido refrigerante · Elettrico: autonomia",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Su di giri: giri motore, pressione turbo · Freddo: olio, liquido refrigerante · Elettrico: kW, carica"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Su di giri: giri motore, pressione turbo · Freddo: olio, liquido refrigerante · Elettrico: kW, carica",
+   "Warnings take over": "Gli avvisi hanno la precedenza"
   }
  },
  {
@@ -2353,7 +2367,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "HUDの地図をBMWのポップアップより優先",
    "Phone maps": "スマホの地図",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "高回転: エンジン回転数、過給圧 · 冷間: オイル、冷却水 · 電気: 航続距離",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高回転: エンジン回転数、過給圧 · 冷間: オイル、冷却水 · 電気: kW、充電量"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高回転: エンジン回転数、過給圧 · 冷間: オイル、冷却水 · 電気: kW、充電量",
+   "Warnings take over": "警告を優先表示"
   }
  },
  {
@@ -2510,7 +2525,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "BMW 팝업 위에 HUD 지도 유지",
    "Phone maps": "휴대폰 지도",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "고회전: 엔진 회전수, 부스트 · 냉간: 오일, 냉각수 · 전기: 주행 가능 거리",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "고회전: 엔진 회전수, 부스트 · 냉간: 오일, 냉각수 · 전기: kW, 충전량"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "고회전: 엔진 회전수, 부스트 · 냉간: 오일, 냉각수 · 전기: kW, 충전량",
+   "Warnings take over": "경고 우선 표시"
   }
  },
  {
@@ -2667,7 +2683,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Behold kart i HUD over BMWs popup-vinduer",
    "Phone maps": "Telefonens kart",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Høyt turtall: turtall, ladetrykk · Kald: olje, kjølevæske · Elektrisk: rekkevidde",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Høyt turtall: turtall, ladetrykk · Kald: olje, kjølevæske · Elektrisk: kW, lading"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Høyt turtall: turtall, ladetrykk · Kald: olje, kjølevæske · Elektrisk: kW, lading",
+   "Warnings take over": "Advarsler tar over"
   }
  },
  {
@@ -2826,7 +2843,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Kaart in HUD boven BMW-pop-ups houden",
    "Phone maps": "Kaarten van de telefoon",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Hoog toerental: toerental, laaddruk · Koud: olie, koelvloeistof · Elektrisch: actieradius",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Hoog toerental: toerental, laaddruk · Koud: olie, koelvloeistof · Elektrisch: kW, lading"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Hoog toerental: toerental, laaddruk · Koud: olie, koelvloeistof · Elektrisch: kW, lading",
+   "Warnings take over": "Waarschuwingen gaan voor"
   }
  },
  {
@@ -2983,7 +3001,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Zachowaj mapę na HUD nad wyskakującymi oknami BMW",
    "Phone maps": "Mapy z telefonu",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Wysokie obroty: obroty, doładowanie · Zimny: olej, płyn chłodzący · Elektrycznie: zasięg",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Wysokie obroty: obroty, doładowanie · Zimny: olej, płyn chłodzący · Elektrycznie: kW, naładowanie"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Wysokie obroty: obroty, doładowanie · Zimny: olej, płyn chłodzący · Elektrycznie: kW, naładowanie",
+   "Warnings take over": "Ostrzeżenia mają pierwszeństwo"
   }
  },
  {
@@ -3140,7 +3159,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups da BMW",
    "Phone maps": "Mapas do celular",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Giro alto: rotação, pressão do turbo · Frio: óleo, arrefecimento · Elétrico: autonomia",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Giro alto: rotação, pressão do turbo · Frio: óleo, arrefecimento · Elétrico: kW, carga"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Giro alto: rotação, pressão do turbo · Frio: óleo, arrefecimento · Elétrico: kW, carga",
+   "Warnings take over": "Alertas têm prioridade"
   }
  },
  {
@@ -3297,7 +3317,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups BMW",
    "Phone maps": "Mapas do telemóvel",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Rotação alta: rotação, pressão do turbo · Frio: óleo, refrigerante · Elétrico: autonomia",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Rotação alta: rotação, pressão do turbo · Frio: óleo, refrigerante · Elétrico: kW, carga"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Rotação alta: rotação, pressão do turbo · Frio: óleo, refrigerante · Elétrico: kW, carga",
+   "Warnings take over": "Avisos têm prioridade"
   }
  },
  {
@@ -3454,7 +3475,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Păstrare hartă pe HUD peste ferestrele pop-up BMW",
    "Phone maps": "Hărți din telefon",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Turație mare: turație, presiune turbo · Rece: ulei, lichid de răcire · Electric: autonomie",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Turație mare: turație, presiune turbo · Rece: ulei, lichid de răcire · Electric: kW, încărcare"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Turație mare: turație, presiune turbo · Rece: ulei, lichid de răcire · Electric: kW, încărcare",
+   "Warnings take over": "Avertizările au prioritate"
   }
  },
  {
@@ -3611,7 +3633,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Оставлять карту на HUD поверх всплывающих окон BMW",
    "Phone maps": "Карты телефона",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Обороты: обороты двигателя, наддув · Холодный: масло, антифриз · Электро: запас хода",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Обороты: обороты двигателя, наддув · Холодный: масло, антифриз · Электро: кВт, заряд"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Обороты: обороты двигателя, наддув · Холодный: масло, антифриз · Электро: кВт, заряд",
+   "Warnings take over": "Предупреждения в приоритете"
   }
  },
  {
@@ -3768,7 +3791,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Ponechať mapu na HUD nad kontextovými oknami BMW",
    "Phone maps": "Mapy z telefónu",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Vytáčanie: otáčky, plniaci tlak · Studený: olej, chladiaca kvapalina · Elektricky: dojazd",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vytáčanie: otáčky, plniaci tlak · Studený: olej, chladiaca kvapalina · Elektricky: kW, nabitie"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vytáčanie: otáčky, plniaci tlak · Studený: olej, chladiaca kvapalina · Elektricky: kW, nabitie",
+   "Warnings take over": "Varovania majú prednosť"
   }
  },
  {
@@ -3925,7 +3949,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Ohrani zemljevid na HUD nad pojavnimi okni BMW",
    "Phone maps": "Zemljevidi telefona",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Visoki vrtljaji: vrtljaji, polnilni tlak · Hladen: olje, hladilna tekočina · Električno: doseg",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Visoki vrtljaji: vrtljaji, polnilni tlak · Hladen: olje, hladilna tekočina · Električno: kW, napolnjenost"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Visoki vrtljaji: vrtljaji, polnilni tlak · Hladen: olje, hladilna tekočina · Električno: kW, napolnjenost",
+   "Warnings take over": "Opozorila imajo prednost"
   }
  },
  {
@@ -4082,7 +4107,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Behåll karta i HUD över BMW:s popup-fönster",
    "Phone maps": "Telefonens kartor",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Högt varv: varvtal, laddtryck · Kall: olja, kylvätska · El: räckvidd",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Högt varv: varvtal, laddtryck · Kall: olja, kylvätska · El: kW, laddning"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Högt varv: varvtal, laddtryck · Kall: olja, kylvätska · El: kW, laddning",
+   "Warnings take over": "Varningar tar över"
   }
  },
  {
@@ -4239,7 +4265,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "คงแผนที่บน HUD ไว้เหนือป๊อปอัปของ BMW",
    "Phone maps": "แผนที่โทรศัพท์",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "รอบสูง: รอบเครื่อง, บูสต์ · เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น · ไฟฟ้า: ระยะทาง",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "รอบสูง: รอบเครื่อง, บูสต์ · เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น · ไฟฟ้า: kW, ประจุ"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "รอบสูง: รอบเครื่อง, บูสต์ · เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น · ไฟฟ้า: kW, ประจุ",
+   "Warnings take over": "แสดงคำเตือนก่อน"
   }
  },
  {
@@ -4396,7 +4423,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "HUD haritasını BMW açılır pencerelerinin üstünde tut",
    "Phone maps": "Telefon haritaları",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Yüksek devir: devir, turbo basıncı · Soğuk: yağ, soğutma suyu · Elektrikli: menzil",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Yüksek devir: devir, turbo basıncı · Soğuk: yağ, soğutma suyu · Elektrikli: kW, şarj"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Yüksek devir: devir, turbo basıncı · Soğuk: yağ, soğutma suyu · Elektrikli: kW, şarj",
+   "Warnings take over": "Uyarılar öne çıkar"
   }
  },
  {
@@ -4553,7 +4581,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Залишати карту на HUD поверх спливних вікон BMW",
    "Phone maps": "Карти телефону",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Оберти: оберти двигуна, наддув · Холодний: олива, охолоджувальна рідина · Електро: запас ходу",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Оберти: оберти двигуна, наддув · Холодний: олива, охолоджувальна рідина · Електро: кВт, заряд"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Оберти: оберти двигуна, наддув · Холодний: олива, охолоджувальна рідина · Електро: кВт, заряд",
+   "Warnings take over": "Попередження в пріоритеті"
   }
  },
  {
@@ -4710,7 +4739,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "Giữ bản đồ trên HUD phía trên cửa sổ bật lên của BMW",
    "Phone maps": "Bản đồ điện thoại",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Vòng tua cao: vòng tua, tăng áp · Lạnh: dầu, nước làm mát · Điện: quãng đường",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vòng tua cao: vòng tua, tăng áp · Lạnh: dầu, nước làm mát · Điện: kW, mức sạc"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vòng tua cao: vòng tua, tăng áp · Lạnh: dầu, nước làm mát · Điện: kW, mức sạc",
+   "Warnings take over": "Ưu tiên cảnh báo"
   }
  },
  {
@@ -4869,7 +4899,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "HUD 地图保持在 BMW 弹窗之上",
    "Phone maps": "手机地图",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "高转速：转速、增压 · 冷车：机油、冷却液 · 电动：续航",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高转速：转速、增压 · 冷车：机油、冷却液 · 电动：kW、电量"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高转速：转速、增压 · 冷车：机油、冷却液 · 电动：kW、电量",
+   "Warnings take over": "警告优先显示"
   }
  },
  {
@@ -5028,7 +5059,8 @@ module.exports = [
    "Keep HUD map over BMW's pop-ups": "HUD 地圖保持在 BMW 彈出視窗之上",
    "Phone maps": "手機地圖",
    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "高轉速：轉速、增壓 · 冷車：機油、冷卻液 · 電動：續航",
-   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高轉速：轉速、增壓 · 冷車：機油、冷卻液 · 電動：kW、電量"
+   "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高轉速：轉速、增壓 · 冷車：機油、冷卻液 · 電動：kW、電量",
+   "Warnings take over": "警告優先顯示"
   }
  }
 ];

@@ -9,6 +9,8 @@ across the whole panel; the readings to pick are numbered in the order they show
 how many are picked, and Auto is a switch next to it with what it does. Maps lists CarPlay and Android Auto with
 their patch's state (a tap picks one for the buttons under them). The pictures' map is a dark one with grey roads.
 
+HUD: **Warnings take over** (Display page, HUD) switches off the warnings that take the info bar over.
+
 ## 0.9.40
 
 The cluster's info bar has Auto too (its last button on the Display page's Cluster tab): engine speed and boost while

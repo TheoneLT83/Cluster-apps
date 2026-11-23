@@ -53,10 +53,10 @@ const W = 1600, H = 520;
 const PAGES = ['Maps', 'Display', 'Turn View', 'Log'];
 /* The Display page's switches, its HUD tab's and its Cluster tab's: the setting, its words. */
 const HUD_ITEMS = [['hudOn', 'Displays on HUD'], ['hudTurn', 'Turn signals'], ['hudGear', 'Gear'], ['realSpeed', 'Real speed on HUD'],
-    ['greenLightHud', 'Green light alert'], ['hudNight', 'Dimmer at night']];
+    ['greenLightHud', 'Green light alert'], ['hudNight', 'Dimmer at night'], ['hudWarn', 'Warnings take over']];
 const CLUSTER_ITEMS = [['greenLightCluster', 'Green light alert'], ['clusterPanel', 'Info bar'], ['sideView', 'Side view']];
 /* The icon in front of each switch (icons.js), by its setting. */
-const ICON = { hudOn: 'hud', hudTurn: 'turn', hudGear: 'gear', realSpeed: 'speed', greenLightHud: 'light', hudNight: 'night', hudKeep: 'layers',
+const ICON = { hudOn: 'hud', hudTurn: 'turn', hudGear: 'gear', realSpeed: 'speed', greenLightHud: 'light', hudNight: 'night', hudWarn: 'warn', hudKeep: 'layers',
     map: 'map', guide: 'guide', greenLightCluster: 'light', clusterPanel: 'bar', sideView: 'camera', own: 'person' };
 /* Side view: the side signalled, its camera on the cluster (waze-on-cluster's Side view copy) while Turn View is off; kept SIDE_HOLD_MS after
  * the signal (its blink and a lane change's short taps). Hazards: nothing. */
@@ -307,7 +307,7 @@ async function background(bg) {
     /* The data under the map (hud_overlay.js drawData), the car's own only; preview: every chosen one, '--' for
      * a value not known. */
     const dataNow = (preview) => {
-        const warn = preview ? [] : warningNow();
+        const warn = preview || settings.get('hudWarn') === false ? [] : warningNow();
         if (warn.length) return warn.slice(0, HUD_DATA_MAX);
         const d = car.data(), real = d && !d.demo ? d : {}, out = [];
         // cold: blue under PANEL.COLD_C, as the cluster's info bar (oil, coolant, gearbox oil)

@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "Διατήρηση χάρτη στο HUD πάνω από τα αναδυόμενα της BMW",
     "Phone maps": "Χάρτες τηλεφώνου",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Στροφές: στροφές κινητήρα, υπερπλήρωση · Κρύο: λάδι, ψυκτικό · Ηλεκτρικά: αυτονομία",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Στροφές: στροφές κινητήρα, υπερπλήρωση · Κρύο: λάδι, ψυκτικό · Ηλεκτρικά: kW, φόρτιση"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Στροφές: στροφές κινητήρα, υπερπλήρωση · Κρύο: λάδι, ψυκτικό · Ηλεκτρικά: kW, φόρτιση",
+    "Warnings take over": "Οι προειδοποιήσεις έχουν προτεραιότητα"
   }
 }

@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "Оставлять карту на HUD поверх всплывающих окон BMW",
     "Phone maps": "Карты телефона",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Обороты: обороты двигателя, наддув · Холодный: масло, антифриз · Электро: запас хода",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Обороты: обороты двигателя, наддув · Холодный: масло, антифриз · Электро: кВт, заряд"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Обороты: обороты двигателя, наддув · Холодный: масло, антифриз · Электро: кВт, заряд",
+    "Warnings take over": "Предупреждения в приоритете"
   }
 }

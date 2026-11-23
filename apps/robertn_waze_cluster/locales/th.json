@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "คงแผนที่บน HUD ไว้เหนือป๊อปอัปของ BMW",
     "Phone maps": "แผนที่โทรศัพท์",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "รอบสูง: รอบเครื่อง, บูสต์ · เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น · ไฟฟ้า: ระยะทาง",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "รอบสูง: รอบเครื่อง, บูสต์ · เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น · ไฟฟ้า: kW, ประจุ"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "รอบสูง: รอบเครื่อง, บูสต์ · เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น · ไฟฟ้า: kW, ประจุ",
+    "Warnings take over": "แสดงคำเตือนก่อน"
   }
 }

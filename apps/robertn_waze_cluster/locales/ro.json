@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "Păstrare hartă pe HUD peste ferestrele pop-up BMW",
     "Phone maps": "Hărți din telefon",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Turație mare: turație, presiune turbo · Rece: ulei, lichid de răcire · Electric: autonomie",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Turație mare: turație, presiune turbo · Rece: ulei, lichid de răcire · Electric: kW, încărcare"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Turație mare: turație, presiune turbo · Rece: ulei, lichid de răcire · Electric: kW, încărcare",
+    "Warnings take over": "Avertizările au prioritate"
   }
 }

@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "Ponechať mapu na HUD nad kontextovými oknami BMW",
     "Phone maps": "Mapy z telefónu",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Vytáčanie: otáčky, plniaci tlak · Studený: olej, chladiaca kvapalina · Elektricky: dojazd",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vytáčanie: otáčky, plniaci tlak · Studený: olej, chladiaca kvapalina · Elektricky: kW, nabitie"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vytáčanie: otáčky, plniaci tlak · Studený: olej, chladiaca kvapalina · Elektricky: kW, nabitie",
+    "Warnings take over": "Varovania majú prednosť"
   }
 }

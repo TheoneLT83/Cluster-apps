@@ -63,6 +63,12 @@ const ICONS = {
         cv.arc(x, y, 7, 9, 190, 430, c);
         cv.arc(x + 4.5, y - 4.5, 7, 9, 170, 280, c);
     },
+    // a warning triangle
+    warn(cv, x, y, c) {
+        cv.polyline([[x, y - 10], [x + 11, y + 9], [x - 11, y + 9], [x, y - 10]], LW, c);
+        cv.line(x, y - 3, x, y + 3, LW, c);
+        cv.circle(x, y + 6, 1.3, c);
+    },
     // one window over another
     layers(cv, x, y, c) {
         cv.strokeRoundRect(x - 10, y - 8, 14, 11, 2, LW, c);

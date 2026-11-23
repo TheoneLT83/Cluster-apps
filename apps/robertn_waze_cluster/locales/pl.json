@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "Zachowaj mapę na HUD nad wyskakującymi oknami BMW",
     "Phone maps": "Mapy z telefonu",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Wysokie obroty: obroty, doładowanie · Zimny: olej, płyn chłodzący · Elektrycznie: zasięg",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Wysokie obroty: obroty, doładowanie · Zimny: olej, płyn chłodzący · Elektrycznie: kW, naładowanie"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Wysokie obroty: obroty, doładowanie · Zimny: olej, płyn chłodzący · Elektrycznie: kW, naładowanie",
+    "Warnings take over": "Ostrzeżenia mają pierwszeństwo"
   }
 }

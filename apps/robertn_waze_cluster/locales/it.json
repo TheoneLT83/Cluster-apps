@@ -151,6 +151,7 @@
     "Keep HUD map over BMW's pop-ups": "Mantieni la mappa sull'HUD sopra i pop-up BMW",
     "Phone maps": "Mappe del telefono",
     "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Su di giri: giri motore, pressione turbo · Freddo: olio, liquido refrigerante · Elettrico: autonomia",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Su di giri: giri motore, pressione turbo · Freddo: olio, liquido refrigerante · Elettrico: kW, carica"
+    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Su di giri: giri motore, pressione turbo · Freddo: olio, liquido refrigerante · Elettrico: kW, carica",
+    "Warnings take over": "Gli avvisi hanno la precedenza"
   }
 }
