@@ -1,7 +1,7 @@
 # Turn View in Cluster functions
 
 Turn View is IterioDev's (github.com/IterioDev/car-apps, `tools/iteriodev-turnview` at commit 2e353a0, tool 0.7.0, and
-the camera request of its app `iteriodev_turnview` 1.5.0, `src/camreq.js`), under the PolyForm Strict License 1.0.0
+the camera request of its app `iteriodev_turnview` 1.5.0, `src/camreq.js`; the turn sign's distance as tool 0.9.1 sends it, commit f9ca32b), under the PolyForm Strict License 1.0.0
 in `LICENSE.md`. TheoneLT83 has IterioDev's permission to ship it in Cluster-apps and to change it for Cluster functions, the camera
 binary `mgu-camcluster` included.
 IterioDev's credits and notices are kept.

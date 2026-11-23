@@ -25,6 +25,8 @@
 const mgu = require('./kit/mgu');
 const G = require('./kit/gauges');
 const Car = require('./kit/car');
+const Engine = require('./kit/engine');
+const revs = require('./revs.js');
 const { withAlpha } = require('./kit/canvas');
 const fonts = require('./kit/fonts');
 const i18n = require('./i18n.js');
@@ -79,7 +81,6 @@ const PANEL_ITEMS = [['power', 'clusterKw', 'Battery kW usage'], ['soc', 'cluste
 const PANEL_MAX = 4;
 /* An info bar item the car and the settings offer: the battery's only with eDrive, Real speed only with its setting. */
 const offers = (k, hv, settings) => (k !== 'power' && k !== 'soc' || hv.installed()) && (k !== 'speed' || !!settings.get('realSpeedCluster'));
-const RPM_MAX = 7000;
 const LOG_LINES = 60;
 const HMI_CONTEXT = ['de.bmw.infotainment.hmi.hmicontext.HMIContext', 'HMI_CID'];
 /* The HUD overlay's state, by hud.state(), for the log. */
@@ -158,7 +159,10 @@ async function background(bg) {
     // boost from the sport display (FES), as M Vitals reads it: bar, 0.01 a step, 255 no value
     let boost = null, program = null;
     const programSeen = [];
+    // petrol or diesel (kit/engine.js): the engine speed's scale and zones (revs.js)
+    const engine = new Engine({ settings, dataDir: bg.dataDir, log });
     const car = new Car(Object.assign({}, bg, { log }), ['gear', 'speed', 'rpm', 'temps', 'torque'], {
+        [Engine.SIGNAL[0]]: engine.handlers(),
         'de.bmw.infotainment.drivingexcitement.FES': {
             statusSwitchDriveDynamicSport2: (v) => { const r = v && v.displayBoostPressure; boost = G.isNum(r) && r !== 255 ? r * 0.01 : null; },
         },
@@ -236,6 +240,9 @@ async function background(bg) {
     }, log).catch((e) => log.warn('day / night: ' + e.message));
     const mapNow = () => mapRect(ctl.hudWidth() || 0, ctl.hudOffset() || [0, 0]);
     // the HUD shows the car's gear only, never demo data
+    const revZones = (real) => revs.zones(engine.redline(), engine.value('coldLimit', { diesel: 3000, petrol: 4500 }), real.oil);
+    // the gear in red from the shift point (revs.js), as the engine speed's slider
+    const gearHot = () => { const d = car.data(); return !!(d && !d.demo && G.isNum(d.rpm) && revs.stage(d.rpm, revZones(d)) === 'red'); };
     const gearNow = () => { const d = car.data(); return d && !d.demo ? gearText(Object.assign({}, d, { program })) : null; };
     /* The data under the map (hud_overlay.js drawData), the car's own only; preview: every chosen one, '--' for
      * a value not known. */
@@ -265,7 +272,9 @@ async function background(bg) {
                 value(t('POWER'), p.value, ' ' + p.unit);
                 value(t('TORQUE'), q.value, ' ' + q.unit);
             } else if (c === 'rpm') {
-                slider(real.rpm, 0, RPM_MAX, G.isNum(real.rpm) ? Math.round(real.rpm / 10) * 10 : '');
+                // white, yellow, red from the shift point; the red lower while the oil is cold (revs.js)
+                slider(real.rpm, 0, engine.scaleMax(), G.isNum(real.rpm) ? Math.round(real.rpm / 10) * 10 : '', false,
+                    G.isNum(real.rpm) ? revs.COLOURS[revs.stage(real.rpm, revZones(real))] : null);
             } else if (c === 'temps') {
                 value(t('OIL'), real.oil, '°', true);
                 value(t('COOLANT'), real.coolant, '°', true);
@@ -289,7 +298,7 @@ async function background(bg) {
     // Displays on HUD off: nothing of ours on the HUD, which the renderer then gives back to BMW's own layout
     const toHud = () => (settings.get('hudOn') === false || !hudOk() || given() ? hud.update({ turn: {}, gear: null, map: mapNow(), showTurn: false, showGear: false,
         data: [], speed: null }) : hud.update({
-        turn: turns.state(), gear: gearNow(), map: mapNow(),
+        turn: turns.state(), gear: gearNow(), gearHot: gearHot(), map: mapNow(),
         showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'), data: dataNow(false), speed: speedNow(),
     }));
     car.onSample(() => { toHud(); changed(); });

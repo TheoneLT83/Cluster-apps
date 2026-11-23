@@ -49,7 +49,7 @@ HUD has no room under it, within its sides), following the map's size and place:
 - between the gear and the right arrow, the one reading chosen: **Electric range** (`EV`, with the eDrive power: a
   slider centred on 0 with its kW, green while the battery takes power), **Oil and coolant**, **Boost** (FES
   `statusSwitchDriveDynamicSport2` as M Vitals reads it, a slider up to its boost limit, else 2 bar), **Power and
-  torque** (FES `statusActualValueTorque2` and torque x rpm) or **Engine speed** (a 0-7000 rpm slider);
+  torque** (FES `statusActualValueTorque2` and torque x rpm) or **Engine speed** (a slider to 8000 rpm petrol, 6000 diesel: white, yellow, then red from 700 rpm under the redline, the red lower while the oil is cold, from 4500 rpm petrol and 3000 diesel at 20 °C to the warm point at 90 °C; the gear turns red with it);
 - with **Real speed on HUD**, the car's own speed (`Vehicle2` `statusCarSpeed2`, which a mileage blocker leaves
   alone) left of BMW's speed reading, right of its speed-limit sign.
 

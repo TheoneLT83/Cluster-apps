@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.37
+
+HUD: the Engine speed slider is coloured by zone, white, then yellow, then red from 700 rpm under the engine's
+redline (petrol or diesel, read from the car), the red starting lower while the oil is cold and climbing as it warms;
+the gear turns red from the same point. After WoodyCode23's HUD (woody-apps, GPL-3.0).
+
 ## 0.9.36
 
 robertnisipeanu/idrive-apps' Maps on cluster 0.6.13 and 0.6.14: CarPlay's and Android Auto's Status says why a patch

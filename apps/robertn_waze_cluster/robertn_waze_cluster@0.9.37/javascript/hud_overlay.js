@@ -51,7 +51,7 @@ const GEAR_W = GEAR_RECT.w, GEAR_H = GEAR_RECT.h;
 /* The real speed, left of BMW's own speed and right of its speed-limit sign (the same photo), right-aligned. */
 const SPEED_RECT = { x: 200, y: 328, w: 70, h: 52 };
 const MAX_KW = 60;
-const GREEN = '#25e05a', WHITE = '#f2f5f8', AMBER = '#ffb020', DIM = '#8d98a3';
+const GREEN = '#25e05a', WHITE = '#f2f5f8', AMBER = '#ffb020', DIM = '#8d98a3', HOT = '#ff1f3d';
 
 /* The map's place on the HUD as waze-on-cluster puts it (map_feed.cpp quad): its width as a share of the HUD's
  * (0: the fitted box, about 57 %), the frame's shape kept (1088 x 480), centred, then moved by the offset and held
@@ -196,10 +196,10 @@ function drawGear(cv, gear, o) {
     const p = o || {}, k = p.k || 1, x = p.x || 0, y = p.y || 0;
     const col = (c) => (p.alpha === undefined ? c : withAlpha(c, p.alpha));
     const g = String(gear || ''), size = 24 * k, gap = 3 * k;
-    // as small as BMW's km/h over it, the letters spread wider; R in amber
+    // as small as BMW's km/h over it, the letters spread wider; R in amber, red from the shift point (hot)
     let at = x + 1 * k;
     for (const ch of g) {
-        cv.text(ch, at, y + Math.round((GEAR_H * k + 0.7 * size) / 2), size, col(g.charAt(0) === 'R' ? AMBER : WHITE), { font: 'gear' });
+        cv.text(ch, at, y + Math.round((GEAR_H * k + 0.7 * size) / 2), size, col(g.charAt(0) === 'R' ? AMBER : p.hot ? HOT : WHITE), { font: 'gear' });
         at += cv.textWidth(ch, size, { font: 'gear' }) + gap;
     }
 }
@@ -331,7 +331,7 @@ class HudOverlay {
             this._layer(name, rect, (cv) => { if (lit) drawArrow(cv, rect.w, rect.h, side === 'left' ? -1 : 1, GREEN); }, (lit ? 'on' : 'off') + rect.w);
         });
         if (w.showGear && w.gear) {
-            this._layer('gear', gearRect(w.map, w.arrowSize), (cv) => drawGear(cv, w.gear), 'g' + w.gear);
+            this._layer('gear', gearRect(w.map, w.arrowSize), (cv) => drawGear(cv, w.gear, { hot: w.gearHot }), 'g' + w.gear + (w.gearHot ? '!' : ''));
         } else {
             this._drop('gear');
         }
