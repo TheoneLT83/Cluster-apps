@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.14.7
+
+The rollback tests read this repository's release tags (its first, 0.9.2) and check a separate capture unit only
+for the releases before 0.14.6. Nothing changes on the car.
+
 ## 0.14.6
 
 Uses about 10 MB less of the head unit's memory: the diagnostic DLT
