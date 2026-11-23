@@ -9,8 +9,9 @@
  *     AMPEL_ROT (red), AMPEL_ROT_GELB (red and yellow), AMPEL_GELB (yellow), AMPEL_GRUEN... (green). On cars and
  *     countries where BMW shows traffic lights.
  *   - TrafficLightRecognitionFrontCameraLegacy.RecognitionTrafficLightCamera, the camera's own light objects:
- *     trafficLightColor RAW_RED and RAW_GREEN (the codes are not documented; each code seen is logged once, so a car's
- *     can be read from the log); RAW_NONE is no light.
+ *     trafficLightColor RAW_GREEN green, RAW_NONE no light, any other code a lit light that is not green, shown red
+ *     (at a stop that is red or red and yellow; the codes are not documented and differ from car to car: each code
+ *     seen is logged once, so a car's can be read from the log).
  * Values come as numbers, enum names or { value } objects (num()). The camera numbers a light anew as it tracks it,
  * so any light counts, not only the same trafficLightID.
  *
@@ -107,7 +108,7 @@ class GreenLight extends EventEmitter {
             this.rawSeen.push(code);
             this.log.info('green light: camera colour code ' + code + ' (light ' + num(v.trafficLightID) + ')');
         }
-        this.light(code === RAW_RED ? 'red' : code === RAW_GREEN ? 'green' : null);
+        this.light(code === RAW_GREEN ? 'green' : 'red');
     }
 
     _slow() { const kmh = this.speed(); return typeof kmh === 'number' && isFinite(kmh) && kmh <= SLOW_KMH; }

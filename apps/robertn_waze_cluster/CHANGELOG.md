@@ -13,6 +13,10 @@ switch slides; the pictures are dark screens with grey roads.
 
 HUD: **Warnings take over** (Display page, HUD) switches off the warnings that take the info bar over.
 
+Green light alert: the camera's lights in any colour but green show red (at a stop: red, or red and yellow), not only
+the one code taken for red, so the red shows while waiting and the green after it gets its GO; each code a car's
+camera sends is in the log once ("camera colour code").
+
 ## 0.9.40
 
 The cluster's info bar has Auto too (its last button on the Display page's Cluster tab): engine speed and boost while

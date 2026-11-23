@@ -73,6 +73,11 @@ eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GE
     t += GO_MS + 1; g.tick();
     camera({ trafficLightID: 8, trafficLightColor: 1 }); t += 1000; camera({ trafficLightID: 8, trafficLightColor: 3 });
     eq(shown.slice(-2), ['red', 'green'], 'within the quiet time: green without a second GO');
+    t += QUIET_MS + 1; camera({ trafficLightID: 9, trafficLightColor: 6 });
+    eq(shown[shown.length - 1], 'red', 'another code than green or none (a car\'s own red): red');
+    t += 1000; camera({ trafficLightID: 9, trafficLightColor: 3 });
+    eq(shown[shown.length - 1], 'green GO', 'its green after it: GO');
+    t += GO_MS + 1; g.tick();
     kmh = null; t += 500; g.tick();
     eq(shown[shown.length - 1], 'none', 'no speed known: nothing');
     kmh = 0; t += RED_KEEP_MS + 1; g.tick();
