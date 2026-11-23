@@ -829,7 +829,10 @@ function unitLine(text, key) { var m = new RegExp('^' + key + '=(.*)$', 'm').exe
  * runs current/patchd.js with no arguments and nothing in ExecStopPost; its
  * patchd.js has no capture code and runs as its daemon with --dlt-capture
  * (a downgrade keeps this version's patchd unit until the next install). */
-var ALL = list.map(function (t) { return t.slice('waze-on-cluster@'.length); }).filter(function (v) { return /^\d+\.\d+\.\d+$/.test(v); }).sort(cmp);
+// the releases with a capture unit: those before 0.14.6, the first that runs the capture in patchd as this version does
+var IN_PATCHD = '0.14.6';
+var ALL = list.map(function (t) { return t.slice('waze-on-cluster@'.length); })
+    .filter(function (v) { return /^\d+\.\d+\.\d+$/.test(v) && cmp(v, IN_PATCHD) < 0; }).sort(cmp);
 var byBlob = {}, kinds = {};
 ALL.forEach(function (v) {
     var cap = relFile(v, 'systemd/waze-on-cluster-capture.service'), pu = relFile(v, 'systemd/waze-on-cluster-patchd.service');
