@@ -150,8 +150,8 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Manter mapa no HUD sobre pop-ups BMW",
     "Phone maps": "Mapas do telemóvel",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Rotação alta: rotação, pressão do turbo · Frio: óleo, refrigerante · Elétrico: autonomia",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Rotação alta: rotação, pressão do turbo · Frio: óleo, refrigerante · Elétrico: kW, carga",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Rotação alta: rotação, pressão do turbo | Frio: óleo, refrigerante | Elétrico: autonomia",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Rotação alta: rotação, pressão do turbo | Frio: óleo, refrigerante | Elétrico: kW, carga",
     "Warnings take over": "Avisos têm prioridade"
   }
 }

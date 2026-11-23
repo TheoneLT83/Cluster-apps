@@ -150,8 +150,8 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Ponechat mapu na HUD přes vyskakovací okna BMW",
     "Phone maps": "Mapy z telefonu",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Vytáčení: otáčky, plnicí tlak · Studený: olej, chladicí kapalina · Elektricky: dojezd",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Vytáčení: otáčky, plnicí tlak · Studený: olej, chladicí kapalina · Elektricky: kW, nabití",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Vytáčení: otáčky, plnicí tlak | Studený: olej, chladicí kapalina | Elektricky: dojezd",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Vytáčení: otáčky, plnicí tlak | Studený: olej, chladicí kapalina | Elektricky: kW, nabití",
     "Warnings take over": "Varování mají přednost"
   }
 }

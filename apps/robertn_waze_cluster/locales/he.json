@@ -150,8 +150,8 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "השארת המפה ב-HUD מעל החלונות הקופצים של BMW",
     "Phone maps": "מפות הטלפון",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "סיבובים: סל\"ד, טורבו · קר: שמן, נוזל קירור · חשמלי: טווח",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "סיבובים: סל\"ד, טורבו · קר: שמן, נוזל קירור · חשמלי: kW, טעינה",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "סיבובים: סל\"ד, טורבו | קר: שמן, נוזל קירור | חשמלי: טווח",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "סיבובים: סל\"ד, טורבו | קר: שמן, נוזל קירור | חשמלי: kW, טעינה",
     "Warnings take over": "אזהרות קודמות"
   }
 }

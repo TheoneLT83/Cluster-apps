@@ -150,8 +150,8 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "HUDの地図をBMWのポップアップより優先",
     "Phone maps": "スマホの地図",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "高回転: エンジン回転数、過給圧 · 冷間: オイル、冷却水 · 電気: 航続距離",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高回転: エンジン回転数、過給圧 · 冷間: オイル、冷却水 · 電気: kW、充電量",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "高回転: エンジン回転数、過給圧 | 冷間: オイル、冷却水 | 電気: 航続距離",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "高回転: エンジン回転数、過給圧 | 冷間: オイル、冷却水 | 電気: kW、充電量",
     "Warnings take over": "警告を優先表示"
   }
 }

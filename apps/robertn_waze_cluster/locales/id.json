@@ -150,8 +150,8 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Pertahankan peta di HUD di atas pop-up BMW",
     "Phone maps": "Peta ponsel",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Putaran tinggi: putaran mesin, boost · Dingin: oli, cairan pendingin · Listrik: jarak tempuh",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Putaran tinggi: putaran mesin, boost · Dingin: oli, cairan pendingin · Listrik: kW, daya baterai",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Putaran tinggi: putaran mesin, boost | Dingin: oli, cairan pendingin | Listrik: jarak tempuh",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Putaran tinggi: putaran mesin, boost | Dingin: oli, cairan pendingin | Listrik: kW, daya baterai",
     "Warnings take over": "Peringatan diutamakan"
   }
 }

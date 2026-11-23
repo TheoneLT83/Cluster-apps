@@ -150,8 +150,8 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Térkép megtartása a HUD-on a BMW felugró ablakai felett",
     "Phone maps": "Telefonos térképek",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Pörgetés: fordulatszám, töltőnyomás · Hideg: olaj, hűtőfolyadék · Elektromos: hatótáv",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Pörgetés: fordulatszám, töltőnyomás · Hideg: olaj, hűtőfolyadék · Elektromos: kW, töltöttség",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Pörgetés: fordulatszám, töltőnyomás | Hideg: olaj, hűtőfolyadék | Elektromos: hatótáv",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Pörgetés: fordulatszám, töltőnyomás | Hideg: olaj, hűtőfolyadék | Elektromos: kW, töltöttség",
     "Warnings take over": "A figyelmeztetések elsőbbséget kapnak"
   }
 }

@@ -150,8 +150,8 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "HUD haritasını BMW açılır pencerelerinin üstünde tut",
     "Phone maps": "Telefon haritaları",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Yüksek devir: devir, turbo basıncı · Soğuk: yağ, soğutma suyu · Elektrikli: menzil",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Yüksek devir: devir, turbo basıncı · Soğuk: yağ, soğutma suyu · Elektrikli: kW, şarj",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Yüksek devir: devir, turbo basıncı | Soğuk: yağ, soğutma suyu | Elektrikli: menzil",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Yüksek devir: devir, turbo basıncı | Soğuk: yağ, soğutma suyu | Elektrikli: kW, şarj",
     "Warnings take over": "Uyarılar öne çıkar"
   }
 }

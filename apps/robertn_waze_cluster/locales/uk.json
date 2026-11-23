@@ -150,8 +150,8 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "Залишати карту на HUD поверх спливних вікон BMW",
     "Phone maps": "Карти телефону",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "Оберти: оберти двигуна, наддув · Холодний: олива, охолоджувальна рідина · Електро: запас ходу",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "Оберти: оберти двигуна, наддув · Холодний: олива, охолоджувальна рідина · Електро: кВт, заряд",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Оберти: оберти двигуна, наддув | Холодний: олива, охолоджувальна рідина | Електро: запас ходу",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Оберти: оберти двигуна, наддув | Холодний: олива, охолоджувальна рідина | Електро: кВт, заряд",
     "Warnings take over": "Попередження в пріоритеті"
   }
 }

@@ -819,7 +819,7 @@ mgu.run({
                 const auto = settings.get('hudAuto') === true;
                 let hx = heading(cv, th, t('Info bar'), 48, hy) + 16;
                 hx = countLines(cv, th, hx, hy, Math.min(count, HUD_DATA_MAX), HUD_DATA_MAX) + 18;
-                autoPill(cv, th, hx, hy - 6, auto, () => settings.set('hudAuto', !auto), 'data-auto', !hudOnNow, t('Revving: engine speed, boost · Cold: oil, coolant · Electric: range'));
+                autoPill(cv, th, hx, hy - 6, auto, () => settings.set('hudAuto', !auto), 'data-auto', !hudOnNow, t('Revving: engine speed, boost | When cold: oil, coolant | Electric: range'));
                 chips(hy + 18, offered, 'data-', HUD_DATA_MAX, !hudOnNow);
             } else {
                 // the map on the cluster: on or off with the HUD's as it is (never on neither)
@@ -845,7 +845,7 @@ mgu.run({
                 const cauto = settings.get('clusterAuto') === true;
                 let lx = heading(cv, th, t('Info bar'), 48, ly) + 16;
                 lx = countLines(cv, th, lx, ly, Math.min(count, PANEL_MAX), PANEL_MAX) + 18;
-                autoPill(cv, th, lx, ly - 6, cauto, () => settings.set('clusterAuto', !cauto), 'item-auto', !barOn, t('Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge'));
+                autoPill(cv, th, lx, ly - 6, cauto, () => settings.set('clusterAuto', !cauto), 'item-auto', !barOn, t('Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge'));
                 chips(ly + 18, offered, 'item-', PANEL_MAX, !barOn);
             }
 

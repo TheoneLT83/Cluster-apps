@@ -152,8 +152,8 @@
     "Real speed on cluster": "Real speed on cluster",
     "Keep HUD map over BMW's pop-ups": "HUD 地圖保持在 BMW 彈出視窗之上",
     "Phone maps": "手機地圖",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: range": "高轉速：轉速、增壓 · 冷車：機油、冷卻液 · 電動：續航",
-    "Revving: engine speed, boost · Cold: oil, coolant · Electric: kW, charge": "高轉速：轉速、增壓 · 冷車：機油、冷卻液 · 電動：kW、電量",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "高轉速：轉速、增壓 | 冷車：機油、冷卻液 | 電動：續航",
+    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "高轉速：轉速、增壓 | 冷車：機油、冷卻液 | 電動：kW、電量",
     "Warnings take over": "警告優先顯示"
   }
 }
