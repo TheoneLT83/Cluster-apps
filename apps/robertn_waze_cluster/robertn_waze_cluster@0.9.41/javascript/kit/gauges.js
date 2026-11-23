@@ -828,6 +828,7 @@ function onColour(c) {
     return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2] > 0.35 ? '#000000' : '#ffffff';
 }
 const BTN_FILL = '#ffffff17', BTN_EDGE = '#ffffff33';
+const SIGNS = { '-': 'minus', '+': 'plus', '<': 'left', '>': 'right', '^': 'up', v: 'down' };
 /** A pressed button, chip or choice lights up this long (pressed: key -> when). */
 const PRESS_MS = 180, pressed = new Map();
 function pressing(key, run) {
@@ -851,6 +852,8 @@ function button(cv, t, x, y, w, h, label, run, opts) {
             return null;
         };
     }
+    // a one-character label of a sign or an arrow is drawn as its glyph
+    if (!o.glyph && SIGNS[label]) o = Object.assign({}, o, { glyph: SIGNS[label] });
     const S = t.sel || t.accent, c = o.color || S, r = o.round ? h / 2 : Math.min(10, h / 2);
     const text = upperText(label), opt = { align: 'center', font: 'bold', spacing: 1.5 };
     if (!w) w = Math.max(h * 2.4, cv.textWidth(text, h * 0.36, opt) + h * 0.9);
@@ -863,7 +866,7 @@ function button(cv, t, x, y, w, h, label, run, opts) {
     const fg = o.primary ? (o.busy ? withAlpha(onColour(c), 0.6) : onColour(c)) : o.busy ? withAlpha(t.dim, 0.7) : o.color || t.text;
     if (o.glyph) glyph(cv, o.glyph, x + w / 2, y + h / 2, h * 0.2, fg);
     else cv.text(text, x + w / 2, y + h / 2 + h * 0.13, h * 0.36, fg, opt);
-    if (!o.busy && run) cv.target(x, y, w, h, pressing(o.key || label, run), o.key || label);
+    if (!o.busy && run) cv.target(x, y, w, h, pressing(o.key || label, run), o.key || label, r);
     return w;
 }
 /** A button's glyph, centred at cx, cy, s px from the centre to its tips. */
@@ -898,7 +901,7 @@ function segment(cv, t, x, y, w, h, items) {
         if (lit(it.key || it.label)) cv.roundRect(ix, iy, iw, ih, 9, withAlpha('#ffffff', 0.18));
         cv.text(fit(cv, upperText(it.label), size, iw - 16, opt), ix + iw / 2, iy + ih / 2 + size * 0.36, size,
             it.on ? onColour(S) : it.busy ? withAlpha(t.dim, 0.55) : t.dim, opt);
-        if (!it.busy && it.run) cv.target(ix, iy, iw, ih, pressing(it.key || it.label, it.run), it.key || it.label);
+        if (!it.busy && it.run) cv.target(ix, iy, iw, ih, pressing(it.key || it.label, it.run), it.key || it.label, 9);
     });
     return w;
 }
@@ -922,7 +925,7 @@ function chip(cv, t, x, y, w, h, label, n, run, opts) {
         cv.circle(cx, cy, cr, withAlpha(S, a));
         if (n !== true) cv.text(String(n), cx, cy + cr * 0.45, cr * 1.15, onColour(S), { align: 'center', font: 'bold' });
     } else cv.arc(cx, cy, cr - 1.5, cr, 0, 360, withAlpha('#ffffff', 0.3 * a));
-    if (!o.busy && run) cv.target(x, y, w, h, pressing(o.key || label, run), o.key || label);
+    if (!o.busy && run) cv.target(x, y, w, h, pressing(o.key || label, run), o.key || label, 10);
     return w;
 }
 /** s cut to w px at size (with an ellipsis). */
