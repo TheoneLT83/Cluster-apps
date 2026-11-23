@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.8
+
+The kit's new look: the selected tab has a short line under its name, buttons have rounded corners and are filled in
+the theme's colour when chosen (dark words on Ice White and Night Amber), a pressed one lights up, and the iDrive
+controller's mark is a white ring in a halo of the theme's colour.
+
 ## 1.0.7
 
 - **The player answers this app** (Drive Recorder player 1.2.14): the player answers only the app in IterioDev's
