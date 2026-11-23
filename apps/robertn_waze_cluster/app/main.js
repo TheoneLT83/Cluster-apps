@@ -67,6 +67,9 @@ const HUD_GLASS = { x: 80, y: 100, w: 640, h: 290 };
 /* The HUD's readings in the row under the map, up to HUD_DATA_MAX at once, in this order: the reading, its setting,
  * its words (hudData: the one reading an earlier version chose, taken over once). */
 const HUD_DATA_MAX = 3;
+/* Auto's choice held at least this long before a lower one takes over; a warning shown this long when it starts; what is
+ * too hot, deg C (a low tyre: more_data.js lowTyre). */
+const AUTO_HOLD_MS = 8000, WARN_SHOW_MS = 20000, HOT = { oil: 130, coolant: 115, gearbox: 120 };
 const HUD_DATA = [['ev', 'hudEv', 'Electric range'], ['soc', 'hudSoc', 'Battery charge'], ['temps', 'hudTemps', 'Oil and coolant'],
     ['boost', 'hudBoost', 'Boost'], ['power', 'hudPower', 'Power and torque'], ['rpm', 'hudRpm', 'Engine speed'],
     ['tyres', 'hudTyres', 'Tyre pressures'], ['gearbox', 'hudGearbox', 'Gearbox oil'], ['fuel', 'hudFuel', 'Fuel range'],
@@ -188,8 +191,46 @@ async function background(bg) {
     // an earlier version's one reading (hudData) becomes its switch, once
     { const was = settings.get('hudData'), it = HUD_DATA.find(([v]) => v === was); if (it) { settings.set(it[1], true); settings.set('hudData', 'off'); } }
     /* The HUD's readings switched on that this car has (the battery's with eDrive), up to HUD_DATA_MAX. */
-    const dataChoices = () => HUD_DATA.filter(([v, key]) => settings.get(key) && ((v !== 'ev' && v !== 'soc') || hv.installed())).map(([v]) => v)
-        .slice(0, HUD_DATA_MAX);
+    const dataChoices = () => (settings.get('hudAuto') === true ? autoChoices() : HUD_DATA.filter(([v, key]) => settings.get(key) &&
+        ((v !== 'ev' && v !== 'soc') || hv.installed())).map(([v]) => v).slice(0, HUD_DATA_MAX));
+    /* Auto (setting hudAuto): the readings for what the car is doing, the first that holds -
+     *   revving (from the yellow zone): engine speed, and boost where the car gives it;
+     *   oil or coolant under PANEL.COLD_C: oil and coolant;
+     *   driving on the battery (eDrive, the engine stopped): the electric range;
+     *   else the fuel range.
+     * A choice higher in the list takes over at once; a lower one only after AUTO_HOLD_MS, so it doesn't flicker. */
+    let autoNow = null, autoSince = 0;
+    const AUTO_ORDER = ['rev', 'cold', 'ev', 'cruise'];
+    function autoChoices() {
+        const d = car.data(), real = d && !d.demo ? d : {}, now = Date.now();
+        const st = G.isNum(real.rpm) ? revs.stage(real.rpm, revZones(real)) : 'white';
+        const pick = st !== 'white' ? 'rev'
+            : (G.isNum(real.oil) && real.oil < PANEL.COLD_C) || (G.isNum(real.coolant) && real.coolant < PANEL.COLD_C) ? 'cold'
+            : hv.installed() && (!G.isNum(real.rpm) || real.rpm < 300) ? 'ev' : 'cruise';
+        if (autoNow === null || (pick !== autoNow && (AUTO_ORDER.indexOf(pick) < AUTO_ORDER.indexOf(autoNow) || now - autoSince >= AUTO_HOLD_MS))) {
+            if (pick !== autoNow) { autoNow = pick; autoSince = now; }
+        } else if (pick === autoNow) autoSince = now;
+        return autoNow === 'rev' ? (G.isNum(boost) ? ['rpm', 'boost'] : ['rpm']) : autoNow === 'cold' ? ['temps'] : autoNow === 'ev' ? ['ev'] : ['fuel'];
+    }
+    /* A warning takes the info bar over for WARN_SHOW_MS when it starts (a low tyre, oil, coolant or gearbox oil too hot),
+     * with Auto or the owner's readings; it shows again if it clears and comes back. */
+    const warnSeen = {};
+    const warningNow = () => {
+        const d = car.data(), real = d && !d.demo ? d : {}, now = Date.now(), out = [];
+        const low = more.lowTyre(), p = more.tyres(), gb = more.gearbox();
+        const on = {
+            tyres: low.length ? { label: t('TYRES'), text: Math.min.apply(null, low.map((w) => p[w])).toFixed(1) + ' bar' } : null,
+            oil: G.isNum(real.oil) && real.oil >= HOT.oil ? { label: t('OIL'), text: Math.round(real.oil) + '°' } : null,
+            coolant: G.isNum(real.coolant) && real.coolant >= HOT.coolant ? { label: t('COOLANT'), text: Math.round(real.coolant) + '°' } : null,
+            gearbox: G.isNum(gb) && gb >= HOT.gearbox ? { label: t('GEARBOX'), text: Math.round(gb) + '°' } : null,
+        };
+        Object.keys(on).forEach((k) => {
+            if (!on[k]) { delete warnSeen[k]; return; }
+            if (warnSeen[k] === undefined) { warnSeen[k] = now; log.info('HUD warning: ' + k + ' ' + on[k].text); }
+            if (now - warnSeen[k] < WARN_SHOW_MS) out.push(Object.assign({ kind: 'value', warn: true }, on[k]));
+        });
+        return out;
+    };
     /* The cluster's info bar (cluster_panel.js): the items switched on (the battery's only with eDrive; none of them:
      * oil, coolant and engine speed), while the Waze map shows on the cluster and setting clusterPanel is on. */
     const panelKinds = () => {
@@ -241,12 +282,15 @@ async function background(bg) {
     const mapNow = () => mapRect(ctl.hudWidth() || 0, ctl.hudOffset() || [0, 0]);
     // the HUD shows the car's gear only, never demo data
     const revZones = (real) => revs.zones(engine.redline(), engine.value('coldLimit', { diesel: 3000, petrol: 4500 }), real.oil);
-    // the gear in red from the shift point (revs.js), as the engine speed's slider
-    const gearHot = () => { const d = car.data(); return !!(d && !d.demo && G.isNum(d.rpm) && revs.stage(d.rpm, revZones(d)) === 'red'); };
+    // the engine speed's stage (revs.js): the gear and the slider red from the shift point, flashing near the redline
+    const revStage = () => { const d = car.data(); return d && !d.demo && G.isNum(d.rpm) ? revs.stage(d.rpm, revZones(d)) : 'white'; };
+    const gearHot = () => { const st = revStage(); return st === 'red' || (st === 'flash' && revs.flashOn(Date.now())); };
     const gearNow = () => { const d = car.data(); return d && !d.demo ? gearText(Object.assign({}, d, { program })) : null; };
     /* The data under the map (hud_overlay.js drawData), the car's own only; preview: every chosen one, '--' for
      * a value not known. */
     const dataNow = (preview) => {
+        const warn = preview ? [] : warningNow();
+        if (warn.length) return warn.slice(0, HUD_DATA_MAX);
         const d = car.data(), real = d && !d.demo ? d : {}, out = [];
         // cold: blue under PANEL.COLD_C, as the cluster's info bar (oil, coolant, gearbox oil)
         const value = (label, v, unit, cold) => { if (G.isNum(v) || preview) out.push({ kind: 'value', label, text: G.isNum(v) ? Math.round(v) + unit : '--', cold: !!cold && G.isNum(v) && v < PANEL.COLD_C }); };
@@ -274,7 +318,7 @@ async function background(bg) {
             } else if (c === 'rpm') {
                 // white, yellow, red from the shift point; the red lower while the oil is cold (revs.js)
                 slider(real.rpm, 0, engine.scaleMax(), G.isNum(real.rpm) ? Math.round(real.rpm / 10) * 10 : '', false,
-                    G.isNum(real.rpm) ? revs.COLOURS[revs.stage(real.rpm, revZones(real))] : null);
+                    G.isNum(real.rpm) ? revs.colour(revs.stage(real.rpm, revZones(real)), revs.flashOn(Date.now())) : null);
             } else if (c === 'temps') {
                 value(t('OIL'), real.oil, '°', true);
                 value(t('COOLANT'), real.coolant, '°', true);
@@ -302,6 +346,8 @@ async function background(bg) {
         showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'), data: dataNow(false), speed: speedNow(),
     }));
     car.onSample(() => { toHud(); changed(); });
+    // a flash, and a warning's end, need the HUD drawn again between the car's samples
+    setInterval(() => { if (revStage() === 'flash' || Object.keys(warnSeen).length) toHud(); }, revs.FLASH_MS);
     hv.on('change', () => { toHud(); changed(); });
     more.on('change', () => { toHud(); toPanel(); changed(); });
     const gearWanted = () => more.wantGearbox((settings.get('hudOn') !== false && hudOk() && dataChoices().indexOf('gearbox') >= 0) ||
@@ -673,13 +719,18 @@ mgu.run({
                 // the readings, as the info bar's: a button each, lit while on (up to HUD_DATA_MAX)
                 const offered = HUD_DATA.filter(([v]) => (v !== 'ev' && v !== 'soc') || hv.installed());
                 const count = offered.filter(([, key]) => settings.get(key)).length;
-                label(cv, th, t('Info bar') + '  ' + count + '/' + HUD_DATA_MAX, 48, 356);
+                label(cv, th, t('Info bar') + '  ' + (settings.get('hudAuto') === true ? t('Auto') : count + '/' + HUD_DATA_MAX), 48, 356);
                 const at = (i) => [48 + (i % DCOLS) * (DBTN + 12), 366 + Math.floor(i / DCOLS) * 46];
+                // Auto: the readings for what the car is doing; the owner's choice stays for when it is off
+                const auto = settings.get('hudAuto') === true;
                 offered.forEach(([v, key, text], i) => {
                     const lit = !!settings.get(key);
                     G.button(cv, th, at(i)[0], at(i)[1], DBTN, 40, t(text), () => settings.set(key, !lit),
-                        { primary: lit, key: 'data-' + v, busy: !hudOnNow || (!lit && count >= HUD_DATA_MAX) });
+                        { primary: lit && !auto, key: 'data-' + v, busy: !hudOnNow || auto || (!lit && count >= HUD_DATA_MAX) });
                 });
+                const ai = offered.length;
+                G.button(cv, th, at(ai)[0], at(ai)[1], DBTN, 40, t('Auto'), () => settings.set('hudAuto', !auto),
+                    { primary: auto, key: 'data-auto', busy: !hudOnNow });
             } else {
                 // the map on the cluster: on or off with the HUD's as it is (never on neither)
                 const shown = ctl.shownOn(), clusterNow = ctl.clusterOn() === true, hudMap = ctl.hudOn() === true;

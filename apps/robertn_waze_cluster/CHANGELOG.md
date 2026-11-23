@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.38
+
+HUD: the gear and the Engine speed slider flash from 300 rpm under the redline. The info bar has Auto, the reading for
+what the car is doing (revving, cold oil, on the battery, cruising), and a warning takes it over for 20 s when it
+starts: a low tyre, or oil, coolant or gearbox oil too hot.
+
 ## 0.9.37
 
 HUD: the Engine speed slider is coloured by zone, white, then yellow, then red from 700 rpm under the engine's

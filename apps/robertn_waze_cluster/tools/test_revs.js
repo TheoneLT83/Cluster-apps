@@ -15,4 +15,8 @@ ok(half.red > 4500 && half.red < 6300 && half.red % 100 === 0, 'oil warming: red
 ok(r.stage(3000, warm) === 'white' && r.stage(5600, warm) === 'yellow' && r.stage(6300, warm) === 'red', 'stages');
 ok(r.stage(4600, cold) === 'red' && r.stage(4600, warm) === 'white', 'cold oil: red sooner');
 ok(r.stage(undefined, warm) === 'white', 'no rpm: white');
+ok(warm.flash === 6700 && r.stage(6700, warm) === 'flash' && r.stage(6600, warm) === 'red', 'petrol, warm: flashing from 300 rpm under the redline');
+ok(cold.flash === 4900 && r.stage(5000, cold) === 'flash', 'cold oil: the flash 400 rpm over the cold red');
+ok(r.colour('flash', true) === r.COLOURS.red && r.colour('flash', false) === r.COLOURS.white && r.colour('yellow') === r.COLOURS.yellow, 'a flash: red, then white');
+ok(r.flashOn(0) && !r.flashOn(r.FLASH_MS) && r.flashOn(2 * r.FLASH_MS), 'flash halves of FLASH_MS');
 console.log(`revs: ${n} checks pass`);
