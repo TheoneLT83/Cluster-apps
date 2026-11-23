@@ -54,6 +54,8 @@ HUD has no room under it, within its sides), following the map's size and place:
   into the yellow zone, **Engine speed** (and **Boost** where the car gives it); oil or coolant under 50 °C, **Oil
   and coolant**; driving on the battery, **Electric range**; else the readings chosen by hand (none chosen: nothing). One
   higher in that list takes over at once, a lower one after 8 s;
+  the cluster's info bar (Display page, Cluster) has its own **Auto** for the same situations: **Engine speed** (and
+  **Boost**), **OIL** and **COOLANT**, **Battery kW usage** and **Battery charge**, else its items chosen by hand;
 - a warning takes the info bar over for 20 s when it starts, in red, with Auto or without: a low tyre, oil from
   130 °C, coolant from 115 °C, gearbox oil from 120 °C; it shows again if it clears and comes back;
 - with **Real speed on HUD**, the car's own speed (`Vehicle2` `statusCarSpeed2`, which a mileage blocker leaves

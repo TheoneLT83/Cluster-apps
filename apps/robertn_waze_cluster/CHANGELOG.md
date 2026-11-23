@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.40
+
+The cluster's info bar has Auto too (its last button on the Display page's Cluster tab): engine speed and boost while
+revving, oil and coolant while cold, the battery's kW and charge on the battery, else the items chosen by hand, the
+same situation as the HUD's Auto.
+
 ## 0.9.39
 
 HUD: the gear and the Engine speed slider flash from 300 rpm under the redline. The info bar has Auto, the reading for

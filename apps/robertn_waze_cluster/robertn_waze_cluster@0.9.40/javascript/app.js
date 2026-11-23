@@ -202,7 +202,8 @@ async function background(bg) {
      * A choice higher in the list takes over at once; a lower one only after AUTO_HOLD_MS, so it doesn't flicker. */
     let autoNow = null, autoSince = 0;
     const AUTO_ORDER = ['rev', 'cold', 'ev', 'manual'];
-    function autoChoices() {
+    /* What Auto shows for (the HUD's info bar, setting hudAuto, and the cluster's, clusterAuto): one situation for both. */
+    function autoPick() {
         const d = car.data(), real = d && !d.demo ? d : {}, now = Date.now();
         const st = G.isNum(real.rpm) ? revs.stage(real.rpm, revZones(real)) : 'white';
         const pick = st !== 'white' ? 'rev'
@@ -211,7 +212,11 @@ async function background(bg) {
         if (autoNow === null || (pick !== autoNow && (AUTO_ORDER.indexOf(pick) < AUTO_ORDER.indexOf(autoNow) || now - autoSince >= AUTO_HOLD_MS))) {
             if (pick !== autoNow) { autoNow = pick; autoSince = now; }
         } else if (pick === autoNow) autoSince = now;
-        return autoNow === 'rev' ? (G.isNum(boost) ? ['rpm', 'boost'] : ['rpm']) : autoNow === 'cold' ? ['temps'] : autoNow === 'ev' ? ['ev'] : manualChoices();
+        return autoNow;
+    }
+    function autoChoices() {
+        const a = autoPick();
+        return a === 'rev' ? (G.isNum(boost) ? ['rpm', 'boost'] : ['rpm']) : a === 'cold' ? ['temps'] : a === 'ev' ? ['ev'] : manualChoices();
     }
     /* A warning takes the info bar over for WARN_SHOW_MS when it starts (a low tyre, oil, coolant or gearbox oil too hot),
      * with Auto or the owner's readings; it shows again if it clears and comes back. */
@@ -234,9 +239,17 @@ async function background(bg) {
     };
     /* The cluster's info bar (cluster_panel.js): the items switched on (the battery's only with eDrive; none of them:
      * oil, coolant and engine speed), while the Waze map shows on the cluster and setting clusterPanel is on. */
-    const panelKinds = () => {
+    const panelManual = () => {
         const on = PANEL_ITEMS.filter(([k, key]) => settings.get(key) && offers(k, hv, settings)).map(([k]) => k);
         return (on.length ? on : ['oil', 'coolant', 'rpm']).slice(0, PANEL_MAX);
+    };
+    // Auto (clusterAuto): the cluster's items for the same situation as the HUD's (autoPick), else the ones chosen
+    const panelKinds = () => {
+        if (settings.get('clusterAuto') !== true) return panelManual();
+        const a = autoPick(), ok = (l) => l.filter((k) => offers(k, hv, settings));
+        const l = a === 'rev' ? ok(G.isNum(boost) ? ['rpm', 'boost'] : ['rpm']) : a === 'cold' ? ok(['oil', 'coolant'])
+            : a === 'ev' ? ok(['power', 'soc']) : [];
+        return l.length ? l : panelManual();
     };
     const panelOn = () => settings.get('clusterPanel') !== false && ctl.clusterOn() === true && !!ctl.renderStatus && ctl.renderStatus.state === 'showing';
     const panelItems = (kinds) => {
@@ -753,13 +766,18 @@ mgu.run({
                 const count = offered.filter(([, key]) => settings.get(key)).length;
                 // how many are on, of the most; right under the switches (two rows here)
                 const ly = 118 + Math.ceil((2 + CLUSTER_ITEMS.length) / 2) * 54 + 34;
-                label(cv, th, t('Info bar') + '  ' + count + '/' + PANEL_MAX, 48, ly);
+                const cauto = settings.get('clusterAuto') === true;
+                label(cv, th, t('Info bar') + '  ' + (cauto ? t('Auto') : count + '/' + PANEL_MAX), 48, ly);
                 const at = (i) => [48 + (i % DCOLS) * (DBTN + 12), ly + 10 + Math.floor(i / DCOLS) * 46];
                 offered.forEach(([k, key, text], i) => {
                     const lit = !!settings.get(key);
                     G.button(cv, th, at(i)[0], at(i)[1], DBTN, 40, t(text), () => settings.set(key, !lit),
                         { primary: lit, key: 'item-' + k, busy: !barOn || (!lit && count >= PANEL_MAX) });
                 });
+                // Auto: the items for what the car is doing (as the HUD's); the ones chosen by hand otherwise
+                const ci = offered.length;
+                G.button(cv, th, at(ci)[0], at(ci)[1], DBTN, 40, t('Auto'), () => settings.set('clusterAuto', !cauto),
+                    { primary: cauto, key: 'item-auto', busy: !barOn });
             }
 
             // the pictures on the right: the cluster on top, the HUD under it, each showing what of ours is on there
