@@ -501,10 +501,20 @@ mgu.run({
         const label = (cv, th, s, x, y) => cv.text(String(s).toUpperCase(), x, y, 18, th.dim, { font: 'bold', spacing: 2 });
         const small = (cv, th, s, x, y, w, color) => { if (s) cv.text(fit(cv, s, 21, w, 'label'), x, y, 21, color || th.text, { font: 'label' }); };
         const line = (cv, th, s, x, y, w, color) => { if (s) cv.text(fit(cv, s, 24, w, 'label'), x, y, 24, color || th.text, { font: 'label' }); };
+        // a switch slides between off and on in SLIDE_MS (slid: key -> { on, at }), the page drawn again meanwhile
+        const SLIDE_MS = 160, slid = new Map();
+        const slide = (key, on) => {
+            const s = slid.get(key), now = Date.now();
+            if (!s) { slid.set(key, { on, at: 0 }); return on ? 1 : 0; }
+            if (s.on !== on) { s.on = on; s.at = now; for (let i = 1; i <= 5; i++) setTimeout(changed, i * SLIDE_MS / 4); }
+            const f = Math.min(1, (now - s.at) / SLIDE_MS), e = 1 - Math.pow(1 - f, 3);
+            return on ? e : 1 - e;
+        };
         const toggle = (cv, th, x, y, on, run, key, off) => {
-            const S = th.sel || th.accent;
-            cv.roundRect(x, y, 56, 30, 15, on ? withAlpha(S, off ? 0.4 : 1) : withAlpha('#ffffff', off ? 0.08 : 0.2));
-            cv.circle(on ? x + 41 : x + 15, y + 15, 11, off ? withAlpha('#ffffff', 0.4) : on ? G.onColour(S) : '#d6d7da');
+            const S = th.sel || th.accent, p = slide(key, !!on);
+            cv.roundRect(x, y, 56, 30, 15, withAlpha('#ffffff', off ? 0.08 : 0.2));
+            if (p > 0) cv.roundRect(x, y, 56, 30, 15, withAlpha(S, (off ? 0.4 : 1) * p));
+            cv.circle(x + 15 + 26 * p, y + 15, 11, off ? withAlpha('#ffffff', 0.4) : p > 0.5 ? G.onColour(S) : '#d6d7da');
             if (!off && cv.own) cv.target(x - 8, y - 10, 72, 50, run, key, 19);
         };
         /* A switch's row, w wide from x, h high from y: its icon, its words (a smaller second line under them: note
@@ -522,8 +532,9 @@ mgu.run({
         /* A section's heading: its words in capitals; returns the x after them. */
         const heading = (cv, th, s, x, y) => {
             const s2 = String(s).toUpperCase(), opt = { font: 'bold', spacing: 2.5 };
-            cv.text(s2, x, y, 17, th.dim, opt);
-            return x + cv.textWidth(s2, 17, opt);
+            cv.roundRect(x, y - 14, 4, 16, 2, th.sel || th.accent);
+            cv.text(s2, x + 12, y, 17, th.dim, opt);
+            return x + 12 + cv.textWidth(s2, 17, opt);
         };
         /* How many of the most are on: a short line each, the ones on in the theme's colour, then "n/max". */
         const countLines = (cv, th, x, y, n, max) => {
@@ -560,6 +571,11 @@ mgu.run({
             cv.polyline([[x + 0.48 * w, y + h * 0.98], [x + 0.49 * w, y + h * 0.5], [x + 0.72 * w, y + h * 0.33]], 4 * s, withAlpha(th.accent2 || '#81c4ff', a(1)));
             cv.quad([[x + 0.48 * w, y + h * 0.8], [x + 0.48 * w - 4 * s, y + h * 0.8 + 9 * s], [x + 0.48 * w + 4 * s, y + h * 0.8 + 9 * s], [x + 0.48 * w, y + h * 0.8]], withAlpha('#ffffff', a(1)));
         };
+        /* A picture's screen: dark, a little lighter at the top, with a soft edge. */
+        const screen = (cv, x, y, w, h, sel) => {
+            cv.card(x, y, w, h, 12, [[0, '#14171d'], [0.55, '#07090c'], [1, '#040506']]);
+            cv.strokeRoundRect(x, y, w, h, 12, 1, withAlpha('#ffffff', 0.06));
+        };
         // drawArrow at an offset: hud_overlay draws from 0,0
         const drawArrowAt = (cv, x, y, w, h, dir, c) => drawArrow({
             quad: (pts, col) => cv.quad(pts.map(([px, py]) => [x + px, y + py]), col),
@@ -579,20 +595,17 @@ mgu.run({
                 cv.clip(Math.round(x0), Math.round(y0), ww, hh);
                 cv.glass = true;
                 try { drawHudPicture(cv, th, x0, y0, ww, crop); } finally { cv.glass = false; cv.noclip(); }
-                cv.strokeRoundRect(Math.round(x0), Math.round(y0), ww, hh, 10, 1.5, withAlpha('#ffffff', 0.25));
                 return hh;
             }
             const off = ctx.canvas(ww, hh).clear('#05070a');
             off.glass = true; off.own = cv.own;
             drawHudPicture(off, th, 0, 0, ww, crop);
             cv.blit(off, Math.round(x0), Math.round(y0));
-            cv.strokeRoundRect(Math.round(x0), Math.round(y0), ww, hh, 10, 1.5, withAlpha('#ffffff', 0.25));
             return hh;
         };
         const drawHudPicture = (cv, th, x0, y0, w, crop) => {
             const c = crop || { x: 0, y: 0, w: HUD_W, h: HUD_H }, k = w / c.w, h = c.h * k;
-            cv.roundRect(x0, y0, w, h, 10, '#05070a');
-            cv.strokeRoundRect(x0, y0, w, h, 10, 1.5, withAlpha('#ffffff', 0.25));
+            screen(cv, x0, y0, w, h);
             const x = x0 - c.x * k, y = y0 - c.y * k;
             const m = mapNow(), mx = x + m.x * k, my = y + m.y * k, mw = m.w * k, mh = m.h * k;
             const on = ctl.hudOn() === true, br = (ctl.hudBrightness() || 100) / 100;
@@ -635,12 +648,20 @@ mgu.run({
             const on = ctl.shownOn(), can = ctl.canChooseShownOn();
             G.segment(cv, th, 48, 132, 712, 48, [['cluster', 'Cluster'], ['hud', 'HUD'], ['both', 'Cluster + HUD']].filter(([v]) => v === 'cluster' || hudOk())
                 .map(([v, text]) => ({ label: t(text), run: () => ctl.showOn(v), on: on === v, busy: !can, key: 'show-' + v })));
-            small(cv, th, ctl.mapText(), 48, 206, 340, th.dim);
-            if (hudOk()) small(cv, th, ctl.hudText(), 400, 206, 360, ctl.hudDisabled() ? th.warn : th.dim);
+            const statusPill = (s, x, col) => {
+                const opt = { font: 'bold', spacing: 1 }, s2 = String(s).toUpperCase(), w = cv.textWidth(s2, 13, opt) + 34;
+                cv.roundRect(x, 190, w, 26, 13, withAlpha(col, 0.16));
+                cv.circle(x + 13, 203, 4, col);
+                cv.text(s2, x + 24, 208, 13, col, opt);
+                return x + w + 10;
+            };
+            const shows = (st) => st !== t('Off') && st !== t('Unavailable');
+            const px2 = statusPill(ctl.mapText(), 48, shows(ctl._mapState()) ? '#25e05a' : th.dim);
+            if (hudOk()) statusPill(ctl.hudText(), px2, ctl.hudDisabled() ? th.warn : shows(ctl._hudState()) ? '#25e05a' : th.dim);
             // the map settings of this driver profile, its own or the shared ones (greyed while no profile is known)
             // (BMW's logo on the cluster: the Display page, Cluster)
             const po = profiles.canChooseOwn();
-            switchRow(cv, th, 48, 216, 712, 46, ICON.own, t('Own settings for this driver'), profiles.ownShown(), () => profiles.setOwn(!profiles.ownShown()), 'profile-own', !po);
+            switchRow(cv, th, 48, 224, 712, 46, ICON.own, t('Own settings for this driver'), profiles.ownShown(), () => profiles.setOwn(!profiles.ownShown()), 'profile-own', !po);
 
             // the phones: a row each with its patch's state (a tap picks it), under them the picked one's details and buttons
             const py = 300 + ex / 4;
@@ -715,8 +736,7 @@ mgu.run({
         /* A picture of the cluster: its two dials, the map in the middle while it shows there, "GO" over it. */
         const clusterPicture = (cv, th, x, y, w, go) => {
             const h = Math.round(w * 720 / 1920), r = Math.min(h * 0.4, w * 0.13);
-            cv.roundRect(x, y, w, h, 12, '#05070a');
-            cv.strokeRoundRect(x, y, w, h, 12, 1.5, withAlpha('#ffffff', 0.25));
+            screen(cv, x, y, w, h);
             [x + w * 0.16, x + w * 0.84].forEach((cx) => {
                 cv.arc(cx, y + h * 0.55, r - 4, r, -130, 130, withAlpha('#ffffff', 0.35));
                 const ang = (blink ? -40 : 25) * Math.PI / 180;      // the needle swings with the blink

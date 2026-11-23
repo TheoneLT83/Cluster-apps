@@ -828,6 +828,16 @@ function onColour(c) {
     return 0.2126 * l[0] + 0.7152 * l[1] + 0.0722 * l[2] > 0.35 ? '#000000' : '#ffffff';
 }
 const BTN_FILL = '#ffffff17', BTN_EDGE = '#ffffff33';
+/** A pressed button, chip or choice lights up this long (pressed: key -> when). */
+const PRESS_MS = 180, pressed = new Map();
+function pressing(key, run) {
+    return () => {
+        pressed.set(key, Date.now());
+        if (onArmed) { onArmed(); setTimeout(onArmed, PRESS_MS + 20); }
+        return run();
+    };
+}
+const lit = (key) => pressed.has(key) && Date.now() - pressed.get(key) < PRESS_MS;
 function button(cv, t, x, y, w, h, label, run, opts) {
     let o = opts || {};
     if (!cv.own) return 0;              // elsewhere the HMI's bar has the button
@@ -849,10 +859,11 @@ function button(cv, t, x, y, w, h, label, run, opts) {
         cv.roundRect(x, y, w, h, r, BTN_FILL);
         cv.strokeRoundRect(x, y, w, h, r, 1.5, o.color ? withAlpha(o.color, o.busy ? 0.3 : 0.8) : o.busy ? '#ffffff1a' : BTN_EDGE);
     }
+    if (lit(o.key || label)) cv.roundRect(x, y, w, h, r, withAlpha('#ffffff', 0.22));
     const fg = o.primary ? (o.busy ? withAlpha(onColour(c), 0.6) : onColour(c)) : o.busy ? withAlpha(t.dim, 0.7) : o.color || t.text;
     if (o.glyph) glyph(cv, o.glyph, x + w / 2, y + h / 2, h * 0.2, fg);
     else cv.text(text, x + w / 2, y + h / 2 + h * 0.13, h * 0.36, fg, opt);
-    if (!o.busy && run) cv.target(x, y, w, h, run, o.key || label);
+    if (!o.busy && run) cv.target(x, y, w, h, pressing(o.key || label, run), o.key || label);
     return w;
 }
 /** A button's glyph, centred at cx, cy, s px from the centre to its tips. */
@@ -882,10 +893,12 @@ function segment(cv, t, x, y, w, h, items) {
     const opt = { align: 'center', font: 'bold', spacing: 2 }, size = Math.min(17, Math.max(15, h * 0.4));
     items.forEach((it, i) => {
         const ix = x + p + i * iw, iy = y + p, ih = h - 2 * p;
+        if (it.on && !it.busy) cv.roundRect(ix - 3, iy - 3, iw + 6, ih + 6, 12, withAlpha(S, 0.18));
         if (it.on) cv.roundRect(ix, iy, iw, ih, 9, it.busy ? withAlpha(S, 0.4) : S);
+        if (lit(it.key || it.label)) cv.roundRect(ix, iy, iw, ih, 9, withAlpha('#ffffff', 0.18));
         cv.text(fit(cv, upperText(it.label), size, iw - 16, opt), ix + iw / 2, iy + ih / 2 + size * 0.36, size,
             it.on ? onColour(S) : it.busy ? withAlpha(t.dim, 0.55) : t.dim, opt);
-        if (!it.busy && it.run) cv.target(ix, iy, iw, ih, it.run, it.key || it.label);
+        if (!it.busy && it.run) cv.target(ix, iy, iw, ih, pressing(it.key || it.label, it.run), it.key || it.label);
     });
     return w;
 }
@@ -898,8 +911,10 @@ function chip(cv, t, x, y, w, h, label, n, run, opts) {
     const o = opts || {};
     if (!cv.own) return 0;
     const S = t.sel || t.accent, on = !!n, a = o.busy ? 0.45 : 1;
+    if (on && !o.busy) cv.roundRect(x - 3, y - 3, w + 6, h + 6, 13, withAlpha(S, 0.14));
     cv.roundRect(x, y, w, h, 10, BTN_FILL);
-    if (on) cv.roundRect(x, y, w, h, 10, withAlpha(S, 0.16 * a));
+    if (on) cv.roundRect(x, y, w, h, 10, withAlpha(S, 0.22 * a));
+    if (lit(o.key || label)) cv.roundRect(x, y, w, h, 10, withAlpha('#ffffff', 0.18));
     cv.strokeRoundRect(x, y, w, h, 10, 1.5, on ? withAlpha(S, 0.75 * a) : withAlpha('#ffffff', 0.2 * a));
     const opt = { font: 'bold', spacing: 1.2 }, size = Math.min(15, h * 0.37), cr = h * 0.27, cx = x + w - cr - 12, cy = y + h / 2;
     cv.text(fit(cv, upperText(label), size, w - 2 * cr - 40, opt), x + 16, cy + size * 0.36, size, withAlpha(t.text, a), opt);
@@ -907,7 +922,7 @@ function chip(cv, t, x, y, w, h, label, n, run, opts) {
         cv.circle(cx, cy, cr, withAlpha(S, a));
         if (n !== true) cv.text(String(n), cx, cy + cr * 0.45, cr * 1.15, onColour(S), { align: 'center', font: 'bold' });
     } else cv.arc(cx, cy, cr - 1.5, cr, 0, 360, withAlpha('#ffffff', 0.3 * a));
-    if (!o.busy && run) cv.target(x, y, w, h, run, o.key || label);
+    if (!o.busy && run) cv.target(x, y, w, h, pressing(o.key || label, run), o.key || label);
     return w;
 }
 /** s cut to w px at size (with an ellipsis). */

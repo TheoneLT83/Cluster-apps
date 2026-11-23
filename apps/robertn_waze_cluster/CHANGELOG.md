@@ -7,7 +7,9 @@ in the theme's colour when chosen, with dark words on Ice White and Night Amber;
 View's Near a turn / Always as one bar each. The Display page's switches have an icon each and a thin line under them,
 across the whole panel; the readings to pick are numbered in the order they show, the lines after their heading say
 how many are picked, and Auto is a switch next to it with what it does. Maps lists CarPlay and Android Auto with
-their patch's state (a tap picks one for the buttons under them). The pictures' map is a dark one with grey roads.
+their patch's state (a tap picks one for the buttons under them), and the maps' state as small pills, green while
+showing. Headings have a short bar in the theme's colour; picked readings glow in it; a pressed button lights up and a
+switch slides; the pictures are dark screens with grey roads.
 
 HUD: **Warnings take over** (Display page, HUD) switches off the warnings that take the info bar over.
 
