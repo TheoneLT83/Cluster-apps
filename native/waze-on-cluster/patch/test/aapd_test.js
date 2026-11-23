@@ -5,8 +5,7 @@
 /* The Android Auto patch end to end on temporary copies of the unit's aapd
  * (AAPD_BIN, aapd 22.39.3) and aapd.conf (AAPD_CONF). This version applies
  * it in aapd's memory (PATCH.md "In memory"): the plan's refusals (the
- * coding, a site not found, a site of a build whose shipped file is known
- * holding neither its shipped bytes nor the edit,
+ * coding, a site not found,
  * an aapd.conf without what the geometry needs; any other build is
  * planned), the plan and the copy of aapd.conf it points aapd at, the byte-exact
  * undo of a patch an earlier release wrote to the files (waze-on-cluster
@@ -24,15 +23,15 @@
 var headUnit = require('./head_unit_env.js');   /* a HIGH head unit for every patcher and patchd this runs */
 
 var fs = require('fs');
-var os = require('os');
 var net = require('net');
 var path = require('path');
+var tmp = require('./tmp.js');
 var cp = require('child_process');
 var crypto = require('crypto');
 
 /* The records the watcher tests below read (inmem.js) live in a folder of
  * this test. */
-process.env.WOC_STATE_DIR = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-aa-state-'));
+process.env.WOC_STATE_DIR = tmp.dir();
 
 var PATCH = path.join(__dirname, '..');
 var BIN = process.env.AAPD_BIN || '', CONF = process.env.AAPD_CONF || '', CARPLAY = process.env.CARPLAY_BIN || '';
@@ -54,15 +53,11 @@ var UNPROVEN = (function () {
     b[at] ^= 0xff;
     return b;
 })();
-var fails = 0, dirs = [process.env.WOC_STATE_DIR], children = [];
+var fails = 0;
 function ok(name, cond, detail) {
     process.stdout.write((cond ? 'ok   ' : 'FAIL ') + name + (detail !== undefined && !cond ? '  — ' + detail : '') + '\n');
     if (!cond) fails++;
 }
-process.on('exit', function () {
-    children.forEach(function (c) { try { c.kill('SIGKILL'); } catch (e) {} });
-    dirs.forEach(function (d) { try { cp.execFileSync('rm', ['-rf', d]); } catch (e) {} });
-});
 function sha(x) { return crypto.createHash('sha256').update(Buffer.isBuffer(x) ? x : fs.readFileSync(x)).digest('hex'); }
 /* The waits below are for a condition, each bounded by HANG_MS only so that
  * a hang ends the run: no wait depends on how fast the host is. */
@@ -93,8 +88,7 @@ function coding(v, flags) {
 
 /* A fresh unit: aapd, aapd.conf, the coding, a df reporting plenty. */
 function unit(bin) {
-    var d = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-aa-'));
-    dirs.push(d);
+    var d = tmp.dir();
     var t = { d: d, bin: path.join(d, 'aapd'), conf: path.join(d, 'aapd.conf'), coding: path.join(d, 'coding'), df: path.join(d, 'df') };
     fs.writeFileSync(t.bin, bin || SRC);
     fs.chmodSync(t.bin, 0o755);
@@ -221,15 +215,13 @@ function density(text) { return JSON.parse(text).SCREENS.KOMBI_DISPLAY.CODEC_DEF
             sha(u.bin) === sha(m[1]), x.out + s);
         ok('aapd 22.39.3 with ' + m[0] + ': probe names the part that differs', m[2].test(pr), pr);
     });
-    /* a gate byte the locator still reads as stock, so only the shipped
-     * bytes tell it from aapd 22.39.3's */
+    /* a gate byte the locator reads as stock, though not the shipped byte:
+     * the locator's checks decide, so it is planned, aapd untouched */
     var fb = Buffer.from(SRC);
     fb[0x998be] ^= 1;
-    var fu = unit(fb), fx = plan(fu, ['--unproven']), fs2 = status(fu);
-    ok('a site holding neither the shipped bytes nor the edit: status a modified build naming it, the plan refused, also with --unproven, aapd untouched',
-        /known:\s+yes, modified build \(neither the shipped bytes nor our edit at 0x998bd\)/.test(fs2) && /^gate:\s+ORIGINAL$/m.test(fs2) &&
-        fx.code === 1 && /in memory needs the pristine build on disk: neither the shipped bytes nor our edit at 0x998bd/.test(fx.out) &&
-        !fs.existsSync(fx.plan) && sha(fu.bin) === sha(fb), fx.out + fs2);
+    var fu = unit(fb), fx = plan(fu), fs2 = status(fu);
+    ok('a gate byte the locator reads as stock, not the shipped one: status pristine, planned, aapd untouched',
+        /known:\s+yes, pristine/.test(fs2) && /^gate:\s+ORIGINAL$/m.test(fs2) && fx.code === 0 && fs.existsSync(fx.plan) && sha(fu.bin) === sha(fb), fx.out + fs2);
     var text = SRCCONF.toString('utf8');
     [['not JSON', text.slice(0, -10), /not JSON/],
      ['a number the edit sets missing', text.replace(/"SA_WIDTHPIXELS": 612/, '"SA_WIDTHPIXELS": "612"'), /no number SCREENS\/KOMBI_DISPLAY\/DIMENSIONS\/12\.3\/SA_WIDTHPIXELS/],
@@ -844,7 +836,6 @@ function nextStart(t, pid) {
 function daemon(t) {
     try { fs.unlinkSync(t.env.WOC_PATCH_SOCK); } catch (e) {}
     var c = cp.spawn(process.execPath, [path.join(PATCH, 'patchd.js')], { env: t.env, stdio: ['ignore', 'pipe', 'pipe'] });
-    children.push(c);
     var log = '';
     c.stdout.on('data', function (b) { log += b; });
     c.stderr.on('data', function (b) { log += b; });
@@ -885,7 +876,6 @@ function aaDone(m) { return m.ev === 'status' && m.aa && m.aa.state !== 'busy' &
 /* A dummy aapd main process for patchd's SIGKILL, as unit.json's pid. */
 function dummyAapd(t) {
     var c = cp.spawn('sleep', ['300']);
-    children.push(c);
     c.died = new Promise(function (r) { c.on('exit', function (code, sig) { r(sig); }); });
     aapdStarts(t, c.pid);
     return c;
@@ -1203,8 +1193,7 @@ var record = require('../patch_record.js');
 /* The aapd watcher on an earlier release's patch of aapd (its backup and
  * record) in a folder of its own, with systemd and the restore stubbed. */
 function fakeRec(opts) {
-    var d = opts.dir || fs.mkdtempSync(path.join(os.tmpdir(), 'woc-aarec-'));
-    dirs.push(d);
+    var d = opts.dir || tmp.dir();
     var t = recovery.targets({ state: path.join(d, 'boot-recovery.json'), sock: path.join(d, 'patch.sock'), carplay: path.join(d, 'carplay'),
         aapd: path.join(d, 'aapd'), aapdConf: path.join(d, 'aapd.conf') }).aapd;
     if (!opts.dir) {
@@ -1448,7 +1437,6 @@ async function recoveryTests() {
     var envU = Object.assign({}, u.env, { WOC_BOOT_ID: path.join(u.d, 'bootid') });
     fs.writeFileSync(path.join(u.d, 'bootid'), 'x\n');
     var ch = cp.spawn(process.execPath, [path.join(PATCH, 'recovery.js'), 'boot', 'aapd'], { env: envU });
-    children.push(ch);
     var chOut = '';
     ch.stdout.on('data', function (d) { chOut += d; });
     ch.stderr.on('data', function (d) { chOut += d; });
@@ -1502,8 +1490,7 @@ async function recoveryTests() {
 
     /* shutdown_mark.sh: aapd SIGKILLed is stopped (no crash), as for its
      * watcher; carplay's record is unchanged. */
-    var md = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-mark-'));
-    dirs.push(md);
+    var md = tmp.dir();
     fs.writeFileSync(path.join(md, 'boot_id'), 'B\n');
     fs.writeFileSync(path.join(md, 'systemctl'), '#!/bin/sh\nprintf "ActiveState=failed\\nResult=signal\\nExecMainCode=2\\nExecMainStatus=9\\n"\n');
     fs.chmodSync(path.join(md, 'systemctl'), 0o755);

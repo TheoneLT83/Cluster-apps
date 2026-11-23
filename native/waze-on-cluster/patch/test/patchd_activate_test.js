@@ -50,9 +50,9 @@ var carplayProc = require('./carplay_proc.js');
 var earlier = require('./earlier_patcher.js');
 
 var fs = require('fs');
-var os = require('os');
 var net = require('net');
 var path = require('path');
+var tmp = require('./tmp.js');
 var cp = require('child_process');
 var crypto = require('crypto');
 
@@ -70,12 +70,7 @@ function ok(name, cond, detail) {
 if (!fs.existsSync(SRC)) { process.stdout.write('SKIP: set CARPLAY_BIN to a copy of the unit\'s /usr/bin/carplay (carplay 22.28.3)\n'); process.exit(0); }
 var SRCBUF = fs.readFileSync(SRC);
 
-var dir = fs.mkdtempSync(path.join(os.tmpdir(), 'woc-activate-'));
-var children = [];
-process.on('exit', function () {
-    children.forEach(function (c) { try { c.kill('SIGKILL'); } catch (e) {} });
-    try { cp.execFileSync('rm', ['-rf', dir]); } catch (e) {}
-});
+var dir = tmp.dir();
 
 var TGT = path.join(dir, 'carplay');
 var BAK = TGT + '.woc-orig';
@@ -237,7 +232,6 @@ function daemonStatus() { return daemonCommand(null, function (m) { return m.ev 
 function daemonCommand(msg, done) {
     return new Promise(function (resolve, reject) {
         var d = cp.spawn(process.execPath, [PATCHD], { env: ENV, stdio: ['ignore', 'ignore', 'inherit'] });
-        children.push(d);
         var sock = path.join(SOCKDIR, 'patch.sock');
         var tries = 0;
         (function connect() {
@@ -695,14 +689,21 @@ async function main() {
             rec().sha256 === sha(elsewhere) && rec().trial === true && !r.result.conflict, JSON.stringify(r.result));
     });
 
-    /* A site holding neither the shipped bytes nor ours (another physical
-     * size in the geometry): modified by something else. */
-    var atSite = Buffer.from(SRCBUF);
-    atSite[0x20ca36] ^= 0x01;
-    fresh(atSite);
-    r = hook('activate');
-    ok('another value at an edit site: left alone, modified by something else, exit 0', r.code === 0 && disk() === sha(atSite) && rec() === null &&
-        /modified by something else/.test(r.result.conflict || ''), JSON.stringify(r.result));
+    /* Geometry immediates the classifier reads as stock holding other bytes
+     * than the shipped file: this tool's safe area over a stock geometry (the
+     * file reported in #245, another tool's restore of its own backup), and
+     * another physical size. The locator's checks decide: armed in memory on
+     * trial, the file untouched, no conflict. */
+    [['this tool\'s safe area over a stock geometry', function (b) {
+        Buffer.from('00000000f8010000', 'hex').copy(b, 0x20ca66); Buffer.from('700100001e014800', 'hex').copy(b, 0x20ca74); }],
+     ['another physical size', function (b) { b[0x20ca36] ^= 0x01; }]].forEach(function (m) {
+        var atSite = Buffer.from(SRCBUF);
+        m[1](atSite);
+        fresh(atSite);
+        r = hook('activate');
+        ok(m[0] + ': armed in memory on trial, the file untouched, no conflict, exit 0', r.code === 0 && disk() === sha(atSite) && !!rec() &&
+            rec().sha256 === sha(atSite) && rec().trial === true && !r.result.conflict, JSON.stringify(r.result));
+    });
 
     /* carplay.service started through another program (another tool's
      * drop-in): the install does not plan the patch; an environment-only
@@ -959,7 +960,6 @@ async function main() {
     fs.rmdirSync(blocked);
     headUnitStart();
     var watcherProc = cp.spawn(process.execPath, [path.join(__dirname, '..', 'recovery.js')], { env: Object.assign({}, ENV, { WOC_RECOVERY_TICK_MS: '100' }), stdio: 'ignore' });
-    children.push(watcherProc);
     /* Planned, and its count started afresh (the watcher resets it once the plan is written). */
     function replanned() {
         var x = rec(), c = null;
@@ -998,7 +998,6 @@ async function main() {
         JSON.stringify([bootStep.stdout.slice(-600), toPlan]));
     runs(TGT);
     var watcher2 = cp.spawn(process.execPath, [path.join(__dirname, '..', 'recovery.js')], { env: Object.assign({}, ENV, { WOC_RECOVERY_TICK_MS: '100' }), stdio: 'ignore' });
-    children.push(watcher2);
     for (var wt2 = Date.now(); Date.now() - wt2 < 20000 && !(replanned() && armed());) await new Promise(function (res) { setTimeout(res, 50); });
     watcher2.kill('SIGTERM');
     await new Promise(function (res) { if (watcher2.exitCode !== null || watcher2.signalCode !== null) res(); else watcher2.on('exit', res); });

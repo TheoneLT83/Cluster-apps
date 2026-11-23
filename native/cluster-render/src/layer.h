@@ -62,6 +62,9 @@ struct LayerParams {
     /* The target whose host placed this layer here (its producer's mark,
      * PROTOCOL.md "Hosting from layers"); empty: none. */
     std::string hosted;
+    /* The canvas it draws in (canvas.h), set when it is made; 0: the
+     * target's layer stack. */
+    uint32_t canvas = 0;
     Rect rect;
     float opacity = 1.0f;
     /* Video layers: the edges faded out over this many pixels each side (0: a hard edge), the bottom one over

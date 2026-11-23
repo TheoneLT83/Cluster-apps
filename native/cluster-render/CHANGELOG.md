@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## 0.6.15
+
+robertnisipeanu/idrive-apps' 0.8.3 with this repository's 0.6.14:
+
+Canvases: an app's effect and mesh layers can draw into an off-screen
+picture of its own, which its layers on screen then show like an asset.
+A canvas can have its own depth and stencil buffer, for masks and depth
+tests that never touch the display's, and can be drawn once and kept until
+something it shows or samples changes. A canvas drawn every frame is
+skipped while nothing shown samples it. The client libraries send canvases
+only to a service that takes them.
+
 ## 0.6.14
 
 robertnisipeanu/idrive-apps' 0.8.1 and 0.8.2 with this repository's 0.6.13:

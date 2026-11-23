@@ -39,7 +39,7 @@ JOBS    ?= $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 1)
 # The unit's toolchain ABI (docker/Dockerfile), tagged with the Dockerfile's
 # checksum: built when no image has that tag.
 IMAGE   := cluster-render-build:$(shell cksum < docker/Dockerfile | cut -d' ' -f1)
-DOCKER_IMAGE = docker image inspect $(IMAGE) >/dev/null 2>&1 || docker build -q --platform linux/amd64 -t $(IMAGE) docker
+DOCKER_IMAGE = docker image inspect $(IMAGE) >/dev/null 2>&1 || docker build --progress=plain --platform linux/amd64 -t $(IMAGE) docker
 
 CXXFLAGS = -std=c++14 -O2 -g -Wall -Wextra -Werror
 HOSTINC  = -Ikit -Iinclude -I. -Isrc -isystem dcsm/third_party/vsomeip/interface
@@ -56,7 +56,7 @@ H = $(BUILD)/host
 
 KIT_SRC  = kit/dirty_tiles.cpp kit/yuv_atlas.cpp kit/block_pack.cpp
 CORE_SRC = src/slots.cpp src/governor.cpp src/stack.cpp src/recv_buffer.cpp src/layer.cpp src/video_layer.cpp \
-           src/video_composite.cpp src/mesh_layer.cpp src/occlusion.cpp src/asset.cpp src/compositor.cpp src/scene_file.cpp \
+           src/video_composite.cpp src/mesh_layer.cpp src/occlusion.cpp src/asset.cpp src/canvas.cpp src/compositor.cpp src/scene_file.cpp \
            src/scene_edit.cpp \
            src/server.cpp src/service.cpp src/dcsm2_port.cpp src/dcsm27_port.cpp src/ramses_console.cpp \
            src/ceiling_memory.cpp src/link_trace.cpp client/protocol.cpp src/log.cpp

@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 0.14.10
+
+robertnisipeanu/idrive-apps' 0.14.7 to 0.14.9 with this repository's 0.14.7:
+
+Building from source retries a failed package download and shows its
+error.
+
+The tests remove their temporary files and stop the processes they start
+however a run ends, also when it fails or is interrupted.
+
+CarPlay's cluster map works on cars where removing or updating
+another CarPlay safe-area tool left `Changed by another tool`; restart the
+head unit after updating.
+
 ## 0.14.7
 
 The rollback tests read this repository's release tags (its first, 0.9.2) and check a separate capture unit only
