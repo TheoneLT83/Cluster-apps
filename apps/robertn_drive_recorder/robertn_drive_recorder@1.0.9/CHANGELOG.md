@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.9
+
+The kit's bars of choices show the ones not chosen as boxes with an edge.
+
 ## 1.0.8
 
 The kit's new look: the selected tab has a short line under its name, buttons have rounded corners and are filled in

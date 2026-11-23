@@ -777,7 +777,7 @@ mgu.run({
             text: (s, a, b, sz, c, o) => cv.text(s, x + a * k, y + b * k, sz * k, c, o),
         });
         /* The Display page: the switches and the info bar's choices on the left (DL wide), the pictures on the right. */
-        const DL = 1056, DCOL = 524, DCOLS = 4, DBTN = 243, DTOP = 106, DROW = 44;
+        const DL = 1056, DCOL = 524, DCOLS = 4, DBTN = 243, DTOP = 120, DROW = 44, DCHIP = 44, DCHIP_STEP = 52;
         function drawDisplay(cv, th) {
             const hasHud = hudOk();
             if (!hasHud) dispTab = 'cluster';
@@ -785,7 +785,7 @@ mgu.run({
 
             // the switches on the left: a tab for the HUD, one for the cluster
             G.panel(cv, th, 24, 44, DL, 468, null);
-            G.segment(cv, th, 48, 58, DL - 48, 40, (hasHud ? [['cluster', 'Cluster'], ['hud', 'HUD']] : [['cluster', 'Cluster']])
+            G.segment(cv, th, 48, 58, DL - 48, 54, (hasHud ? [['cluster', 'Cluster'], ['hud', 'HUD']] : [['cluster', 'Cluster']])
                 .map(([id, text]) => ({ label: t(text), run: () => { dispTab = id; changed(); }, on: dispTab === id, key: 'tab-' + id })));
             // two columns of switches, DROW high; note: a smaller second line under the words (the green light alert's camera)
             const row = (i, key, text, on, run, off, note) =>
@@ -801,7 +801,7 @@ mgu.run({
                 const picked = items.filter(([, key]) => settings.get(key));
                 items.forEach(([v, key, text], i) => {
                     const lit = !!settings.get(key), n = lit ? picked.findIndex(([v2]) => v2 === v) + 1 : 0;
-                    G.chip(cv, th, 48 + (i % DCOLS) * (DBTN + 12), y + Math.floor(i / DCOLS) * 46, DBTN, 38, t(text), n, () => settings.set(key, !lit),
+                    G.chip(cv, th, 48 + (i % DCOLS) * (DBTN + 12), y + Math.floor(i / DCOLS) * DCHIP_STEP, DBTN, DCHIP, t(text), n, () => settings.set(key, !lit),
                         { key: prefix + v, busy: off || (!lit && picked.length >= max) });
                 });
                 return picked.length;

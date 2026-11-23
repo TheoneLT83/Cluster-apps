@@ -885,22 +885,27 @@ function glyph(cv, g, cx, cy, s, c) {
 }
 
 /**
- * A row of choices in one box, the chosen one filled: items = [{ label, run, on, busy, key }]. Drawn where
- * G.button is. Returns the width.
+ * A row of choices in one box, the chosen one filled, the others each a box with an edge: items = [{ label, run,
+ * on, busy, key }]. Drawn where G.button is. Returns the width.
  */
 function segment(cv, t, x, y, w, h, items) {
     if (!cv.own) return 0;
     const S = t.sel || t.accent, p = 4, iw = (w - 2 * p) / Math.max(1, items.length);
     cv.roundRect(x, y, w, h, 12, '#00000073');
     cv.strokeRoundRect(x, y, w, h, 12, 1, '#ffffff1a');
-    const opt = { align: 'center', font: 'bold', spacing: 2 }, size = Math.min(17, Math.max(15, h * 0.4));
+    const opt = { align: 'center', font: 'bold', spacing: 2 }, size = Math.min(19, Math.max(15, h * 0.38));
     items.forEach((it, i) => {
         const ix = x + p + i * iw, iy = y + p, ih = h - 2 * p;
         if (it.on && !it.busy) cv.roundRect(ix - 3, iy - 3, iw + 6, ih + 6, 12, withAlpha(S, 0.18));
+        // the others a box of their own with an edge, so each reads as a button to press
+        if (!it.on) {
+            cv.roundRect(ix + 2, iy, iw - 4, ih, 9, withAlpha('#ffffff', it.busy ? 0.03 : 0.07));
+            cv.strokeRoundRect(ix + 2, iy, iw - 4, ih, 9, 1.5, withAlpha('#ffffff', it.busy ? 0.08 : 0.2));
+        }
         if (it.on) cv.roundRect(ix, iy, iw, ih, 9, it.busy ? withAlpha(S, 0.4) : S);
         if (lit(it.key || it.label)) cv.roundRect(ix, iy, iw, ih, 9, withAlpha('#ffffff', 0.18));
         cv.text(fit(cv, upperText(it.label), size, iw - 16, opt), ix + iw / 2, iy + ih / 2 + size * 0.36, size,
-            it.on ? onColour(S) : it.busy ? withAlpha(t.dim, 0.55) : t.dim, opt);
+            it.on ? onColour(S) : it.busy ? withAlpha(t.dim, 0.55) : t.text, opt);
         if (!it.busy && it.run) cv.target(ix, iy, iw, ih, pressing(it.key || it.label, it.run), it.key || it.label, 9);
     });
     return w;
@@ -919,8 +924,11 @@ function chip(cv, t, x, y, w, h, label, n, run, opts) {
     if (on) cv.roundRect(x, y, w, h, 10, withAlpha(S, 0.22 * a));
     if (lit(o.key || label)) cv.roundRect(x, y, w, h, 10, withAlpha('#ffffff', 0.18));
     cv.strokeRoundRect(x, y, w, h, 10, 1.5, on ? withAlpha(S, 0.75 * a) : withAlpha('#ffffff', 0.2 * a));
-    const opt = { font: 'bold', spacing: 1.2 }, size = Math.min(15, h * 0.37), cr = h * 0.27, cx = x + w - cr - 12, cy = y + h / 2;
-    cv.text(fit(cv, upperText(label), size, w - 2 * cr - 40, opt), x + 16, cy + size * 0.36, size, withAlpha(t.text, a), opt);
+    const opt = { font: 'bold', spacing: 1.2 }, cr = h * 0.27, cx = x + w - cr - 12, cy = y + h / 2, room = w - 2 * cr - 40, txt = upperText(label);
+    // a long name a little smaller before it is cut
+    let size = Math.min(16, h * 0.37);
+    while (size > 12 && cv.textWidth(txt, size, opt) > room) size -= 0.5;
+    cv.text(fit(cv, txt, size, room, opt), x + 16, cy + size * 0.36, size, withAlpha(t.text, a), opt);
     if (on) {
         cv.circle(cx, cy, cr, withAlpha(S, a));
         if (n !== true) cv.text(String(n), cx, cy + cr * 0.45, cr * 1.15, onColour(S), { align: 'center', font: 'bold' });

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.42
+
+The Display page's Cluster / HUD bar and the info bar's readings are bigger (a long name a little smaller rather than
+cut); in every bar of choices (Show on, Cluster / HUD, Near a turn / Always) the ones not chosen are boxes with an
+edge, so each reads as a button.
+
 ## 0.9.41
 
 New look, the same functions: the selected page has a short line under its name; buttons with round corners, filled
