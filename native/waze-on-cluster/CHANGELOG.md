@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.14.13
+
+robertnisipeanu/idrive-apps' 0.14.12 with this repository's 0.14.12: the tests build with the cluster renderer's
+iDrive 7 log-level handling left out, as the map feed test does not use it. Nothing changes on the car.
+
 ## 0.14.12
 
 robertnisipeanu/idrive-apps' 0.14.11 with this repository's 0.14.11:

@@ -649,8 +649,71 @@ public:
         scene_->destroy(*q->second.turned);
         scene_->destroy(*q->second.placed);
         scene_->destroy(*q->second.geo);
+        drop_glyph_buffers(q->second);
         scene_->destroy(*q->second.app);
         quads_.erase(q);
+    }
+
+    bool glyph_buffer(int quad, uint32_t capacity) override
+    {
+        auto it = quads_.find(quad);
+        if (it == quads_.end() || it->second.glyph_cap || !capacity || capacity > 16383)
+            return false;
+        Quad &q = it->second;
+        q.glyph_pos = scene_->createVertexDataBuffer(capacity * 32, ramses::EDataType_Vector2F);
+        q.glyph_uv = scene_->createVertexDataBuffer(capacity * 32, ramses::EDataType_Vector2F);
+        q.glyph_idx = scene_->createIndexDataBuffer(capacity * 12, ramses::EDataType_UInt16);
+        std::vector<uint16_t> idx(capacity * 6);
+        for (uint32_t i = 0; i < capacity; i++) {
+            const uint16_t b = (uint16_t)(i * 4);
+            const uint16_t six[6] = {b, (uint16_t)(b + 1), (uint16_t)(b + 2), (uint16_t)(b + 2), (uint16_t)(b + 1),
+                                     (uint16_t)(b + 3)};
+            std::copy(six, six + 6, idx.begin() + i * 6);
+        }
+        const float zero[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+        ramses::AttributeInput pos, uv;
+        /* a binding of its own, made with the buffers, in place of the unit quad's */
+        ramses::GeometryBinding *geo = scene_->createGeometryBinding(*q.effect);
+        const bool good =
+            geo && q.glyph_pos && q.glyph_uv && q.glyph_idx &&
+            ok(q.glyph_idx->setData(reinterpret_cast<const char *>(idx.data()), capacity * 12, 0)) &&
+            ok(q.glyph_pos->setData(reinterpret_cast<const char *>(zero), 32, 0)) &&
+            ok(q.glyph_uv->setData(reinterpret_cast<const char *>(zero), 32, 0)) &&
+            ok(q.effect->findAttributeInput("a_position", pos)) && ok(q.effect->findAttributeInput("a_texcoord", uv)) &&
+            ok(geo->setInputBuffer(pos, *q.glyph_pos)) && ok(geo->setInputBuffer(uv, *q.glyph_uv)) &&
+            ok(geo->setIndices(*q.glyph_idx)) && ok(q.mesh->setGeometryBinding(*geo)) && ok(q.mesh->setIndexCount(6));
+        if (good) {
+            scene_->destroy(*q.geo);
+            q.geo = geo;
+        } else if (geo) {
+            scene_->destroy(*geo);
+        }
+        if (!good) {
+            log_error("ramses: a glyph run of %u glyphs refused", capacity);
+            return false;   /* the quad is dropped, its buffers with it */
+        }
+        q.glyph_cap = capacity;
+        return true;
+    }
+
+    bool glyphs(int quad, const float *v, uint32_t n) override
+    {
+        auto it = quads_.find(quad);
+        if (it == quads_.end() || !it->second.glyph_cap || n > it->second.glyph_cap)
+            return false;
+        Quad &q = it->second;
+        /* nothing to draw: one glyph of no area */
+        std::vector<float> pos(std::max<uint32_t>(n, 1) * 8, 0.0f), uv(pos.size(), 0.0f);
+        for (uint32_t i = 0; i < n * 4; i++) {
+            pos[i * 2] = v[i * 4];
+            pos[i * 2 + 1] = v[i * 4 + 1];
+            uv[i * 2] = v[i * 4 + 2];
+            uv[i * 2 + 1] = v[i * 4 + 3];
+        }
+        const uint32_t bytes = (uint32_t)(pos.size() * 4);
+        return ok(q.glyph_pos->setData(reinterpret_cast<const char *>(pos.data()), bytes, 0)) &&
+               ok(q.glyph_uv->setData(reinterpret_cast<const char *>(uv.data()), bytes, 0)) &&
+               ok(q.mesh->setIndexCount(std::max<uint32_t>(n, 1) * 6));
     }
 
     void drop_buffer(int buf) override
@@ -1223,6 +1286,15 @@ public:
         return ok(s);
     }
 
+    bool band(int32_t base) override
+    {
+        if (!borrowed_)
+            return false;
+        over_base_ = std::min<int32_t>(base, INT32_MAX - 1024);
+        band_ = layout_dirty_ = true;
+        return true;
+    }
+
 private:
     struct Buffer {
         ramses::Texture2DBuffer *buffer;   /* null for an immutable texture */
@@ -1238,6 +1310,10 @@ private:
         ramses::Appearance *app = nullptr;
         ramses::GeometryBinding *geo = nullptr;
         ramses::Effect *effect = nullptr;
+        /* A glyph run's buffers (glyph_buffer()), its capacity in glyphs. */
+        ramses::VertexDataBuffer *glyph_pos = nullptr, *glyph_uv = nullptr;
+        ramses::IndexDataBuffer *glyph_idx = nullptr;
+        uint32_t glyph_cap = 0;
         int32_t order = 0;
         int32_t grouped_order = 0;   /* its order within its segment's group */
         size_t segment = 0;
@@ -1245,6 +1321,16 @@ private:
         Rect r;
         Turn t;
     };
+    /* A glyph run's buffers go with its quad. */
+    void drop_glyph_buffers(Quad &q)
+    {
+        if (q.glyph_pos) scene_->destroy(*q.glyph_pos);
+        if (q.glyph_uv) scene_->destroy(*q.glyph_uv);
+        if (q.glyph_idx) scene_->destroy(*q.glyph_idx);
+        q.glyph_pos = q.glyph_uv = nullptr;
+        q.glyph_idx = nullptr;
+        q.glyph_cap = 0;
+    }
     /* A 2D pass: the quads between two views. */
     struct Segment {
         ramses::RenderPass *pass = nullptr;
@@ -1774,7 +1860,19 @@ private:
         std::vector<bool> kinds;
         for (const Item &it : items)
             kinds.push_back(it.view);
-        const std::vector<int> pass = plan_passes(kinds);
+        std::vector<int> pass = plan_passes(kinds);
+        /* The over band (band()), the target's own surface only: from its
+         * first item on, passes of its own at render orders from over_base_ up. */
+        int over = -1;
+        for (size_t i = 0; band_ && canvas == 0 && i < items.size() && over < 0; i++) {
+            if (items[i].order < kOverBand)
+                continue;
+            if (i && pass[i] == pass[i - 1])   /* a quad sharing the band below's pass: a new one */
+                for (size_t k = i; k < items.size(); k++)
+                    pass[k]++;
+            over = pass[i];
+        }
+        auto at = [&](int p) { return over >= 0 && p >= over ? over_base_ + (p - over) : sf.base + p; };
         /* 2D passes in order of appearance; pass 0 is always the first
          * segment. */
         std::map<int, size_t> segment_of;
@@ -1798,14 +1896,14 @@ private:
         }
         for (const auto &kv : segment_of) {
             Segment &s = sf.segments[kv.second];
-            if (s.render_order != sf.base + kv.first && ok(s.pass->setRenderOrder(sf.base + kv.first)))
-                s.render_order = sf.base + kv.first;
+            if (s.render_order != at(kv.first) && ok(s.pass->setRenderOrder(at(kv.first))))
+                s.render_order = at(kv.first);
         }
         for (size_t i = 0; i < items.size(); i++) {
             if (items[i].view) {
                 View &v = views_[items[i].handle];
-                if (v.render_order != sf.base + pass[i] && ok(v.pass->setRenderOrder(sf.base + pass[i])))
-                    v.render_order = sf.base + pass[i];
+                if (v.render_order != at(pass[i]) && ok(v.pass->setRenderOrder(at(pass[i]))))
+                    v.render_order = at(pass[i]);
                 continue;
             }
             Quad &q = quads_[items[i].handle];
@@ -1862,8 +1960,10 @@ private:
     std::map<int, Surface> canvases_;
     int32_t canvas_seq_ = 0;
     /* In a scene file's scene (over()): not ours to publish or destroy; the
-     * passes' render orders start at base_. */
-    bool borrowed_ = false;
+     * passes' render orders start at main_.base, the over band's (band())
+     * at over_base_. */
+    bool borrowed_ = false, band_ = false;
+    int32_t over_base_ = 0;
     bool write_failing_ = false, flush_failing_ = false;   /* log the first of a run */
     bool layout_dirty_ = false;
     std::map<int, Buffer> buffers_;

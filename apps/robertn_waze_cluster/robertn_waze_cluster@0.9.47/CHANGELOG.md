@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.47
+
+The cluster renderer's client from cluster-render 0.6.18 (text layers, layers over a scene file).
+
 ## 0.9.46
 
 The Display page's info bar readings share the room down to the panel's foot: fewer of them (no hybrid battery)
