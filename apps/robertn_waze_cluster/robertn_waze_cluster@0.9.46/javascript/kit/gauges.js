@@ -915,6 +915,7 @@ function segment(cv, t, x, y, w, h, items) {
  * One of a list to pick: label on the left, on the right a ring, or while picked the box in the theme's
  * colour and the ring filled with its place n (a number, or true for a dot). Drawn where G.button is.
  */
+/** (opts.maxSize: the label's largest size, 16 unless given) */
 function chip(cv, t, x, y, w, h, label, n, run, opts) {
     const o = opts || {};
     if (!cv.own) return 0;
@@ -926,7 +927,7 @@ function chip(cv, t, x, y, w, h, label, n, run, opts) {
     cv.strokeRoundRect(x, y, w, h, 10, 1.5, on ? withAlpha(S, 0.75 * a) : withAlpha('#ffffff', 0.2 * a));
     const opt = { font: 'bold', spacing: 1.2 }, cr = h * 0.27, cx = x + w - cr - 12, cy = y + h / 2, room = w - 2 * cr - 40, txt = upperText(label);
     // a long name a little smaller before it is cut
-    let size = Math.min(16, h * 0.37);
+    let size = Math.min(o.maxSize || 16, h * 0.37);
     while (size > 12 && cv.textWidth(txt, size, opt) > room) size -= 0.5;
     cv.text(fit(cv, txt, size, room, opt), x + 16, cy + size * 0.36, size, withAlpha(t.text, a), opt);
     if (on) {

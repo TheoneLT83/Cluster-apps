@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.46
+
+The Display page's info bar readings are taller, with larger names, as far as the room under them allows.
+
 ## 0.9.45
 
 The cluster renderer's client from cluster-render 0.6.17: the HUD map's frames go through shared memory where the

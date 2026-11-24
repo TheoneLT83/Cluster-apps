@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.10
+
+The kit's chips take a larger name where an app asks for one; nothing changes on this app's pages.
+
 ## 1.0.9
 
 The kit's bars of choices show the ones not chosen as boxes with an edge.
