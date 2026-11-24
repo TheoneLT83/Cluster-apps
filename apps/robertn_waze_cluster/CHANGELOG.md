@@ -2,7 +2,8 @@
 
 ## 0.9.46
 
-The Display page's info bar readings are taller, with larger names, as far as the room under them allows.
+The Display page's info bar readings share the room down to the panel's foot: fewer of them (no hybrid battery)
+taller with larger names, more of them smaller, so they always fill it and never run past it.
 
 ## 0.9.45
 

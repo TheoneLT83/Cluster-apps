@@ -795,7 +795,7 @@ mgu.run({
             text: (s, a, b, sz, c, o) => cv.text(s, x + a * k, y + b * k, sz * k, c, o),
         });
         /* The Display page: the switches and the info bar's choices on the left (DL wide), the pictures on the right. */
-        const DL = 1056, DCOL = 524, DCOLS = 4, DBTN = 243, DTOP = 120, DROW = 44, DCHIP = 44, DCHIP_STEP = 52, DCHIP_MAX = 62;
+        const DL = 1056, DCOL = 524, DCOLS = 4, DBTN = 243, DTOP = 120, DROW = 44, DCHIP = 44, DCHIP_STEP = 52, DCHIP_MIN = 36, DCHIP_MAX = 84;
         function drawDisplay(cv, th) {
             const hasHud = hudOk();
             if (!hasHud) dispTab = 'cluster';
@@ -814,15 +814,17 @@ mgu.run({
                 const f = /^greenLight/.test(key) ? green.found() : null;
                 return f === null ? null : { text: f ? t('Traffic-light camera found') : t('Traffic-light camera not found'), color: f ? th.dim : th.warn };
             };
-            // the readings to pick, DCOLS a row from y: a chip each, numbered in the order they show; as tall as the room
-            // down to the panel's foot allows (DCHIP_STEP at least, DCHIP_MAX at most)
+            // the readings to pick, DCOLS a row from y: a chip each, numbered in the order they show. Their rows share the
+            // room down to the panel's foot: fewer readings (no hybrid battery) taller chips, more of them smaller ones,
+            // between DCHIP_MIN and DCHIP_MAX high
             const chips = (y, items, prefix, max, off) => {
-                const picked = items.filter(([, key]) => settings.get(key)), rows = Math.ceil(items.length / DCOLS);
-                const step = Math.max(DCHIP_STEP, Math.min(DCHIP_MAX + 10, Math.floor((G.pageBottom(cv) - G.MARGIN - y) / rows)));
+                const picked = items.filter(([, key]) => settings.get(key)), rows = Math.max(1, Math.ceil(items.length / DCOLS));
+                const gap = DCHIP_STEP - DCHIP;
+                const step = Math.max(DCHIP_MIN + gap, Math.min(DCHIP_MAX + gap, Math.floor((G.pageBottom(cv) - G.MARGIN - y) / rows)));
                 items.forEach(([v, key, text], i) => {
                     const lit = !!settings.get(key), n = lit ? picked.findIndex(([v2]) => v2 === v) + 1 : 0;
-                    G.chip(cv, th, 48 + (i % DCOLS) * (DBTN + 12), y + Math.floor(i / DCOLS) * step, DBTN, step - (DCHIP_STEP - DCHIP), t(text), n, () => settings.set(key, !lit),
-                        { key: prefix + v, busy: off || (!lit && picked.length >= max), maxSize: 19 });
+                    G.chip(cv, th, 48 + (i % DCOLS) * (DBTN + 12), y + Math.floor(i / DCOLS) * step, DBTN, step - gap, t(text), n, () => settings.set(key, !lit),
+                        { key: prefix + v, busy: off || (!lit && picked.length >= max), maxSize: Math.round(Math.min(22, (step - gap) * 0.36)) });
                 });
                 return picked.length;
             };
