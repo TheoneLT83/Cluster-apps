@@ -25,4 +25,14 @@ const cases = [
     [{}, null], [{ program: 'M' }, 'M']];
 cases.forEach(([d, want]) => assert.strictEqual(gearText(d), want, JSON.stringify(d)));
 assert.deepStrictEqual([PROGRAMS.S_MINUS_PROGRAMM, PROGRAMS.M_MINUS_PROGRAMM, PROGRAMS[1], PROGRAMS[2]], ['S', 'M', 'S', 'M']);
-console.log(`gear: ${cases.length + 1} checks pass`);
+
+// Auto's readings among those chosen by hand (withAuto): the chosen keep their places, the last give theirs up
+const withAuto = new Function(src.match(/function withAuto[\s\S]*?\n}\n/)[0] + '; return withAuto;')();     // eslint-disable-line no-new-func
+const auto = [
+    [[['oil', 'coolant'], ['speed', 'fuel', 'tyres', 'clock'], 4], ['speed', 'fuel', 'oil', 'coolant']],
+    [[['oil', 'coolant'], ['oil', 'rpm'], 4], ['oil', 'rpm', 'coolant']],
+    [[['rpm', 'boost'], ['fuel', 'tyres', 'clock', 'rpm'], 4], ['fuel', 'tyres', 'rpm', 'boost']],
+    [[['temps'], ['speed', 'fuel', 'clock'], 3], ['speed', 'fuel', 'temps']],
+    [[[], ['speed'], 4], ['speed']], [[['ev'], [], 3], ['ev']]];
+auto.forEach(([a, want]) => assert.deepStrictEqual(withAuto(...a), want, JSON.stringify(a)));
+console.log(`gear: ${cases.length + 1 + auto.length} checks pass`);

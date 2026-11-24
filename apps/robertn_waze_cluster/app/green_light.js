@@ -9,7 +9,8 @@
  *     AMPEL_ROT (red), AMPEL_ROT_GELB (red and yellow), AMPEL_GELB (yellow), AMPEL_GRUEN... (green). On cars and
  *     countries where BMW shows traffic lights.
  *   - TrafficLightRecognitionFrontCameraLegacy.RecognitionTrafficLightCamera, the camera's own light objects:
- *     trafficLightColor RAW_GREEN green, RAW_NONE no light, any other code a lit light that is not green, shown red
+ *     trafficLightColor RAW_GREEN green, RAW_NONE no light, any other code a lit light that is not green, shown red;
+ *     none until the car has driven since start (a parked car's camera, just started, reports lights that are not there)
  *     (at a stop that is red or red and yellow; the codes are not documented and differ from car to car: each code
  *     seen is logged once, so a car's can be read from the log).
  * Values come as numbers, enum names or { value } objects (num()). The camera numbers a light anew as it tracks it,
@@ -39,6 +40,7 @@ const QUIET_MS = 10000;
 const LOOK_MS = 30000;
 const TICK_MS = 500;
 const PASSED_MS = 10000;           // over SLOW_KMH this long: driven past the light
+const MOVED_KMH = 3;
 const GONG_CALL = { location: 0, identifier: 208, duration: 0, type: 16, distance: 0, angle: 0 };
 
 /* An enum as the signal gives it (number, name, numeric text or { value }) -> its number, or null. */
@@ -77,6 +79,7 @@ class GreenLight extends EventEmitter {
         this.goUntil = 0;
         this.lastGo = -Infinity;
         this.rawSeen = [];
+        this.moved = false;        // the car drove (over MOVED_KMH) since start: the camera's lights count from then
         this.timer = null;
         this.startedAt = null;
         this.foresight = null;     // the display's watch, available once its provider answers
@@ -104,11 +107,19 @@ class GreenLight extends EventEmitter {
         this.cameraUp = true;
         const code = num(v.trafficLightColor);
         if (code === null || code === RAW_NONE) return;
+        // a parked car's camera, just started, can report a light that is not there: none counts before it drives
+        if (!this._moved()) return;
         if (this.rawSeen.length < 16 && this.rawSeen.indexOf(code) < 0) {
             this.rawSeen.push(code);
             this.log.info('green light: camera colour code ' + code + ' (light ' + num(v.trafficLightID) + ')');
         }
         this.light(code === RAW_GREEN ? 'green' : 'red');
+    }
+
+    _moved() {
+        const kmh = this.speed();
+        if (typeof kmh === 'number' && kmh > MOVED_KMH) this.moved = true;
+        return this.moved;
     }
 
     _slow() { const kmh = this.speed(); return typeof kmh === 'number' && isFinite(kmh) && kmh <= SLOW_KMH; }
@@ -137,6 +148,7 @@ class GreenLight extends EventEmitter {
      * (over SLOW_KMH for PASSED_MS) or seen long ago. */
     tick() {
         const t = this.now();
+        this._moved();
         if (!this._slow()) {
             if (this.fastSince === null) this.fastSince = t;
             if (t - this.fastSince >= PASSED_MS) { this.last = null; this.redAt = -Infinity; }

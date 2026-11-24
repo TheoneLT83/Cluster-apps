@@ -46,6 +46,8 @@ eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GE
     t += LOOK_MS + 1;
     eq(g.found(), false, 'nothing answered: no traffic-light camera');
     t -= LOOK_MS + 1;
+    camera({ trafficLightID: 61, trafficLightColor: 13 });
+    eq(shown, [], 'just started, not yet driven: the camera\'s light left out');
     kmh = 0; foresight({ dispForesightEvent: 'AMPEL_GRUEN' });
     eq([shown, gongs], [['green'], []], 'a green without a red, slow: green, no GO');
     kmh = 30; t += 500; g.tick();

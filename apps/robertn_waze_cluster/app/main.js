@@ -86,6 +86,15 @@ const PANEL_ITEMS = [['power', 'clusterKw', 'Battery kW usage'], ['soc', 'cluste
     ['gearbox', 'clusterGearbox', 'Gearbox oil'], ['fuel', 'clusterFuel', 'Fuel range'], ['clock', 'clusterClock', 'Clock'],
     ['drive', 'clusterDrive', 'Drive time']];
 const PANEL_MAX = 4;
+/* Auto's readings among the ones chosen by hand: those chosen stay in their places, the last of them giving theirs up to
+ * Auto's that are missing, up to max. */
+function withAuto(auto, chosen, max) {
+    const out = chosen.slice(0, max), missing = auto.filter((k) => out.indexOf(k) < 0);
+    for (let i = out.length - 1; i >= 0 && out.length + missing.length > max; i--) {
+        if (auto.indexOf(out[i]) < 0) out.splice(i, 1);
+    }
+    return out.concat(missing).slice(0, max);
+}
 /* An info bar item the car and the settings offer: the battery's only with eDrive, Real speed only with its setting. */
 const offers = (k, hv, settings) => (k !== 'power' && k !== 'soc' || hv.installed()) && (k !== 'speed' || !!settings.get('realSpeedCluster'));
 const LOG_LINES = 60;
@@ -203,6 +212,7 @@ async function background(bg) {
      *   oil or coolant under PANEL.COLD_C: oil and coolant;
      *   driving on the battery (eDrive, the engine stopped): the electric range;
      *   else the readings chosen by hand (none: nothing).
+     * Its readings join those chosen by hand, taking the places of the last of them (withAuto).
      * A choice higher in the list takes over at once; a lower one only after AUTO_HOLD_MS, so it doesn't flicker. */
     let autoNow = null, autoSince = 0;
     const AUTO_ORDER = ['rev', 'cold', 'ev', 'manual'];
@@ -220,7 +230,8 @@ async function background(bg) {
     }
     function autoChoices() {
         const a = autoPick();
-        return a === 'rev' ? (G.isNum(boost) ? ['rpm', 'boost'] : ['rpm']) : a === 'cold' ? ['temps'] : a === 'ev' ? ['ev'] : manualChoices();
+        return withAuto(a === 'rev' ? (G.isNum(boost) ? ['rpm', 'boost'] : ['rpm']) : a === 'cold' ? ['temps'] : a === 'ev' ? ['ev'] : [],
+            manualChoices(), HUD_DATA_MAX);
     }
     /* A warning takes the info bar over for WARN_SHOW_MS when it starts (a low tyre, oil, coolant or gearbox oil too hot),
      * with Auto or the owner's readings; it shows again if it clears and comes back. */
@@ -247,13 +258,13 @@ async function background(bg) {
         const on = PANEL_ITEMS.filter(([k, key]) => settings.get(key) && offers(k, hv, settings)).map(([k]) => k);
         return (on.length ? on : ['oil', 'coolant', 'rpm']).slice(0, PANEL_MAX);
     };
-    // Auto (clusterAuto): the cluster's items for the same situation as the HUD's (autoPick), else the ones chosen
+    // Auto (clusterAuto): the cluster's items for the same situation as the HUD's (autoPick) among the ones chosen
     const panelKinds = () => {
         if (settings.get('clusterAuto') !== true) return panelManual();
         const a = autoPick(), ok = (l) => l.filter((k) => offers(k, hv, settings));
         const l = a === 'rev' ? ok(G.isNum(boost) ? ['rpm', 'boost'] : ['rpm']) : a === 'cold' ? ok(['oil', 'coolant'])
             : a === 'ev' ? ok(['power', 'soc']) : [];
-        return l.length ? l : panelManual();
+        return withAuto(l, panelManual(), PANEL_MAX);
     };
     const panelOn = () => settings.get('clusterPanel') !== false && ctl.clusterOn() === true && !!ctl.renderStatus && ctl.renderStatus.state === 'showing';
     const panelItems = (kinds) => {
@@ -648,8 +659,15 @@ mgu.run({
             const on = ctl.shownOn(), can = ctl.canChooseShownOn();
             G.segment(cv, th, 48, 132, 712, 48, [['cluster', 'Cluster'], ['hud', 'HUD'], ['both', 'Cluster + HUD']].filter(([v]) => v === 'cluster' || hudOk())
                 .map(([v, text]) => ({ label: t(text), run: () => ctl.showOn(v), on: on === v, busy: !can, key: 'show-' + v })));
+            // each pill at most half the row (its words cut with an ellipsis), inside the panel
             const statusPill = (s, x, col) => {
-                const opt = { font: 'bold', spacing: 1 }, s2 = String(s).toUpperCase(), w = cv.textWidth(s2, 13, opt) + 34;
+                const opt = { font: 'bold', spacing: 1 }, room = (712 - 10) / 2 - 34;
+                let s2 = String(s).toUpperCase();
+                if (cv.textWidth(s2, 13, opt) > room) {
+                    while (s2.length > 1 && cv.textWidth(s2 + '…', 13, opt) > room) s2 = s2.slice(0, -1);
+                    s2 = s2.trimEnd() + '…';
+                }
+                const w = cv.textWidth(s2, 13, opt) + 34;
                 cv.roundRect(x, 190, w, 26, 13, withAlpha(col, 0.16));
                 cv.circle(x + 13, 203, 4, col);
                 cv.text(s2, x + 24, 208, 13, col, opt);

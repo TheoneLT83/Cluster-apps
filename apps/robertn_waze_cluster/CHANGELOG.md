@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.43
+
+The traffic light: the camera's lights count only once the car has driven since it was started (a parked car's
+camera, just started, could show a red light that is not there). Auto on the info bars adds its readings to the ones
+chosen, in the places of the last of them, instead of showing only its own. The Maps page's map and HUD states stay
+inside the panel, cut with an ellipsis when long.
+
 ## 0.9.42
 
 The Display page's Cluster / HUD bar and the info bar's readings are bigger (a long name a little smaller rather than
