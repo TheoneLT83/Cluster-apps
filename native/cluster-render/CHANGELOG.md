@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+## 0.6.17
+
+robertnisipeanu/idrive-apps' 0.8.8 and its unreleased scene animations with this repository's 0.6.16:
+
+A video layer's frames go to the service through memory both share instead
+of through its socket, which takes less CPU for each frame. Clients and
+services without it keep sending and taking whole frames on the socket.
+
+With nothing shown, requested or due, the service wakes less often, and on
+iDrive 8 it dispatches the cluster's events less often while it offers
+nothing. The status file is written only when its text changes.
+
+A scene file's own animations can be played: the edit line `--play NAME`
+starts the animation sequence `NAME` the file was saved with and `--skip
+NAME` shows its end at once. In an animation system without a clock of its
+own, the service sets its time once a tick, so the play never depends on the
+display's clock. These lines are applied once and never kept; the hello's
+`scene_anim` 1 says the display can play them.
+
 ## 0.6.16
 
 robertnisipeanu/idrive-apps' 0.8.4 to 0.8.7 with this repository's 0.6.15:

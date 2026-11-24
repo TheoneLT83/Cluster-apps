@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.45
+
+The cluster renderer's client from cluster-render 0.6.17: the HUD map's frames go through shared memory where the
+renderer takes them.
+
 ## 0.9.44
 
 Android Auto's Status says when boot recovery removed its patch because Android Auto crashed (`Removed — Android Auto

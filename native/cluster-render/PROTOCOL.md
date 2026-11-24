@@ -56,6 +56,8 @@ lacks.
 | `unhost` | `ref` or `into`, `target`: that host of `target` ends; to a service whose hello has `host_layers` 1 |
 | `drop` | `ref`: a layer, a scene, an asset no layer samples (else refused: `asset in use`), a canvas nothing draws in or samples (else refused: `canvas in use`), or a value (its links undone) |
 | `repeat` | `ref` (a video layer): a frame whose atlas is the layer's last frame's, byte for byte, in place of that frame; to a service whose hello has `repeat` 1 |
+| `shm` | `ref` (a video layer), `slots` (1-4), with a descriptor passed on the message (SCM_RIGHTS): the layer's [shared frame buffer](#shared-frames); answered by a `shm` event; to a service whose hello has `shm_frames` 1 |
+| `slot` | `ref`, `slot`: the frame in that slot of the layer's shared buffer is its next frame, as an `F` frame would be |
 | `status` | — (answered by a `status` event) |
 
 A client has at most 64 layers and all clients together 96 (past either, a
@@ -180,6 +182,20 @@ its pixels, writes them whole into each new scene of its target and in place
 as they change, before the layers, within the shared upload budget. A layer
 that samples an asset is stalled until the asset has pixels, and waits while
 the asset's buffer does not hold them whole.
+
+### Shared frames
+
+A video layer's frames can go through a buffer both sides map, in place of
+the whole atlas on the socket (Linux only). The buffer is a memfd sealed
+against shrinking (`F_SEAL_SHRINK`), of 64 bytes and then `slots` slots of
+one whole atlas each; its first bytes are one 32-bit word a slot, 1 while
+the slot holds a frame the service has not taken. The client sends `shm`
+with the descriptor once a layer is made, and uses the buffer once the
+service's `shm` event has `ok` 1. For a frame it picks a slot whose word is
+0, sets the word to 1, writes the atlas and sends `slot`; the service copies
+the frame out and sets the word to 0. With no slot free, or before `ok`, a
+frame goes whole as an `F` frame. A `shm` for a layer that has one replaces
+it; dropping the layer ends it.
 
 ### Choosing a pixel format
 
@@ -710,21 +726,56 @@ most 256 characters; numbers are separated by commas.
 | `--pass-off RE`, `--pass-on RE` | a render pass disabled, enabled |
 | `--uniform RE:NAME=v[,v...]` | the uniform `NAME` of each matching mesh's appearance: as many whole elements as given and it has (float, vec2-4, mat2-4; int and ivec2-4 rounded); one bound to a data object is not set (`--set` it) |
 | `--set NAME=v[,v...]` | the data object called `NAME` (the name, not a pattern): float, int, vec2-4 |
+| `--play NAME`, `--skip NAME` | to a service whose hello has `scene_anim` 1: the animation sequence called `NAME` (the name, not a pattern) of an animation system the file has, interpolated by the renderer ([below](#playing-a-files-animations)). `--play` starts it from its start (from there again when it is playing or has played); `--skip` shows its end at once (it is started as long ago as it lasts) |
 
 A line replaces the kept line with the same key, its kind (`--show` counts
-as `--hide`, `--pass-on` as `--pass-off`) and what comes before its value
-(up to the last `=`), and goes to the end. The kept lines, at most 1024,
-are applied in that order to each scene the file is loaded into, so a
-scene published again shows what the lines so far made of it. New lines
-are applied once a tick, in the target's one flush (not while the target
-is parked; none when they change nothing). A pattern is resolved once per scene and kind of object, and
-cached by its text.
+as `--hide`, `--pass-on` as `--pass-off`, `--skip` as `--play`) and what
+comes before its value (up to the last `=`), and goes to the end. The kept
+lines, at most 1024, are applied in that order to each scene the file is
+loaded into, so a scene published again shows what the lines so far made
+of it. New lines are applied once a tick, in the target's one flush (not
+while the target is parked; none when they change nothing). A pattern is
+resolved once per scene and kind of object, and cached by its text.
+
+`--play` and `--skip` are events, not values: each waits like any line
+(a newer one of the same sequence in its place), is applied once, and is
+not kept. A scene published again shows the file as saved with the kept
+lines, and plays nothing until another comes; the clients do not send them
+again after a reconnect. Sent on `shown`, the play is seen from its start.
+
+#### Playing a file's animations
+
+What a sequence does at play depends on its animation system:
+
+- **Without a clock of its own** (`Scene::createAnimationSystem`), the
+  recommended kind: the service sets the system's time, from the play on,
+  once a tick in the target's flush (one small scene action a flush), the
+  renderer interpolating every property at that time. The last time set is
+  the end of the last sequence playing in the system; then nothing is sent
+  until the next play. While the layers' writes wait on the upload budget a
+  tick is left out, never holding them, and the next one catches up to its
+  time, so the motion steps but never runs late. Nothing depends on the
+  renderer's clock. A sequence played like this lasts at most 10 minutes
+  (one that loops forever is refused). The system's time only goes forward;
+  the service starts it at 10 minutes or more.
+- **Real-time** (`Scene::createRealTimeAnimationSystem`): nothing is sent
+  while it plays, but the renderer plays it on its own clock, against a
+  start the service stamps from the head unit's clock plus
+  `scene_realtime_offset_ms` (cluster-render.conf, default 0; the time used
+  is logged). A display whose clock is not the head unit's, nor kept in step
+  with it, starts it that much early (its start partly skipped, or only its
+  end shown) or late (nothing moving until then). Use the kind above on such
+  a display.
+
+For a rest state that is right whatever happens (a renderer that never
+plays it, a play cut short, the scene published again), save the file with
+each animated value at its last key's value and start nothing in the file.
 
 A malformed line is refused at once, the other lines of the message taken:
 an `error` event, `op` `edit`, `line` the line, `reason` naming it and
 why. A line that changes nothing (no object matches, no mesh has the
-uniform, not a regular expression) is reported the same way, once per
-loaded scene.
+uniform, not a regular expression, no such sequence) is reported the same
+way, once per loaded scene.
 
 ### Layers over a scene file
 
@@ -938,11 +989,12 @@ Every JSON message has `ev`.
 
 | ev | Fields | When |
 |---|---|---|
-| `hello` | `proto`, `backend` (`id7`, or `id8` on iDrive 8), `targets` (`map:1088x480,panel:1920x720,hud:800x480`; on iDrive 8 `map:874x749,hud:353x203,guide:702x213,widget:2240x896,popup:2240x896`, then any a drop-in adds, README.md "iDrive 8"), `repeat` (1: takes `repeat`), `always_packed` (1: takes a video layer's `always_packed`; absent from older services), `host_edge` (1: takes a `host`'s `edge_*`; absent from older services), `preload` (1: knows a layer's `preload`; absent from older services), `others_fps` (1: knows a layer's `others_fps`; absent from older services), `render_state` (1: takes the [render state](#render-state) fields), `samplers` (1: takes the [mipmaps and samplers](#mipmaps-and-samplers) fields), `host_layers` (1: takes `host` with `into`, `unhost` and a layer's `hosted`; absent from older services), `canvas` (1: takes [canvases](#canvases) and the stencil fields), `curves` (1: takes the eased `interp`s, [above](#animations)), `nodes` (1: takes [pivots and parents](#part-hierarchies)), `draw` (1: takes [draw modes](#draw-modes-and-instances)), `instances` (1: takes instances above 1, [same place](#draw-modes-and-instances)), `cube` (1: takes [cube maps](#cube-maps)), `values` (1: takes [shared values](#shared-values)) | after the client's hello |
+| `hello` | `proto`, `backend` (`id7`, or `id8` on iDrive 8), `targets` (`map:1088x480,panel:1920x720,hud:800x480`; on iDrive 8 `map:874x749,hud:353x203,guide:702x213,widget:2240x896,popup:2240x896`, then any a drop-in adds, README.md "iDrive 8"), `repeat` (1: takes `repeat`), `always_packed` (1: takes a video layer's `always_packed`; absent from older services), `host_edge` (1: takes a `host`'s `edge_*`; absent from older services), `preload` (1: knows a layer's `preload`; absent from older services), `others_fps` (1: knows a layer's `others_fps`; absent from older services), `render_state` (1: takes the [render state](#render-state) fields), `samplers` (1: takes the [mipmaps and samplers](#mipmaps-and-samplers) fields), `host_layers` (1: takes `host` with `into`, `unhost` and a layer's `hosted`; absent from older services), `canvas` (1: takes [canvases](#canvases) and the stencil fields), `curves` (1: takes the eased `interp`s, [above](#animations)), `nodes` (1: takes [pivots and parents](#part-hierarchies)), `draw` (1: takes [draw modes](#draw-modes-and-instances)), `instances` (1: takes instances above 1, [same place](#draw-modes-and-instances)), `cube` (1: takes [cube maps](#cube-maps)), `values` (1: takes [shared values](#shared-values)), `shm_frames` (1: takes [shared frames](#shared-frames); absent from older services and off Linux), `scene_anim` (1: takes the [edit lines](#scene-edits) `--play` and `--skip`, the display able to play a file's animation sequences; 0 where it cannot; absent from older services) | after the client's hello |
 | `layer` | `ref`, `state`, `reason` | the layer's state changed |
 | `target` | `target`, `state`, `holder`, `reason`, `retry_in_ms`, `rendering`, `guide_disabled`, `disabled` | a target's state changed |
 | `budget` | `cap_kb_per_s`, `max_kb_per_s`, `floor_kb_per_s`, `reason` | the upload cap changed |
 | `fps_cap` | `fps` (0: not held any more), `app` (the client whose layer holds it; empty with 0) | another client's `others_fps` holds this client's video layers to `fps` updates a second, at another rate, or no longer ([above](#bandwidth-for-a-layer)) |
+| `shm` | `ref`, `ok` (1: the layer's frames may go through its shared buffer), `reason` (why not, with 0) | the answer to `shm` |
 | `error` | `op`, `ref`, `reason`; `line` for an edit line; `target` for a `host`, and `into` for one with `into` | a message was refused, or an edit line changed nothing |
 | `status` | `text` | after a status request; among its lines, one for each slot the KOMBI's latest reports name: `slot 0x203 status 2: 0x1000400 class 0 map 1, ...` (each row's content, class and map status) |
 | `hosting` | `target`, `into`, `state` (`live` or `waiting`), `reason` (waiting: why), `by` (the client whose host from layers is live in its place; else empty) | to a client with a host from layers, when its state or reason changes ([above](#hosting-from-layers)) |

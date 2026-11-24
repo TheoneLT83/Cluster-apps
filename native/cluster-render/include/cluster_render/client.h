@@ -323,7 +323,8 @@ public:
     void scene(uint32_t ref, const SceneOptions &so);
     /* Edit lines for a scene (PROTOCOL.md "edit"), separated by newlines;
      * kept by their key (edit_key), each replacing the kept line of its
-     * key, and sent again after a reconnect in the order last sent. */
+     * key, and sent again after a reconnect in the order last sent; --play
+     * and --skip (to a service whose hello has scene_anim) never kept. */
     void edit(uint32_t ref, const std::string &lines);
     /* The scene (made with layers) hosts h.target there (PROTOCOL.md
      * "host"), its src_* part when src_w and src_h are set (all four go),
@@ -473,6 +474,8 @@ public:
     bool takes_cube() const { return cube_; }
     /* The service's hello takes shared values (value(), link()). */
     bool takes_values() const { return values_; }
+    /* The service's hello takes --play and --skip edit lines (edit()). */
+    bool takes_scene_anim() const { return scene_anim_; }
 
 private:
     struct Part {
@@ -599,6 +602,27 @@ private:
     bool instances_ = false;        /* and instances above 1 */
     bool cube_ = false;             /* and cube maps */
     bool values_ = false;           /* and shared values */
+    bool shm_frames_ = false;       /* and video frames in shared memory (PROTOCOL.md "Shared frames") */
+    /* A video layer's shared frames on this connection: its buffer, sent
+     * with its "shm" message, taken once the service says ok. */
+    struct Shm {
+        uint8_t *map = nullptr;
+        size_t size = 0, slot_bytes = 0;
+        unsigned slots = 0;
+        enum State { Asked, Ok, Refused } state = Asked;
+    };
+    static const unsigned kShmSlots = 2;
+    std::map<uint32_t, Shm> shm_;
+    std::set<uint32_t> shm_due_;    /* video layers whose buffer is still to be made and sent */
+    int cur_fd_ = -1;               /* a buffer's descriptor, ours until it goes with cur_'s first byte */
+    /* The buffer of shm_due_'s first layer into cur_, with its descriptor;
+     * false when none is due (or one cannot be made: frames then go whole). */
+    bool next_shm();
+    /* A frame of video layer ref through its shared buffer, its message into
+     * cur_: false when the layer has none or no slot is free. */
+    bool shm_frame(uint32_t ref, const std::vector<uint8_t> &px);
+    void shm_close(Shm *m);
+    bool scene_anim_ = false;       /* and a scene file's animation sequences played */
     uint64_t parts_made_ = 0;
 };
 
