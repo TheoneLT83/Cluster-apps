@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.48
+
+Android Auto's Patch, Remove patch, Zoom and the turn card can be changed while another change waits for the next
+head-unit start, and take effect then (waze-on-cluster 0.14.14), from robertnisipeanu/idrive-apps.
+
 ## 0.9.47
 
 The cluster renderer's client from cluster-render 0.6.18 (text layers, layers over a scene file).

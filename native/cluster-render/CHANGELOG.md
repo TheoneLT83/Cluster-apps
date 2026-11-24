@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## 0.6.19
+
+robertnisipeanu/idrive-apps' 0.8.12 with this repository's 0.6.18:
+
+`--skip` shows a scene file's animation sequence at its end on iDrive 7: at
+once in an animation system without a clock of its own, also when nothing
+plays in it, and within 250 ms in a real-time one (its last 250 ms play; one
+already in its last 250 ms, or ended, is left as it is).
+
 ## 0.6.18
 
 robertnisipeanu/idrive-apps' 0.8.9 to 0.8.11 with this repository's 0.6.17:
