@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.44
+
+Android Auto's Status says when boot recovery removed its patch because Android Auto crashed (`Removed — Android Auto
+crashed`), from robertnisipeanu/idrive-apps' 0.6.15; other restores keep `Removed — head unit kept restarting`.
+
 ## 0.9.43
 
 The traffic light: the camera's lights count only once the car has driven since it was started (a parked car's

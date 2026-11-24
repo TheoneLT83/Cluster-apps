@@ -1,7 +1,7 @@
 {
  "id": "robertn_waze_cluster",
  "title": "Cluster functions",
- "version": "0.9.43",
+ "version": "0.9.44",
  "screens": [
   {
    "name": "MAIN",

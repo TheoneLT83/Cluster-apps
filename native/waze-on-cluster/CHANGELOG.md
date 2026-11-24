@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.14.11
+
+robertnisipeanu/idrive-apps' 0.14.10 with this repository's 0.14.10: the tests run at once (`make test` in about a
+minute and a half instead of about 18, with the same checks). Nothing changes on the car.
+
 ## 0.14.10
 
 robertnisipeanu/idrive-apps' 0.14.7 to 0.14.9 with this repository's 0.14.7:
