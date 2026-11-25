@@ -15,7 +15,9 @@
 # tools and of carplay (what the journal still holds), the list of boots,
 # the carplay patch probe (where its edit sites are in this carplay), the
 # tools' folders, their local settings, the time and the uptime,
-# this boot's journal of aapd and the Android Auto boot step, the aapd
+# this boot's journal of aapd and the Android Auto boot step, and of the
+# Store's services (its renderer, updater, uplink, app-privacy, the controller
+# gate, the deploy tool's check), idrive7-apps' renderer and Turn View, the aapd
 # patch's site report (aapd_patch.js probe: each edit's offset and bytes,
 # the backup's and the running copy's SHA-256, the patch record),
 # wifi.txt: CarPlay's Wi-Fi band as patchd last read it, each P2P
@@ -96,7 +98,9 @@ done
 if command -v journalctl >/dev/null 2>&1; then
     for unit in cluster-render waze-on-cluster waze-on-cluster-patchd waze-on-cluster-boot waze-on-cluster-recovery \
             waze-on-cluster-capture waze-on-cluster-journal waze-on-cluster-journal.timer waze-on-cluster-logs \
-            waze-on-cluster-logs-fw waze-on-cluster-aa-boot carplay aapd; do
+            waze-on-cluster-logs-fw waze-on-cluster-aa-boot carplay aapd \
+            mgu-render mgu-render-hmi mgu-updater mgu-uplink app-privacy mgu-inputgate-guard mgu-deploy-verify \
+            mgu-renderd turn-view; do
         journalctl -b -o short-precise --no-pager -u "$unit" 2>/dev/null |
             grep -v -E '\] (Intercepting function|Blocked function|Notice in function: findThreadByName)' > "$DIR/journal-$unit.txt"
     done

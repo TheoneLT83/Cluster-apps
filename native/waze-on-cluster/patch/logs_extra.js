@@ -283,7 +283,7 @@ function dumpsText() {
 /* The apps' own logs (the idrive7-apps kit's <id>.log and .log.1, in each app's data folder under the app manager's
  * OAP folders): the newest CAP bytes of each, their folders walked APP_DEPTH deep, at most APP_LOGS of them. eDrive,
  * Ambient config and the others log only there. */
-var OAP = '/var/opt/public/oap', APP_DEPTH = 5, APP_LOGS = 24;
+var OAP = '/var/opt/public/oap', APP_DEPTH = 5, APP_LOGS = 48;
 function tailText(file) {
     return function () {
         var st = fs.lstatSync(file);

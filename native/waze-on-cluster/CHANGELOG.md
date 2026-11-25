@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.14.16
+
+The log export (Cluster functions' Log page) also holds this boot's journal of the Store's services (its renderer,
+updater, uplink, app-privacy, the controller gate, the deploy tool's check), idrive7-apps' renderer and Turn View,
+and up to 48 of the apps' own log files.
+
 ## 0.14.15
 
 The map service runs in the head unit's slice for standard services, level
