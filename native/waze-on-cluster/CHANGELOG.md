@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+## 0.14.17
+
+The log export has perf.txt: what used the head unit's CPU and memory over 3 s when the Log page opened - the load
+and pressure, the busiest processes by app (named from their uid's app folder) and systemd unit, their busiest
+threads, the most memory, and each node process's app. The load line kept every 30 s names an app's process by its
+app (app:<name>, it was node) and lists the busiest 8.
+
 ## 0.14.16
 
 The log export (Cluster functions' Log page) also holds this boot's journal of the Store's services (its renderer,

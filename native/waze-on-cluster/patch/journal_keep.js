@@ -55,7 +55,7 @@
  *
  * Every LOAD_MS it logs a load line (to the journal, which brings it back
  * here): the load averages, MemAvailable, the processes in D state and the
- * TOP processes by CPU over the interval, from /proc/<pid>/stat (name and
+ * TOP processes by CPU over the interval, from /proc/<pid>/stat (an app's process by its app's name, from its uid (perf.js); else name and
  * pid, never a command line), and the time the sample took.
  *
  * The caps hold the last 10 minutes whatever the units log: every rotated
@@ -94,9 +94,10 @@ var PENDING_MAX = 256 * 1024;
 var BOOT_S = 10;
 var LOAD_MS = Number(process.env.WOC_JOURNAL_LOAD_MS) || 30000;
 var PROC = process.env.WOC_PROC || '/proc';
-var TOP = 5;
+var TOP = 8;
 var PIDS_MAX = 4096;
 var CLK_TCK = 100;
+function readText(f) { try { return fs.readFileSync(f, 'utf8'); } catch (e) { return null; } }
 var MARK = 'kept-last';
 var KEEP_DELAY_MS = Number(process.env.WOC_JOURNAL_KEEP_DELAY_MS) || 5000;
 var KEEP_AFTER_MS = Number(process.env.WOC_JOURNAL_KEEP_AFTER_MS) || 60000;
@@ -542,6 +543,14 @@ LoadSampler.prototype.sample = function () {
 var GENERIC = /^(javascript|source|src|lib|js|current|app|apps|oap|var|opt|public|data|usr|bin|node_modules|run|tmp|kit|runtime|dist|oap_\d+)$/;
 LoadSampler.prototype.label = function (p) {
     if (p.name !== 'node') return p.name;
+    // an app's process runs as its folder's uid (oap_<uid>): named by that app (perf.js), the list read every 5 min
+    var now = this.now();
+    if (!this.apps || now - this.appsAt > 300000) {
+        try { this.apps = require('./perf.js').apps(); } catch (e) { this.apps = {}; }
+        this.appsAt = now;
+    }
+    var uid = /^Uid:\s+(\d+)/m.exec(readText(this.proc + '/' + p.pid + '/status') || '');
+    if (uid && this.apps[uid[1]]) return 'app:' + this.apps[uid[1]];
     var cmd;
     try { cmd = fs.readFileSync(this.proc + '/' + p.pid + '/cmdline', 'latin1').split('\0'); } catch (e) { return p.name; }
     var script = cmd.slice(1).filter(function (a) { return /^\/[^=]*\.js$/.test(a); })[0];

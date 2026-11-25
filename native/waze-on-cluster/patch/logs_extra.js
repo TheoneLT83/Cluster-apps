@@ -52,6 +52,11 @@
  *                          the crash handler and the kernel keep of crashes
  *                          (DUMPS, two levels deep, at most ENTRIES each),
  *                          never their contents
+ *       perf.txt           what uses the CPU and memory, sampled for 3 s: load,
+ *                          pressure, the busiest processes by app (their
+ *                          uid's folder) and systemd unit, their busiest
+ *                          threads, the most memory, node processes' apps
+ *                          (perf.js)
  *       aapd-crashes.txt   of the crash handler's records of aapd's newest
  *                          CONTEXTS crashes, where it crashed: signal,
  *                          kernel stack, executable mappings, crash ids and
@@ -352,6 +357,8 @@ function snapshot(dir) {
         ['recmgr-crashes.txt', crashesText],
         ['core-dumps.txt', dumpsText],
         ['aapd-crashes.txt', aapdCrashesText],
+        // what uses the CPU and memory now, by app and unit, and the busiest threads (perf.js)
+        ['perf.txt', function () { return require('./perf.js').report(); }],
     ]));
 }
 

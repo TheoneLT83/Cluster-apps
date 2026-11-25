@@ -163,7 +163,7 @@ for (i = 0; i < 3000; i++) appLog += '2026-11-16T19:' + String(i % 60).padStart(
 mk('var/opt/public/oap/oap_12215/apps/edrive/data/edrive.log', appLog + '2026-11-16T19:22:00.000Z WARN soc failed for WBA8E9C50GK123456\n');
 mk('var/opt/public/oap/oap_12215/apps/edrive/data/edrive.log.1', 'older\n');
 mk('var/opt/public/oap/oap_12215/apps/edrive/notes.log', 'not a data folder\n');
-var XENV = Object.assign({}, ENV, { WOC_LOGS_ROOT: U, WOC_LOGS_SNAPSHOT: SNAP, WOC_BOOT_ID: path.join(U, 'boot_id') });
+var XENV = Object.assign({}, ENV, { WOC_LOGS_ROOT: U, WOC_LOGS_SNAPSHOT: SNAP, WOC_BOOT_ID: path.join(U, 'boot_id'), WOC_PERF_MS: '200' });
 var asRoot = process.getuid && process.getuid() === 0;
 if (!asRoot) {
     fs.mkdirSync(SNAP);
@@ -230,6 +230,7 @@ cp.execFileSync(process.execPath, [path.join(CUR, 'logs_extra.js'), 'snapshot', 
 var shrunk = fs.readFileSync(path.join(edge2, 'restartInfo-crashhandler.xml'), 'utf8');
 assert(shrunk.length < 30000 && shrunk.indexOf('WBA') < 0 && /\n\.\.\. \(cut at \d+ bytes\)\n$/.test(shrunk), shrunk.slice(-80));
 var everything = fs.readdirSync(A).map(get).join('\n');
+if (asRoot) assert(/^perf\.txt: what used the head unit/.test(get('perf.txt')) && /CPU over/.test(get('perf.txt')), 'perf.txt');
 SECRETS.forEach(function (x) { assert(everything.indexOf(x) < 0, 'the archive holds ' + x); });
 console.log('ok   the archive adds the patch records, aapd recovery, coding, aapd status, deploy state, restart records, ' +
     'recmgr crashes, aapd\'s crash records and core-dump names (' + (asRoot ? 'as root' : 'from the snapshot') + '), capped, no secret or VIN');
@@ -246,7 +247,7 @@ cp.execFileSync('rm', ['-rf', path.join(U, 'var/opt/public/sin/recmgr'), path.jo
 var snap3 = path.join(dir, 'snap3');
 fs.mkdirSync(snap3);
 cp.execFileSync(process.execPath, [path.join(CUR, 'logs_extra.js'), 'snapshot', snap3], { env: XENV });
-assert.deepStrictEqual(fs.readdirSync(snap3).sort(), ['aapd-crashes.txt', 'app-edrive.log', 'app-edrive.log.1', 'core-dumps.txt', 'restartInfo-crashhandler.xml']);
+assert.deepStrictEqual(fs.readdirSync(snap3).sort(), ['aapd-crashes.txt', 'app-edrive.log', 'app-edrive.log.1', 'core-dumps.txt', 'perf.txt', 'restartInfo-crashhandler.xml']);
 assert(fs.readFileSync(path.join(snap3, 'core-dumps.txt'), 'utf8').indexOf('kerneldump') < 0);
 console.log('ok   a hung sqlite3 is killed at 2 s; what is absent is left out');
 
