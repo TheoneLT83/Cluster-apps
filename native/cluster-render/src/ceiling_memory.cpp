@@ -94,6 +94,8 @@ bool parse_ceiling(const std::string &text, CeilingRecord *out)
             r.firmware = clean_text(value);
         } else if (key == "kombi_variant") {
             r.kombi = clean_text(value);
+        } else if (key == "paced") {
+            r.paced = value == "1";
         }
     }
     if (!have)
@@ -110,6 +112,7 @@ std::string format_ceiling(const CeilingRecord &r)
         s += "firmware " + r.firmware + "\n";
     if (!r.kombi.empty())
         s += "kombi_variant " + r.kombi + "\n";
+    s += "paced 1\n";
     return s;
 }
 
@@ -182,7 +185,12 @@ CeilingMemory::CeilingMemory(const CeilingSettings &s) : s_(s), start_kb_(s.max_
     }
     const bool fw = !s_.firmware.empty() && !rec_.firmware.empty() && s_.firmware != rec_.firmware;
     const bool kombi = !s_.kombi.empty() && !rec_.kombi.empty() && s_.kombi != rec_.kombi;
-    if (rec_.ceiling_kb && (fw || kombi)) {
+    if (rec_.ceiling_kb && !rec_.paced) {
+        log_info("upload: remembered ceiling %llu KB/s dropped: learned while the writes went past the cap",
+                 (unsigned long long)rec_.ceiling_kb);
+        rec_ = CeilingRecord();
+        save("dropped");
+    } else if (rec_.ceiling_kb && (fw || kombi)) {
         log_info("upload: remembered ceiling %llu KB/s dropped: %s %s, now %s", (unsigned long long)rec_.ceiling_kb,
                  fw ? "firmware" : "KOMBI variant", fw ? rec_.firmware.c_str() : rec_.kombi.c_str(),
                  fw ? s_.firmware.c_str() : s_.kombi.c_str());

@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.6.22
+
+A remembered upload ceiling learned before 0.6.20 is dropped once: the writes went at `upload_kb_per_s` then, so
+each removal was put down to a cap they did not keep to, and cars' ceilings ended at the floor (2000 KB/s, about 4
+map frames a second with 0.6.20). The ceiling is learned again from `upload_kb_per_s`, the writes held to it.
+
 ## 0.6.21
 
 robertnisipeanu/idrive-apps' 0.8.13 with this repository's 0.6.20: the service runs in the head unit's slice

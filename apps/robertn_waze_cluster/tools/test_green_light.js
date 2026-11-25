@@ -86,6 +86,8 @@ eq([foresightColour('AMPEL_ROT'), foresightColour(13), foresightColour('AMPEL_GE
     t += GO_MS + 1; g.tick();
     t += CAM_KEEP_MS + 1; g.tick();
     eq(shown[shown.length - 1], 'none', 'the camera\'s light no longer reported: gone after CAM_KEEP_MS');
+    steady({ trafficLightID: 12, trafficLightColor: 0 });
+    eq(shown[shown.length - 1], 'none', 'code 0 (seen on a car with no light ahead): no light');
     steady({ trafficLightID: 10, trafficLightColor: 2 });
     eq(shown[shown.length - 1], 'yellow', 'code 2: yellow');
     kmh = 40; t += 100; steady({ trafficLightID: 11, trafficLightColor: 1 }); kmh = 0; t += 100; g.tick();

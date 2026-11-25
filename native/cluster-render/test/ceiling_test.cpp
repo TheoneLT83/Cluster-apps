@@ -185,11 +185,11 @@ static void probing()
     ok("from 2500: probe 3000, clean: remembered 3000, count 0", probe == 3000 && r.ceiling_kb == 3000 && r.clean == 0);
 
     CeilingSettings u = settings("probe-cap");
-    put(u.path, "ceiling_kb 5300\nclean_runs 3\n");
+    put(u.path, "ceiling_kb 5300\nclean_runs 3\npaced 1\n");
     ok("a probe never goes above upload_kb_per_s", run(u, 0) == 5500);
     u.max_kb = 4000;
     ok("a remembered ceiling above upload_kb_per_s: upload_kb_per_s", run(u, 0) == 4000);
-    put(u.path, "ceiling_kb 1000\nclean_runs 0\n");
+    put(u.path, "ceiling_kb 1000\nclean_runs 0\npaced 1\n");
     ok("one below the floor: the floor", run(u, 0) == 2000);
 }
 
@@ -212,8 +212,11 @@ static void reset()
     CeilingRecord r;
     parse_ceiling(slurp(s.path), &r);
     ok("and the file keeps the known ones", r.firmware == s.firmware && r.kombi == "7");
-    put(s.path, "ceiling_kb 4000\nclean_runs 1\n");
+    put(s.path, "ceiling_kb 4000\nclean_runs 1\npaced 1\n");
     ok("a file without them (older) is kept", run(s, 0) == 4000);
+    put(s.path, "ceiling_kb 2000\nclean_runs 0\n");
+    ok("one learned before the writes kept to the cap (no paced line) is dropped: 5500, the file gone",
+       run(s, 0) == 5500 && !exists(s.path));
 }
 
 static void malformed()
@@ -228,7 +231,7 @@ static void malformed()
     }
     ok("a malformed file: no remembered ceiling", all);
     put(s.path, "# a newer version's\nceiling_kb 4500\nclean_runs 7\nmargin_kb 300\nfirmware " + s.firmware +
-                    "\nkombi_variant 7\n");
+                    "\nkombi_variant 7\npaced 1\n");
     ok("lines it does not know are skipped; clean runs past 3 are 3: a probe", run(s, 0) == 5000);
     unlink(s.path.c_str());
     ok("a missing file: 5500", run(s, 0) == 5500);
@@ -239,7 +242,7 @@ static void malformed()
     r.kombi = "7";
     CeilingRecord back;
     ok("format and parse round-trip", parse_ceiling(format_ceiling(r), &back) && back.ceiling_kb == 3500 &&
-                                          back.clean == 2 && back.firmware == "a b" && back.kombi == "7");
+                                          back.clean == 2 && back.firmware == "a b" && back.kombi == "7" && back.paced);
 }
 
 static void user_set()

@@ -27,7 +27,7 @@ const { HmiText } = require('./hmi-text');
 const { listSheet } = require('./sheet');
 
 const sdkLog = logging.getSDKLogger();
-const SPEC = JSON.parse(fs.readFileSync(path.join(__dirname, 'app-spec.json'), 'utf8'));
+const SPEC = JSON.parse(fs.readFileSync(path.join(__dirname, 'spec.json'), 'utf8'));
 
 /* ---------------- paths ---------------- */
 // cwd of an OAP app is oap_<uid>/data; source is oap_<uid>/source

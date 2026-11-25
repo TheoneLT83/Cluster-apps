@@ -4187,7 +4187,7 @@ int main()
         char tmpl[] = "/tmp/crs-ceiling.XXXXXX";
         const std::string dir = mkdtemp(tmpl) ? tmpl : "/tmp";
         const std::string file = dir + "/upload-ceiling";
-        { std::ofstream(file) << "ceiling_kb 5000\nclean_runs 1\n"; }
+        { std::ofstream(file) << "ceiling_kb 5000\nclean_runs 1\npaced 1\n"; }
         Rig lr(6000 * 1024);
         lr.sc.ceiling.path = file;
         lr.svc.reset();

@@ -9,7 +9,7 @@
  *     AMPEL_ROT (red), AMPEL_ROT_GELB (red and yellow), AMPEL_GELB (yellow), AMPEL_GRUEN... (green). On cars and
  *     countries where BMW shows traffic lights.
  *   - TrafficLightRecognitionFrontCameraLegacy.RecognitionTrafficLightCamera, the camera's own light objects:
- *     trafficLightColor RAW_GREEN green, RAW_YELLOW yellow, RAW_NONE no light, any other code a lit light that is not
+ *     trafficLightColor RAW_GREEN green, RAW_YELLOW yellow, RAW_OFF and RAW_NONE no light, any other code a lit light that is not
  *     green, shown red (the codes are not documented and differ from car to car: each code seen is logged once, so a
  *     car's can be read from the log). A camera light counts only while the car is slow, once the same colour came
  *     again CAM_CONFIRM_MS or more after its first report (a glint, a car's lamp far ahead, is gone by then), and for
@@ -34,7 +34,7 @@ const CAMERA = 'de.bmw.environmentalmodel.TrafficLightRecognitionFrontCameraLega
 const GONG = 'de.bmw.infotainment.gp.gongplayer.IGPCommand';
 const EVENTS = { AMPEL_ROT: 12, AMPEL_ROT_GELB: 13, AMPEL_GELB: 14, AMPEL_GRUEN: 15, AMPEL_GRUEN_PULSIEREND: 16,
     AMPEL_GRUEN_SCHILD_RECHTS_OBEN: 17, AMPEL_GRUEN_SCHILD_RECHTS_UNTEN: 18 };
-const RAW_RED = 1, RAW_YELLOW = 2, RAW_GREEN = 3, RAW_NONE = 15;
+const RAW_OFF = 0, RAW_RED = 1, RAW_YELLOW = 2, RAW_GREEN = 3, RAW_NONE = 15;
 const CAM_CONFIRM_MS = 300;      // a camera colour counts once reported again this long after its first report
 const CAM_KEEP_MS = 5000;         // and is shown this long after its last report
 const SLOW_KMH = 10;
@@ -111,7 +111,7 @@ class GreenLight extends EventEmitter {
         if (!v) return;
         this.cameraUp = true;
         const code = num(v.trafficLightColor);
-        if (code === null || code === RAW_NONE) return;
+        if (code === null || code === RAW_OFF || code === RAW_NONE) return;
         // a parked car's camera, just started, can report a light that is not there: none counts before it drives
         if (!this._moved()) return;
         if (this.rawSeen.length < 16 && this.rawSeen.indexOf(code) < 0) {

@@ -510,7 +510,9 @@ def build(app_id, language='en', preview_only=False, sdk=True):
             file.write(comment.encode('utf-8') + body)
     rt_spec = {k: spec.get(k) for k in ('id', 'title', 'version', 'screens', 'settings', 'config', 'startWidget')}
     rt_spec['stateIds'] = state_ids
-    json.dump(rt_spec, open(os.path.join(src, 'javascript', 'kit', 'app-spec.json'), 'w', encoding='utf-8', newline='\n'), indent=1)
+    # spec.json, not idrive7-apps' app-spec.json: mgu-render sends an app with that file back to idrive7-apps' own
+    # renderer while one runs (its kit.c), and this kit connects to mgu-render alone
+    json.dump(rt_spec, open(os.path.join(src, 'javascript', 'kit', 'spec.json'), 'w', encoding='utf-8', newline='\n'), indent=1)
     locale = {'language': language, 'strings': load_locale(language)}
     if credit(language):
         locale['credit'] = credit(language)['corner']

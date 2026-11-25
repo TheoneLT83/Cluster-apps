@@ -50,6 +50,9 @@ struct CeilingRecord {
     uint64_t ceiling_kb = 0;   /* 0: none */
     int clean = 0;             /* clean runs at it */
     std::string firmware, kombi;
+    /* learned with the writes held to the cap (0.6.22 on, "paced 1"): one learned before, while they went at
+     * upload_kb_per_s whatever the cap said, blamed its removals on a cap that was not the rate, and is dropped */
+    bool paced = false;
 };
 
 /* False, *out untouched, when the text has no valid ceiling_kb. */

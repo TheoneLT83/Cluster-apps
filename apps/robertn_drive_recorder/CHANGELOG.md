@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.12
+
+The app stays on the Store's renderer where idrive7-apps' own renderer runs too: its kit's spec is spec.json, so
+mgu-render no longer takes it for an idrive7-apps app and sends it to that renderer.
+
 ## 1.0.11
 
 Each tap and controller input is answered to the renderer, also one that leaves the page as it is (a greyed-out
