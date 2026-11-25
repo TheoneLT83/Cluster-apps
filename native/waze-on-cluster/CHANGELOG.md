@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.14.15
+
+The map service runs in the head unit's slice for standard services, level
+with the HMI.
+
 ## 0.14.14
 
 robertnisipeanu/idrive-apps' 0.14.13 and 0.14.14 with this repository's 0.14.13:

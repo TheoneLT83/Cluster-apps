@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.6.21
+
+robertnisipeanu/idrive-apps' 0.8.13 with this repository's 0.6.20: the service runs in the head unit's slice
+for standard services, level with the HMI.
+
 ## 0.6.20
 
 The upload goes at the remembered ceiling from the start. The writes started
