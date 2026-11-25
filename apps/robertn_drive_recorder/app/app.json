@@ -2,7 +2,7 @@
   "id": "robertn_drive_recorder",
   "title": "Drive recorder",
   "description": "Keeps the car's cameras recording and saves a clip when you ask (the seconds before and after); watch, lock, delete and copy clips to a USB stick while parked. Recording and playback by IterioDev's Drive Recorder player",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "vendor": "custom",
   "loggingId": "OADR",
   "iconGlyph": "camera",

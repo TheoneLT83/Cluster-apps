@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.11
+
+Each tap and controller input is answered to the renderer, also one that leaves the page as it is (a greyed-out
+button): mgu-render no longer takes the app for one not acting on input and hands the screen to the HMI for 10 s.
+
 ## 1.0.10
 
 The kit's chips take a larger name where an app asks for one; nothing changes on this app's pages.

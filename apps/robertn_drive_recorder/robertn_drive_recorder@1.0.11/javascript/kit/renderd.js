@@ -66,7 +66,7 @@ class RenderClient extends EventEmitter {
         this.retry = null;
         this.closed = false;
         this.fd = null;              // file sink
-        this.claimed = null;         // the claims sent on this connection (JSON), null: none yet
+        this.claimed = null; this.claimMsg = null;         // the claims sent on this connection (JSON), null: none yet
         this.native = false;         // this connection speaks mgu-render/1 (X_READY came)
         this.info = null;            // X_READY: { touch, controller, frontGate }
         this.onScreen = null;        // X_STATE: the renderer shows us (null: not told)
@@ -97,7 +97,7 @@ class RenderClient extends EventEmitter {
             this.inbuf = Buffer.alloc(0);   // (a message cut off with the last connection)
             s.setNoDelay && s.setNoDelay(true);
             this.native = false; this.info = null; this.onScreen = null;
-            this.claimed = null;
+            this.claimed = null; this.claimMsg = null;
             this._write(msg(M.HELLO, this._hello()));
             // upstream renderers take these before READY; they are sent again once READY came
             if (this.placement) this._sendPlace();
@@ -156,6 +156,13 @@ class RenderClient extends EventEmitter {
         rects.forEach((r, i) => ['x', 'y', 'w', 'h'].forEach((k, j) => b.writeFloatLE(r[k], 4 + i * 16 + j * 4)));
         this._write(msg(CLAIM, b));
         this.claimed = key;
+        this.claimMsg = b;
+    }
+    /** Says an input was acted on though the picture may stay as it is (a tap on a greyed-out button): the claims
+     *  again, which mgu-render/1 takes as the app answering, not as one deaf to input (it would hand touch and the
+     *  controller to the HMI for 10 s). */
+    handled() {
+        if (this.ready && this.native && this.claimMsg) this._write(msg(CLAIM, this.claimMsg));
     }
     close() {
         this.grab(false);

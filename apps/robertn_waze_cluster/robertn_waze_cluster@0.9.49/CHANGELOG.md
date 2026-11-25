@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.49
+
+Each tap and controller input is answered to the renderer, also one that leaves the page as it is (a greyed-out
+button): mgu-render no longer takes the app for one not acting on input and hands the screen to the HMI for 10 s.
+
 ## 0.9.48
 
 Android Auto's Patch, Remove patch, Zoom and the turn card can be changed while another change waits for the next
