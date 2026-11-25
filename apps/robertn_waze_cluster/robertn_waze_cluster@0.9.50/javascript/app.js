@@ -665,7 +665,7 @@ mgu.run({
                 let s2 = String(s).toUpperCase();
                 if (cv.textWidth(s2, 13, opt) > room) {
                     while (s2.length > 1 && cv.textWidth(s2 + '…', 13, opt) > room) s2 = s2.slice(0, -1);
-                    s2 = s2.trimEnd() + '…';
+                    s2 = s2.replace(/\s+$/, '') + '…';
                 }
                 const w = cv.textWidth(s2, 13, opt) + 34;
                 cv.roundRect(x, 190, w, 26, 13, withAlpha(col, 0.16));

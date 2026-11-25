@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.50
+
+The Maps page draws whole again with a long map status (Cluster map: Unavailable): shortening it used a string
+function the head unit's Node 8 does not have, so every frame stopped after the status, without its buttons and
+without touch.
+
 ## 0.9.49
 
 Each tap and controller input is answered to the renderer, also one that leaves the page as it is (a greyed-out
