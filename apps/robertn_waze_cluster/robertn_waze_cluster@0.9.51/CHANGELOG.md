@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.51
+
+The traffic light from the front camera: a light counts only while the car is at walking pace, once the camera has
+reported the same colour for 0.3 s, and shows only while the camera keeps reporting it (5 s after the last report)
+instead of 2 minutes; code 2 is yellow. A glint or a lamp far ahead no longer leaves a red standing.
+
 ## 0.9.50
 
 The Maps page draws whole again with a long map status (Cluster map: Unavailable): shortening it used a string

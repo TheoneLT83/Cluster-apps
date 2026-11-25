@@ -9,14 +9,16 @@
  *     AMPEL_ROT (red), AMPEL_ROT_GELB (red and yellow), AMPEL_GELB (yellow), AMPEL_GRUEN... (green). On cars and
  *     countries where BMW shows traffic lights.
  *   - TrafficLightRecognitionFrontCameraLegacy.RecognitionTrafficLightCamera, the camera's own light objects:
- *     trafficLightColor RAW_GREEN green, RAW_NONE no light, any other code a lit light that is not green, shown red;
- *     none until the car has driven since start (a parked car's camera, just started, reports lights that are not there)
- *     (at a stop that is red or red and yellow; the codes are not documented and differ from car to car: each code
- *     seen is logged once, so a car's can be read from the log).
+ *     trafficLightColor RAW_GREEN green, RAW_YELLOW yellow, RAW_NONE no light, any other code a lit light that is not
+ *     green, shown red (the codes are not documented and differ from car to car: each code seen is logged once, so a
+ *     car's can be read from the log). A camera light counts only while the car is slow, once the same colour came
+ *     again CAM_CONFIRM_MS or more after its first report (a glint, a car's lamp far ahead, is gone by then), and for
+ *     CAM_KEEP_MS after its last report; none until the car has driven since start (a parked car's camera, just
+ *     started, reports lights that are not there).
  * Values come as numbers, enum names or { value } objects (num()). The camera numbers a light anew as it tracks it,
  * so any light counts, not only the same trafficLightID.
  *
- * Shown only while the car's speed is known and at most SLOW_KMH: the last light seen, within RED_KEEP_MS, unless the
+ * Shown only while the car's speed is known and at most SLOW_KMH: the last light seen, within RED_KEEP_MS (a camera light CAM_KEEP_MS), unless the
  * car drove on (over SLOW_KMH for PASSED_MS) after it. A green within RED_KEEP_MS of a red: "GO" and the gong for
  * GO_MS (at most one each QUIET_MS), then the green alone. The gong: BMW's gong player (IGPCommand.requestGong), as
  * alexp50's Green Light Alert (bmw-apps, MIT) plays it.
@@ -32,7 +34,9 @@ const CAMERA = 'de.bmw.environmentalmodel.TrafficLightRecognitionFrontCameraLega
 const GONG = 'de.bmw.infotainment.gp.gongplayer.IGPCommand';
 const EVENTS = { AMPEL_ROT: 12, AMPEL_ROT_GELB: 13, AMPEL_GELB: 14, AMPEL_GRUEN: 15, AMPEL_GRUEN_PULSIEREND: 16,
     AMPEL_GRUEN_SCHILD_RECHTS_OBEN: 17, AMPEL_GRUEN_SCHILD_RECHTS_UNTEN: 18 };
-const RAW_RED = 1, RAW_GREEN = 3, RAW_NONE = 15;
+const RAW_RED = 1, RAW_YELLOW = 2, RAW_GREEN = 3, RAW_NONE = 15;
+const CAM_CONFIRM_MS = 300;      // a camera colour counts once reported again this long after its first report
+const CAM_KEEP_MS = 5000;         // and is shown this long after its last report
 const SLOW_KMH = 10;
 const RED_KEEP_MS = 120000;
 const GO_MS = 4000;
@@ -84,6 +88,7 @@ class GreenLight extends EventEmitter {
         this.startedAt = null;
         this.foresight = null;     // the display's watch, available once its provider answers
         this.cameraUp = false;     // the camera's provider answered, or a light came
+        this.cam = null;           // the camera's colour being confirmed: { colour, first, last }
         this.gong = null;          // the gong player's proxy
         this.gongHandle = 80;
     }
@@ -113,7 +118,12 @@ class GreenLight extends EventEmitter {
             this.rawSeen.push(code);
             this.log.info('green light: camera colour code ' + code + ' (light ' + num(v.trafficLightID) + ')');
         }
-        this.light(code === RAW_GREEN ? 'green' : 'red');
+        // far lights (and lamps taken for them) are seen while driving: only a slow car's count
+        if (!this._slow()) { this.cam = null; return; }
+        const colour = code === RAW_GREEN ? 'green' : code === RAW_YELLOW ? 'yellow' : 'red', t = this.now();
+        const c = this.cam && this.cam.colour === colour && t - this.cam.last <= CAM_KEEP_MS ? this.cam : (this.cam = { colour, first: t, last: t });
+        c.last = t;
+        if (t - c.first >= CAM_CONFIRM_MS) this.light(colour, 'camera');
     }
 
     _moved() {
@@ -125,12 +135,12 @@ class GreenLight extends EventEmitter {
     _slow() { const kmh = this.speed(); return typeof kmh === 'number' && isFinite(kmh) && kmh <= SLOW_KMH; }
 
     /* A light's colour now. */
-    light(colour) {
+    light(colour, from) {
         const t = this.now();
         if (!colour) return;
         const wasRed = t - this.redAt <= RED_KEEP_MS;
         if (colour === 'red' || colour === 'redyellow') this.redAt = t;
-        this.last = { colour, at: t };
+        this.last = { colour, at: t, keep: from === 'camera' ? CAM_KEEP_MS : RED_KEEP_MS };
         if (colour === 'green' && wasRed && this._slow() && t - this.lastGo >= QUIET_MS) {
             this.redAt = -Infinity;
             this.lastGo = t;
@@ -158,7 +168,7 @@ class GreenLight extends EventEmitter {
         this.fastSince = null;
         if (t < this.goUntil) return null;
         const l = this.last;
-        this._set(l && t - l.at <= RED_KEEP_MS ? { colour: l.colour, go: false } : null);
+        this._set(l && t - l.at <= l.keep ? { colour: l.colour, go: false } : null);
         return null;
     }
 
@@ -187,4 +197,4 @@ class GreenLight extends EventEmitter {
     stop() { clearInterval(this.timer); this.timer = null; }
 }
 
-module.exports = { GreenLight, foresightColour, num, RAW_RED, RAW_GREEN, SLOW_KMH, GO_MS, QUIET_MS, LOOK_MS, RED_KEEP_MS };
+module.exports = { GreenLight, foresightColour, num, RAW_RED, RAW_YELLOW, RAW_GREEN, CAM_CONFIRM_MS, CAM_KEEP_MS, SLOW_KMH, GO_MS, QUIET_MS, LOOK_MS, RED_KEEP_MS };
