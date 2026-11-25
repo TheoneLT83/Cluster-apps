@@ -986,6 +986,35 @@ static void held_videos_together()
        g->flushes > f0 && g->visible().size() == 2 && !r.comp->composite(r.panel));
 }
 
+/* A remembered ceiling below the maximum: the writes go at it from the
+ * start, not at the maximum until the governor next changes its cap. */
+static void starts_at_remembered_ceiling()
+{
+    const uint64_t max = 5500 * 1024, remembered = 2000 * 1024;
+    for (int with = 0; with < 2; with++) {
+        CountingPort port;
+        FakeGpu gpu;
+        SlotManager slots{&port, nullptr};
+        TargetSpec m;
+        m.name = "map"; m.slot = 0x100; m.scene_id = 0x010004f0; m.width = W; m.height = H; m.linger_ms = 2000;
+        slots.add(m);
+        GovernorConfig gc;
+        gc.max_bps = max;
+        gc.floor_bps = remembered;
+        gc.start_bps = with ? remembered : 0;
+        Compositor comp(&gpu, &slots, gc, 250);
+        slots.set_scenes(&comp);
+        std::string err;
+        comp.init(&err);
+        /* its first allowance is a burst at its rate (the Rig's 250 ms) */
+        const_cast<crk::UploadPacer &>(comp.pacer()).ready(50000);
+        const uint64_t want = with ? remembered : max;
+        ok(with ? "upload: a remembered ceiling is the writes' rate from the start (its burst the first allowance)"
+                : "upload: with none remembered, the maximum",
+           comp.governor().cap() == want && comp.pacer().allowance() == int64_t(want * 250 / 1000));
+    }
+}
+
 static void refusals_lower_the_cap()
 {
     Rig r(6000 * 1024);
@@ -3925,6 +3954,7 @@ int main()
     image_made_exclusive_while_parked();
     hold_within_budget();
     held_videos_together();
+    starts_at_remembered_ceiling();
     refusals_lower_the_cap();
     stack_and_lifecycle();
     warm_scene();

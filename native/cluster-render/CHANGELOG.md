@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+## 0.6.20
+
+The upload goes at the remembered ceiling from the start. The writes started
+at `upload_kb_per_s` and took the governor's cap only when it next changed
+it, which a ceiling remembered at the floor never does: the cluster got
+5.5 MB/s through a whole drive and dropped the map every 20 to 60 s (KOMBI
+removal), BMW's own content with it.
+
 ## 0.6.19
 
 robertnisipeanu/idrive-apps' 0.8.12 with this repository's 0.6.18:

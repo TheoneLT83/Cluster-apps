@@ -96,9 +96,12 @@ int64_t steady_us()
 
 Compositor::Compositor(Gpu *gpu, SlotManager *slots, const GovernorConfig &budget, int upload_burst_ms,
                        const CompositorLimits &limits)
-    : gpu_(gpu), slots_(slots), limits_(limits), governor_(budget), pacer_(budget.max_bps, upload_burst_ms),
+    : gpu_(gpu), slots_(slots), limits_(limits), governor_(budget), pacer_(governor_.cap(), upload_burst_ms),
       clock_us_(steady_us)
 {
+    /* The writes go at the governor's cap from the start: a remembered
+     * ceiling below upload_kb_per_s, which the governor starts at and only
+     * changes on its own evidence, is the rate from the first write. */
     share_.share_of(&pacer_);
 }
 
