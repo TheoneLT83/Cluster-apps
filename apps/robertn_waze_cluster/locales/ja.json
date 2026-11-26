@@ -6,7 +6,6 @@
     "ja_JP"
   ],
   "words": {
-    "Not supported on this car": "この車両は非対応",
     "Unavailable": "利用不可",
     "Changed by another tool": "他のツールが変更",
     "(after restart)": "（再起動後）",
@@ -153,6 +152,14 @@
     "Phone maps": "スマホの地図",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "高回転: エンジン回転数、過給圧 | 冷間: オイル、冷却水 | 電気: 航続距離",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "高回転: エンジン回転数、過給圧 | 冷間: オイル、冷却水 | 電気: kW、充電量",
-    "Warnings take over": "警告を優先表示"
+    "Warnings take over": "警告を優先表示",
+    "Not supported on this head unit": "このヘッドユニットは非対応",
+    "Not supported — no cluster display": "非対応 — メーターディスプレイなし",
+    "Not supported — this cluster": "非対応 — このメーター",
+    "Built in": "標準搭載",
+    "Not supported — this CarPlay version": "非対応 — このCarPlayバージョン",
+    "Not supported — this Android Auto version": "非対応 — このAndroid Autoバージョン",
+    "Removed": "解除",
+    "Failed — press Patch to try again": "失敗 — 「パッチを適用」で再試行"
   }
 }

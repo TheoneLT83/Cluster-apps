@@ -6,7 +6,6 @@
     "pt_PT"
   ],
   "words": {
-    "Not supported on this car": "Não compatível com este automóvel",
     "Unavailable": "Indisponível",
     "Changed by another tool": "Alterado por outra ferramenta",
     "(after restart)": "(após reiniciar)",
@@ -153,6 +152,14 @@
     "Phone maps": "Mapas do telemóvel",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Rotação alta: rotação, pressão do turbo | Frio: óleo, refrigerante | Elétrico: autonomia",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Rotação alta: rotação, pressão do turbo | Frio: óleo, refrigerante | Elétrico: kW, carga",
-    "Warnings take over": "Avisos têm prioridade"
+    "Warnings take over": "Avisos têm prioridade",
+    "Not supported on this head unit": "Não compatível com esta unidade principal",
+    "Not supported — no cluster display": "Não compatível — sem ecrã de instrumentos",
+    "Not supported — this cluster": "Não compatível — este painel de instrumentos",
+    "Built in": "Integrado",
+    "Not supported — this CarPlay version": "Não compatível — esta versão do CarPlay",
+    "Not supported — this Android Auto version": "Não compatível — esta versão do Android Auto",
+    "Removed": "Removida",
+    "Failed — press Patch to try again": "Falhou — prima Aplicar correção para tentar novamente"
   }
 }

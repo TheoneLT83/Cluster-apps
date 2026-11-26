@@ -6,7 +6,6 @@
     "th_TH"
   ],
   "words": {
-    "Not supported on this car": "ไม่รองรับรถคันนี้",
     "Unavailable": "ไม่พร้อมใช้งาน",
     "Changed by another tool": "ถูกเครื่องมืออื่นแก้ไข",
     "(after restart)": "(หลังรีสตาร์ท)",
@@ -153,6 +152,14 @@
     "Phone maps": "แผนที่โทรศัพท์",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "รอบสูง: รอบเครื่อง, บูสต์ | เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น | ไฟฟ้า: ระยะทาง",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "รอบสูง: รอบเครื่อง, บูสต์ | เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น | ไฟฟ้า: kW, ประจุ",
-    "Warnings take over": "แสดงคำเตือนก่อน"
+    "Warnings take over": "แสดงคำเตือนก่อน",
+    "Not supported on this head unit": "ไม่รองรับเฮดยูนิตนี้",
+    "Not supported — no cluster display": "ไม่รองรับ — ไม่มีจอแสดงผลหน้าปัด",
+    "Not supported — this cluster": "ไม่รองรับ — หน้าปัดนี้",
+    "Built in": "มีในตัว",
+    "Not supported — this CarPlay version": "ไม่รองรับ — CarPlay เวอร์ชันนี้",
+    "Not supported — this Android Auto version": "ไม่รองรับ — Android Auto เวอร์ชันนี้",
+    "Removed": "ลบแล้ว",
+    "Failed — press Patch to try again": "ไม่สำเร็จ — กด ใช้แพตช์ เพื่อลองอีกครั้ง"
   }
 }

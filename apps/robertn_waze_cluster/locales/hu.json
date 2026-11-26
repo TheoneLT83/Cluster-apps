@@ -6,7 +6,6 @@
     "hu_HU"
   ],
   "words": {
-    "Not supported on this car": "Ebben az autóban nem támogatott",
     "Unavailable": "Nem elérhető",
     "Changed by another tool": "Másik eszköz módosította",
     "(after restart)": "(újraindítás után)",
@@ -153,6 +152,14 @@
     "Phone maps": "Telefonos térképek",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Pörgetés: fordulatszám, töltőnyomás | Hideg: olaj, hűtőfolyadék | Elektromos: hatótáv",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Pörgetés: fordulatszám, töltőnyomás | Hideg: olaj, hűtőfolyadék | Elektromos: kW, töltöttség",
-    "Warnings take over": "A figyelmeztetések elsőbbséget kapnak"
+    "Warnings take over": "A figyelmeztetések elsőbbséget kapnak",
+    "Not supported on this head unit": "Ez a fejegység nem támogatott",
+    "Not supported — no cluster display": "Nem támogatott — nincs műszerfal-kijelző",
+    "Not supported — this cluster": "Nem támogatott — ez a műszerfal",
+    "Built in": "Beépítve",
+    "Not supported — this CarPlay version": "Nem támogatott — ez a CarPlay-verzió",
+    "Not supported — this Android Auto version": "Nem támogatott — ez az Android Auto-verzió",
+    "Removed": "Eltávolítva",
+    "Failed — press Patch to try again": "Sikertelen — próbálja újra a Javítás alkalmazása gombbal"
   }
 }

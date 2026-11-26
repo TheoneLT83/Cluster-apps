@@ -6,7 +6,6 @@
     "vi_VN"
   ],
   "words": {
-    "Not supported on this car": "Không hỗ trợ trên xe này",
     "Unavailable": "Không khả dụng",
     "Changed by another tool": "Đã bị công cụ khác thay đổi",
     "(after restart)": "(sau khi khởi động lại)",
@@ -153,6 +152,14 @@
     "Phone maps": "Bản đồ điện thoại",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Vòng tua cao: vòng tua, tăng áp | Lạnh: dầu, nước làm mát | Điện: quãng đường",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Vòng tua cao: vòng tua, tăng áp | Lạnh: dầu, nước làm mát | Điện: kW, mức sạc",
-    "Warnings take over": "Ưu tiên cảnh báo"
+    "Warnings take over": "Ưu tiên cảnh báo",
+    "Not supported on this head unit": "Không hỗ trợ trên hệ thống này",
+    "Not supported — no cluster display": "Không hỗ trợ — không có màn hình đồng hồ",
+    "Not supported — this cluster": "Không hỗ trợ — cụm đồng hồ này",
+    "Built in": "Tích hợp sẵn",
+    "Not supported — this CarPlay version": "Không hỗ trợ — phiên bản CarPlay này",
+    "Not supported — this Android Auto version": "Không hỗ trợ — phiên bản Android Auto này",
+    "Removed": "Đã gỡ",
+    "Failed — press Patch to try again": "Thất bại — nhấn Áp dụng bản vá để thử lại"
   }
 }

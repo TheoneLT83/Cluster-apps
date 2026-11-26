@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.55
+
+The map patch's Status words of waze-on-cluster 0.14.21: Built in (a cluster that shows the CarPlay / Android Auto map itself), Removed (turned off with Remove patch), and why a car is not supported (no cluster display, this cluster, this CarPlay or Android Auto version), in every language.
+
 ## 0.9.54
 
 The cluster renderer's client from cluster-render 0.6.23 (a hosted map can be hidden rather than drawn on its own slot).

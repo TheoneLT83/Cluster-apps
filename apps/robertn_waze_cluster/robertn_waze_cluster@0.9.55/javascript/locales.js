@@ -10,7 +10,6 @@ module.exports = [
    "ar_AE"
   ],
   "words": {
-   "Not supported on this car": "غير مدعوم في هذه السيارة",
    "Unavailable": "غير متاح",
    "Changed by another tool": "عدّلته أداة أخرى",
    "(after restart)": "(بعد إعادة التشغيل)",
@@ -157,7 +156,15 @@ module.exports = [
    "Phone maps": "خرائط الهاتف",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "التسارع: سرعة المحرك، الشاحن | بارد: الزيت، سائل التبريد | كهربائي: المدى",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "التسارع: سرعة المحرك، الشاحن | بارد: الزيت، سائل التبريد | كهربائي: كيلوواط، الشحن",
-   "Warnings take over": "التحذيرات لها الأولوية"
+   "Warnings take over": "التحذيرات لها الأولوية",
+   "Not supported on this head unit": "غير مدعوم في هذه الوحدة الرئيسية",
+   "Not supported — no cluster display": "غير مدعوم — لا توجد شاشة عدادات",
+   "Not supported — this cluster": "غير مدعوم — لوحة العدادات هذه",
+   "Built in": "مدمج",
+   "Not supported — this CarPlay version": "غير مدعوم — إصدار CarPlay هذا",
+   "Not supported — this Android Auto version": "غير مدعوم — إصدار Android Auto هذا",
+   "Removed": "أُزيل",
+   "Failed — press Patch to try again": "فشل — اضغط «تطبيق التصحيح» للمحاولة مجددًا"
   }
  },
  {
@@ -169,7 +176,6 @@ module.exports = [
    "cs_CZ"
   ],
   "words": {
-   "Not supported on this car": "V tomto voze nepodporováno",
    "Unavailable": "Nedostupné",
    "Changed by another tool": "Změněno jiným nástrojem",
    "(after restart)": "(po restartu)",
@@ -316,7 +322,15 @@ module.exports = [
    "Phone maps": "Mapy z telefonu",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Vytáčení: otáčky, plnicí tlak | Studený: olej, chladicí kapalina | Elektricky: dojezd",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Vytáčení: otáčky, plnicí tlak | Studený: olej, chladicí kapalina | Elektricky: kW, nabití",
-   "Warnings take over": "Varování mají přednost"
+   "Warnings take over": "Varování mají přednost",
+   "Not supported on this head unit": "Tato jednotka není podporována",
+   "Not supported — no cluster display": "Nepodporováno — bez displeje přístrojů",
+   "Not supported — this cluster": "Nepodporováno — tento přístrojový panel",
+   "Built in": "Vestavěno",
+   "Not supported — this CarPlay version": "Nepodporováno — tato verze CarPlay",
+   "Not supported — this Android Auto version": "Nepodporováno — tato verze Android Auto",
+   "Removed": "Odebráno",
+   "Failed — press Patch to try again": "Selhalo — zkuste znovu „Použít opravu“"
   }
  },
  {
@@ -328,7 +342,6 @@ module.exports = [
    "da_DK"
   ],
   "words": {
-   "Not supported on this car": "Understøttes ikke i denne bil",
    "Unavailable": "Ikke tilgængelig",
    "Changed by another tool": "Ændret af et andet værktøj",
    "(after restart)": "(efter genstart)",
@@ -475,7 +488,15 @@ module.exports = [
    "Phone maps": "Telefonens kort",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Høje omdrejninger: omdrejninger, ladetryk | Kold: olie, kølevæske | El: rækkevidde",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Høje omdrejninger: omdrejninger, ladetryk | Kold: olie, kølevæske | El: kW, opladning",
-   "Warnings take over": "Advarsler tager over"
+   "Warnings take over": "Advarsler tager over",
+   "Not supported on this head unit": "Understøttes ikke af denne hovedenhed",
+   "Not supported — no cluster display": "Understøttes ikke — intet instrumentdisplay",
+   "Not supported — this cluster": "Understøttes ikke — dette instrumentpanel",
+   "Built in": "Indbygget",
+   "Not supported — this CarPlay version": "Understøttes ikke — denne version af CarPlay",
+   "Not supported — this Android Auto version": "Understøttes ikke — denne version af Android Auto",
+   "Removed": "Fjernet",
+   "Failed — press Patch to try again": "Mislykkedes — tryk på Anvend patch for at prøve igen"
   }
  },
  {
@@ -487,7 +508,6 @@ module.exports = [
    "de_DE"
   ],
   "words": {
-   "Not supported on this car": "In diesem Fahrzeug nicht unterstützt",
    "Unavailable": "Nicht verfügbar",
    "Changed by another tool": "Von anderem Tool geändert",
    "(after restart)": "(nach Neustart)",
@@ -634,7 +654,15 @@ module.exports = [
    "Phone maps": "Handy-Karten",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Hochdrehen: Drehzahl, Ladedruck | Kalt: Öl, Kühlmittel | Elektrisch: Reichweite",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Hochdrehen: Drehzahl, Ladedruck | Kalt: Öl, Kühlmittel | Elektrisch: kW, Ladestand",
-   "Warnings take over": "Warnungen haben Vorrang"
+   "Warnings take over": "Warnungen haben Vorrang",
+   "Not supported on this head unit": "Von dieser Headunit nicht unterstützt",
+   "Not supported — no cluster display": "Nicht unterstützt — kein Kombi-Display",
+   "Not supported — this cluster": "Nicht unterstützt — dieses Kombiinstrument",
+   "Built in": "Integriert",
+   "Not supported — this CarPlay version": "Nicht unterstützt — diese CarPlay-Version",
+   "Not supported — this Android Auto version": "Nicht unterstützt — diese Android-Auto-Version",
+   "Removed": "Entfernt",
+   "Failed — press Patch to try again": "Fehlgeschlagen — zum erneuten Versuch „Patchen“ drücken"
   }
  },
  {
@@ -646,7 +674,6 @@ module.exports = [
    "el_GR"
   ],
   "words": {
-   "Not supported on this car": "Δεν υποστηρίζεται σε αυτό το όχημα",
    "Unavailable": "Μη διαθέσιμο",
    "Changed by another tool": "Τροποποιήθηκε από άλλο εργαλείο",
    "(after restart)": "(μετά την επανεκκίνηση)",
@@ -793,7 +820,15 @@ module.exports = [
    "Phone maps": "Χάρτες τηλεφώνου",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Στροφές: στροφές κινητήρα, υπερπλήρωση | Κρύο: λάδι, ψυκτικό | Ηλεκτρικά: αυτονομία",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Στροφές: στροφές κινητήρα, υπερπλήρωση | Κρύο: λάδι, ψυκτικό | Ηλεκτρικά: kW, φόρτιση",
-   "Warnings take over": "Οι προειδοποιήσεις έχουν προτεραιότητα"
+   "Warnings take over": "Οι προειδοποιήσεις έχουν προτεραιότητα",
+   "Not supported on this head unit": "Δεν υποστηρίζεται σε αυτή τη μονάδα",
+   "Not supported — no cluster display": "Δεν υποστηρίζεται — χωρίς οθόνη οργάνων",
+   "Not supported — this cluster": "Δεν υποστηρίζεται — αυτός ο πίνακας οργάνων",
+   "Built in": "Ενσωματωμένο",
+   "Not supported — this CarPlay version": "Δεν υποστηρίζεται — αυτή η έκδοση του CarPlay",
+   "Not supported — this Android Auto version": "Δεν υποστηρίζεται — αυτή η έκδοση του Android Auto",
+   "Removed": "Καταργήθηκε",
+   "Failed — press Patch to try again": "Απέτυχε — πατήστε «Εφαρμογή διόρθωσης» για νέα προσπάθεια"
   }
  },
  {
@@ -805,7 +840,6 @@ module.exports = [
    "es_MX"
   ],
   "words": {
-   "Not supported on this car": "No compatible con este auto",
    "Unavailable": "No disponible",
    "Changed by another tool": "Modificado por otra herramienta",
    "(after restart)": "(al reiniciar)",
@@ -952,7 +986,15 @@ module.exports = [
    "Phone maps": "Mapas del teléfono",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Revoluciones: rpm, presión del turbo | Frío: aceite, refrigerante | Eléctrico: autonomía",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Revoluciones: rpm, presión del turbo | Frío: aceite, refrigerante | Eléctrico: kW, carga",
-   "Warnings take over": "Las alertas tienen prioridad"
+   "Warnings take over": "Las alertas tienen prioridad",
+   "Not supported on this head unit": "No compatible con esta unidad principal",
+   "Not supported — no cluster display": "No compatible — sin pantalla de instrumentos",
+   "Not supported — this cluster": "No compatible — este tablero de instrumentos",
+   "Built in": "Integrado",
+   "Not supported — this CarPlay version": "No compatible — esta versión de CarPlay",
+   "Not supported — this Android Auto version": "No compatible — esta versión de Android Auto",
+   "Removed": "Eliminado",
+   "Failed — press Patch to try again": "Error — toca Aplicar parche para reintentar"
   }
  },
  {
@@ -964,7 +1006,6 @@ module.exports = [
    "es_ES"
   ],
   "words": {
-   "Not supported on this car": "No compatible con este coche",
    "Unavailable": "No disponible",
    "Changed by another tool": "Modificado por otra herramienta",
    "(after restart)": "(al reiniciar)",
@@ -1111,7 +1152,15 @@ module.exports = [
    "Phone maps": "Mapas del móvil",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Revoluciones: rpm, presión del turbo | Frío: aceite, refrigerante | Eléctrico: autonomía",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Revoluciones: rpm, presión del turbo | Frío: aceite, refrigerante | Eléctrico: kW, carga",
-   "Warnings take over": "Los avisos tienen prioridad"
+   "Warnings take over": "Los avisos tienen prioridad",
+   "Not supported on this head unit": "No compatible con esta unidad principal",
+   "Not supported — no cluster display": "No compatible — sin pantalla de instrumentos",
+   "Not supported — this cluster": "No compatible — este cuadro de instrumentos",
+   "Built in": "Integrado",
+   "Not supported — this CarPlay version": "No compatible — esta versión de CarPlay",
+   "Not supported — this Android Auto version": "No compatible — esta versión de Android Auto",
+   "Removed": "Eliminado",
+   "Failed — press Patch to try again": "Error — pulsa Aplicar parche para reintentar"
   }
  },
  {
@@ -1123,7 +1172,6 @@ module.exports = [
    "fi_FI"
   ],
   "words": {
-   "Not supported on this car": "Ei tuettu tässä autossa",
    "Unavailable": "Ei saatavilla",
    "Changed by another tool": "Toisen työkalun muuttama",
    "(after restart)": "(uudelleenkäynnistyksen jälkeen)",
@@ -1270,7 +1318,15 @@ module.exports = [
    "Phone maps": "Puhelimen kartat",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Kierrokset: moottorin kierrokset, ahtopaine | Kylmä: öljy, jäähdytysneste | Sähkö: toimintamatka",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Kierrokset: moottorin kierrokset, ahtopaine | Kylmä: öljy, jäähdytysneste | Sähkö: kW, varaus",
-   "Warnings take over": "Varoitukset ensin"
+   "Warnings take over": "Varoitukset ensin",
+   "Not supported on this head unit": "Ei tuettu tässä pääyksikössä",
+   "Not supported — no cluster display": "Ei tuettu — ei mittaristonäyttöä",
+   "Not supported — this cluster": "Ei tuettu — tämä mittaristo",
+   "Built in": "Sisäänrakennettu",
+   "Not supported — this CarPlay version": "Ei tuettu — tämä CarPlay-versio",
+   "Not supported — this Android Auto version": "Ei tuettu — tämä Android Auto -versio",
+   "Removed": "Poistettu",
+   "Failed — press Patch to try again": "Epäonnistui — yritä uudelleen valitsemalla Asenna korjaus"
   }
  },
  {
@@ -1282,7 +1338,6 @@ module.exports = [
    "fr_CA"
   ],
   "words": {
-   "Not supported on this car": "Non pris en charge sur ce véhicule",
    "Unavailable": "Indisponible",
    "Changed by another tool": "Modifié par un autre outil",
    "(after restart)": "(après redémarrage)",
@@ -1429,7 +1484,15 @@ module.exports = [
    "Phone maps": "Cartes du téléphone",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Régime élevé : régime, suralimentation | Froid : huile, liquide de refroidissement | Électrique : autonomie",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Régime élevé : régime, suralimentation | Froid : huile, liquide de refroidissement | Électrique : kW, charge",
-   "Warnings take over": "Les alertes passent en premier"
+   "Warnings take over": "Les alertes passent en premier",
+   "Not supported on this head unit": "Non pris en charge par ce système",
+   "Not supported — no cluster display": "Non pris en charge — aucun écran d’instruments",
+   "Not supported — this cluster": "Non pris en charge — ce tableau de bord",
+   "Built in": "Intégré",
+   "Not supported — this CarPlay version": "Non pris en charge — cette version de CarPlay",
+   "Not supported — this Android Auto version": "Non pris en charge — cette version d’Android Auto",
+   "Removed": "Retiré",
+   "Failed — press Patch to try again": "Échec — touchez Appliquer le correctif pour réessayer"
   }
  },
  {
@@ -1441,7 +1504,6 @@ module.exports = [
    "fr_FR"
   ],
   "words": {
-   "Not supported on this car": "Non pris en charge sur ce véhicule",
    "Unavailable": "Indisponible",
    "Changed by another tool": "Modifié par un autre outil",
    "(after restart)": "(après redémarrage)",
@@ -1588,7 +1650,15 @@ module.exports = [
    "Phone maps": "Cartes du téléphone",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Régime élevé : régime, suralimentation | Froid : huile, liquide de refroidissement | Électrique : autonomie",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Régime élevé : régime, suralimentation | Froid : huile, liquide de refroidissement | Électrique : kW, charge",
-   "Warnings take over": "Les alertes passent en premier"
+   "Warnings take over": "Les alertes passent en premier",
+   "Not supported on this head unit": "Non pris en charge par ce système",
+   "Not supported — no cluster display": "Non pris en charge — aucun écran d’instruments",
+   "Not supported — this cluster": "Non pris en charge — ce combiné d’instruments",
+   "Built in": "Intégré",
+   "Not supported — this CarPlay version": "Non pris en charge — cette version de CarPlay",
+   "Not supported — this Android Auto version": "Non pris en charge — cette version d’Android Auto",
+   "Removed": "Retiré",
+   "Failed — press Patch to try again": "Échec — appuyez sur Appliquer le correctif pour réessayer"
   }
  },
  {
@@ -1600,7 +1670,6 @@ module.exports = [
    "he_IL"
   ],
   "words": {
-   "Not supported on this car": "לא נתמך ברכב זה",
    "Unavailable": "לא זמין",
    "Changed by another tool": "שונה על ידי כלי אחר",
    "(after restart)": "(לאחר הפעלה מחדש)",
@@ -1747,7 +1816,15 @@ module.exports = [
    "Phone maps": "מפות הטלפון",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "סיבובים: סל\"ד, טורבו | קר: שמן, נוזל קירור | חשמלי: טווח",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "סיבובים: סל\"ד, טורבו | קר: שמן, נוזל קירור | חשמלי: kW, טעינה",
-   "Warnings take over": "אזהרות קודמות"
+   "Warnings take over": "אזהרות קודמות",
+   "Not supported on this head unit": "לא נתמך במערכת זו",
+   "Not supported — no cluster display": "לא נתמך — אין צג מחוונים",
+   "Not supported — this cluster": "לא נתמך — לוח מחוונים זה",
+   "Built in": "מובנה",
+   "Not supported — this CarPlay version": "לא נתמך — גרסת CarPlay זו",
+   "Not supported — this Android Auto version": "לא נתמך — גרסת Android Auto זו",
+   "Removed": "הוסר",
+   "Failed — press Patch to try again": "נכשל — הקש על החלת תיקון כדי לנסות שוב"
   }
  },
  {
@@ -1759,7 +1836,6 @@ module.exports = [
    "hu_HU"
   ],
   "words": {
-   "Not supported on this car": "Ebben az autóban nem támogatott",
    "Unavailable": "Nem elérhető",
    "Changed by another tool": "Másik eszköz módosította",
    "(after restart)": "(újraindítás után)",
@@ -1906,7 +1982,15 @@ module.exports = [
    "Phone maps": "Telefonos térképek",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Pörgetés: fordulatszám, töltőnyomás | Hideg: olaj, hűtőfolyadék | Elektromos: hatótáv",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Pörgetés: fordulatszám, töltőnyomás | Hideg: olaj, hűtőfolyadék | Elektromos: kW, töltöttség",
-   "Warnings take over": "A figyelmeztetések elsőbbséget kapnak"
+   "Warnings take over": "A figyelmeztetések elsőbbséget kapnak",
+   "Not supported on this head unit": "Ez a fejegység nem támogatott",
+   "Not supported — no cluster display": "Nem támogatott — nincs műszerfal-kijelző",
+   "Not supported — this cluster": "Nem támogatott — ez a műszerfal",
+   "Built in": "Beépítve",
+   "Not supported — this CarPlay version": "Nem támogatott — ez a CarPlay-verzió",
+   "Not supported — this Android Auto version": "Nem támogatott — ez az Android Auto-verzió",
+   "Removed": "Eltávolítva",
+   "Failed — press Patch to try again": "Sikertelen — próbálja újra a Javítás alkalmazása gombbal"
   }
  },
  {
@@ -1918,7 +2002,6 @@ module.exports = [
    "id_ID"
   ],
   "words": {
-   "Not supported on this car": "Tidak didukung di mobil ini",
    "Unavailable": "Tidak tersedia",
    "Changed by another tool": "Diubah oleh alat lain",
    "(after restart)": "(setelah mulai ulang)",
@@ -2065,7 +2148,15 @@ module.exports = [
    "Phone maps": "Peta ponsel",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Putaran tinggi: putaran mesin, boost | Dingin: oli, cairan pendingin | Listrik: jarak tempuh",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Putaran tinggi: putaran mesin, boost | Dingin: oli, cairan pendingin | Listrik: kW, daya baterai",
-   "Warnings take over": "Peringatan diutamakan"
+   "Warnings take over": "Peringatan diutamakan",
+   "Not supported on this head unit": "Tidak didukung di head unit ini",
+   "Not supported — no cluster display": "Tidak didukung — tanpa layar instrumen",
+   "Not supported — this cluster": "Tidak didukung — panel instrumen ini",
+   "Built in": "Bawaan",
+   "Not supported — this CarPlay version": "Tidak didukung — versi CarPlay ini",
+   "Not supported — this Android Auto version": "Tidak didukung — versi Android Auto ini",
+   "Removed": "Dihapus",
+   "Failed — press Patch to try again": "Gagal — tekan Terapkan patch untuk mencoba lagi"
   }
  },
  {
@@ -2077,7 +2168,6 @@ module.exports = [
    "it_IT"
   ],
   "words": {
-   "Not supported on this car": "Non supportato su questa vettura",
    "Unavailable": "Non disponibile",
    "Changed by another tool": "Modificato da un altro strumento",
    "(after restart)": "(dopo il riavvio)",
@@ -2224,7 +2314,15 @@ module.exports = [
    "Phone maps": "Mappe del telefono",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Su di giri: giri motore, pressione turbo | Freddo: olio, liquido refrigerante | Elettrico: autonomia",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Su di giri: giri motore, pressione turbo | Freddo: olio, liquido refrigerante | Elettrico: kW, carica",
-   "Warnings take over": "Gli avvisi hanno la precedenza"
+   "Warnings take over": "Gli avvisi hanno la precedenza",
+   "Not supported on this head unit": "Non supportato da questo sistema",
+   "Not supported — no cluster display": "Non supportato — nessun display del quadro",
+   "Not supported — this cluster": "Non supportato — questo quadro strumenti",
+   "Built in": "Integrato",
+   "Not supported — this CarPlay version": "Non supportato — questa versione di CarPlay",
+   "Not supported — this Android Auto version": "Non supportato — questa versione di Android Auto",
+   "Removed": "Rimossa",
+   "Failed — press Patch to try again": "Non riuscito — premi Applica patch per riprovare"
   }
  },
  {
@@ -2236,7 +2334,6 @@ module.exports = [
    "ja_JP"
   ],
   "words": {
-   "Not supported on this car": "この車両は非対応",
    "Unavailable": "利用不可",
    "Changed by another tool": "他のツールが変更",
    "(after restart)": "（再起動後）",
@@ -2383,7 +2480,15 @@ module.exports = [
    "Phone maps": "スマホの地図",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "高回転: エンジン回転数、過給圧 | 冷間: オイル、冷却水 | 電気: 航続距離",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "高回転: エンジン回転数、過給圧 | 冷間: オイル、冷却水 | 電気: kW、充電量",
-   "Warnings take over": "警告を優先表示"
+   "Warnings take over": "警告を優先表示",
+   "Not supported on this head unit": "このヘッドユニットは非対応",
+   "Not supported — no cluster display": "非対応 — メーターディスプレイなし",
+   "Not supported — this cluster": "非対応 — このメーター",
+   "Built in": "標準搭載",
+   "Not supported — this CarPlay version": "非対応 — このCarPlayバージョン",
+   "Not supported — this Android Auto version": "非対応 — このAndroid Autoバージョン",
+   "Removed": "解除",
+   "Failed — press Patch to try again": "失敗 — 「パッチを適用」で再試行"
   }
  },
  {
@@ -2395,7 +2500,6 @@ module.exports = [
    "ko_KR"
   ],
   "words": {
-   "Not supported on this car": "이 차량에서 지원 안 됨",
    "Unavailable": "사용 불가",
    "Changed by another tool": "다른 도구가 변경함",
    "(after restart)": "(재시작 후)",
@@ -2542,7 +2646,15 @@ module.exports = [
    "Phone maps": "휴대폰 지도",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "고회전: 엔진 회전수, 부스트 | 냉간: 오일, 냉각수 | 전기: 주행 가능 거리",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "고회전: 엔진 회전수, 부스트 | 냉간: 오일, 냉각수 | 전기: kW, 충전량",
-   "Warnings take over": "경고 우선 표시"
+   "Warnings take over": "경고 우선 표시",
+   "Not supported on this head unit": "이 헤드 유닛에서 지원 안 됨",
+   "Not supported — no cluster display": "지원 안 됨 — 계기판 디스플레이 없음",
+   "Not supported — this cluster": "지원 안 됨 — 이 계기판",
+   "Built in": "기본 내장",
+   "Not supported — this CarPlay version": "지원 안 됨 — 이 CarPlay 버전",
+   "Not supported — this Android Auto version": "지원 안 됨 — 이 Android Auto 버전",
+   "Removed": "제거됨",
+   "Failed — press Patch to try again": "실패 — 다시 하려면 패치 적용을 누르세요"
   }
  },
  {
@@ -2554,7 +2666,6 @@ module.exports = [
    "no_NO"
   ],
   "words": {
-   "Not supported on this car": "Støttes ikke i denne bilen",
    "Unavailable": "Utilgjengelig",
    "Changed by another tool": "Endret av et annet verktøy",
    "(after restart)": "(etter omstart)",
@@ -2701,7 +2812,15 @@ module.exports = [
    "Phone maps": "Telefonens kart",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Høyt turtall: turtall, ladetrykk | Kald: olje, kjølevæske | Elektrisk: rekkevidde",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Høyt turtall: turtall, ladetrykk | Kald: olje, kjølevæske | Elektrisk: kW, lading",
-   "Warnings take over": "Advarsler tar over"
+   "Warnings take over": "Advarsler tar over",
+   "Not supported on this head unit": "Støttes ikke av denne hovedenheten",
+   "Not supported — no cluster display": "Støttes ikke — ingen instrumentskjerm",
+   "Not supported — this cluster": "Støttes ikke — dette instrumentpanelet",
+   "Built in": "Innebygd",
+   "Not supported — this CarPlay version": "Støttes ikke — denne versjonen av CarPlay",
+   "Not supported — this Android Auto version": "Støttes ikke — denne versjonen av Android Auto",
+   "Removed": "Fjernet",
+   "Failed — press Patch to try again": "Mislyktes — trykk Bruk patch for å prøve igjen"
   }
  },
  {
@@ -2715,7 +2834,6 @@ module.exports = [
    "nl_BE"
   ],
   "words": {
-   "Not supported on this car": "Niet ondersteund in deze auto",
    "Unavailable": "Niet beschikbaar",
    "Changed by another tool": "Gewijzigd door andere tool",
    "(after restart)": "(na herstart)",
@@ -2862,7 +2980,15 @@ module.exports = [
    "Phone maps": "Kaarten van de telefoon",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Hoog toerental: toerental, laaddruk | Koud: olie, koelvloeistof | Elektrisch: actieradius",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Hoog toerental: toerental, laaddruk | Koud: olie, koelvloeistof | Elektrisch: kW, lading",
-   "Warnings take over": "Waarschuwingen gaan voor"
+   "Warnings take over": "Waarschuwingen gaan voor",
+   "Not supported on this head unit": "Niet ondersteund door deze headunit",
+   "Not supported — no cluster display": "Niet ondersteund — geen instrumentdisplay",
+   "Not supported — this cluster": "Niet ondersteund — dit instrumentenpaneel",
+   "Built in": "Ingebouwd",
+   "Not supported — this CarPlay version": "Niet ondersteund — deze CarPlay-versie",
+   "Not supported — this Android Auto version": "Niet ondersteund — deze Android Auto-versie",
+   "Removed": "Verwijderd",
+   "Failed — press Patch to try again": "Mislukt — druk op Patchen om het opnieuw te proberen"
   }
  },
  {
@@ -2874,7 +3000,6 @@ module.exports = [
    "pl_PL"
   ],
   "words": {
-   "Not supported on this car": "Nieobsługiwane w tym samochodzie",
    "Unavailable": "Niedostępne",
    "Changed by another tool": "Zmienione przez inne narzędzie",
    "(after restart)": "(po restarcie)",
@@ -3021,7 +3146,15 @@ module.exports = [
    "Phone maps": "Mapy z telefonu",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Wysokie obroty: obroty, doładowanie | Zimny: olej, płyn chłodzący | Elektrycznie: zasięg",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Wysokie obroty: obroty, doładowanie | Zimny: olej, płyn chłodzący | Elektrycznie: kW, naładowanie",
-   "Warnings take over": "Ostrzeżenia mają pierwszeństwo"
+   "Warnings take over": "Ostrzeżenia mają pierwszeństwo",
+   "Not supported on this head unit": "Nieobsługiwane przez tę jednostkę",
+   "Not supported — no cluster display": "Nieobsługiwane — brak wyświetlacza zegarów",
+   "Not supported — this cluster": "Nieobsługiwane — ten zestaw wskaźników",
+   "Built in": "Wbudowane",
+   "Not supported — this CarPlay version": "Nieobsługiwane — ta wersja CarPlay",
+   "Not supported — this Android Auto version": "Nieobsługiwane — ta wersja Android Auto",
+   "Removed": "Usunięta",
+   "Failed — press Patch to try again": "Niepowodzenie — naciśnij Zastosuj poprawkę, aby ponowić"
   }
  },
  {
@@ -3033,7 +3166,6 @@ module.exports = [
    "pt_BR"
   ],
   "words": {
-   "Not supported on this car": "Não compatível com este carro",
    "Unavailable": "Indisponível",
    "Changed by another tool": "Alterado por outra ferramenta",
    "(after restart)": "(após reiniciar)",
@@ -3180,7 +3312,15 @@ module.exports = [
    "Phone maps": "Mapas do celular",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Giro alto: rotação, pressão do turbo | Frio: óleo, arrefecimento | Elétrico: autonomia",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Giro alto: rotação, pressão do turbo | Frio: óleo, arrefecimento | Elétrico: kW, carga",
-   "Warnings take over": "Alertas têm prioridade"
+   "Warnings take over": "Alertas têm prioridade",
+   "Not supported on this head unit": "Não compatível com esta unidade principal",
+   "Not supported — no cluster display": "Não compatível — sem tela de instrumentos",
+   "Not supported — this cluster": "Não compatível — este painel de instrumentos",
+   "Built in": "Integrado",
+   "Not supported — this CarPlay version": "Não compatível — esta versão do CarPlay",
+   "Not supported — this Android Auto version": "Não compatível — esta versão do Android Auto",
+   "Removed": "Removido",
+   "Failed — press Patch to try again": "Falhou — toque em Aplicar patch para tentar de novo"
   }
  },
  {
@@ -3192,7 +3332,6 @@ module.exports = [
    "pt_PT"
   ],
   "words": {
-   "Not supported on this car": "Não compatível com este automóvel",
    "Unavailable": "Indisponível",
    "Changed by another tool": "Alterado por outra ferramenta",
    "(after restart)": "(após reiniciar)",
@@ -3339,7 +3478,15 @@ module.exports = [
    "Phone maps": "Mapas do telemóvel",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Rotação alta: rotação, pressão do turbo | Frio: óleo, refrigerante | Elétrico: autonomia",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Rotação alta: rotação, pressão do turbo | Frio: óleo, refrigerante | Elétrico: kW, carga",
-   "Warnings take over": "Avisos têm prioridade"
+   "Warnings take over": "Avisos têm prioridade",
+   "Not supported on this head unit": "Não compatível com esta unidade principal",
+   "Not supported — no cluster display": "Não compatível — sem ecrã de instrumentos",
+   "Not supported — this cluster": "Não compatível — este painel de instrumentos",
+   "Built in": "Integrado",
+   "Not supported — this CarPlay version": "Não compatível — esta versão do CarPlay",
+   "Not supported — this Android Auto version": "Não compatível — esta versão do Android Auto",
+   "Removed": "Removida",
+   "Failed — press Patch to try again": "Falhou — prima Aplicar correção para tentar novamente"
   }
  },
  {
@@ -3351,7 +3498,6 @@ module.exports = [
    "ro_RO"
   ],
   "words": {
-   "Not supported on this car": "Neacceptat pe această mașină",
    "Unavailable": "Indisponibil",
    "Changed by another tool": "Modificat de alt instrument",
    "(after restart)": "(după repornire)",
@@ -3498,7 +3644,15 @@ module.exports = [
    "Phone maps": "Hărți din telefon",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Turație mare: turație, presiune turbo | Rece: ulei, lichid de răcire | Electric: autonomie",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Turație mare: turație, presiune turbo | Rece: ulei, lichid de răcire | Electric: kW, încărcare",
-   "Warnings take over": "Avertizările au prioritate"
+   "Warnings take over": "Avertizările au prioritate",
+   "Not supported on this head unit": "Neacceptat pe această unitate",
+   "Not supported — no cluster display": "Neacceptat — fără afișaj de bord",
+   "Not supported — this cluster": "Neacceptat — acest bord",
+   "Built in": "Integrat",
+   "Not supported — this CarPlay version": "Neacceptat — această versiune CarPlay",
+   "Not supported — this Android Auto version": "Neacceptat — această versiune Android Auto",
+   "Removed": "Eliminat",
+   "Failed — press Patch to try again": "Eșuat — apăsați Aplicare patch pentru a reîncerca"
   }
  },
  {
@@ -3510,7 +3664,6 @@ module.exports = [
    "ru_RU"
   ],
   "words": {
-   "Not supported on this car": "Не поддерживается в этом авто",
    "Unavailable": "Недоступно",
    "Changed by another tool": "Изменено другим инструментом",
    "(after restart)": "(после перезапуска)",
@@ -3657,7 +3810,15 @@ module.exports = [
    "Phone maps": "Карты телефона",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Обороты: обороты двигателя, наддув | Холодный: масло, антифриз | Электро: запас хода",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Обороты: обороты двигателя, наддув | Холодный: масло, антифриз | Электро: кВт, заряд",
-   "Warnings take over": "Предупреждения в приоритете"
+   "Warnings take over": "Предупреждения в приоритете",
+   "Not supported on this head unit": "Не поддерживается этим устройством",
+   "Not supported — no cluster display": "Не поддерживается — нет дисплея приборов",
+   "Not supported — this cluster": "Не поддерживается — эта приборная панель",
+   "Built in": "Встроено",
+   "Not supported — this CarPlay version": "Не поддерживается — эта версия CarPlay",
+   "Not supported — this Android Auto version": "Не поддерживается — эта версия Android Auto",
+   "Removed": "Удалён",
+   "Failed — press Patch to try again": "Ошибка — нажмите «Применить патч», чтобы повторить"
   }
  },
  {
@@ -3669,7 +3830,6 @@ module.exports = [
    "sk_SK"
   ],
   "words": {
-   "Not supported on this car": "Toto vozidlo nie je podporované",
    "Unavailable": "Nedostupné",
    "Changed by another tool": "Zmenené iným nástrojom",
    "(after restart)": "(po reštarte)",
@@ -3816,7 +3976,15 @@ module.exports = [
    "Phone maps": "Mapy z telefónu",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Vytáčanie: otáčky, plniaci tlak | Studený: olej, chladiaca kvapalina | Elektricky: dojazd",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Vytáčanie: otáčky, plniaci tlak | Studený: olej, chladiaca kvapalina | Elektricky: kW, nabitie",
-   "Warnings take over": "Varovania majú prednosť"
+   "Warnings take over": "Varovania majú prednosť",
+   "Not supported on this head unit": "Táto jednotka nie je podporovaná",
+   "Not supported — no cluster display": "Nepodporované — bez displeja prístrojov",
+   "Not supported — this cluster": "Nepodporované — tento prístrojový panel",
+   "Built in": "Vstavané",
+   "Not supported — this CarPlay version": "Nepodporované — táto verzia CarPlay",
+   "Not supported — this Android Auto version": "Nepodporované — táto verzia Android Auto",
+   "Removed": "Odstránené",
+   "Failed — press Patch to try again": "Zlyhalo — skúste znova „Použiť opravu“"
   }
  },
  {
@@ -3828,7 +3996,6 @@ module.exports = [
    "sl_SI"
   ],
   "words": {
-   "Not supported on this car": "V tem vozilu ni podprto",
    "Unavailable": "Ni na voljo",
    "Changed by another tool": "Spremenilo drugo orodje",
    "(after restart)": "(po ponovnem zagonu)",
@@ -3975,7 +4142,15 @@ module.exports = [
    "Phone maps": "Zemljevidi telefona",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Visoki vrtljaji: vrtljaji, polnilni tlak | Hladen: olje, hladilna tekočina | Električno: doseg",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Visoki vrtljaji: vrtljaji, polnilni tlak | Hladen: olje, hladilna tekočina | Električno: kW, napolnjenost",
-   "Warnings take over": "Opozorila imajo prednost"
+   "Warnings take over": "Opozorila imajo prednost",
+   "Not supported on this head unit": "Ta enota ni podprta",
+   "Not supported — no cluster display": "Ni podprto — brez zaslona armature",
+   "Not supported — this cluster": "Ni podprto — ta armatura",
+   "Built in": "Vgrajeno",
+   "Not supported — this CarPlay version": "Ni podprto — ta različica CarPlay",
+   "Not supported — this Android Auto version": "Ni podprto — ta različica Android Auto",
+   "Removed": "Odstranjen",
+   "Failed — press Patch to try again": "Ni uspelo — za ponovni poskus pritisnite Uveljavi popravek"
   }
  },
  {
@@ -3987,7 +4162,6 @@ module.exports = [
    "sv_SE"
   ],
   "words": {
-   "Not supported on this car": "Stöds inte i den här bilen",
    "Unavailable": "Inte tillgänglig",
    "Changed by another tool": "Ändrad av ett annat verktyg",
    "(after restart)": "(efter omstart)",
@@ -4134,7 +4308,15 @@ module.exports = [
    "Phone maps": "Telefonens kartor",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Högt varv: varvtal, laddtryck | Kall: olja, kylvätska | El: räckvidd",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Högt varv: varvtal, laddtryck | Kall: olja, kylvätska | El: kW, laddning",
-   "Warnings take over": "Varningar tar över"
+   "Warnings take over": "Varningar tar över",
+   "Not supported on this head unit": "Stöds inte av den här huvudenheten",
+   "Not supported — no cluster display": "Stöds inte — ingen instrumentskärm",
+   "Not supported — this cluster": "Stöds inte — den här instrumentpanelen",
+   "Built in": "Inbyggt",
+   "Not supported — this CarPlay version": "Stöds inte — den här versionen av CarPlay",
+   "Not supported — this Android Auto version": "Stöds inte — den här versionen av Android Auto",
+   "Removed": "Borttagen",
+   "Failed — press Patch to try again": "Misslyckades — tryck på Patcha för att försöka igen"
   }
  },
  {
@@ -4146,7 +4328,6 @@ module.exports = [
    "th_TH"
   ],
   "words": {
-   "Not supported on this car": "ไม่รองรับรถคันนี้",
    "Unavailable": "ไม่พร้อมใช้งาน",
    "Changed by another tool": "ถูกเครื่องมืออื่นแก้ไข",
    "(after restart)": "(หลังรีสตาร์ท)",
@@ -4293,7 +4474,15 @@ module.exports = [
    "Phone maps": "แผนที่โทรศัพท์",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "รอบสูง: รอบเครื่อง, บูสต์ | เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น | ไฟฟ้า: ระยะทาง",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "รอบสูง: รอบเครื่อง, บูสต์ | เย็น: น้ำมันเครื่อง, น้ำหล่อเย็น | ไฟฟ้า: kW, ประจุ",
-   "Warnings take over": "แสดงคำเตือนก่อน"
+   "Warnings take over": "แสดงคำเตือนก่อน",
+   "Not supported on this head unit": "ไม่รองรับเฮดยูนิตนี้",
+   "Not supported — no cluster display": "ไม่รองรับ — ไม่มีจอแสดงผลหน้าปัด",
+   "Not supported — this cluster": "ไม่รองรับ — หน้าปัดนี้",
+   "Built in": "มีในตัว",
+   "Not supported — this CarPlay version": "ไม่รองรับ — CarPlay เวอร์ชันนี้",
+   "Not supported — this Android Auto version": "ไม่รองรับ — Android Auto เวอร์ชันนี้",
+   "Removed": "ลบแล้ว",
+   "Failed — press Patch to try again": "ไม่สำเร็จ — กด ใช้แพตช์ เพื่อลองอีกครั้ง"
   }
  },
  {
@@ -4305,7 +4494,6 @@ module.exports = [
    "tr_TR"
   ],
   "words": {
-   "Not supported on this car": "Bu araçta desteklenmiyor",
    "Unavailable": "Kullanılamıyor",
    "Changed by another tool": "Başka bir araç değiştirdi",
    "(after restart)": "(yeniden başlatınca)",
@@ -4452,7 +4640,15 @@ module.exports = [
    "Phone maps": "Telefon haritaları",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Yüksek devir: devir, turbo basıncı | Soğuk: yağ, soğutma suyu | Elektrikli: menzil",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Yüksek devir: devir, turbo basıncı | Soğuk: yağ, soğutma suyu | Elektrikli: kW, şarj",
-   "Warnings take over": "Uyarılar öne çıkar"
+   "Warnings take over": "Uyarılar öne çıkar",
+   "Not supported on this head unit": "Bu ana ünitede desteklenmiyor",
+   "Not supported — no cluster display": "Desteklenmiyor — gösterge ekranı yok",
+   "Not supported — this cluster": "Desteklenmiyor — bu gösterge paneli",
+   "Built in": "Yerleşik",
+   "Not supported — this CarPlay version": "Desteklenmiyor — bu CarPlay sürümü",
+   "Not supported — this Android Auto version": "Desteklenmiyor — bu Android Auto sürümü",
+   "Removed": "Kaldırıldı",
+   "Failed — press Patch to try again": "Başarısız — yeniden denemek için Yamala’ya basın"
   }
  },
  {
@@ -4464,7 +4660,6 @@ module.exports = [
    "uk_UA"
   ],
   "words": {
-   "Not supported on this car": "Не підтримується в цьому авто",
    "Unavailable": "Недоступно",
    "Changed by another tool": "Змінено іншим інструментом",
    "(after restart)": "(після перезапуску)",
@@ -4611,7 +4806,15 @@ module.exports = [
    "Phone maps": "Карти телефону",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Оберти: оберти двигуна, наддув | Холодний: олива, охолоджувальна рідина | Електро: запас ходу",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Оберти: оберти двигуна, наддув | Холодний: олива, охолоджувальна рідина | Електро: кВт, заряд",
-   "Warnings take over": "Попередження в пріоритеті"
+   "Warnings take over": "Попередження в пріоритеті",
+   "Not supported on this head unit": "Не підтримується цим пристроєм",
+   "Not supported — no cluster display": "Не підтримується — немає дисплея приладів",
+   "Not supported — this cluster": "Не підтримується — ця панель приладів",
+   "Built in": "Вбудовано",
+   "Not supported — this CarPlay version": "Не підтримується — ця версія CarPlay",
+   "Not supported — this Android Auto version": "Не підтримується — ця версія Android Auto",
+   "Removed": "Видалено",
+   "Failed — press Patch to try again": "Помилка — натисніть «Застосувати патч», щоб повторити"
   }
  },
  {
@@ -4623,7 +4826,6 @@ module.exports = [
    "vi_VN"
   ],
   "words": {
-   "Not supported on this car": "Không hỗ trợ trên xe này",
    "Unavailable": "Không khả dụng",
    "Changed by another tool": "Đã bị công cụ khác thay đổi",
    "(after restart)": "(sau khi khởi động lại)",
@@ -4770,7 +4972,15 @@ module.exports = [
    "Phone maps": "Bản đồ điện thoại",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Vòng tua cao: vòng tua, tăng áp | Lạnh: dầu, nước làm mát | Điện: quãng đường",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Vòng tua cao: vòng tua, tăng áp | Lạnh: dầu, nước làm mát | Điện: kW, mức sạc",
-   "Warnings take over": "Ưu tiên cảnh báo"
+   "Warnings take over": "Ưu tiên cảnh báo",
+   "Not supported on this head unit": "Không hỗ trợ trên hệ thống này",
+   "Not supported — no cluster display": "Không hỗ trợ — không có màn hình đồng hồ",
+   "Not supported — this cluster": "Không hỗ trợ — cụm đồng hồ này",
+   "Built in": "Tích hợp sẵn",
+   "Not supported — this CarPlay version": "Không hỗ trợ — phiên bản CarPlay này",
+   "Not supported — this Android Auto version": "Không hỗ trợ — phiên bản Android Auto này",
+   "Removed": "Đã gỡ",
+   "Failed — press Patch to try again": "Thất bại — nhấn Áp dụng bản vá để thử lại"
   }
  },
  {
@@ -4784,7 +4994,6 @@ module.exports = [
    "zh_yue_Hans_CN"
   ],
   "words": {
-   "Not supported on this car": "本车不支持",
    "Unavailable": "不可用",
    "Changed by another tool": "已被其他工具更改",
    "(after restart)": "（重启后）",
@@ -4931,7 +5140,15 @@ module.exports = [
    "Phone maps": "手机地图",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "高转速：转速、增压 | 冷车：机油、冷却液 | 电动：续航",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "高转速：转速、增压 | 冷车：机油、冷却液 | 电动：kW、电量",
-   "Warnings take over": "警告优先显示"
+   "Warnings take over": "警告优先显示",
+   "Not supported on this head unit": "本主机不支持",
+   "Not supported — no cluster display": "不支持 — 无仪表显示屏",
+   "Not supported — this cluster": "不支持 — 此仪表",
+   "Built in": "内置",
+   "Not supported — this CarPlay version": "不支持 — 此 CarPlay 版本",
+   "Not supported — this Android Auto version": "不支持 — 此 Android Auto 版本",
+   "Removed": "已移除",
+   "Failed — press Patch to try again": "失败 — 按“应用补丁”重试"
   }
  },
  {
@@ -4945,7 +5162,6 @@ module.exports = [
    "zh_yue_Hant_CN"
   ],
   "words": {
-   "Not supported on this car": "此車輛不支援",
    "Unavailable": "無法使用",
    "Changed by another tool": "已被其他工具變更",
    "(after restart)": "（重新啟動後）",
@@ -5092,7 +5308,15 @@ module.exports = [
    "Phone maps": "手機地圖",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "高轉速：轉速、增壓 | 冷車：機油、冷卻液 | 電動：續航",
    "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "高轉速：轉速、增壓 | 冷車：機油、冷卻液 | 電動：kW、電量",
-   "Warnings take over": "警告優先顯示"
+   "Warnings take over": "警告優先顯示",
+   "Not supported on this head unit": "此主機不支援",
+   "Not supported — no cluster display": "不支援 — 無儀表顯示器",
+   "Not supported — this cluster": "不支援 — 此儀表",
+   "Built in": "內建",
+   "Not supported — this CarPlay version": "不支援 — 此 CarPlay 版本",
+   "Not supported — this Android Auto version": "不支援 — 此 Android Auto 版本",
+   "Removed": "已移除",
+   "Failed — press Patch to try again": "失敗 — 按「套用修補」重試"
   }
  }
 ];

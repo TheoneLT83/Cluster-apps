@@ -6,7 +6,6 @@
     "uk_UA"
   ],
   "words": {
-    "Not supported on this car": "Не підтримується в цьому авто",
     "Unavailable": "Недоступно",
     "Changed by another tool": "Змінено іншим інструментом",
     "(after restart)": "(після перезапуску)",
@@ -153,6 +152,14 @@
     "Phone maps": "Карти телефону",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Оберти: оберти двигуна, наддув | Холодний: олива, охолоджувальна рідина | Електро: запас ходу",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Оберти: оберти двигуна, наддув | Холодний: олива, охолоджувальна рідина | Електро: кВт, заряд",
-    "Warnings take over": "Попередження в пріоритеті"
+    "Warnings take over": "Попередження в пріоритеті",
+    "Not supported on this head unit": "Не підтримується цим пристроєм",
+    "Not supported — no cluster display": "Не підтримується — немає дисплея приладів",
+    "Not supported — this cluster": "Не підтримується — ця панель приладів",
+    "Built in": "Вбудовано",
+    "Not supported — this CarPlay version": "Не підтримується — ця версія CarPlay",
+    "Not supported — this Android Auto version": "Не підтримується — ця версія Android Auto",
+    "Removed": "Видалено",
+    "Failed — press Patch to try again": "Помилка — натисніть «Застосувати патч», щоб повторити"
   }
 }

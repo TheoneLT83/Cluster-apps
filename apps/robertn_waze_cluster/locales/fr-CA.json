@@ -6,7 +6,6 @@
     "fr_CA"
   ],
   "words": {
-    "Not supported on this car": "Non pris en charge sur ce véhicule",
     "Unavailable": "Indisponible",
     "Changed by another tool": "Modifié par un autre outil",
     "(after restart)": "(après redémarrage)",
@@ -153,6 +152,14 @@
     "Phone maps": "Cartes du téléphone",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Régime élevé : régime, suralimentation | Froid : huile, liquide de refroidissement | Électrique : autonomie",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Régime élevé : régime, suralimentation | Froid : huile, liquide de refroidissement | Électrique : kW, charge",
-    "Warnings take over": "Les alertes passent en premier"
+    "Warnings take over": "Les alertes passent en premier",
+    "Not supported on this head unit": "Non pris en charge par ce système",
+    "Not supported — no cluster display": "Non pris en charge — aucun écran d’instruments",
+    "Not supported — this cluster": "Non pris en charge — ce tableau de bord",
+    "Built in": "Intégré",
+    "Not supported — this CarPlay version": "Non pris en charge — cette version de CarPlay",
+    "Not supported — this Android Auto version": "Non pris en charge — cette version d’Android Auto",
+    "Removed": "Retiré",
+    "Failed — press Patch to try again": "Échec — touchez Appliquer le correctif pour réessayer"
   }
 }

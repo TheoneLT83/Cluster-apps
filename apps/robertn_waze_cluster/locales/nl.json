@@ -8,7 +8,6 @@
     "nl_BE"
   ],
   "words": {
-    "Not supported on this car": "Niet ondersteund in deze auto",
     "Unavailable": "Niet beschikbaar",
     "Changed by another tool": "Gewijzigd door andere tool",
     "(after restart)": "(na herstart)",
@@ -155,6 +154,14 @@
     "Phone maps": "Kaarten van de telefoon",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Hoog toerental: toerental, laaddruk | Koud: olie, koelvloeistof | Elektrisch: actieradius",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Hoog toerental: toerental, laaddruk | Koud: olie, koelvloeistof | Elektrisch: kW, lading",
-    "Warnings take over": "Waarschuwingen gaan voor"
+    "Warnings take over": "Waarschuwingen gaan voor",
+    "Not supported on this head unit": "Niet ondersteund door deze headunit",
+    "Not supported — no cluster display": "Niet ondersteund — geen instrumentdisplay",
+    "Not supported — this cluster": "Niet ondersteund — dit instrumentenpaneel",
+    "Built in": "Ingebouwd",
+    "Not supported — this CarPlay version": "Niet ondersteund — deze CarPlay-versie",
+    "Not supported — this Android Auto version": "Niet ondersteund — deze Android Auto-versie",
+    "Removed": "Verwijderd",
+    "Failed — press Patch to try again": "Mislukt — druk op Patchen om het opnieuw te proberen"
   }
 }

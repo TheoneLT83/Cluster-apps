@@ -6,7 +6,6 @@
     "sl_SI"
   ],
   "words": {
-    "Not supported on this car": "V tem vozilu ni podprto",
     "Unavailable": "Ni na voljo",
     "Changed by another tool": "Spremenilo drugo orodje",
     "(after restart)": "(po ponovnem zagonu)",
@@ -153,6 +152,14 @@
     "Phone maps": "Zemljevidi telefona",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Visoki vrtljaji: vrtljaji, polnilni tlak | Hladen: olje, hladilna tekočina | Električno: doseg",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Visoki vrtljaji: vrtljaji, polnilni tlak | Hladen: olje, hladilna tekočina | Električno: kW, napolnjenost",
-    "Warnings take over": "Opozorila imajo prednost"
+    "Warnings take over": "Opozorila imajo prednost",
+    "Not supported on this head unit": "Ta enota ni podprta",
+    "Not supported — no cluster display": "Ni podprto — brez zaslona armature",
+    "Not supported — this cluster": "Ni podprto — ta armatura",
+    "Built in": "Vgrajeno",
+    "Not supported — this CarPlay version": "Ni podprto — ta različica CarPlay",
+    "Not supported — this Android Auto version": "Ni podprto — ta različica Android Auto",
+    "Removed": "Odstranjen",
+    "Failed — press Patch to try again": "Ni uspelo — za ponovni poskus pritisnite Uveljavi popravek"
   }
 }

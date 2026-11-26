@@ -6,7 +6,6 @@
     "ro_RO"
   ],
   "words": {
-    "Not supported on this car": "Neacceptat pe această mașină",
     "Unavailable": "Indisponibil",
     "Changed by another tool": "Modificat de alt instrument",
     "(after restart)": "(după repornire)",
@@ -153,6 +152,14 @@
     "Phone maps": "Hărți din telefon",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Turație mare: turație, presiune turbo | Rece: ulei, lichid de răcire | Electric: autonomie",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Turație mare: turație, presiune turbo | Rece: ulei, lichid de răcire | Electric: kW, încărcare",
-    "Warnings take over": "Avertizările au prioritate"
+    "Warnings take over": "Avertizările au prioritate",
+    "Not supported on this head unit": "Neacceptat pe această unitate",
+    "Not supported — no cluster display": "Neacceptat — fără afișaj de bord",
+    "Not supported — this cluster": "Neacceptat — acest bord",
+    "Built in": "Integrat",
+    "Not supported — this CarPlay version": "Neacceptat — această versiune CarPlay",
+    "Not supported — this Android Auto version": "Neacceptat — această versiune Android Auto",
+    "Removed": "Eliminat",
+    "Failed — press Patch to try again": "Eșuat — apăsați Aplicare patch pentru a reîncerca"
   }
 }

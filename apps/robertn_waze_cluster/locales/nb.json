@@ -6,7 +6,6 @@
     "no_NO"
   ],
   "words": {
-    "Not supported on this car": "Støttes ikke i denne bilen",
     "Unavailable": "Utilgjengelig",
     "Changed by another tool": "Endret av et annet verktøy",
     "(after restart)": "(etter omstart)",
@@ -153,6 +152,14 @@
     "Phone maps": "Telefonens kart",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Høyt turtall: turtall, ladetrykk | Kald: olje, kjølevæske | Elektrisk: rekkevidde",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Høyt turtall: turtall, ladetrykk | Kald: olje, kjølevæske | Elektrisk: kW, lading",
-    "Warnings take over": "Advarsler tar over"
+    "Warnings take over": "Advarsler tar over",
+    "Not supported on this head unit": "Støttes ikke av denne hovedenheten",
+    "Not supported — no cluster display": "Støttes ikke — ingen instrumentskjerm",
+    "Not supported — this cluster": "Støttes ikke — dette instrumentpanelet",
+    "Built in": "Innebygd",
+    "Not supported — this CarPlay version": "Støttes ikke — denne versjonen av CarPlay",
+    "Not supported — this Android Auto version": "Støttes ikke — denne versjonen av Android Auto",
+    "Removed": "Fjernet",
+    "Failed — press Patch to try again": "Mislyktes — trykk Bruk patch for å prøve igjen"
   }
 }

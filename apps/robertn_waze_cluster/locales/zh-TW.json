@@ -8,7 +8,6 @@
     "zh_yue_Hant_CN"
   ],
   "words": {
-    "Not supported on this car": "此車輛不支援",
     "Unavailable": "無法使用",
     "Changed by another tool": "已被其他工具變更",
     "(after restart)": "（重新啟動後）",
@@ -155,6 +154,14 @@
     "Phone maps": "手機地圖",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "高轉速：轉速、增壓 | 冷車：機油、冷卻液 | 電動：續航",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "高轉速：轉速、增壓 | 冷車：機油、冷卻液 | 電動：kW、電量",
-    "Warnings take over": "警告優先顯示"
+    "Warnings take over": "警告優先顯示",
+    "Not supported on this head unit": "此主機不支援",
+    "Not supported — no cluster display": "不支援 — 無儀表顯示器",
+    "Not supported — this cluster": "不支援 — 此儀表",
+    "Built in": "內建",
+    "Not supported — this CarPlay version": "不支援 — 此 CarPlay 版本",
+    "Not supported — this Android Auto version": "不支援 — 此 Android Auto 版本",
+    "Removed": "已移除",
+    "Failed — press Patch to try again": "失敗 — 按「套用修補」重試"
   }
 }

@@ -6,7 +6,6 @@
     "tr_TR"
   ],
   "words": {
-    "Not supported on this car": "Bu araçta desteklenmiyor",
     "Unavailable": "Kullanılamıyor",
     "Changed by another tool": "Başka bir araç değiştirdi",
     "(after restart)": "(yeniden başlatınca)",
@@ -153,6 +152,14 @@
     "Phone maps": "Telefon haritaları",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Yüksek devir: devir, turbo basıncı | Soğuk: yağ, soğutma suyu | Elektrikli: menzil",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Yüksek devir: devir, turbo basıncı | Soğuk: yağ, soğutma suyu | Elektrikli: kW, şarj",
-    "Warnings take over": "Uyarılar öne çıkar"
+    "Warnings take over": "Uyarılar öne çıkar",
+    "Not supported on this head unit": "Bu ana ünitede desteklenmiyor",
+    "Not supported — no cluster display": "Desteklenmiyor — gösterge ekranı yok",
+    "Not supported — this cluster": "Desteklenmiyor — bu gösterge paneli",
+    "Built in": "Yerleşik",
+    "Not supported — this CarPlay version": "Desteklenmiyor — bu CarPlay sürümü",
+    "Not supported — this Android Auto version": "Desteklenmiyor — bu Android Auto sürümü",
+    "Removed": "Kaldırıldı",
+    "Failed — press Patch to try again": "Başarısız — yeniden denemek için Yamala’ya basın"
   }
 }

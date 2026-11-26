@@ -6,7 +6,6 @@
     "el_GR"
   ],
   "words": {
-    "Not supported on this car": "Δεν υποστηρίζεται σε αυτό το όχημα",
     "Unavailable": "Μη διαθέσιμο",
     "Changed by another tool": "Τροποποιήθηκε από άλλο εργαλείο",
     "(after restart)": "(μετά την επανεκκίνηση)",
@@ -153,6 +152,14 @@
     "Phone maps": "Χάρτες τηλεφώνου",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Στροφές: στροφές κινητήρα, υπερπλήρωση | Κρύο: λάδι, ψυκτικό | Ηλεκτρικά: αυτονομία",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Στροφές: στροφές κινητήρα, υπερπλήρωση | Κρύο: λάδι, ψυκτικό | Ηλεκτρικά: kW, φόρτιση",
-    "Warnings take over": "Οι προειδοποιήσεις έχουν προτεραιότητα"
+    "Warnings take over": "Οι προειδοποιήσεις έχουν προτεραιότητα",
+    "Not supported on this head unit": "Δεν υποστηρίζεται σε αυτή τη μονάδα",
+    "Not supported — no cluster display": "Δεν υποστηρίζεται — χωρίς οθόνη οργάνων",
+    "Not supported — this cluster": "Δεν υποστηρίζεται — αυτός ο πίνακας οργάνων",
+    "Built in": "Ενσωματωμένο",
+    "Not supported — this CarPlay version": "Δεν υποστηρίζεται — αυτή η έκδοση του CarPlay",
+    "Not supported — this Android Auto version": "Δεν υποστηρίζεται — αυτή η έκδοση του Android Auto",
+    "Removed": "Καταργήθηκε",
+    "Failed — press Patch to try again": "Απέτυχε — πατήστε «Εφαρμογή διόρθωσης» για νέα προσπάθεια"
   }
 }

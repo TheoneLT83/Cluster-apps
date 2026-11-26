@@ -6,7 +6,6 @@
     "fi_FI"
   ],
   "words": {
-    "Not supported on this car": "Ei tuettu tässä autossa",
     "Unavailable": "Ei saatavilla",
     "Changed by another tool": "Toisen työkalun muuttama",
     "(after restart)": "(uudelleenkäynnistyksen jälkeen)",
@@ -153,6 +152,14 @@
     "Phone maps": "Puhelimen kartat",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Kierrokset: moottorin kierrokset, ahtopaine | Kylmä: öljy, jäähdytysneste | Sähkö: toimintamatka",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Kierrokset: moottorin kierrokset, ahtopaine | Kylmä: öljy, jäähdytysneste | Sähkö: kW, varaus",
-    "Warnings take over": "Varoitukset ensin"
+    "Warnings take over": "Varoitukset ensin",
+    "Not supported on this head unit": "Ei tuettu tässä pääyksikössä",
+    "Not supported — no cluster display": "Ei tuettu — ei mittaristonäyttöä",
+    "Not supported — this cluster": "Ei tuettu — tämä mittaristo",
+    "Built in": "Sisäänrakennettu",
+    "Not supported — this CarPlay version": "Ei tuettu — tämä CarPlay-versio",
+    "Not supported — this Android Auto version": "Ei tuettu — tämä Android Auto -versio",
+    "Removed": "Poistettu",
+    "Failed — press Patch to try again": "Epäonnistui — yritä uudelleen valitsemalla Asenna korjaus"
   }
 }

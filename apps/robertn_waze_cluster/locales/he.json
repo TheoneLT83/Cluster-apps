@@ -6,7 +6,6 @@
     "he_IL"
   ],
   "words": {
-    "Not supported on this car": "לא נתמך ברכב זה",
     "Unavailable": "לא זמין",
     "Changed by another tool": "שונה על ידי כלי אחר",
     "(after restart)": "(לאחר הפעלה מחדש)",
@@ -153,6 +152,14 @@
     "Phone maps": "מפות הטלפון",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "סיבובים: סל\"ד, טורבו | קר: שמן, נוזל קירור | חשמלי: טווח",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "סיבובים: סל\"ד, טורבו | קר: שמן, נוזל קירור | חשמלי: kW, טעינה",
-    "Warnings take over": "אזהרות קודמות"
+    "Warnings take over": "אזהרות קודמות",
+    "Not supported on this head unit": "לא נתמך במערכת זו",
+    "Not supported — no cluster display": "לא נתמך — אין צג מחוונים",
+    "Not supported — this cluster": "לא נתמך — לוח מחוונים זה",
+    "Built in": "מובנה",
+    "Not supported — this CarPlay version": "לא נתמך — גרסת CarPlay זו",
+    "Not supported — this Android Auto version": "לא נתמך — גרסת Android Auto זו",
+    "Removed": "הוסר",
+    "Failed — press Patch to try again": "נכשל — הקש על החלת תיקון כדי לנסות שוב"
   }
 }

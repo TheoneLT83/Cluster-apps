@@ -6,7 +6,6 @@
     "pl_PL"
   ],
   "words": {
-    "Not supported on this car": "Nieobsługiwane w tym samochodzie",
     "Unavailable": "Niedostępne",
     "Changed by another tool": "Zmienione przez inne narzędzie",
     "(after restart)": "(po restarcie)",
@@ -153,6 +152,14 @@
     "Phone maps": "Mapy z telefonu",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Wysokie obroty: obroty, doładowanie | Zimny: olej, płyn chłodzący | Elektrycznie: zasięg",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Wysokie obroty: obroty, doładowanie | Zimny: olej, płyn chłodzący | Elektrycznie: kW, naładowanie",
-    "Warnings take over": "Ostrzeżenia mają pierwszeństwo"
+    "Warnings take over": "Ostrzeżenia mają pierwszeństwo",
+    "Not supported on this head unit": "Nieobsługiwane przez tę jednostkę",
+    "Not supported — no cluster display": "Nieobsługiwane — brak wyświetlacza zegarów",
+    "Not supported — this cluster": "Nieobsługiwane — ten zestaw wskaźników",
+    "Built in": "Wbudowane",
+    "Not supported — this CarPlay version": "Nieobsługiwane — ta wersja CarPlay",
+    "Not supported — this Android Auto version": "Nieobsługiwane — ta wersja Android Auto",
+    "Removed": "Usunięta",
+    "Failed — press Patch to try again": "Niepowodzenie — naciśnij Zastosuj poprawkę, aby ponowić"
   }
 }

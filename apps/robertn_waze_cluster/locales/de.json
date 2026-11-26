@@ -6,7 +6,6 @@
     "de_DE"
   ],
   "words": {
-    "Not supported on this car": "In diesem Fahrzeug nicht unterstützt",
     "Unavailable": "Nicht verfügbar",
     "Changed by another tool": "Von anderem Tool geändert",
     "(after restart)": "(nach Neustart)",
@@ -153,6 +152,14 @@
     "Phone maps": "Handy-Karten",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Hochdrehen: Drehzahl, Ladedruck | Kalt: Öl, Kühlmittel | Elektrisch: Reichweite",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Hochdrehen: Drehzahl, Ladedruck | Kalt: Öl, Kühlmittel | Elektrisch: kW, Ladestand",
-    "Warnings take over": "Warnungen haben Vorrang"
+    "Warnings take over": "Warnungen haben Vorrang",
+    "Not supported on this head unit": "Von dieser Headunit nicht unterstützt",
+    "Not supported — no cluster display": "Nicht unterstützt — kein Kombi-Display",
+    "Not supported — this cluster": "Nicht unterstützt — dieses Kombiinstrument",
+    "Built in": "Integriert",
+    "Not supported — this CarPlay version": "Nicht unterstützt — diese CarPlay-Version",
+    "Not supported — this Android Auto version": "Nicht unterstützt — diese Android-Auto-Version",
+    "Removed": "Entfernt",
+    "Failed — press Patch to try again": "Fehlgeschlagen — zum erneuten Versuch „Patchen“ drücken"
   }
 }

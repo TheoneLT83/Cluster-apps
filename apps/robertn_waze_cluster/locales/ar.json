@@ -6,7 +6,6 @@
     "ar_AE"
   ],
   "words": {
-    "Not supported on this car": "غير مدعوم في هذه السيارة",
     "Unavailable": "غير متاح",
     "Changed by another tool": "عدّلته أداة أخرى",
     "(after restart)": "(بعد إعادة التشغيل)",
@@ -153,6 +152,14 @@
     "Phone maps": "خرائط الهاتف",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "التسارع: سرعة المحرك، الشاحن | بارد: الزيت، سائل التبريد | كهربائي: المدى",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "التسارع: سرعة المحرك، الشاحن | بارد: الزيت، سائل التبريد | كهربائي: كيلوواط، الشحن",
-    "Warnings take over": "التحذيرات لها الأولوية"
+    "Warnings take over": "التحذيرات لها الأولوية",
+    "Not supported on this head unit": "غير مدعوم في هذه الوحدة الرئيسية",
+    "Not supported — no cluster display": "غير مدعوم — لا توجد شاشة عدادات",
+    "Not supported — this cluster": "غير مدعوم — لوحة العدادات هذه",
+    "Built in": "مدمج",
+    "Not supported — this CarPlay version": "غير مدعوم — إصدار CarPlay هذا",
+    "Not supported — this Android Auto version": "غير مدعوم — إصدار Android Auto هذا",
+    "Removed": "أُزيل",
+    "Failed — press Patch to try again": "فشل — اضغط «تطبيق التصحيح» للمحاولة مجددًا"
   }
 }

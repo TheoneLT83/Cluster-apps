@@ -6,7 +6,6 @@
     "cs_CZ"
   ],
   "words": {
-    "Not supported on this car": "V tomto voze nepodporováno",
     "Unavailable": "Nedostupné",
     "Changed by another tool": "Změněno jiným nástrojem",
     "(after restart)": "(po restartu)",
@@ -153,6 +152,14 @@
     "Phone maps": "Mapy z telefonu",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: range": "Vytáčení: otáčky, plnicí tlak | Studený: olej, chladicí kapalina | Elektricky: dojezd",
     "Revving: engine speed, boost | When cold: oil, coolant | Electric: kW, charge": "Vytáčení: otáčky, plnicí tlak | Studený: olej, chladicí kapalina | Elektricky: kW, nabití",
-    "Warnings take over": "Varování mají přednost"
+    "Warnings take over": "Varování mají přednost",
+    "Not supported on this head unit": "Tato jednotka není podporována",
+    "Not supported — no cluster display": "Nepodporováno — bez displeje přístrojů",
+    "Not supported — this cluster": "Nepodporováno — tento přístrojový panel",
+    "Built in": "Vestavěno",
+    "Not supported — this CarPlay version": "Nepodporováno — tato verze CarPlay",
+    "Not supported — this Android Auto version": "Nepodporováno — tato verze Android Auto",
+    "Removed": "Odebráno",
+    "Failed — press Patch to try again": "Selhalo — zkuste znovu „Použít opravu“"
   }
 }

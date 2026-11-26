@@ -1199,6 +1199,90 @@ test('the newest release reads and writes a state this version left, log and all
     assert(!('log' in after) && !('seen' in after.prev) && after.fails === 0 && after.unknown === 0, newest + ': its save keeps only what it knows: ' + JSON.stringify(after));
 });
 
+test('a plan still to make is made again only for the build it was for: after a car software update the service runs as it ships', async () => {
+    if (!fs.existsSync(CARPLAY_BIN)) { console.log('     (skipped: CARPLAY_BIN not set)'); return; }
+    makeWorld();
+    const bin = fs.readFileSync(CARPLAY_BIN);
+    fs.writeFileSync(CARPLAY, bin, { mode: 0o755 });
+    inmem.planFailed('carplay', ['--panel', 'high'], 'the coding was not published yet');
+    const id = require('../carplay_locate.js').buildId(bin);
+    assert.strictEqual(inmem.readRecord('carplay').build, id, 'the record keeps the build-id');
+    /* another build: the build-id note's last byte changed */
+    const other = Buffer.from(bin), at = other.indexOf(Buffer.from(id, 'hex'));
+    assert(at > 0, 'the build-id is in the file');
+    other[at + 19] ^= 0xff;
+    fs.writeFileSync(CARPLAY, other, { mode: 0o755 });
+    const planned = await new Promise((resolve) => recovery.retryPlan('carplay', resolve, 0, 1000));
+    assert.deepStrictEqual([planned, inmem.readRecord('carplay')], [false, null], 'another build: not planned, the record dropped');
+    /* an earlier release's record, with no build-id: it cannot tell, so it is dropped too */
+    fs.writeFileSync(CARPLAY, bin, { mode: 0o755 });
+    inmem.planFailed('carplay', ['--panel', 'high'], 'the coding was not published yet');
+    inmem.update('carplay', { build: undefined });
+    const planned2 = await new Promise((resolve) => recovery.retryPlan('carplay', resolve, 0, 1000));
+    assert.deepStrictEqual([planned2, inmem.readRecord('carplay')], [false, null], 'no build-id: not planned, the record dropped');
+    clearInmem();
+});
+
+test('a plan still to make waits for a readable coding at the boot step, and the watcher plans it whatever the coding reads', async () => {
+    if (!fs.existsSync(CARPLAY_BIN)) { console.log('     (skipped: CARPLAY_BIN not set)'); return; }
+    makeWorld();
+    fs.writeFileSync(CARPLAY, fs.readFileSync(CARPLAY_BIN), { mode: 0o755 });
+    const args = ['--panel', 'high', '--coding', process.env.WOC_CODING];
+    try {
+        headUnit.coding(null);
+        inmem.planFailed('carplay', args, 'the coding was not published yet');
+        let planned = await new Promise((resolve) => recovery.retryPlan('carplay', resolve, 0, 60000));
+        assert.deepStrictEqual([planned, inmem.readRecord('carplay').needsPlan], [false, true], 'boot step, no coding: not planned, still to plan');
+        headUnit.coding(7, 0);
+        planned = await new Promise((resolve) => recovery.retryPlan('carplay', resolve, 0, 60000));
+        assert.deepStrictEqual([planned, inmem.readRecord('carplay').needsPlan], [false, true], 'boot step, a coding not yet valid: not planned, still to plan');
+        headUnit.coding(7);
+        planned = await new Promise((resolve) => recovery.retryPlan('carplay', resolve, 0, 60000));
+        const m = inmem.readRecord('carplay');
+        assert(planned && !m.needsPlan && m.enabled === true && m.coding === 7, 'boot step, coding 7: planned for it ' + JSON.stringify(m));
+        clearInmem();
+        headUnit.coding(null);
+        inmem.planFailed('carplay', args, 'the coding was not published yet');
+        planned = await new Promise((resolve) => recovery.retryPlan('carplay', resolve, 0, 60000, true));
+        assert(planned && !inmem.readRecord('carplay').needsPlan && inmem.readRecord('carplay').coding === 'unreadable', 'the watcher, no coding: planned, as 7');
+    } finally { headUnit.coding(7); clearInmem(); }
+});
+
+test('a plan records the coding it was made for; one made for another coding than the car reads is planned again for it, which refuses a coding the patch is not made for', async () => {
+    if (!fs.existsSync(CARPLAY_BIN)) { console.log('     (skipped: CARPLAY_BIN not set)'); return; }
+    makeWorld();
+    fs.writeFileSync(CARPLAY, fs.readFileSync(CARPLAY_BIN), { mode: 0o755 });
+    const args = ['--panel', 'high', '--coding', process.env.WOC_CODING];
+    const planned = (c) => { headUnit.coding(c); return new Promise((resolve) => inmem.makePlan('carplay', args, 60000, (e, rec) => resolve(e ? e.message : rec))); };
+    try {
+        let rec = await planned(7);
+        assert.deepStrictEqual([rec.coding, rec.v], [7, 1], 'made for 7');
+        assert.strictEqual(recovery.codingMoved('carplay'), false, 'the car reads 7: kept');
+        headUnit.coding(null);
+        assert.strictEqual(recovery.codingMoved('carplay'), false, 'the coding unreadable: kept');
+        headUnit.coding(4);
+        assert.strictEqual(recovery.codingMoved('carplay'), true, 'the car reads 4: planned again');
+        let m = inmem.readRecord('carplay');
+        assert.deepStrictEqual([m.enabled, m.needsPlan, m.args, inmem.armed('carplay')], [true, true, args, false], 'a plan still to make, nothing armed');
+        const again = await new Promise((resolve) => recovery.retryPlan('carplay', resolve, 0, 60000));
+        assert.deepStrictEqual([again, inmem.readRecord('carplay')], [false, null], 'coding 4: the plan refused, the record gone');
+        clearInmem();
+        rec = await planned(null);
+        assert.deepStrictEqual([rec.coding, rec.v], ['unreadable', 2], 'made while the coding could not be read: a record releases before this one do not read');
+        headUnit.coding(7);
+        assert.strictEqual(recovery.codingMoved('carplay'), false, 'then it reads 7: kept');
+        headUnit.coding(9);
+        assert.strictEqual(recovery.codingMoved('carplay'), true, 'then it reads 9: planned again');
+        clearInmem();
+        rec = await planned(7);
+        inmem.update('carplay', { coding: undefined });
+        assert.strictEqual(inmem.readRecord('carplay').coding, undefined, 'a record of a release that did not keep the coding');
+        headUnit.coding(10);
+        assert.strictEqual(recovery.codingMoved('carplay'), true, 'taken as made for 7: the car reads 10, planned again');
+        clearInmem();
+    } finally { headUnit.coding(7); clearInmem(); }
+});
+
 test('the original (Disable used) or no backup of ours: nothing armed, counted or restored', async () => {
     for (const kind of ['original', 'none']) {
         const w = makeWorld();
@@ -1222,8 +1306,8 @@ test('a missing or corrupt state file restores nothing on its own; the boot is a
 
 test('a patch of ours found in carplay\'s file is put back at the boot step at once, whatever the count or its record, nothing armed over it, our backup dropped, and recorded as a plan to make', async () => {
     const CODING = process.env.WOC_CODING;
-    for (const [kind, rec, unproven] of [['file-proven', null, false], ['file-unproven', null, true], ['file-trial', null, false], ['unknown', null, false],
-        ['unknown', '{oops', false], ['unknown', '{"patched":true,"proven":false}\n', false]]) {
+    for (const [kind, rec] of [['file-proven', null], ['file-unproven', null], ['file-trial', null], ['unknown', null],
+        ['unknown', '{oops'], ['unknown', '{"patched":true,"proven":false}\n']]) {
         const what = kind + (rec ? ' ' + JSON.stringify(rec) : '');
         const w = makeWorld();
         w.install('carplay', kind);
@@ -1236,7 +1320,7 @@ test('a patch of ours found in carplay\'s file is put back at the boot step at o
         assert(!fs.existsSync(w.T.carplay.target + '.woc-orig') && !fs.existsSync(w.T.carplay.target + '.woc-orig.json') &&
             !fs.existsSync(record.recordPath(w.T.carplay.target)), what + ': no backup or record of ours left beside it');
         const m = inmem.readRecord('carplay');
-        assert.deepStrictEqual([m.enabled, m.needsPlan, m.args], [true, true, ['--panel', 'high', '--coding', CODING].concat(unproven ? ['--unproven'] : [])],
+        assert.deepStrictEqual([m.enabled, m.needsPlan, m.args], [true, true, ['--panel', 'high', '--coding', CODING]],
             what + ': a plan to make, for the watcher');
         assert(ro(), what + ': / read-only again');
     }
@@ -2343,6 +2427,9 @@ for (const confLeft of [true, false]) test('the boot step over patchd\'s put-bac
     /* patchd's order: the record to plan first, then the files back */
     const args = ['--conf', conf, '--dpi', '170', '--card', 'shown', '--unproven'];
     inmem.planFailed('aapd', args, 'not planned yet: putting aapd back was cut short');
+    /* the build-id patchd records, of the aapd it puts back (this process's
+     * inmem.js names another aapd path) */
+    inmem.update('aapd', { build: inmem.buildOf(target) });
     fs.writeFileSync(target + '.new', fs.readFileSync(AAPD_BIN), { mode: 0o755 });
     fs.renameSync(target + '.new', target);
     if (!confLeft) { fs.writeFileSync(conf + '.new', fs.readFileSync(AAPD_CONF), { mode: 0o644 }); fs.renameSync(conf + '.new', conf); }
