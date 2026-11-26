@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.54
+
+The cluster renderer's client from cluster-render 0.6.23 (a hosted map can be hidden rather than drawn on its own slot).
+
 ## 0.9.53
 
 Less CPU (it was the head unit's busiest process at about 35 %): the cluster's info bar is looked at 5 times a second
