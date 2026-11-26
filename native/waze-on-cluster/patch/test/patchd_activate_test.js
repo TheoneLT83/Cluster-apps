@@ -19,7 +19,8 @@
  * a conflict. A plan that cannot be made (an I/O error) leaves carplay
  * stock, the error in patchd's status, until the watcher plans it at the
  * next head-unit start. On a car coded otherwise an earlier release's patch
- * is put back as it ships. A stock build outside the proven list is left as
+ * is put back as it ships; CarPlay's Patch button's patch is planned in
+ * memory as that button plans it. A stock build outside the proven list is left as
  * a conflict. Removal (deactivate) disarms the next start, deletes the plan
  * and its record, reverts an earlier release's patch left on disk and drops
  * our backup: a revert is pending only while the running carplay's memory
@@ -1068,6 +1069,44 @@ async function main() {
             r.code === 0 && disk() === sha(SRCBUF) && !fs.existsSync(BAK) && rec() === null && !armed() &&
             r.result.conflict === 'not supported on this car (KI_KOMBI_VARIANT 9)' && /put back as it ships/.test(r.result.status || '') && ro(), JSON.stringify([r.result, drec()]));
     });
+    /* CarPlay's Patch button's patch an earlier release wrote to the file
+     * on a car coded otherwise (its record: patched, unproven): the install
+     * plans it in memory as that button plans it (--unproven), the file put
+     * back as it ships and our backup dropped, the coding conflict in the
+     * result as for a plan the button made; started or not. */
+    var CODED9 = 'not supported on this car (KI_KOMBI_VARIANT 9)';
+    [['started', true, false], ['its apply pending', false, true], ['carplay running the file it replaced, no marker', false, false]].forEach(function (c) {
+        earlierOnDisk(c[1], c[2]);
+        record.write(TGT, { patched: true, proven: false });
+        headUnit.coding(9);
+        r = hook('activate');
+        var m = rec();
+        ok('coding 9, CarPlay\'s Patch button\'s patch on disk (' + c[0] + '): planned in memory as that button plans it (unproven), the file as it ships, the backup dropped, / read-only',
+            r.code === 0 && r.result.conflict === CODED9 && /map patch armed in memory/.test(r.result.status || '') && disk() === sha(SRCBUF) && !fs.existsSync(BAK) &&
+            drec() === null && armed() && JSON.stringify(trial()) === JSON.stringify({ enabled: true, proven: false, trial: false }) && m.args.indexOf('--unproven') >= 0 && ro(),
+            JSON.stringify([r.result, trial(), m && m.args]));
+        r = hook('deactivate');
+        ok('coding 9, CarPlay\'s Patch button\'s patch moved into memory (' + c[0] + '): the removal turns it off', r.code === 0 && rec() === null && !armed() && disk() === sha(SRCBUF),
+            JSON.stringify(r.result));
+    });
+    /* An earlier install's patch on trial, and the Patch button's patch
+     * beside a carplay.service that starts another program: put back,
+     * nothing armed. */
+    earlierOnDisk(true, false);
+    record.write(TGT, { patched: true, proven: false, trial: true });
+    headUnit.coding(9);
+    r = hook('activate');
+    ok('coding 9, an earlier install\'s patch on trial: put back as it ships, nothing armed, the conflict', r.code === 0 && disk() === sha(SRCBUF) && !fs.existsSync(BAK) &&
+        rec() === null && !armed() && r.result.conflict === CODED9 && /put back as it ships/.test(r.result.status || ''), JSON.stringify([r.result, drec()]));
+    earlierOnDisk(true, false);
+    record.write(TGT, { patched: true, proven: false });
+    headUnit.coding(9);
+    fs.mkdirSync(path.join(UNITS, 'carplay.service.d'), { recursive: true });
+    fs.writeFileSync(dropin, '[Service]\nExecStart=\nExecStart=/bin/sh -c \'exec /var/opt/other/carplay "$$@"\' -- -c /etc/cinemo/cinemo_options.xml\n');
+    r = hook('activate');
+    fs.unlinkSync(dropin);
+    ok('coding 9, the Patch button\'s patch, carplay.service starting another program: put back as it ships, nothing armed, the conflict', r.code === 0 &&
+        disk() === sha(SRCBUF) && rec() === null && !armed() && r.result.conflict === CODED9 && /put back as it ships/.test(r.result.status || ''), JSON.stringify([r.result, drec()]));
     earlierOnDisk(false, true);
     before = disk();
     headUnit.coding(9);

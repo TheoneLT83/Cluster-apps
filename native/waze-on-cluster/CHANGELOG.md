@@ -2,6 +2,38 @@
 
 ## Unreleased
 
+## 0.14.20
+
+robertnisipeanu/idrive-apps' 0.14.17 and 0.14.18 with this repository's 0.14.19:
+
+On a car not coded for the CarPlay cluster map, a map patch that CarPlay's
+Patch button applied with a release before 0.11.0 stays on after updating;
+it showed `Not supported on this car` until Patch was pressed again.
+
+A patch stays on when the head unit goes off with no shutdown record (a
+power cut, or a switch-off whose record was lost) and stays off 3 minutes
+or more, also after a short drive; a patch that keeps the head unit
+restarting is still removed. Save logs includes a log of how
+each head-unit start was counted, kept across restarts.
+
+
+While the map is not seen (the cluster showing other content in its
+slot or the slot locked, the HUD giving way to BMW's lists, or the app
+hosting it hiding it, also a cluster theme on a page without the map),
+the head unit makes one map picture a second instead of one for every
+frame and sends none, and the HUD map is not scaled. The phone's stream is
+still decoded, so the map is back with its newest picture the moment it
+is seen again; with the cluster-render released with it, that picture is
+the first one the cluster draws.
+
+## 0.14.16
+
+A map setting the app saves for one driver profile goes into that
+profile's settings only; one made for another driver than the one in use
+is not saved. While any driver has own settings, a map setting from an
+earlier Maps on cluster is not saved either: update the app. Settings
+saved by earlier versions stay as they are.
+
 ## 0.14.19
 
 The CarPlay patch applies with CarPlay multitouch on: its carplay no longer reads as another program, so the cluster

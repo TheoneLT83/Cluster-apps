@@ -57,9 +57,13 @@ CarPlay next starts, which then applies the patch in memory, so no restart
 is needed for it. It then does the same for Android Auto on any aapd build
 it can plan: an earlier release's patch of `/usr/bin/aapd` and `/etc/aapd.conf`
 goes back as they ship, and the patch is armed in aapd's memory. Where the
-sites are not found or not recognised, the coding is another, or another
-tool's change is found beside our own edits, it leaves everything as it is,
-and the app's Status says why; bytes away from the sites do not count. A
+sites are not found or not recognised, or another tool's change is found
+beside our own edits, it leaves everything as it is, and the app's Status
+says why; bytes away from the sites do not count. On a car not coded for
+the cluster map, or whose coding cannot be read, it plans nothing and puts
+an earlier release's patch back as it ships, except a patch CarPlay's Patch
+button applied with our backup beside it, which it plans in memory as that
+button does. A
 patch you turned off with Remove patch stays off across updates, car
 software updates and restarts, until you press Patch (PATCH.md
 "Install-time activation", "In memory").
@@ -90,9 +94,12 @@ before CarPlay (or aapd) starts: after one failed start for a patch not yet
 proven on that car, after two for a proven one. CarPlay comes back without
 the map, its Status reads `Removed — head
 unit kept restarting`, and its Patch button applies the patch again
-(PATCH.md "Boot recovery"). Android Auto's patch is removed at the first
-crash of the patched aapd, and aapd is started again after every end, so
-Android Auto comes back without the cluster map; the patch stays off until
+(PATCH.md "Boot recovery"). A start that ended with no shutdown record,
+after which the head unit was off 3 minutes or more, counts as one that
+ended in order; a crash in it, or a quick restart after it, still counts.
+Android Auto's patch is removed at the first crash of the patched aapd,
+and aapd is started again after every end, so Android Auto comes back
+without the cluster map; the patch stays off until
 its Patch button applies it, an update brings a newer patch, or a car
 software update replaces aapd or aapd.conf (then it is tried again, on
 trial).
@@ -115,7 +122,14 @@ cluster stream is live. When the stream ends, stays blank for `blank_ms`
 cluster's own content until the next picture. The render runs from boot and
 decodes whether or not the map is shown, since the phone sends a keyframe
 only when its stream starts: a render that missed the start shows nothing
-until the phone reconnects.
+until the phone reconnects. While cluster-render reports the map's target
+parked, waiting or unavailable (the cluster shows other content in the slot,
+the slot is locked, the HUD gives way to BMW's lists), or its host hides it,
+one picture a second is made and none is sent; the newest goes the moment
+the map is seen again, and is the first one the cluster writes (cluster-
+render's `fresh_ms`) unless the cluster's target cannot wait for it (tiles
+of the map a change uncovers there). With a cluster-render that does not
+take `fresh_ms`, only a map its host hides counts as not seen.
 
 **BMW's turn box.** While the map shows, BMW's CarPlay turn-by-turn box on
 the cluster is hidden (cluster-render README, "Guide hold"). The app's
@@ -144,7 +158,12 @@ as the hosted map, so cluster-render knows it). With
 hosted_vpp_scale and always_packed" below). The app hiding its layers,
 ending the host or exiting puts the map back on its own slot, and so does
 any host whose place the map cannot be drawn in (its part misses the map,
-or lands smaller than 64x32), a scene's host included.
+or lands smaller than 64x32), a scene's host included. An app that
+shows the map nowhere on one of its pages sends its host with `shown` 0
+and `hide` (PROTOCOL.md "Hosting from layers"): the map is then hidden,
+nothing of it sent, while the app's layers are drawn on that target and
+no other app shows the map; without `hide`, `shown` 0 puts it back on its
+own slot.
 
 ### Settings
 

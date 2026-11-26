@@ -71,7 +71,15 @@
  *                                   hud-brightness-reply,
  *                                   hud-keep-shown-reply)
  *                                   follows the write and carries ok, the values
- *                                   saved and reason.
+ *                                   saved, reason and the settings in effect.
+ *                                   With "profile":"<id>"|null and "own":0|1
+ *                                   (the driver profile and set the app's page
+ *                                   showed), each is saved only while that
+ *                                   profile and set are in effect; without, only
+ *                                   while no driver has own settings. Otherwise
+ *                                   nothing is saved and the reply carries ok
+ *                                   false, refused "profile", reason, the
+ *                                   settings in effect and own_settings.
  *                  {"cmd":"profile","id":"<id>"|null}
  *                  {"cmd":"profile-own","id":"<id>","on":0|1}
  *                                   the driver profile now (the head unit's user
@@ -81,8 +89,10 @@
  *                                   saved in MAP_STATE; profile-own only for the
  *                                   profile last told. The reply (profile-reply,
  *                                   profile-own-reply) carries ok, id, own, the
- *                                   settings in effect and changed (the render
- *                                   is to be moved to them) or reason.
+ *                                   settings in effect, changed (the render
+ *                                   is to be moved to them) and own_settings, or
+ *                                   reason. own_settings (also in each status):
+ *                                   whether any driver has own map settings.
  *                  {"cmd":"capture-start"|"capture-stop"|"capture-status"}
  *                                   (capture-reply to the asker; every client gets
  *                                   ev capture, also once a second)
@@ -396,9 +406,10 @@ function flushMapSettings() {
         saveRetryMs = 0;
         dropShared();
     }
+    var inEffect = settingsInEffect();
     m.asked.forEach(function (a) {
         if (!a.sock) return;
-        var r = { ev: a.ev, ok: !err, reason: err ? err.message : undefined };
+        var r = { ev: a.ev, ok: !err, reason: err ? err.message : undefined, settings: inEffect };
         a.keys.forEach(function (k) { r[k] = m.settings[k]; });
         reply(a.sock, r);
     });
@@ -553,7 +564,7 @@ function profileCmd(msg, sock) {
         reply(sock, { ev: ev, ok: false, reason: 'at most ' + MAX_OWN + ' profiles have their own settings' });
         return;
     }
-    var inUse = profilesInUse(p), now = (profilesKept(p) && profileEntry(p)) || mapSettingsNow();
+    var inUse = profilesInUse(p), now = settingsInEffect();
     if (msg.cmd === 'profile') currentProfile = id;
     if (msg.cmd === 'profile-own') {
         if (msg.on && !p.own[id]) {
@@ -577,8 +588,34 @@ function profileCmd(msg, sock) {
         m.profiles = true;
         if (!m.timer) m.timer = setTimeout(flushMapSettings, MAP_SAVE_MS);
     }
-    reply(sock, { ev: ev, ok: true, id: id, own: !!target, changed: changed || restored, settings: want });
+    reply(sock, { ev: ev, ok: true, id: id, own: !!target, changed: changed || restored, settings: want, own_settings: ownSettings() });
     restored = false;
+    if (profilesInUse(p) !== inUse) status();
+}
+
+/* The map settings the app writes. A write names the driver profile its
+ * page showed ("profile": the id, or null for none) and whether that
+ * profile's own settings were the ones in effect ("own": 0 or 1). It is
+ * saved only while patchd has that profile and that set in effect, so it
+ * goes into those settings and no others: the reason it is refused, else
+ * null. A write without "profile" (an app before it, or one while no
+ * driver has own settings) is saved only while no driver has own settings:
+ * the shared settings are then the only ones. */
+var MAP_CMDS = ['cluster', 'hud', 'hud-size', 'hud-pos', 'hud-keep-shown'];
+function ownSettings() { return !!profiles && profilesInUse(profiles); }
+function mapWriteRefusal(msg) {
+    if (!('profile' in msg)) return ownSettings() ? 'drivers have their own map settings: update Maps on cluster' : null;
+    var id = msg.profile === '' ? null : msg.profile;
+    if (id !== null && !profileIdOk(id)) return 'not a profile id';
+    if (msg.own !== 0 && msg.own !== 1) return 'own must be 0 or 1';
+    if (currentProfile === undefined) return 'no driver profile told since the start';
+    if (id !== currentProfile) return 'not the driver profile in effect';
+    var own = !!(id !== null && profiles && profiles.own[id]);
+    if (own !== (msg.own === 1)) return own ? 'the driver profile has its own map settings' : 'the driver profile uses the shared map settings';
+    return null;
+}
+function settingsInEffect() {
+    return Object.assign({}, (profiles && profilesKept(profiles) && profileEntry(profiles)) || mapSettingsNow());
 }
 var statusWaiters = null;    /* the callers of the carplay_patch status read in flight */
 var MAX_LINE = 64 * 1024;    /* drop a client that floods without a newline */
@@ -1099,6 +1136,7 @@ function status(extra, aaExtra) {
             msg.aa = aaMsg(aa);
             if (aaExtra) Object.keys(aaExtra).forEach(function (k) { msg.aa[k] = aaExtra[k]; });
             msg.wifi = wifi ? wifi.current() : null;
+            msg.own_settings = ownSettings();
             send(msg);
         });
     });
@@ -2007,9 +2045,16 @@ function inmemHook(which, cb) {
         if (off && !reset) { out(0, 'the patch was turned off; its Patch button applies it'); return; }
         /* The coding and another program started as carplay keep the
          * install from planning; an earlier patch of ours still goes back
-         * to stock (Remove patch semantics: nothing else is written). */
-        var conflict = codingConflict(st.coding === null ? null : [null, String(st.coding)]) || foreignStart(CP);
-        if (conflict) {
+         * to stock (Remove patch semantics: nothing else is written). The
+         * exception is CarPlay's Patch button's patch an earlier release
+         * wrote to the file on a car coded otherwise (its record: patched,
+         * neither proven nor on trial): the owner's choice, planned in
+         * memory as that button plans it (--unproven, below), as the boot
+         * step plans such a patch it puts back. */
+        var codingWhy = codingConflict(st.coding === null ? null : [null, String(st.coding)]), foreign = foreignStart(CP);
+        var conflict = codingWhy || foreign;
+        var buttons = codingWhy && !foreign && st.restorable && st.backup && !st.foreign && record.buttonPatch(record.current(TARGET));
+        if (conflict && !buttons) {
             if (!ours || st.foreign || !st.restorable) { out(0, 'carplay left as it is: ' + conflict, conflict); return; }
             revert(true, true, function (rErr) {
                 inmem.disarm('carplay');
@@ -2030,7 +2075,8 @@ function inmemHook(which, cb) {
             if (err) { out(1, 'applying the map patch failed: ' + err.message); return; }
             if (why) { out(0, why); return; }
             settle();
-            out(0, activation === 'deferred' ? 'map patch armed in memory; takes effect at the next carplay start' : 'map patch armed in memory; carplay runs it already', null, reset);
+            out(0, activation === 'deferred' ? 'map patch armed in memory; takes effect at the next carplay start' : 'map patch armed in memory; carplay runs it already',
+                buttons ? codingWhy : null, reset);
         });
     });
 }
@@ -2398,7 +2444,19 @@ function handle(line, sock) {
         return;
     }
     /* Where the map shows and the HUD map's settings: not operations on
-     * carplay, so not held back by one. */
+     * carplay, so not held back by one. Each is saved only into the driver
+     * profile's settings it names (mapWriteRefusal). */
+    if (MAP_CMDS.indexOf(msg.cmd) >= 0) {
+        var refusal = mapWriteRefusal(msg);
+        if (refusal) {
+            log('not saved: ' + msg.cmd + (!('profile' in msg) ? ' without a driver profile' :
+                ' for ' + (msg.own ? 'the own map settings of ' : 'the map settings in effect for ') + 'driver profile ' +
+                (profileIdOk(msg.profile) ? profileTag(msg.profile) : msg.profile == null ? 'none' : '(not an id)')) + ': ' + refusal);
+            reply(sock, { ev: msg.cmd + '-reply', ok: false, refused: 'profile', reason: refusal, settings: settingsInEffect(),
+                own_settings: ownSettings() });
+            return;
+        }
+    }
     if (msg.cmd === 'cluster' || msg.cmd === 'hud') {
         var set = {};
         if (msg.on !== 0 && msg.on !== 1) { reply(sock, { ev: msg.cmd + '-reply', ok: false, reason: 'on must be 0 or 1' }); return; }
