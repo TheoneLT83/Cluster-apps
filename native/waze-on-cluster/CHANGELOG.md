@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.14.19
+
+The CarPlay patch applies with CarPlay multitouch on: its carplay no longer reads as another program, so the cluster
+map shows with two-finger touch kept.
+
 ## 0.14.18
 
 Each log save measures perf.txt then (the one from when the Log page opened is perf-open.txt): a second save no longer

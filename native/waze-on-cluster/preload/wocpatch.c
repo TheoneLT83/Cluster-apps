@@ -112,7 +112,22 @@ static int first_object(struct dl_phdr_info *info, size_t size, void *data) {
     return 1;
 }
 
-/* The main program's GNU build-id, from its PT_NOTE segments in memory. */
+/* The GNU build-id note at `at`, if one starts there and ends by `end`. */
+static int gnu_note(const unsigned char *at, const unsigned char *end, const unsigned char **id, size_t *len) {
+    if (at + sizeof(ElfW(Nhdr)) + 4 > end) return -1;
+    const ElfW(Nhdr) *nh = (const ElfW(Nhdr) *)at;
+    const unsigned char *n = at + sizeof *nh, *d = n + 4;
+    if (nh->n_type != NT_GNU_BUILD_ID || nh->n_namesz != 4 || memcmp(n, "GNU", 4) != 0 ||
+        nh->n_descsz == 0 || nh->n_descsz > 64 || d + nh->n_descsz > end) return -1;
+    *id = d;
+    *len = nh->n_descsz;
+    return 0;
+}
+
+/* The main program's GNU build-id, from its PT_NOTE segments in memory, or,
+ * for a program whose note header was given another use (CarPlay
+ * multitouch's carplay turns it into the PT_LOAD of its added code), the
+ * note itself, still in the loaded ELF header's page. */
 static int build_id(const struct image *img, const unsigned char **id, size_t *len) {
     for (int i = 0; i < img->phnum; i++) {
         const ElfW(Phdr) *p = &img->phdr[i];
@@ -123,13 +138,18 @@ static int build_id(const struct image *img, const unsigned char **id, size_t *l
             size_t name = (nh->n_namesz + 3) & ~(size_t)3, desc = (nh->n_descsz + 3) & ~(size_t)3;
             const unsigned char *n = at + sizeof *nh, *d = n + name;
             if (d + desc > end) break;
-            if (nh->n_type == NT_GNU_BUILD_ID && nh->n_namesz == 4 && memcmp(n, "GNU", 4) == 0) {
-                *id = d;
-                *len = nh->n_descsz;
-                return 0;
-            }
+            if (gnu_note(at, end, id, len) == 0) return 0;
             at = d + desc;
         }
+    }
+    for (int i = 0; i < img->phnum; i++) {
+        const ElfW(Phdr) *p = &img->phdr[i];
+        if (p->p_type != PT_LOAD || p->p_offset != 0) continue;
+        const unsigned char *start = (const unsigned char *)(img->base + p->p_vaddr);
+        const unsigned char *end = start + (p->p_filesz < 4096 ? p->p_filesz : 4096);
+        for (const unsigned char *at = start; at < end; at += 4)
+            if (gnu_note(at, end, id, len) == 0) return 0;
+        break;
     }
     return -1;
 }

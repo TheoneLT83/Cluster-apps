@@ -66,6 +66,26 @@ out=$(LD_PRELOAD=$LIB "$BIN" 2>&1)
 [ "$out" = "$stock
 child" ] && ok "no WOC_PATCH_PLAN: stock, silent" || bad "unarmed: $out"
 
+# The program's PT_NOTE header given another use (CarPlay multitouch's carplay):
+# the build-id from the note in the loaded ELF header, applied.
+NONOTE=$W/target-nonote
+cp "$BIN" "$NONOTE"
+python3 - "$NONOTE" <<'EOF'
+import struct, sys
+f = open(sys.argv[1], 'r+b'); h = f.read(64)
+phoff, = struct.unpack_from('<Q', h, 32); phentsize, phnum = struct.unpack_from('<HH', h, 54)
+for i in range(phnum):
+    f.seek(phoff + i * phentsize)
+    if struct.unpack('<I', f.read(4))[0] == 4:
+        f.seek(phoff + i * phentsize); f.write(struct.pack('<I', 0))
+EOF
+readelf -lW "$NONOTE" | grep -q ' NOTE ' && bad "the test copy still has a PT_NOTE" || {
+    : > "$W/result"
+    out=$(WOC_PATCH_PLAN=$W/p1 WOC_PATCH_RESULT=$W/result LD_PRELOAD=$LIB "$NONOTE" 2>/dev/null)
+    [ "$(echo "$out" | head -1)" = "patched message 2a" ] && grep -q '"applied":true' "$W/result" \
+        && ok "no PT_NOTE header: the build-id from the ELF header's page, applied" || bad "no PT_NOTE: '$out' $(cat "$W/result")"
+}
+
 # Another library's thread, started before ours (libdlt's in carplay): applied.
 THR=$(dirname "$BIN")/libthread.so
 : > "$W/result"

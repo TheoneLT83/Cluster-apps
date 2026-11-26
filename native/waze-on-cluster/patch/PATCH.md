@@ -742,7 +742,11 @@ or none:
 
 - the main program's GNU build-id, from its own `PT_NOTE` in memory, must
   be the plan's; any other program (one carplay starts, which inherits
-  `LD_PRELOAD`) is left alone and writes no result;
+  `LD_PRELOAD`) is left alone and writes no result. CarPlay multitouch's
+  carplay (a copy with two-finger touch, started in place of
+  `/usr/bin/carplay`) has turned that header into the `PT_LOAD` of its added
+  code: the note itself, still in the loaded ELF header's page, names it.
+  Its edits leave every site of ours as it ships, so both apply;
 - the plan must be whole: its version, every line, its closing count, and
   only kinds of line this library knows, so a newer plan never meets an
   older library half-understood;
