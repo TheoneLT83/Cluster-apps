@@ -92,7 +92,8 @@ function create(o) {
                 (e) => {
                     if (link[name] === 'connecting') log(`${name} not there yet (again every ${RETRY_MS / 1000} s):`, errText(e));
                     link[name] = `ERR ${errText(e)}`;
-                    setTimer(() => connect(name), RETRY_MS);
+                    // CameraProxy is asked once: never offered on its own on the car (camCall goes through ICAM2Proxy)
+                    if (name !== 'cam') setTimer(() => connect(name), RETRY_MS);
                 });
     }
     // getters, not notifiers (Car Data: notifiers often never fire for an app)

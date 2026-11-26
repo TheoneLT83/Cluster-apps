@@ -51,7 +51,7 @@ HUD has no room under it, within its sides), following the map's size and place:
   `statusSwitchDriveDynamicSport2` as M Vitals reads it, a slider up to its boost limit, else 2 bar), **Power and
   torque** (FES `statusActualValueTorque2` and torque x rpm) or **Engine speed** (a slider to 8000 rpm petrol, 6000 diesel: white, yellow, then red from 700 rpm under the redline, the red lower while the oil is cold, from 4500 rpm petrol and 3000 diesel at 20 °C to the warm point at 90 °C; the gear turns red with it, and both flash from 300 rpm under the redline);
 - **Auto** (the info bar's last button) picks the reading for what the car is doing, the first that holds: revving
-  into the yellow zone, **Engine speed** (and **Boost** where the car gives it); oil or coolant under 50 °C, **Oil
+  into the yellow zone, **Engine speed** (and **Boost** where the car gives it); oil or coolant under 70 °C, **Oil
   and coolant**; driving on the battery, **Electric range**; else the readings chosen by hand (none chosen: nothing). One
   higher in that list takes over at once, a lower one after 8 s;
   the cluster's info bar (Display page, Cluster) has its own **Auto** for the same situations: **Engine speed** (and

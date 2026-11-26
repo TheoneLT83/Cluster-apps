@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.13
+
+The kit no longer looks up a component for each hidden setting (none has one): no warning for them in the log.
+
 ## 1.0.12
 
 The app stays on the Store's renderer where idrive7-apps' own renderer runs too: its kit's spec is spec.json, so

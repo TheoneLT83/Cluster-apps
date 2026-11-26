@@ -21,7 +21,7 @@ const H = 96, PAD = 12, POWER_W = 200, VALUE_W = 92, TYRES_W = 124;
 const PILL = [8, 10, 16, 165], WHITE = '#f2f5f8', LABEL = '#a9b1c2';
 const RED = '#ff4d4d', BLUE = '#2f86ff', PURPLE = '#b35cff', GREEN = '#2fd27a', AMBER = '#ffb020', COLD = '#5ab8ff', TRACK = '#22262e';
 const AMBER_KW = 60, MAX_OUT_DEFAULT = 100, MAX_IN_DEFAULT = 60;
-const COLD_C = 50;
+const COLD_C = 70;
 /* Where it sits: centred, its bottom this far over the map's bottom edge. */
 const BOTTOM_GAP = 32;          // clear of the cluster's dimmed edge under the map
 

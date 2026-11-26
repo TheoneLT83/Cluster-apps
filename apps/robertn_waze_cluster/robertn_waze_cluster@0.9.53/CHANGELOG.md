@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.53
+
+Cold is blue up to 70 °C (oil, coolant, gearbox oil; it was 50 °C), on the cluster's info bar and the HUD. The log
+no longer fills with the camera service that is never offered on its own (asked once) and with the hidden settings,
+which have no component.
+
 ## 0.9.52
 
 The traffic light from the front camera: code 0, which the camera sends with no light ahead, is no light (it showed
