@@ -1,9 +1,9 @@
 {
   "id": "turn-view",
   "kind": "tool",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "title": "Turn View",
-  "description": "By IterioDev, in Cluster functions: the front camera in the instrument cluster's central map area with navigation arrows on the road and a turn card (BMW navigation, CarPlay or Android Auto), the camera alone without a route. Switched on in Cluster functions (Turn View tab), off at every start of the car; set Instrument cluster > Central display area to Map view. While it is on, the Waze map leaves the cluster (to the HUD, or off without one). Drawn by Cluster renderer.",
+  "description": "By IterioDev, in Cluster functions: the front camera in the instrument cluster's central map area with navigation arrows on the road and a turn card (BMW navigation, CarPlay or Android Auto), the camera alone without a route. Switched on in Cluster functions (Turn View tab), off at every start of the car; set Instrument cluster > Central display area to Map view. With the IterioDev cluster design, it can instead show in the design\u0027s centre widget slot (pick Turn View there). While it is on, the Waze map leaves the cluster (to the HUD, or off without one). Drawn by Cluster renderer.",
   "optional": true,
   "uninstallable": true,
   "mguHmi": [

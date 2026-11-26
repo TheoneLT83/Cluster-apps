@@ -57,7 +57,13 @@ const APP_ID = 'robertn_waze_cluster';           // Cluster functions: the camer
 const CAM_FPS = 15;                         // camcluster --fps (1-30)
 const CAM_RECT = '1320x640@400,136';        // camcluster --rect: its widget default (it knows no `turnview`)
 // target -> where the driver finds it: the widget menu entry (iDrive 8), the cluster setting (iDrive 7)
-const WIDGETS = { turnview: 'Turn View AR', widget: 'Cluster renderer', map: 'Map view' };
+const WIDGETS = { turnview: 'Turn View AR', widget: 'Cluster renderer', map: 'Map view', panel: 'Cluster design widget' };
+// 0.8.4: the IterioDev cluster design (iDrive 7) hosts the cluster map into its centre widget slot (`panel`) and writes
+// SLOT_FILE `turnview` while its centre widget is Turn View's. Only reached when such a design is present; with no design
+// mapHost stays null and everything below is the map as before.
+const SLOT_FILE = process.env.TURNVIEW_SLOT_FILE || '/dev/shm/iteriodev-clusterdesign/slot';
+const PICTURE_FILE = process.env.TURNVIEW_PICTURE_FILE || '/dev/shm/iteriodev-turnview/picture';
+const SLOT_MS = 100, HOST_WAIT_MS = +process.env.TURNVIEW_HOST_WAIT_MS || 3000, PICTURE_MS = 2000;
 const SETTINGS = path.join(DATA, 'settings.json'), LOG = path.join(DATA, 'turnview.log');
 const LOG_MAX = 1024 * 1024, PUSH_MS = 250, RESTART_MS = 5000, RESTART_MAX_MS = 60000, YOUNG_MS = 10000;
 const SPEED_MS = 200, EVENTS_MS = 1000, NAV_SILENT_MS = 10000, BUSY_MS = 10000, KILL_MS = 2000;
@@ -166,7 +172,7 @@ function main() {
     if (GEN === 7) settings.enabled = false;
     log(`start: enabled ${settings.enabled}${GEN === 7 ? ' (iDrive 7: off at every start)' : ''}, cal ${JSON.stringify(settings.cal)}${noFront ? ', no front camera (saved)' : ''}`);
 
-    const status = { gate: 'closed', side: null, camera: 'off', rect: null, route: 'none', provider: null, maneuver: null, cr: 'connecting', backend: null,
+    const status = { gate: 'closed', side: null, slot: 'none', camera: 'off', rect: null, route: 'none', provider: null, maneuver: null, cr: 'connecting', backend: null,
         nav: 'waiting', state: 'none', camreq: 'idle', noFront, widget: WIDGETS.widget };
     let crTarget = null;                                // the target, from cluster-render's hello (null: none yet)
     // what lets Turn View show (the tick): a turn signal on (the app's 'signal'), Map view selected (null: not known)
@@ -195,10 +201,9 @@ function main() {
         // shared one. Another one than before: the layers and camcluster move (camcluster's end starts it again at once)
         const t = cr.backend === 'id7' ? 'map' : `,${cr.targets}`.indexOf(',turnview:') >= 0 ? 'turnview' : 'widget';
         if (t !== crTarget) {
-            crTarget = t; status.widget = WIDGETS[t];
-            scene.retarget(t);
-            log(t === 'map' ? 'target map: the cluster\'s central map area (Map view)' : `target ${t}: "${status.widget}" in the cluster's widget menu`);
-            if (cam) { try { cam.stdin.end(); } catch (e) { /* gone */ } } else camStart();
+            crTarget = t;
+            log(t === 'map' ? 'target map: the cluster\'s central map area (Map view)' : `target ${t}: "${WIDGETS[t]}" in the cluster's widget menu`);
+            applyPlace();
         }
         push();
     });
@@ -210,6 +215,55 @@ function main() {
         const sel = /^(parked|waiting)$/.test(state) && holder === 'foreign' ? false : state === 'shown' || holder === 'stock' ? true : gate.mapView;
         if (sel !== gate.mapView) { gate.mapView = sel; log(`map view ${sel ? 'selected' : 'not selected'} (map target ${state}${holder ? ', ' + holder : ''})`); }
     });
+    // ---- the cluster design's centre widget (0.8.4): host event + slot file -> where Turn View draws on iDrive 7 ----
+    let mapHost = null, hostGone = null, slot = '', placeKey = '';
+    const designUp = () => cr.backend === 'id7' && !!mapHost && mapHost.into === 'panel';
+    // { target, rect }: the design's slot (panel) while its widget is Turn View's; nothing while another widget shows;
+    // otherwise the current target (the whole map on iDrive 7, the widget on iDrive 8) - the unchanged path
+    function curPlace() {
+        if (!designUp()) return { target: crTarget, rect: null };
+        if (slot === 'turnview') return { target: 'panel', rect: { w: +mapHost.w, h: +mapHost.h, x: +mapHost.x, y: +mapHost.y } };
+        return { target: null, rect: null };
+    }
+    function applyPlace() {
+        const place = curPlace(), key = JSON.stringify(place);
+        if (key === placeKey) return;
+        placeKey = key;
+        status.widget = WIDGETS[place.target] || WIDGETS.widget;
+        status.slot = designUp() ? (place.target === 'panel' ? 'shown' : 'design') : 'none';
+        if (!place.target) scene.drop();                   // the design up with another widget: nothing drawn
+        else { scene.restore(); scene.retarget(place.target); if (place.rect) scene.rect(place.rect); }
+        log(place.target === 'panel' ? `cluster design: Turn View in its widget slot ${place.rect.w}x${place.rect.h}@${place.rect.x},${place.rect.y}`
+            : place.target ? `target ${place.target}` : 'cluster design: another widget shown - nothing drawn, no video');
+        // camcluster to the new place: ended (it restarts at once reading the new place), or started
+        if (cam) { try { cam.stdin.end(); } catch (e) { /* gone */ } } else if (place.target) camStart();
+        push();
+    }
+    cr.on('host', (name, ev) => {
+        if (name !== 'map' || cr.backend !== 'id7') return;
+        if (ev && ev.into) { clearTimeout(hostGone); hostGone = null; mapHost = ev; applyPlace(); return; }
+        // ended: a design reload re-hosts within moments; only after HOST_WAIT_MS with no new host is the design gone
+        if (mapHost && !hostGone) hostGone = setTimeout(() => { hostGone = null; mapHost = null; log('cluster design: its map host ended'); applyPlace(); }, HOST_WAIT_MS);
+    });
+    // the design's slot file: `turnview` = its centre widget is Turn View's
+    setInterval(() => {
+        if (cr.backend !== 'id7') return;
+        let s2 = '';
+        try { s2 = fs.readFileSync(SLOT_FILE, 'utf8').trim(); } catch (e) { /* none: not ours */ }
+        if (s2 !== slot) { slot = s2; applyPlace(); }
+    }, SLOT_MS);
+    // our flag, so the design opens its slot's hole only while the picture is really there (older than ~6 s = gone)
+    let pictureAt = -Infinity;
+    const unflag = () => { if (pictureAt > -Infinity) { pictureAt = -Infinity; try { fs.unlinkSync(PICTURE_FILE); } catch (e) { /* none */ } } };
+    function flag(on) {
+        if (!on) { unflag(); return; }
+        if (mono() - pictureAt < PICTURE_MS) return;
+        try { fs.mkdirSync(path.dirname(PICTURE_FILE), 0o755); } catch (e) { /* there */ }
+        try { fs.writeFileSync(`${PICTURE_FILE}.new`, 'shown\n'); fs.renameSync(`${PICTURE_FILE}.new`, PICTURE_FILE); pictureAt = mono(); }
+        catch (e) { log(`picture flag: ${e.message}`); }
+    }
+    unflag();                                              // (a stale one from a crash)
+    process.on('exit', unflag);
     cr.on('budget', (cap) => scene.budget(cap));
     cr.on('refused', (op, ref, reason) => log(`cluster-render refused ${op} (ref ${ref}): ${reason}`));
     cr.on('layer', (ref, state, reason) => { if (/error/.test(state)) log(`layer ${ref}: ${state} ${reason || ''}`); });
@@ -323,13 +377,18 @@ function main() {
         if (!fs.existsSync(CAMCLUSTER)) { camState('missing'); setTimeout(camStart, backoff(camSt, mono())); return; }
         // the widget picked in the cluster's widget menu (user 2026-11-06: only where it is picked)
         // 0.3.1 (user 2026-11-13): 15 pictures a second, not camcluster's 20: room for the head unit (~3 MB/s upload)
-        camTarget = crTarget;
-        // iDrive 7's map: the whole target, its size from the hello (map:WxH)
-        const m = /(?:^|,)map:(\d+)x(\d+)/.exec(cr.targets || ''), rect = camTarget !== 'map' ? CAM_RECT : m ? `${m[1]}x${m[2]}@0,0` : '1088x480@0,0';
+        const place = curPlace();
+        if (!place.target) return;                         // the cluster design up with another widget: nothing to draw
+        camTarget = place.target;
+        // the design's slot: its hosted rect; iDrive 7's map: the whole target (map:WxH from the hello); iDrive 8: its widget
+        let rect;
+        if (place.target === 'panel') rect = `${place.rect.w}x${place.rect.h}@${place.rect.x},${place.rect.y}`;
+        else if (place.target === 'map') { const m = /(?:^|,)map:(\d+)x(\d+)/.exec(cr.targets || ''); rect = m ? `${m[1]}x${m[2]}@0,0` : '1088x480@0,0'; }
+        else rect = CAM_RECT;
         const c = child(CAMCLUSTER, ['--control', 'stdin', '--target', camTarget, '--rect', rect, '--fps', String(CAM_FPS)], log, (why) => {
             log(`mgu-camcluster ended (${why})`);
             if (cam === c) { cam = null; camOut = ''; }
-            if (camTarget !== crTarget) { camStart(); return; }   // stopped for the other widget: on it at once
+            if (camTarget !== curPlace().target) { camStart(); return; }   // stopped for the other place: on it at once
             camState('restarting');
             setTimeout(camStart, backoff(camSt, mono()));
         });
@@ -418,11 +477,14 @@ function main() {
         if (status.nav === 'waiting' && t - subscribedAt > NAV_SILENT_MS && !lastNavAt) { status.nav = 'no navigation data'; push(); }
         if (status.cr === 'unsupported') return;              // not our cluster: nothing drawn
         scene.show(v, t);
-        video(v.video);
+        // nothing to draw (the cluster design up with another widget): no video, no picture flag
+        const pt = curPlace().target;
+        video(!!pt && v.video);
+        flag(pt === 'panel' && v.video && status.camera === 'decoding');   // the design opens its slot's hole only then
         // the app (it asks the camera ECU for the front view) only while the camera is really wanted: the widget shown
         // (iDrive 8) or Turn View switched on (iDrive 7) - camcluster decoding, not merely the video allowed (0.7.0,
         // user 2026-11-15: never start in the background and take Drive Recorder's camera when not in use)
-        if (v.video && CAMERA_UP[status.camera]) startApp();
+        if (pt && v.video && CAMERA_UP[status.camera]) startApp();
     }, TICK_MS);
 
     // ---- the control socket ----

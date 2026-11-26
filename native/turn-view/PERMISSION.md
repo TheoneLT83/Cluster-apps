@@ -10,6 +10,12 @@ Changed here: the tool's id, service, data folder and control socket (`turn-view
 `/run/turn-view/ctl.sock`), so it never clashes with IterioDev's own Turn View; the app it starts is Cluster functions
 (`robertn_waze_cluster`), which also keeps the driver's on / off over a start of the car; iDrive 7 only.
 
+The cluster-design centre-widget support (IterioDev tool 0.11.0, commit f6e2b75) is ported into `scene.js`,
+`cluster_render_client.js` and `turnview.js` here: Turn View can draw in the IterioDev cluster design's hosted map
+slot (`panel`) when its slot file says `turnview`. The camera is placed into the slot with the existing binary's
+`--target`/`--rect`; IterioDev 0.11.0's `--crop` sharpening is not used, because this ships IterioDev's older
+`mgu-camcluster` build (unchanged), which has no `--crop`.
+
 `mgu-camcluster` is IterioDev's build, shipped here unchanged with their permission. It is GPL-3.0-or-later as a whole
 (`LICENSE.camcluster`: parts of it come from Robert Nisipeanu's waze-on-cluster and cluster-render) and links FFmpeg's
 libraries (LGPL-2.1-or-later, `LICENSE.ffmpeg`); its source is IterioDev's, to be had from them.
