@@ -101,7 +101,7 @@ if command -v journalctl >/dev/null 2>&1; then
             waze-on-cluster-capture waze-on-cluster-journal waze-on-cluster-journal.timer waze-on-cluster-logs \
             waze-on-cluster-logs-fw waze-on-cluster-aa-boot carplay aapd \
             mgu-render mgu-render-hmi mgu-updater mgu-uplink app-privacy mgu-inputgate-guard mgu-deploy-verify \
-            mgu-renderd turn-view; do
+            mgu-renderd idrive7-renderd mgu-renderd-hmi turn-view; do
         journalctl -b -o short-precise --no-pager -u "$unit" 2>/dev/null |
             grep -v -E '\] (Intercepting function|Blocked function|Notice in function: findThreadByName)' > "$DIR/journal-$unit.txt"
     done

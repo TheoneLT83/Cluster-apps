@@ -5,7 +5,7 @@
 ## 0.14.19
 
 The CarPlay patch applies with CarPlay multitouch on: its carplay no longer reads as another program, so the cluster
-map shows with two-finger touch kept.
+map shows with two-finger touch kept. Saved logs hold the apps' GPU renderer's journal (idrive7-renderd, mgu-renderd-hmi).
 
 ## 0.14.18
 
