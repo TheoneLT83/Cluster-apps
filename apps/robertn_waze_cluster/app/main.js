@@ -73,6 +73,7 @@ const HUD_GLASS = { x: 80, y: 100, w: 640, h: 290 };
 const HUD_DATA_MAX = 3;
 /* Auto's choice held at least this long before a lower one takes over; a warning shown this long when it starts; what is
  * too hot, deg C (a low tyre: more_data.js lowTyre). */
+const PANEL_MS = 200;             // the HUD's and the info bar's values looked at again (5 a second)
 const AUTO_HOLD_MS = 8000, WARN_SHOW_MS = 20000, HOT = { oil: 130, coolant: 115, gearbox: 120 };
 const HUD_DATA = [['ev', 'hudEv', 'Electric range'], ['soc', 'hudSoc', 'Battery charge'], ['temps', 'hudTemps', 'Oil and coolant'],
     ['boost', 'hudBoost', 'Boost'], ['power', 'hudPower', 'Power and torque'], ['rpm', 'hudRpm', 'Engine speed'],
@@ -271,11 +272,12 @@ async function background(bg) {
         const d = car.data(), real = d && !d.demo ? d : {};
         const val = (label, v, text, cold) => ({ kind: 'value', label, text: G.isNum(v) ? text : '--', cold: G.isNum(v) && !!cold });
         return (kinds || panelKinds()).map((k) => {
-            if (k === 'power') { const kw = hv.powerShown(); return { kind: 'power', kw: G.isNum(kw) ? Math.round(kw * 10) / 10 : null, limits: hv.limits() }; }
+            // in the steps shown (0.1 kW under 10, else 1 kW): the bar is drawn again only when its number changes
+            if (k === 'power') { const kw = hv.powerShown(); return { kind: 'power', kw: !G.isNum(kw) ? null : Math.abs(kw) < 10 ? Math.round(kw * 10) / 10 : Math.round(kw), limits: hv.limits() }; }
             if (k === 'soc') { const soc = hv.soc(); return val('SOC', soc, Math.round(soc) + '%'); }
             if (k === 'oil') return val(t('OIL'), real.oil, Math.round(real.oil) + '°', real.oil < PANEL.COLD_C);
             if (k === 'coolant') return val(t('COOLANT'), real.coolant, Math.round(real.coolant) + '°', real.coolant < PANEL.COLD_C);
-            if (k === 'rpm') return val('RPM', real.rpm, String(Math.round(real.rpm / 10) * 10));
+            if (k === 'rpm') return val('RPM', real.rpm, String(Math.round(real.rpm / 50) * 50));
             if (k === 'speed') return val('KM/H', real.speed, String(Math.round(real.speed)));
             if (k === 'tyres') return { kind: 'tyres', bar: more.tyres() || {}, low: more.lowTyre() };
             if (k === 'gearbox') { const g = more.gearbox(); return val(t('GEARBOX'), g, Math.round(g) + '°', g < PANEL.COLD_C); }
@@ -323,7 +325,8 @@ async function background(bg) {
         const d = car.data(), real = d && !d.demo ? d : {}, out = [];
         // cold: blue under PANEL.COLD_C, as the cluster's info bar (oil, coolant, gearbox oil)
         const value = (label, v, unit, cold) => { if (G.isNum(v) || preview) out.push({ kind: 'value', label, text: G.isNum(v) ? Math.round(v) + unit : '--', cold: !!cold && G.isNum(v) && v < PANEL.COLD_C }); };
-        const slider = (v, min, max, text, green, color) => { if (G.isNum(v) || preview) out.push({ kind: 'slider', value: G.isNum(v) ? v : null, min, max, text, green, color }); };
+        // a slider's place in 1 % steps of its range: drawn again only when it moves that far
+        const slider = (v, min, max, text, green, color) => { if (G.isNum(v) || preview) out.push({ kind: 'slider', value: G.isNum(v) ? min + Math.round((v - min) / (max - min) * 100) / 100 * (max - min) : null, min, max, text, green, color }); };
         dataChoices().forEach((c) => {
             if (c === 'ev') {
                 // eased between eDrive's readings; blue out, green recuperating, amber from 60 kW (as the cluster's bar): zero a
@@ -410,9 +413,9 @@ async function background(bg) {
     turns.on('change', () => { toHud(); const st = turns.state(); if (typeof tv !== 'undefined' && tv) { tv.signal(!!(st.left || st.right)); sideNow(); } changed(); });
     tv.on('change', sideNow);
     settings.onChange(() => { hvWanted(); claims(); toHud(); toPanel(); dimNow(); sideNow(); changed(); });
-    // boost, torque, the temperatures and the programme come without a sample of their own: the HUD looks again
-    // often (only what changed is sent; the layers take up to 25 frames a second)
-    setInterval(() => { if (settings.get('hudOn') !== false && hudOk() && !given()) toHud(); toPanel(); }, 80);
+    // boost, torque, the temperatures and the programme come without a sample of their own: the HUD and the info bar
+    // look again PANEL_MS (a layer is drawn and sent only when what it shows changed; the rev bar's flash has its own)
+    setInterval(() => { if (settings.get('hudOn') !== false && hudOk() && !given()) toHud(); toPanel(); }, PANEL_MS);
     const claims = () => {
         HudClaim.standing('robertn_waze_cluster', settings.get('hudOn') !== false && hudOk());
         const now = hudOk() ? HudClaim.others('robertn_waze_cluster') : [];

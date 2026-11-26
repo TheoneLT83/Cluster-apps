@@ -29,7 +29,7 @@ const EventEmitter = require('events');
 
 const SHARED = '/tmp/mgu-edrive.json', WANTED = '/tmp/mgu-edrive-wanted.json';
 const WANT_MS = 1000, EASE_MS = 80;
-const READ_MS = 100, POWER_FRESH_MS = 5000, RANGE_FRESH_MS = 120000, LOOK_MS = 60000;
+const READ_MS = 1000, POWER_FRESH_MS = 5000, RANGE_FRESH_MS = 120000, LOOK_MS = 60000;
 const EDRIVE = 'edrive';
 
 const num = (v) => typeof v === 'number' && isFinite(v);
@@ -60,8 +60,8 @@ class HvData extends EventEmitter {
             this.emit('change');
         };
         read();
+        // a new file is renamed over SHARED: the folder's watch sees it at once; read every READ_MS too, in case
         this.timer = setInterval(() => { read(); this._tellWanted(); }, READ_MS);
-        // a new file is renamed over SHARED: the folder's watch sees it at once
         try {
             const name = path.basename(this.file);
             this.watcher = fs.watch(path.dirname(this.file), (ev, f) => { if (!f || f === name) read(); });
@@ -96,7 +96,10 @@ class HvData extends EventEmitter {
     }
 
     want(w) {
+        const was = this.wanted;
         this.wanted = { power: !!(w && w.power), soc: !!(w && w.soc) };
+        // a change is told at once (eDrive reads fast for it), the same again each WANT_MS
+        if (was.power !== this.wanted.power || was.soc !== this.wanted.soc) { this.wantedAt = 0; this._tellWanted(); }
     }
 
     /* WANTED, each second while something is wanted: eDrive reads fast for it. */

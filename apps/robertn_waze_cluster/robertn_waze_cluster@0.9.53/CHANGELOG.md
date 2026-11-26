@@ -2,6 +2,10 @@
 
 ## 0.9.53
 
+Less CPU (it was the head unit's busiest process at about 35 %): the HUD's and the info bar's values are looked at 5
+times a second instead of 12.5, each drawn again only when the number it shows changes (kW in its shown steps, engine
+speed in 50s, a slider in 1 % steps), and eDrive's file is read when it changes (watched) and once a second besides,
+not 10 times a second.
 Cold is blue up to 70 °C (oil, coolant, gearbox oil; it was 50 °C), on the cluster's info bar and the HUD. The log
 no longer fills with the camera service that is never offered on its own (asked once) and with the hidden settings,
 which have no component.

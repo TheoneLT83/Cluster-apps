@@ -33,7 +33,8 @@
 # read: the logs service gets them from the snapshot its firewall unit takes
 # as root, in SNAPSHOT; run by root, it takes them itself),
 # patchd-logs.json: patchd's carplay, marker and AVB lines and its DLT
-# reader's health, and incidents.txt: the tools' INCIDENT lines with the
+# reader's health, perf.txt (perf.js: what uses the CPU and memory, measured
+# at this save; perf-open.txt as the Log page opened, its apps named), and incidents.txt: the tools' INCIDENT lines with the
 # boots and this export, oldest first (logs_extra.js).
 # Everything is gathered in a folder of its own, then scrubbed into the
 # archive's (logs_extra.js scrub: VINs, MAC and IP addresses, network and
@@ -124,6 +125,12 @@ if [ -f "$HERE/logs_extra.js" ]; then
         for f in "$SNAPSHOT"/*; do
             copy "$f" "${f##*/}"
         done
+        # the snapshot's perf.txt is from when the Log page opened (its apps named, as root): kept as perf-open.txt,
+        # and perf.txt measured now, for this save
+        if [ -f "$DIR/perf.txt" ] && [ -f "$HERE/perf.js" ]; then
+            mv "$DIR/perf.txt" "$DIR/perf-open.txt"
+            "$NODE" "$HERE/perf.js" > "$DIR/perf.txt" 2>/dev/null || rm -f "$DIR/perf.txt"
+        fi
     fi
     "$NODE" "$HERE/logs_extra.js" patchd "$DIR" > /dev/null 2>&1
 fi

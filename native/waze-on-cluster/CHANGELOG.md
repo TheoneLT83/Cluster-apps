@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.14.18
+
+Each log save measures perf.txt then (the one from when the Log page opened is perf-open.txt): a second save no longer
+repeats the first's. An app's process whose folder the logs service cannot read shows as node(uid <n>); the root
+report lists the apps by uid, which also names the load lines' processes.
+
 ## 0.14.17
 
 The log export has perf.txt: what used the head unit's CPU and memory over 3 s when the Log page opened - the load

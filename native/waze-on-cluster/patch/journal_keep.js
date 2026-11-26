@@ -551,6 +551,7 @@ LoadSampler.prototype.label = function (p) {
     }
     var uid = /^Uid:\s+(\d+)/m.exec(readText(this.proc + '/' + p.pid + '/status') || '');
     if (uid && this.apps[uid[1]]) return 'app:' + this.apps[uid[1]];
+    if (uid && Number(uid[1]) >= 1000) return 'node(uid ' + uid[1] + ')';
     var cmd;
     try { cmd = fs.readFileSync(this.proc + '/' + p.pid + '/cmdline', 'latin1').split('\0'); } catch (e) { return p.name; }
     var script = cmd.slice(1).filter(function (a) { return /^\/[^=]*\.js$/.test(a); })[0];

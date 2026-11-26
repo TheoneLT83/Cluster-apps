@@ -72,7 +72,8 @@ function unitOf(pid) {
 /* What it is: an app's name for a process of an app's uid ("app:edrive"), else its name, with its unit. */
 function label(pid, name, appsByUid) {
     var uid = uidOf(pid), app = uid !== null && appsByUid[uid];
-    return app ? 'app:' + app : name;
+    // an app's folder not readable (the logs service's user): its uid, which the root report's list names
+    return app ? 'app:' + app : name === 'node' && uid !== null && Number(uid) >= 1000 ? 'node(uid ' + uid + ')' : name;
 }
 
 function sample() {
@@ -164,6 +165,8 @@ function report(ms) {
     lines.push('node processes now (for the load lines\' node[pid]): ' + Object.keys(b.procs).map(function (k) { return b.procs[k]; })
         .filter(function (p) { return p.name === 'node'; })
         .map(function (p) { return p.pid + ' ' + label(p.pid, p.name, appsByUid) + (unitOf(p.pid) ? ' (' + unitOf(p.pid) + ')' : ''); }).join('; '));
+    var uids = Object.keys(appsByUid);
+    if (uids.length) lines.push('apps by uid: ' + uids.map(function (u) { return u + ' ' + appsByUid[u]; }).join('; '));
     return lines.join('\n') + '\n';
 }
 
