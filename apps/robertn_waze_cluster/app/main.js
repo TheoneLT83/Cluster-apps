@@ -73,7 +73,7 @@ const HUD_GLASS = { x: 80, y: 100, w: 640, h: 290 };
 const HUD_DATA_MAX = 3;
 /* Auto's choice held at least this long before a lower one takes over; a warning shown this long when it starts; what is
  * too hot, deg C (a low tyre: more_data.js lowTyre). */
-const PANEL_MS = 200;             // the HUD's and the info bar's values looked at again (5 a second)
+const HUD_MS = 80, PANEL_MS = 200;  // the HUD's values looked at again 12.5 times a second, the info bar's 5
 const AUTO_HOLD_MS = 8000, WARN_SHOW_MS = 20000, HOT = { oil: 130, coolant: 115, gearbox: 120 };
 const HUD_DATA = [['ev', 'hudEv', 'Electric range'], ['soc', 'hudSoc', 'Battery charge'], ['temps', 'hudTemps', 'Oil and coolant'],
     ['boost', 'hudBoost', 'Boost'], ['power', 'hudPower', 'Power and torque'], ['rpm', 'hudRpm', 'Engine speed'],
@@ -413,9 +413,11 @@ async function background(bg) {
     turns.on('change', () => { toHud(); const st = turns.state(); if (typeof tv !== 'undefined' && tv) { tv.signal(!!(st.left || st.right)); sideNow(); } changed(); });
     tv.on('change', sideNow);
     settings.onChange(() => { hvWanted(); claims(); toHud(); toPanel(); dimNow(); sideNow(); changed(); });
-    // boost, torque, the temperatures and the programme come without a sample of their own: the HUD and the info bar
-    // look again PANEL_MS (a layer is drawn and sent only when what it shows changed; the rev bar's flash has its own)
-    setInterval(() => { if (settings.get('hudOn') !== false && hudOk() && !given()) toHud(); toPanel(); }, PANEL_MS);
+    // boost, torque, the temperatures and the programme come without a sample of their own: the HUD looks again every
+    // HUD_MS (its bars move with the car), the cluster's info bar, numbers only, every PANEL_MS; a layer is drawn and
+    // sent only when what it shows changed
+    setInterval(() => { if (settings.get('hudOn') !== false && hudOk() && !given()) toHud(); }, HUD_MS);
+    setInterval(toPanel, PANEL_MS);
     const claims = () => {
         HudClaim.standing('robertn_waze_cluster', settings.get('hudOn') !== false && hudOk());
         const now = hudOk() ? HudClaim.others('robertn_waze_cluster') : [];
