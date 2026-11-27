@@ -8,7 +8,8 @@
  *   lowTyre()  the tyre(s) LOW_BAR or more under their target (no target: under MIN_BAR)
  *   gearbox()  gearbox oil, deg C, or null            BasicDataSet.basicDataSet valueTemperatureTransmissionOil (- 48); a
  *              car that leaves it empty: the gearbox unit (EGS 0x18) asked over the diagnostic link, as M Vitals does,
- *              while wantGearbox(true): ZF 8HP 22 6000 (deg C + 40), else 22 DA12 (deg C + 48), every EGS_MS
+ *              while wantGearbox(true): ZF 8HP 22 6000 (deg C + 40), else 22 DA12 (deg C + 48), every EGS_MS (never with the
+ *              car locked and left, its VehicleCondition parked or standby: the car can sleep)
  *   range()    km left in the tank, or null           KombiIF.statusRangeTankStatus range
  *   clock()    'H:MM' as the car's clock shows it: UTC and the time zone set in BMW's menu, from the cluster
  *              (KombiIF.timeDateUTC: statusTimeZonesId, a CommonTypes.TimeZone, and summer time when
@@ -23,6 +24,10 @@ const TPMS = 'de.bmw.infotainment.vehicle.TPMS', BASIC = 'de.bmw.infrastructure.
 const WHEELS = { FL: 'FLH', FR: 'FRH', RL: 'RLH', RR: 'RRH' };
 const LOW_BAR = 0.3, MIN_BAR = 1.8;
 const EGS = 0x18, EGS_MS = 5000, BASIC_WAIT_MS = 10000;
+const CONDITION = 'de.bmw.infrastructure.VehicleCondition';
+// statusConditionVehicle, names or wire numbers (the kit's car.js): 1-3 = parked or standby, nobody in the car
+const CONDITIONS = { PARKEN_BN_NIO: 1, PARKEN_BN_IO: 2, STANDFUNKTIONEN_KUNDE_NICHT_IM_FZG: 3, WOHNEN: 5,
+    PRUEFEN_ANALYSE_DIAGNOSE: 7, FAHRBEREITSCHAFT_HERSTELLEN: 8, FAHREN: 10, FAHRBEREITSCHAFT_BEENDEN: 12 };
 const EGS_DIDS = [{ did: [0x60, 0x00], offset: -40 }, { did: [0xda, 0x12], offset: -48 }];
 /* CommonTypes.TimeZone: the enum's numbers in order with their offsets from UTC, minutes (UNKNOWN 0 has none). */
 const ZONES = [null, -660, -600, -540, -480, -480, -480, -420, -420, -420, -420, -360, -360, -360, -360, -360, -300, -300, -300, -300,
@@ -49,7 +54,7 @@ class MoreData extends EventEmitter {
         this.now = o.now || (() => new Date());
         this.started = this.now().getTime();
         this._p = null; this._t = null; this._gear = null; this._range = null;
-        this.diag = o.diag || null; this._egs = null; this._wantGear = false; this._basicT = 0; this._offset = null; this._zoneLogged = false;
+        this.diag = o.diag || null; this._egs = null; this._wantGear = false; this._basicT = 0; this._left = false; this._offset = null; this._zoneLogged = false;
     }
 
     start() {
@@ -65,6 +70,17 @@ class MoreData extends EventEmitter {
             statusTyrePressure: (v) => { this._p = wheels(v, 'actualValuePressureTyre'); this.emit('change'); },
             statusTargetTyrePressure: (v) => { this._t = wheels(v, 'targetPressureTyre'); this.emit('change'); },
         }, { pollMs: 10000 });
+        // the car locked and left (its own state: parked or standby, nobody in it): the gearbox unit is not asked, so
+        // the car can sleep (with the car off its broadcast stops, which is when the unit would be asked)
+        watch(CONDITION, {
+            VehicleCondition: (v) => {
+                const raw = v && v.statusConditionVehicle, n = typeof raw === 'number' ? raw : CONDITIONS[raw];
+                if (!(n >= 1 && n <= 12) || this._left === (n <= 3)) return;
+                this._left = n <= 3;
+                this.log.info(this._left ? 'the car is locked and left: the gearbox unit is not asked, so it can sleep'
+                    : 'the car is in use again');
+            },
+        });
         watch(BASIC, {
             basicDataSet: (v) => {
                 const raw = v && v.valueTemperatureTransmissionOil;
@@ -92,7 +108,7 @@ class MoreData extends EventEmitter {
     /* The gearbox unit asked while the gearbox oil is shown and the car's broadcast has none (recently). */
     wantGearbox(on) { this._wantGear = !!on; }
     _askEgs() {
-        if (!this.diag || !this._wantGear || this._asking || Date.now() - this._basicT < BASIC_WAIT_MS) return;
+        if (!this.diag || !this._wantGear || this._left || this._asking || Date.now() - this._basicT < BASIC_WAIT_MS) return;
         const tries = this._egs ? [this._egs] : EGS_DIDS;
         this._asking = true;
         const next = (i) => {

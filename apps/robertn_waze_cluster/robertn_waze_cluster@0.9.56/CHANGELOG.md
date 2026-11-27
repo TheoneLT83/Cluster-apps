@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.56
+
+The car can sleep with the gearbox oil on the HUD or the cluster: the gearbox unit is not asked while the car is locked and left (parked or standby, nobody in it). Its broadcast stops when the car is switched off, which is when the unit was asked instead, every 5 s, keeping the car's buses awake.
+
 ## 0.9.55
 
 The map patch's Status words of waze-on-cluster 0.14.21: Built in (a cluster that shows the CarPlay / Android Auto map itself), Removed (turned off with Remove patch), and why a car is not supported (no cluster display, this cluster, this CarPlay or Android Auto version), in every language.
