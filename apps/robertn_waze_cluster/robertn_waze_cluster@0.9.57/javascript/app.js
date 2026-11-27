@@ -377,7 +377,9 @@ async function background(bg) {
         turn: turns.state(), gear: gearNow(), gearHot: gearHot(), map: mapNow(),
         showTurn: !!settings.get('hudTurn'), showGear: !!settings.get('hudGear'), data: dataNow(false), speed: speedNow(),
     }));
-    car.onSample(() => { toHud(); changed(); });
+    // the HUD is drawn on its HUD_MS tick below, not at every sample (the car sends engine speed and speed tens of
+    // times a second: a layer drawn at each was most of this app's processor time)
+    car.onSample(changed);
     // a flash, and a warning's end, need the HUD drawn again between the car's samples
     setInterval(() => { if (revStage() === 'flash' || Object.keys(warnSeen).length) toHud(); }, revs.FLASH_MS);
     hv.on('change', () => { toHud(); changed(); });

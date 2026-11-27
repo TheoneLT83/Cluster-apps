@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.57
+
+Less processor time: the HUD's layers are drawn 12.5 times a second, on the HUD's own tick, not at every engine speed or speed sample the car sends (about 64 a second with the engine speed bar shown): measured on a computer with the car's samples at 50 a second, 139 layer updates in 10 s instead of 639.
+
 ## 0.9.56
 
 The car can sleep with the gearbox oil on the HUD or the cluster: the gearbox unit is not asked while the car is locked and left (parked or standby, nobody in it). Its broadcast stops when the car is switched off, which is when the unit was asked instead, every 5 s, keeping the car's buses awake.
