@@ -428,7 +428,8 @@ function inMemRelease(v, d) {
      * version reads it. */
     clearInmem();
     var un = makePlanUnreadable(), unRel = inmemKind(d), unNew = inmemKind();
-    if (v === NEXT) ok(v + ' (I, this version) plans CarPlay with the coding unreadable, record v 2, and reads it', un === 'OK v2' && unRel !== 'null', [un, unRel].join(' '));
+    // this version: NEXT, or the newest release when it ships this version's patch folder (no NEXT then)
+    if (v === NEXT || (!NEXT && v === NEWEST)) ok(v + ' (I, this version) plans CarPlay with the coding unreadable, record v 2, and reads it', un === 'OK v2' && unRel !== 'null', [un, unRel].join(' '));
     else ok(v + ' (I) over this version\'s CarPlay plan made with the coding unreadable: record v 2, which it reads as no patch, so it arms nothing; this version reads it',
         un === 'OK v2' && unRel === 'null' && unNew !== 'null', [un, unRel, unNew].join(' '));
     clearInmem();
