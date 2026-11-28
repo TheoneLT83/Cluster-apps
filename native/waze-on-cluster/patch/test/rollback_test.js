@@ -130,8 +130,8 @@ function group(v) {
 /* The first release whose patchers decide a build they know by its edit
  * sites alone, bytes elsewhere in the file left out (parts 6b and 7). */
 var SITES_DECIDE = '0.14.3';
-/* The first release that reads a v 2 record (inmem.js readRecord). */
-var READS_V2 = '0.14.19';
+/* The first of this repository's releases that reads a v 2 record (inmem.js readRecord). */
+var READS_V2 = '0.14.21';
 /* The first release whose patchers use none of a known build's shipped
  * bytes at its sites to decide: the locator's checks alone (part 6b). */
 var LOCATOR_DECIDES = '0.14.7';
