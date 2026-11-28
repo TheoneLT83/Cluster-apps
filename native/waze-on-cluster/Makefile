@@ -254,13 +254,17 @@ target:
 target-in-docker: $(T)/waze-on-cluster $(T)/libwocpatch.so
 
 # The in-memory carplay patch (preload/wocpatch.c, PATCH.md "In memory"):
-# C, no C++ runtime, exports nothing, libc only.
+# C, no C++ runtime, libc and libdl only; exports only the open functions its
+# redirects take.
 PRELOAD_FLAGS = -std=gnu99 -O2 -g -Wall -Wextra -Werror -fPIC -fvisibility=hidden -D_FORTIFY_SOURCE=2
 PRELOAD_LINK = -shared -Wl,-z,now -Wl,-z,relro -Wl,--no-undefined
+# dlsym (the redirects' next open functions) is in libdl on glibc 2.27
+PRELOAD_LIBS = -ldl
 
 $(T)/libwocpatch.so: preload/wocpatch.c
 	@mkdir -p $(@D)
-	gcc $(PRELOAD_FLAGS) $(PRELOAD_LINK) -o $@ $<
+	gcc $(PRELOAD_FLAGS) -g0 $(PRELOAD_LINK) -o $@ $< $(PRELOAD_LIBS)
+	strip --strip-unneeded $@
 
 # The library against a test program, in the unit's toolchain image.
 test-preload:
@@ -271,16 +275,17 @@ test-preload:
 test-preload-in-docker: $(BUILD)/preload/libwocpatch.so $(BUILD)/preload/libwocpatch-crash.so
 	gcc -std=gnu99 -O2 -fPIE -pie -Wl,--build-id -o $(BUILD)/preload/target preload/test/target.c
 	gcc -std=gnu99 -O2 -fPIC -shared -o $(BUILD)/preload/libthread.so preload/test/thread.c -lpthread
+	g++ -O2 -fPIE -pie -Wl,--build-id -o $(BUILD)/preload/ifstream preload/test/ifstream.cpp
 	sh preload/test/preload_test.sh $(abspath $(BUILD)/preload/libwocpatch.so) $(abspath $(BUILD)/preload/target) $(abspath $(BUILD)/preload/work)
 
 # A test build that aborts once it has applied: an armed start that crashes.
 $(BUILD)/preload/libwocpatch-crash.so: preload/wocpatch.c
 	@mkdir -p $(@D)
-	gcc $(PRELOAD_FLAGS) -DWOC_TEST_CRASH $(PRELOAD_LINK) -o $@ $<
+	gcc $(PRELOAD_FLAGS) -DWOC_TEST_CRASH $(PRELOAD_LINK) -o $@ $< $(PRELOAD_LIBS)
 
 $(BUILD)/preload/libwocpatch.so: preload/wocpatch.c
 	@mkdir -p $(@D)
-	gcc $(PRELOAD_FLAGS) $(PRELOAD_LINK) -o $@ $<
+	gcc $(PRELOAD_FLAGS) $(PRELOAD_LINK) -o $@ $< $(PRELOAD_LIBS)
 
 # Link-only stubs exporting the unit libraries' symbols. Each carries the real
 # SONAME, so the binary records the right DT_NEEDED.
@@ -308,7 +313,7 @@ STUBS = $(T)/stub/libmfxhw64.so $(T)/stub/libva.so.1 $(T)/stub/libva-drm.so.1 \
         $(T)/stub/libias-media_transport-avb_ufipc_bridge.so.1
 
 # Each source compiles once, in parallel, with its header dependencies.
-WOC_FLAGS = $(CXXFLAGS) $(CPPFLAGS) -DWOC_VERSION='"$(VERSION)"' -pthread
+WOC_FLAGS = $(CXXFLAGS) -g0 $(CPPFLAGS) -DWOC_VERSION='"$(VERSION)"' -pthread
 
 $(T)/obj/cr/%.o: $(CR)/%.cpp component.json
 	@mkdir -p $(@D)
@@ -322,6 +327,7 @@ $(T)/obj/%.o: %.cpp component.json
 
 $(T)/waze-on-cluster: $(call objs,$(SRC),$(T)/obj) $(STUBS)
 	g++ $(WOC_FLAGS) -Wl,--dynamic-linker=/lib/ld-linux-x86-64.so.2 -o $@ $^
+	strip $@
 	$(PYTHON) $(CR)/dcsm/tools/abi.py check $@ $(CR)/dcsm/abi/libvsomeip3.so.3.symbols   # loader, glibc/libstdc++ limits
 	$(PYTHON) tools/woc_abi.py check-imports $@ --prefix MFX va ias_ -- \
 		abi/libmfx.symbols abi/libva.symbols abi/libva-drm.symbols abi/libias_avb.symbols

@@ -141,6 +141,7 @@ class LineSocket extends EventEmitter {
         this._socket = null;
         this._buf = '';
         this._retryTimer = null;
+        this._waiters = [];
     }
 
     open() {
@@ -160,6 +161,7 @@ class LineSocket extends EventEmitter {
             this._socket = null;
         }
         this.link = 'down';
+        this._failWaiters();
     }
 
     connected() {
@@ -170,6 +172,35 @@ class LineSocket extends EventEmitter {
         if (this._socket && this.link === 'up') {
             this._socket.write(JSON.stringify(obj) + '\n');
         }
+    }
+
+    /* One request over this open connection: resolves to the first message
+     * done(msg) accepts, or null on timeout or close. */
+    request(obj, done, ms) {
+        if (!this.connected()) {
+            return Promise.resolve(null);
+        }
+        return new Promise((resolve) => {
+            const w = { done, resolve, timer: null };
+            w.timer = setTimeout(() => {
+                const i = this._waiters.indexOf(w);
+                if (i >= 0) {
+                    this._waiters.splice(i, 1);
+                    resolve(null);
+                }
+            }, ms);
+            this._waiters.push(w);
+            this.send(obj);
+        });
+    }
+
+    _failWaiters() {
+        const list = this._waiters;
+        this._waiters = [];
+        list.forEach((w) => {
+            clearTimeout(w.timer);
+            w.resolve(null);
+        });
     }
 
     _connect() {
@@ -211,6 +242,7 @@ class LineSocket extends EventEmitter {
                 this._log.info(`${this.path}: connection closed`);
                 this.link = 'refused';
             }
+            this._failWaiters();
             this.emit('close');
             this._retryTimer = setTimeout(() => {
                 this._retryTimer = null;
@@ -235,6 +267,14 @@ class LineSocket extends EventEmitter {
                 this._log.warn(`bad line from ${this.path}: ${line.slice(0, 80)}`);
             }
             if (msg) {
+                for (let i = 0; i < this._waiters.length; i += 1) {
+                    if (this._waiters[i].done(msg)) {
+                        const w = this._waiters.splice(i, 1)[0];
+                        clearTimeout(w.timer);
+                        w.resolve(msg);
+                        break;
+                    }
+                }
                 this._onMessage(msg, line);
             }
         }

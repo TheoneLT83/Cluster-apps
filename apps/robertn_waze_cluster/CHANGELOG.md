@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.58
+
+With waze-on-cluster 0.14.22 and cluster-render 0.6.24 (robertnisipeanu/idrive-apps' faster, lighter map; Android Auto's geometry by a redirect).
+
 ## 0.9.57
 
 Less processor time: the HUD's layers are drawn 12.5 times a second, on the HUD's own tick, not at every engine speed or speed sample the car sends (about 64 a second with the engine speed bar shown): measured on a computer with the car's samples at 50 a second, 139 layer updates in 10 s instead of 639.

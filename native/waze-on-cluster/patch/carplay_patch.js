@@ -158,12 +158,11 @@ function sha256(buf) { return crypto.createHash('sha256').update(buf).digest('he
 function die(msg) { process.stderr.write('error: ' + msg + '\n'); process.exit(1); }
 function hex(n) { return '0x' + n.toString(16); }
 
-/* The cluster coding, read and judged as aapd_patch.js does: {variant} or
- * {err}, and why the patch cannot work with it (null when it can). Loaded on use,
- * so boot recovery, which loads this file for its backup check, does not
- * load the Android Auto patcher. */
-function readCoding(file) { return require('./aapd_patch.js').readCoding(file); }
-function codingRefusal(cd) { return require('./aapd_patch.js').codingRefusal(cd); }
+/* The cluster coding, read and judged by coding.js: {variant} or {err}, and
+ * why the patch cannot work with it (null when it can). */
+var coding = require('./coding.js');
+var readCoding = coding.readCoding;
+var codingRefusal = coding.codingRefusal;
 
 /* The record of a patch has run healthy on this car: a patch record saying
  * proven without trial (the watcher's, or one written before trial
@@ -379,7 +378,7 @@ function cmdStatus(target, codingFile) {
     line('replaced', replaced(p) ? 'yes' : 'no');
     /* Our edits beside another change: the file differs from its original
      * outside the sites of our edits. */
-    var fo = foreignIn(target);
+    var fo = foreignIn(target, { buf: buf, c: c, p: p });
     line('foreign', fo === null ? 'unknown' : fo ? 'yes' : 'no');
     var bad = unrecognised(c);
     if (!c.ok) { line('known', 'NO — ' + c.reason); return; }
@@ -601,11 +600,11 @@ function edited(buf, c, orig, panel, sinkUrl, wantRes) {
     /* The advertised IC_HIGH geometry: this tool's display size on the high
      * panel, the backup's stock immediates otherwise, so the binary carries
      * one panel's geometry at a time. */
-    var resWant = Buffer.from(out);
-    if (wantRes) writeRes(resWant, loc.res, wantRes);
+    var resBuf = wantRes ? Buffer.alloc(32) : null;
+    if (wantRes) writeRes(resBuf, { mm: 0, px: 8, safe1: 16, safe2: 24 }, wantRes);
     var resText = wantRes ? 'resolution -> ' + geomText(wantRes) : 'resolution -> stock ' + readRes(orig, loc.res).w + 'x' + readRes(orig, loc.res).h;
-    [loc.res.mm, loc.res.px, loc.res.safe1, loc.res.safe2].forEach(function (o) {
-        put(resText, o, (wantRes ? resWant : orig).slice(o, o + 8));
+    [loc.res.mm, loc.res.px, loc.res.safe1, loc.res.safe2].forEach(function (o, i) {
+        put(resText, o, wantRes ? resBuf.slice(i * 8, i * 8 + 8) : orig.slice(o, o + 8));
     });
 
     /* The URL edits, in every mode, where the build has them. */
@@ -753,8 +752,10 @@ function planText(buf, out, c) { return planOf(buf, out, regions(c), regionNames
 
 /* The plan of the edit regions rs ([[offset, length]], named by `names`)
  * between `buf` and its edited image `out`, for the build `id` (aapd's
- * plan is made here too). { text, edits } or { err }. */
-function planOf(buf, out, rs, names, id) {
+ * plan is made here too), with a `redirect <from> <to>` line for each of
+ * `redirects` ([[from, to]], absolute paths: a read of `from` opens `to`
+ * once the edits are applied). { text, edits } or { err }. */
+function planOf(buf, out, rs, names, id, redirects) {
     var elf = locator.elf.parseElf(buf), lines = ['wocplan 1', 'build-id ' + id], edits = [];
     if (!elf.load || !id) return { err: 'no ELF load segments or no build-id' };
     for (var i = 0; i < rs.length; i++) {
@@ -766,23 +767,29 @@ function planOf(buf, out, rs, names, id) {
         if (!buf.slice(off, off + len).equals(out.slice(off, off + len))) edits.push(names[i]);
     }
     if (!edits.length) return { err: 'nothing to edit' };
+    for (var r = 0; redirects && r < redirects.length; r++) {
+        if (!redirects[r].every(function (f) { return /^\/[^\s\0]{1,126}$/.test(f); })) return { err: 'redirect ' + redirects[r].join(' ') + ': not two absolute paths' };
+        lines.push('redirect ' + redirects[r].join(' '));
+    }
     lines.push('end ' + rs.length);
     return { text: lines.join('\n') + '\n', edits: edits };
 }
 
-/* A plan's edits ([{name, va, stock, patched}]) and build-id, or { err }. */
+/* A plan's edits ([{name, va, stock, patched}]), redirects ([[from, to]])
+ * and build-id, or { err }. */
 function parsePlan(text) {
-    var lines = text.split('\n'), edits = [], id = null, ended = false;
+    var lines = text.split('\n'), edits = [], redirects = [], id = null, ended = false;
     if (lines.pop() !== '' || lines[0] !== 'wocplan 1') return { err: 'not a version 1 plan' };
     for (var i = 1; i < lines.length; i++) {
         var f = lines[i].split(' ');
         if (ended) return { err: 'lines after its end' };
         if (f[0] === 'build-id' && f.length === 2) id = f[1];
         else if (f[0] === 'edit' && f.length === 5) edits.push({ name: f[1], va: parseInt(f[2], 16), stock: Buffer.from(f[3], 'hex'), patched: Buffer.from(f[4], 'hex') });
+        else if (f[0] === 'redirect' && f.length === 3 && f[1][0] === '/' && f[2][0] === '/') redirects.push([f[1], f[2]]);
         else if (f[0] === 'end' && f.length === 2 && Number(f[1]) === edits.length) ended = true;
         else return { err: 'bad line ' + (i + 1) };
     }
-    return ended && id && edits.length ? { id: id, edits: edits } : { err: 'cut short' };
+    return ended && id && edits.length ? { id: id, edits: edits, redirects: redirects } : { err: 'cut short' };
 }
 
 /* What an earlier release's patch in `cur` is, against the original
@@ -807,8 +814,8 @@ function againstPlan(cur, orig, text) {
 }
 
 /* `buf` with the plan laid over it, as the process the plan is applied to
- * sees it, or { err } when the plan is not for this build or a site does
- * not read stock. */
+ * sees it, with the plan's edit names and redirects, or { err } when the
+ * plan is not for this build or a site does not read stock. */
 function overlay(buf, text) {
     var p = parsePlan(text), elf = locator.elf.parseElf(buf);
     if (p.err) return { err: 'plan: ' + p.err };
@@ -822,7 +829,7 @@ function overlay(buf, text) {
         if (!buf.slice(off, off + e.stock.length).equals(e.stock)) return { err: e.name + ' does not read as the plan\'s stock bytes' };
         e.patched.copy(out, off);
     }
-    return { buf: out, edits: p.edits.map(function (e) { return e.name; }) };
+    return { buf: out, edits: p.edits.map(function (e) { return e.name; }), redirects: p.redirects };
 }
 
 /* `plan`: the patch, as a plan for libwocpatch.so, made from
@@ -889,12 +896,13 @@ function writeInPlace(target, buf) {
 
 function onlyRegionsDiffer(a, b, regions) {
     if (a.length !== b.length) return false;
-    for (var i = 0; i < a.length; i++) {
-        if (a[i] === b[i]) continue;
-        var inside = regions.some(function (r) { return i >= r[0] && i < r[0] + r[1]; });
-        if (!inside) return false;
+    var rs = regions.slice().sort(function (x, y) { return x[0] - y[0]; }), pos = 0;
+    for (var i = 0; i < rs.length; i++) {
+        var s = Math.min(rs[i][0], a.length), e = Math.min(rs[i][0] + rs[i][1], a.length);
+        if (s > pos && !a.slice(pos, s).equals(b.slice(pos, s))) return false;
+        if (e > pos) pos = e;
     }
-    return true;
+    return pos >= a.length || a.slice(pos).equals(b.slice(pos));
 }
 
 function parseArgs(argv) {
@@ -941,9 +949,11 @@ function main() {
 /* Whether target holds a change besides our edits, against its original
  * (our trusted backup, or the shipped bytes of a build in SHIPPED): true, false, or
  * null when that cannot be told (status prints it as `foreign:`). */
-function foreignIn(target) {
+function foreignIn(target, pre) {
     try {
-        var buf = fs.readFileSync(target), c = classify(buf), p = restorePlan(target, buf, c);
+        var buf = pre ? pre.buf : fs.readFileSync(target);
+        var c = pre ? pre.c : classify(buf);
+        var p = pre ? pre.p : restorePlan(target, buf, c);
         if (!c.ok || p.err || p.b.other) return null;
         return !onlyRegionsDiffer(buf, p.b.buf, regions(c).concat(urlsLeft(buf, p.bc)));
     } catch (e) { return null; }

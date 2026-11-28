@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.6.24
+
+robertnisipeanu/idrive-apps' 0.8.15 with this repository's 0.6.23:
+
+The cluster renderer uses less CPU and memory while drawing and idling, writes logs without stalling frames, and installs a smaller package.
+
 ## 0.6.23
 
 robertnisipeanu/idrive-apps' 0.8.14 with this repository's 0.6.22:
