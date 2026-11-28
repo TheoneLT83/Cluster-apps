@@ -2,7 +2,7 @@
   "id": "robertn_waze_cluster",
   "title": "Cluster functions",
   "description": "The phone's map on the instrument cluster and the HUD (CarPlay and Android Auto), with the HUD map's size, place and brightness; turn signals, the gear, the real speed and readings on the HUD and the cluster: electric range, oil and coolant, boost, power and torque, engine speed, tyre pressures, gearbox oil, fuel range, the clock and the drive time",
-  "version": "0.9.58",
+  "version": "0.9.59",
   "vendor": "Robert Nisipeanu",
   "loggingId": "WOCA",
   "memoryKB": 153600,
@@ -73,6 +73,10 @@
       "_optional": "the fuel range, and the clock in the time zone set in the car",
       "statusRangeTankStatus": "rs",
       "timeDateUTC": "rs"
+    },
+    "de.bmw.infrastructure.VehicleCondition": {
+      "_optional": "the car locked and left: the gearbox unit not asked, so the car can sleep",
+      "VehicleCondition": "s"
     },
     "com.harman.infotainment.systemfunctions.tasu.tasu.InternalTasu": {
       "_optional": "gearbox oil from the gearbox unit (read only) when the car does not send it",

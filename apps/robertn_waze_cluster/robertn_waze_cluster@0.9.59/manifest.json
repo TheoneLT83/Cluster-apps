@@ -205,6 +205,12 @@
         "timeDateUTC": "rs"
       }
     },
+    "de.bmw.infrastructure.VehicleCondition": {
+      "instances": "1",
+      "attributes": {
+        "VehicleCondition": "s"
+      }
+    },
     "com.harman.infotainment.systemfunctions.tasu.tasu.InternalTasu": {
       "instances": "SystemFunctionsInternalTasuInst1",
       "methods": [

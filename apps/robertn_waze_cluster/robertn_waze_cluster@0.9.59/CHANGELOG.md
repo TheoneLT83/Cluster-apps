@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.59
+
+The car locked and left stops the gearbox reads again: the car's VehicleCondition is in the app's signals (0.9.56 asked
+for it without, so the reads went on).
+
 ## 0.9.58
 
 With waze-on-cluster 0.14.22 and cluster-render 0.6.24 (robertnisipeanu/idrive-apps' faster, lighter map; Android Auto's geometry by a redirect).
